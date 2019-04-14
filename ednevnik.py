@@ -6,7 +6,7 @@ from getpass import getpass
 sver = "0.3"
 
 def help():
-	print("-debug\t\t\tEnable debug in EDAP module\n-alltests\t\tShow all tests instead of just from current date\n-loglevel 0/1/2/3\tSet log level (verbose/info/warning/error)\n")
+	print("-debug\t\t\tEnable debug in EDAP module\n-alltests\t\tShow all tests instead of just from current date\n-loglevel 0/1/2/3\tSet log level (verbose/info/warning/error)\n-noanonrep\t\tDon't send anonymous error reports\n")
 	sys.exit(0)
 
 print("eDnevnikAndroid %s\n" % sver)
@@ -28,12 +28,25 @@ for x in classes:
 sel = int(input("\nSelection (0 to %s): " % (cnum-1)))
 print("\nSubjects:")
 subs = dnevnik.getSubjects(sel)
-for x in subs:
-	if x["professors"][0] != None:
-		y = ', '.join(x["professors"])
+for x in range(len(subs)):
+	if subs[x]["professors"][0] != None:
+		y = ', '.join(subs[x]["professors"])
 	else:
 		y = "None"
-	print("subject: %s, professors: %s" % (x["subject"], y))
+	print("ID: %s, subject: %s, professors: %s" % (x, subs[x]["subject"], y))
+sel_2 = int(input("\nSelection (0 to %s): " % (len(subs)-1)))
+dates = []
+ocjene = []
+status = []
+for x in dnevnik.getGradesForSubject(sel,sel_2):
+	dates.append(x[0])
+	ocjene.append(int(x[2]))
+	status.append(x[1])
+print("")
+print(tabulate({"Date":dates, "Subject":status, "Grade":ocjene}, headers="keys"))
+avg1 = round(sum(ocjene)/len(ocjene), 2)
+avg2 = round(avg1, 0)
+print("\nAVERAGE FOR SUBJECT ID %s: %s (%s)" % (sel_2, str(avg2)[:1], avg1))
 print("\nTests:\n")
 subjnames = []
 testsubjs = []
@@ -44,11 +57,3 @@ for x in dnevnik.getTests(sel, alltests=alltests):
 	testdates.append(x[2])
 #print(subjnames)
 print(tabulate({"Subject":subjnames,"Test subject":testsubjs,"Date":testdates}, headers="keys"))
-dates = []
-ocjene = []
-status = []
-for x in dnevnik.getGradesForSubject(sel,0):
-	dates.append(x[0])
-	ocjene.append(x[2])
-	status.append(x[1])
-print(tabulate({"Date":dates, "Subject":status, "Grade":ocjene}, headers="keys"))

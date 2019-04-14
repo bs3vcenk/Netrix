@@ -1,5 +1,5 @@
 # eDnevnikAndroidProject - main library
-import sys
+import sys, inspect, re
 try:
 	from bs4 import BeautifulSoup
 	import requests
@@ -8,7 +8,7 @@ except ModuleNotFoundError:
 	sys.exit(1)
 
 class edap:
-	def __init__(self, user, pasw, parser="html.parser", edurl="https://ocjene.skole.hr", useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0", debug=False, loglevel=1):
+	def __init__(self, user, pasw, parser="html.parser", edurl="https://ocjene.skole.hr", useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0", debug=False, loglevel=1, anon_err_report=True):
 		"""
 			Initialization function
 
@@ -16,6 +16,7 @@ class edap:
 
 			ARGS: user [str/required], pasw [str/required], parser [str/optional], edurl [str/optional], useragent [str/optional], debug [bool/optional], loglevel [int/optional]
 		"""
+		self.anon_err_report = anon_err_report
 		self.parser = parser
 		self.edurl = edurl
 		self.user = user
@@ -37,7 +38,7 @@ class edap:
 			self.csrf = self.session.cookies["csrf_cookie"]
 		except Exception as e:
 			self.__edlog(4, "Failed to connect to eDnevnik (%s)" % e)
-		self.__edlog(1, "Got CSRF: %s" % self.csrf)
+		self.__edlog(1, "Got CSRF: [{%s}]" % self.csrf)
 		self.__edlog(1, "Trying to authenticate %s" % self.user)
 		try:
 			t = self.session.post("%s/pocetna/posalji/" % self.edurl, data={"csrf_token":self.csrf, "user_login":user, "user_password":pasw})
@@ -48,7 +49,7 @@ class edap:
 			self.__edlog(4, "Failed to connect to eDnevnik (%s)" % e)
 		self.__edlog(1, "Authentication successful!")
 
-	def __edlog(self, loglevel, logs):
+	def __edlog(self, loglevel, logs, hidepriv=True):
 		"""
 			Logging function
 
@@ -61,7 +62,9 @@ class edap:
 			if loglevel > 4:
 				print("EDAP/Error: Unknown loglevel %s" % loglevel)
 			logl = ["Verbose", "Info", "Warning", "Error", "FATAL"]
-			print("EDAP/%s: %s" % (logl[loglevel], logs))
+			if "[{" and "}]" in logs and hidepriv:
+				logs = re.sub(r'\[\{.+?\}\]', 'PRIVATE', logs)
+			print("EDAP/%s/%s: %s" % (logl[loglevel], inspect.stack()[1].function, logs))
 			if loglevel == 4:
 				sys.exit(1)
 
@@ -75,7 +78,7 @@ class edap:
 
 			ARGS: none
 		"""
-		self.__edlog(1, "Listing classes for %s" % self.user)
+		self.__edlog(1, "Listing classes for [{%s}]" % self.user)
 		self.__edlog(0, "Getting class selection HTML")
 		try:
 			o = self.session.get("%s/razredi/odabir" % self.edurl)
@@ -110,7 +113,7 @@ class edap:
 
 			ARGS: class_id [int/required]
 		"""
-		self.__edlog(1, "Getting subject list for class id %s (corresponding to actual ID %s)" % (class_id, self.class_ids[class_id]))
+		self.__edlog(1, "Getting subject list for class id %s (corresponding to actual ID [{%s}])" % (class_id, self.class_ids[class_id]))
 		try:
 			o = self.session.get("%s/pregled/predmeti/%s" % (self.edurl, self.class_ids[class_id]))
 			o.raise_for_status()
@@ -136,7 +139,7 @@ class edap:
 				self.__edlog(0, "No empty professor string found, continuing normally")
 			subjinfo.append({'subject':h[0].strip(), 'professors':prof})
 			self.subject_ids.append(i["href"])
-		self.__edlog(1, "Completed with %s subjects found" % len(subjinfo))
+		self.__edlog(1, "Completed with [{%s}] subjects found" % len(subjinfo))
 		return subjinfo
 
 	def getTests(self, class_id, alltests=False):
@@ -147,7 +150,7 @@ class edap:
 
 			ARGS: class_id [int/required], alltests [bool/optional]
 		"""
-		self.__edlog(1, "Getting test list for class id %s (corresponding to actual ID %s)" % (class_id, self.class_ids[class_id]))
+		self.__edlog(1, "Getting test list for class id %s (corresponding to actual ID [{%s}])" % (class_id, self.class_ids[class_id]))
 		if alltests:
 			self.__edlog(1, "Full test list requested")
 			addon = "/all"
@@ -182,7 +185,7 @@ class edap:
 
 			ARGS: class_id [int/required], subject_id [int/required], sorttype [str/optional]
 		"""
-		self.__edlog(1, "Getting grade list for subject id %s, class id %s (corresponding to actual IDs subject:%s and class:%s)" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
+		self.__edlog(1, "Getting grade list for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
 			o = self.session.get("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 			o.raise_for_status()
