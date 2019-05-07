@@ -6,13 +6,14 @@ from getpass import getpass
 sver = "0.3"
 
 def help():
-	print("-debug\t\t\tEnable debug in EDAP module\n-alltests\t\tShow all tests instead of just from current date\n-loglevel 0/1/2/3\tSet log level (verbose/info/warning/error)\n-noanonrep\t\tDon't send anonymous error reports\n")
+	print("-debug\t\t\tEnable debug in EDAP module\n-alltests\t\tShow all tests instead of just from current date\n-loglevel 0/1/2/3\tSet log level (verbose/info/warning/error)\n-noanonrep\t\tDon't send anonymous error reports\n-fullavg\t\tShow only average of all classes\n")
 	sys.exit(0)
 
 print("eDnevnikAndroid %s\n" % sver)
 debug = "-debug" in sys.argv
 alltests = "-alltests" in sys.argv
 loglevel = int(sys.argv[sys.argv.index("-loglevel")+1]) if "-loglevel" in sys.argv else 1
+avgonly = "-fullavg" in sys.argv
 help() if "-h" in sys.argv or "-help" in sys.argv else None
 print("Please enter your credentials.\nDISCLAIMER: Your credentials are sent only to \"ocjene.skole.hr\"\nand are kept in memory only for the duration of the login process.\n")
 user = input("Username: ")
@@ -26,6 +27,24 @@ for x in classes:
 	print("ID %s: class: %s, year: %s, school: %s, city: %s, classmaster: %s" % (cnum, x["class"], x["year"], x["school_name"], x["school_city"], x["classmaster"]))
 	cnum += 1
 sel = int(input("\nSelection (0 to %s): " % (cnum-1)))
+if avgonly:
+	subs = dnevnik.getSubjects(sel)
+	fullgr = []
+	for x in range(len(subs)):
+		ocj = []
+		for y in dnevnik.getGradesForSubject(sel, x):
+			try:
+				ocj.append(int(y[2]))
+			except:
+				pass
+		if len(ocj) == 0:
+			continue
+		else:
+			z = round(sum(ocj)/len(ocj), 0)
+			print("%s: %s" % (subs[x]["subject"], z))
+			fullgr.append(z)
+	print("AVERAGE: %s" % (round(sum(fullgr)/len(fullgr), 2)) )
+	exit()
 print("\nSubjects:")
 subs = dnevnik.getSubjects(sel)
 for x in range(len(subs)):
@@ -55,5 +74,4 @@ for x in dnevnik.getTests(sel, alltests=alltests):
 	subjnames.append(x[0])
 	testsubjs.append(x[1])
 	testdates.append(x[2])
-#print(subjnames)
 print(tabulate({"Subject":subjnames,"Test subject":testsubjs,"Date":testdates}, headers="keys"))
