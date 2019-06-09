@@ -8,23 +8,28 @@ except ModuleNotFoundError:
 	sys.exit(1)
 
 class edap:
-	def __init__(self, user, pasw, parser="html.parser", edurl="https://ocjene.skole.hr", useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0", debug=False, loglevel=1, anon_err_report=True):
+	def __init__(self, user, pasw, parser="html.parser", edurl="https://ocjene.skole.hr", useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0", debug=False, loglevel=1, anon_err_report=True, hidepriv=True):
 		"""
 			Initialization function
 
 			Authenticates user for further actions.
 
-			ARGS: user [str/required], pasw [str/required], parser [str/optional], edurl [str/optional], useragent [str/optional], debug [bool/optional], loglevel [int/optional]
+			ARGS: user [str/required], pasw [str/required], parser [str/optional],
+			      edurl [str/optional], useragent [str/optional],
+			      debug [bool/optional], loglevel [int/optional], hidepriv [bool/optional]
 		"""
 		self.anon_err_report = anon_err_report
 		self.parser = parser
 		self.edurl = edurl
 		self.user = user
-		self.edap_version = "A8"
+		self.edap_version = "A9"
 		self.useragent = useragent
 		self.debug = debug
 		self.loglevel = loglevel
+		self.hidepriv = hidepriv
 		print("EDAP (eDnevnikAndroidProject) %s" % self.edap_version)
+		self.__edlog(1, "Init variables: anon_err_report=%s, parser=%s, edurl=%s, user=[{%s}], edap_version=%s, useragent=%s, debug=%s, loglevel=%s, hidepriv=%s" % (
+			self.anon_err_report, self.parser, self.edurl, self.user, self.edap_version, self.useragent, self.debug, self.loglevel, self.hidepriv))
 		self.__edlog(1, "Initializing requests.Session() object")
 		try:
 			self.session = requests.Session()
@@ -49,7 +54,7 @@ class edap:
 			self.__edlog(4, "Failed to connect to eDnevnik (%s)" % e)
 		self.__edlog(1, "Authentication successful!")
 
-	def __edlog(self, loglevel, logs, hidepriv=True):
+	def __edlog(self, loglevel, logs):
 		"""
 			Logging function
 
@@ -62,7 +67,7 @@ class edap:
 			if loglevel > 4:
 				print("EDAP/Error: Unknown loglevel %s" % loglevel)
 			logl = ["Verbose", "Info", "Warning", "Error", "FATAL"]
-			if "[{" and "}]" in logs and hidepriv:
+			if "[{" and "}]" in logs and self.hidepriv:
 				logs = re.sub(r'\[\{.+?\}\]', 'PRIVATE', logs)
 			print("EDAP/%s/%s: %s" % (logl[loglevel], inspect.stack()[1].function, logs))
 			if loglevel == 4:
@@ -185,7 +190,7 @@ class edap:
 
 			ARGS: class_id [int/required], subject_id [int/required], sorttype [str/optional]
 		"""
-		self.__edlog(1, "Getting grade list for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
+		self.__edlog(0, "Getting grade list for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
 			o = self.session.get("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 			o.raise_for_status()
@@ -199,8 +204,35 @@ class edap:
 			for x in range(len(xtab)):
 				xtab[x] = xtab[x].getText().strip()
 			af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
-		elif sorttype == "gradelist":
-			self.__edlog(3, "Gradelist not yet implemented (and possibly won't be anytime soon)")
+		else:
+			self.__edlog(3, "Method %s not yet implemented" % sorttype)
+			return None
 		return af
 		#avg = float(soup.find("div", class_="average").getText().replace("Prosjek ocjena: ", "").replace(",", "."))
 		#return avg
+
+	def getConcludedGradeForSubject(self, class_id, subject_id):
+		"""
+			Return true/false if there is a concluded grade or not, and if there is return the grade.
+
+			ARGS: class_id [int/required], subject_id [int/required]
+		"""
+		self.__edlog(0, "Getting concluded grade for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
+		try:
+			o = self.session.get("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			o.raise_for_status()
+			response = o.text
+		except Exception as e:
+			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
+		self.__edlog(0, "Initializing BeautifulSoup with response")
+		soup = BeautifulSoup(response, self.parser)
+		xtab = soup.find("div", class_="grades").find_all("table")[0].find_all("td", class_="t-center bold")[1].getText().strip()
+		if len(xtab) > 0:
+			self.__edlog(0, "Got unformatted string: [{%s}]" % xtab)
+			result = re.search('\((.*)\)', xtab).group(1)
+			self.__edlog(0, "Formatted string: [{%s}]" % result)
+			return True, int(result)
+		else:
+			self.__edlog(1, "No concluded grade found for this subject")
+			return False, None
+		
