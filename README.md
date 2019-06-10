@@ -1,11 +1,9 @@
 # e-Dnevnik for Android
-Aplikacija za e-Dnevnik (koja nije samo WebKit browser u okviru). Pisano za Python 3.
+Python skripta za e-Dnevnik. Pisano za Python 3.
+
+Aplikacija za mobilne uređaje dostupna je [ovdje](https://github.com/btx3/eDnevnikAndroid).
 
 ## Upute za instalaciju
-Zasad projekt nije potpuno realiziran, stoga trenutno ne postoji aplikacija za mobilne uređaje.
-
-Ako želite isprobati trenutnu funkcionalnost EDAP librarya (library koji handlea sve vezano za buduću aplikaciju), možete isprobati testnu skriptu `ednevnik.py`.
-
 Podržani i testirani operativni sustavi:
 * **Android** pomoću aplikacije [Termux](https://termux.com/)
 * **Windows**
@@ -29,28 +27,12 @@ Podržani i testirani operativni sustavi:
 
 ### Android (Termux)
 * Instalirajte Termux sa Play Store-a
-* Slijedite upute za Linux (Ubuntu), mijenjajući `python3` za `python`
+* Slijedite upute za Linux (Ubuntu)
 
-## Screenshot
+## Značajke/Features
 
-<img src="https://github.com/btx3/eDnevnikAndroid/raw/master/img/i1.jpg" width="300">
-
-<img src="https://github.com/btx3/eDnevnikAndroid/raw/master/img/i2.jpg" width="300">
-
-## Roadmap
-- [x] Slanje user i pass
-- [x] Dobivanje i integriranje tokena u daljnje HTTP zahtjeve
-- [x] Ispisivanje razreda
-- [x] Odabir razreda
-- [x] Učitavanje predmeta i profesora
-- [x] Učitavanje ispita
-- [x] Parsiranje ispita (sorting u datum, predmet, subjekt)
-- [x] Parsiranje ocjena, prosjeka itd. iz predmeta i općeniti prosjek
-- [ ] "Koliko još ocjena treba do ciljanog prosjeka?"
-- [ ] Prijevod programa
-- [x] Java/Android aplikacija
-  - [ ] Obavijesti za ispite
-  - [ ] Funkcionalnost upisivanja datuma odgovaranja
-  - [ ] e-Građani login
-- [ ] Play Store
-- [ ] Reklame (??)
+* Dobivanje razreda i informacije o njima
+* Dobivanje predmeta i informacije o njima
+* Čitanje ocjena, bilježaka i datuma upisvanja za svaki predmet
+* Čitanje datuma i predmeta ispita (svih ili samo preostalih)
+* Računanje prosjeka (sveukupni i po predmetu) [u demo skripti]
