@@ -22,7 +22,7 @@ class edap:
 		self.parser = parser
 		self.edurl = edurl
 		self.user = user
-		self.edap_version = "A9"
+		self.edap_version = "B1"
 		self.useragent = useragent
 		self.debug = debug
 		self.loglevel = loglevel
@@ -134,7 +134,10 @@ class edap:
 		self.subject_ids = []
 		subjinfo = []
 		for i in sl2:
-			h = i.find_all("div", class_="course")[0].get_text("\n").split("\n")
+			try:
+				h = i.find_all("div", class_="course")[0].get_text("\n").split("\n")
+			except Exception as e:
+				self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,i))
 			prof = ''.join(h[1:]).split(", ")
 			try:
 				t = prof.index("/")
@@ -144,7 +147,7 @@ class edap:
 				self.__edlog(0, "No empty professor string found, continuing normally")
 			subjinfo.append({'subject':h[0].strip(), 'professors':prof})
 			self.subject_ids.append(i["href"])
-		self.__edlog(1, "Completed with [{%s}] subjects found" % len(subjinfo))
+		self.__edlog(1, "Completed with %s subjects found" % len(subjinfo))
 		return subjinfo
 
 	def getTests(self, class_id, alltests=False):
@@ -169,7 +172,10 @@ class edap:
 			self.__edlog(4, "Failed getting test list (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		table = soup.find('table')
+		try:
+			table = soup.find('table')
+		except Exception as e:
+			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,soup))
 		try:
 			xtab = table.find_all('td')
 		except AttributeError:
@@ -206,8 +212,12 @@ class edap:
 			af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
 		else:
 			self.__edlog(3, "Method %s not yet implemented" % sorttype)
-			return None
-		return af
+			return []
+		if af[0][0] == "Nema ostalih bilježaka":
+			self.__edlog(1, "No grades found for this subject")
+			return []
+		else:
+			return af
 		#avg = float(soup.find("div", class_="average").getText().replace("Prosjek ocjena: ", "").replace(",", "."))
 		#return avg
 
@@ -226,13 +236,17 @@ class edap:
 			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		xtab = soup.find("div", class_="grades").find_all("table")[0].find_all("td", class_="t-center bold")[1].getText().strip()
+		try:
+			xtab = soup.find("div", class_="grades").find_all("table")[0].find_all("td", class_="t-center bold")[1].getText().strip()
+		except Exception as e:
+			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,soup))
 		if len(xtab) > 0:
 			self.__edlog(0, "Got unformatted string: [{%s}]" % xtab)
 			result = re.search('\((.*)\)', xtab).group(1)
 			self.__edlog(0, "Formatted string: [{%s}]" % result)
+			self.__edlog(1, "Found concluded grade for this subject")
 			return True, int(result)
 		else:
-			self.__edlog(1, "No concluded grade found for this subject")
+			self.__edlog(0, "No concluded grade found for this subject")
 			return False, None
 		
