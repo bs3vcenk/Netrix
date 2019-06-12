@@ -7,8 +7,14 @@ except ModuleNotFoundError:
 	print("ERROR: BeautifulSoup or requests isn't installed -- check the instructions and try again.")
 	sys.exit(1)
 
+class FatalLogExit(Exception):
+	pass
+
+class WrongCredentials(Exception):
+	pass
+
 class edap:
-	def __init__(self, user, pasw, parser="html.parser", edurl="https://ocjene.skole.hr", useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0", debug=False, loglevel=1, anon_err_report=True, hidepriv=True):
+	def __init__(self, user, pasw, parser="html.parser", edurl="https://ocjene.skole.hr", useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0", debug=False, loglevel=1, anon_err_report=True, hidepriv=True, log_func_name=True):
 		"""
 			Initialization function
 
@@ -22,14 +28,15 @@ class edap:
 		self.parser = parser
 		self.edurl = edurl
 		self.user = user
-		self.edap_version = "B1"
+		self.edap_version = "B2"
 		self.useragent = useragent
 		self.debug = debug
 		self.loglevel = loglevel
 		self.hidepriv = hidepriv
+		self.log_func_name = log_func_name
 		print("EDAP (eDnevnikAndroidProject) %s" % self.edap_version)
-		self.__edlog(1, "Init variables: anon_err_report=%s, parser=%s, edurl=%s, user=[{%s}], edap_version=%s, useragent=%s, debug=%s, loglevel=%s, hidepriv=%s" % (
-			self.anon_err_report, self.parser, self.edurl, self.user, self.edap_version, self.useragent, self.debug, self.loglevel, self.hidepriv))
+		self.__edlog(1, "Init variables: anon_err_report=%s, parser=%s, edurl=%s, user=[{%s}], edap_version=%s, useragent=%s, debug=%s, loglevel=%s, hidepriv=%s, log_func_name=%s" %
+			(self.anon_err_report, self.parser, self.edurl, self.user, self.edap_version, self.useragent, self.debug, self.loglevel, self.hidepriv, self.log_func_name))
 		self.__edlog(1, "Initializing requests.Session() object")
 		try:
 			self.session = requests.Session()
@@ -49,7 +56,7 @@ class edap:
 			t = self.session.post("%s/pocetna/posalji/" % self.edurl, data={"csrf_token":self.csrf, "user_login":user, "user_password":pasw})
 			t.raise_for_status()
 			if "Krivo korisničko ime i/ili lozinka." in t.text:
-				self.__edlog(4, "Wrong username or password. Authenication failed.")
+				raise WrongCredentials
 		except Exception as e:
 			self.__edlog(4, "Failed to connect to eDnevnik (%s)" % e)
 		self.__edlog(1, "Authentication successful!")
@@ -68,10 +75,10 @@ class edap:
 				print("EDAP/Error: Unknown loglevel %s" % loglevel)
 			logl = ["Verbose", "Info", "Warning", "Error", "FATAL"]
 			if "[{" and "}]" in logs and self.hidepriv:
-				logs = re.sub(r'\[\{.+?\}\]', 'PRIVATE', logs)
+				logs = re.sub(r'\[\{.+?\}\]', '[PRIVATE]', logs)
 			print("EDAP/%s/%s: %s" % (logl[loglevel], inspect.stack()[1].function, logs))
 			if loglevel == 4:
-				sys.exit(1)
+				raise FatalLogExit
 
 	def getClasses(self):
 		"""
@@ -109,7 +116,7 @@ class edap:
 			# y[1] -> institution city
 			classlist.append({"class":x[0], "year":x[1].replace("Školska godina ", ""), "school_name":y[0], "school_city":y[1], "classmaster":x[3].replace("Razrednik: ", "")})
 			self.class_ids.append(i["href"].replace("/pregled/predmeti/", ""))
-		self.__edlog(1, "Completed with %s classes found, corresponding to %s class IDs" % (len(classlist), len(self.class_ids)))
+		self.__edlog(1, "Completed with %s classes found" % len(classlist))
 		return classlist
 
 	def getSubjects(self, class_id):
@@ -118,7 +125,7 @@ class edap:
 
 			ARGS: class_id [int/required]
 		"""
-		self.__edlog(1, "Getting subject list for class id %s (corresponding to actual ID [{%s}])" % (class_id, self.class_ids[class_id]))
+		self.__edlog(1, "Getting subject list for class id %s (remote ID [{%s}])" % (class_id, self.class_ids[class_id]))
 		try:
 			o = self.session.get("%s/pregled/predmeti/%s" % (self.edurl, self.class_ids[class_id]))
 			o.raise_for_status()
@@ -137,7 +144,7 @@ class edap:
 			try:
 				h = i.find_all("div", class_="course")[0].get_text("\n").split("\n")
 			except Exception as e:
-				self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,i))
+				self.__edlog(3, "HTML parsing error! [%s] Probably new grade notification, attempting workaround..." % (e,i))
 			prof = ''.join(h[1:]).split(", ")
 			try:
 				t = prof.index("/")
@@ -196,7 +203,7 @@ class edap:
 
 			ARGS: class_id [int/required], subject_id [int/required], sorttype [str/optional]
 		"""
-		self.__edlog(0, "Getting grade list for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
+		self.__edlog(0, "Getting grade list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
 			o = self.session.get("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 			o.raise_for_status()
@@ -244,7 +251,7 @@ class edap:
 			self.__edlog(0, "Got unformatted string: [{%s}]" % xtab)
 			result = re.search('\((.*)\)', xtab).group(1)
 			self.__edlog(0, "Formatted string: [{%s}]" % result)
-			self.__edlog(1, "Found concluded grade for this subject")
+			self.__edlog(0, "Found concluded grade for this subject")
 			return True, int(result)
 		else:
 			self.__edlog(0, "No concluded grade found for this subject")
