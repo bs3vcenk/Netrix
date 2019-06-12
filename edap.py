@@ -34,7 +34,7 @@ class edap:
 		self.loglevel = loglevel
 		self.hidepriv = hidepriv
 		self.log_func_name = log_func_name
-		print("EDAP (eDnevnikAndroidProject) %s" % self.edap_version)
+		print("=> EDAP (eDnevnikAndroidProject) %s" % self.edap_version)
 		self.__edlog(1, "Init variables: anon_err_report=%s, parser=%s, edurl=%s, user=[{%s}], edap_version=%s, useragent=%s, debug=%s, loglevel=%s, hidepriv=%s, log_func_name=%s" %
 			(self.anon_err_report, self.parser, self.edurl, self.user, self.edap_version, self.useragent, self.debug, self.loglevel, self.hidepriv, self.log_func_name))
 		self.__edlog(1, "Initializing requests.Session() object")
@@ -57,7 +57,7 @@ class edap:
 			t.raise_for_status()
 			if "Krivo korisničko ime i/ili lozinka." in t.text:
 				raise WrongCredentials
-		except Exception as e:
+		except requests.HTTPError as e:
 			self.__edlog(4, "Failed to connect to eDnevnik (%s)" % e)
 		self.__edlog(1, "Authentication successful!")
 
