@@ -1,12 +1,17 @@
 #!/usr/bin/python3
-import edap, sys
+import edap, sys, edn_localization
 from tabulate import tabulate
 from getpass import getpass
 
-sver = "0.5"
+sver = "0.6"
+default_lang = "hr"
+
+sel_lang = str(sys.argv[sys.argv.index("-lang")+1]) if "-lang" in sys.argv else default_lang
+
+strings = edn_localization.Strings(lang=sel_lang)
 
 def help():
-	print("-debug\t\t\tEnable debug in EDAP module\n-alltests\t\tShow all tests instead of just from current date\n-loglevel 0/1/2/3\tSet log level (verbose/info/warning/error)\n-noanonrep\t\tDon't send anonymous error reports\n-fullavg\t\tShow only average of all classes\n-nohidepriv\t\tDon't hide private info in debug logs\n-report\t\tStore a grade report into \"report.txt\"\n")
+	print(strings.Help)
 	sys.exit(0)
 
 print("eDnevnikAndroid %s\n" % sver)
@@ -24,11 +29,15 @@ if report:
 	reptext = ""
 
 # Ask for creds
-print("Please enter your credentials.\nDISCLAIMER: Your credentials are sent only to \"ocjene.skole.hr\"\nand are kept in memory only for the duration of the login process.\n")
-user = input("Username: ")
-pasw = getpass("Password: ")
+print(strings.CredentialPrompt)
+user = input(strings.UsernamePrompt)
+pasw = getpass(strings.PasswordPrompt)
 # Init the module
-dnevnik = edap.edap(user=user, pasw=pasw, debug=debug, loglevel=loglevel, hidepriv=hidepriv)
+try:
+	dnevnik = edap.edap(user=user, pasw=pasw, debug=debug, loglevel=loglevel, hidepriv=hidepriv)
+except edap.WrongCredentials:
+	print(strings.WrongCredentials)
+	sys.exit(1)
 if report:
 	reptext += "eDnevnikAndroid %s (EDAP %s)\n\n" % (sver, dnevnik.edap_version)
 # Get list of all classes user has on profile
@@ -36,11 +45,11 @@ classes = dnevnik.getClasses()
 cnum = 0
 # Print out class selection, store it to sel variable
 for x in classes:
-	print("ID %s: class: %s, year: %s, school: %s, city: %s, classmaster: %s" % (cnum, x["class"], x["year"], x["school_name"], x["school_city"], x["classmaster"]))
+	print(strings.ClassSelDisplay % (cnum, x["class"], x["year"], x["school_name"], x["school_city"], x["classmaster"]))
 	cnum += 1
-sel = int(input("\nSelection (0 to %s): " % (cnum-1)))
+sel = int(input(strings.SelectionTemplate % (cnum-1)))
 if report:
-	reptext += "Class: %s (%s)\nSchool: %s, %s\nClassmaster: %s\n\nAVG_GRADE_PLACEHOLDER\n\n" % (classes[sel]["class"], classes[sel]["year"], classes[sel]["school_name"], x["school_city"], classes[sel]["classmaster"])
+	reptext += strings.RepTextHeader % (classes[sel]["class"], classes[sel]["year"], classes[sel]["school_name"], x["school_city"], classes[sel]["classmaster"])
 # If user requested only average
 if avgonly and not report:
 	subs = dnevnik.getSubjects(sel)
@@ -48,7 +57,7 @@ if avgonly and not report:
 	for x in range(len(subs)):
 		hasConcludedGrade, concludedGrade = dnevnik.getConcludedGradeForSubject(sel, x)
 		if hasConcludedGrade:
-			print("%s: %s (CONCLUDED)" % (subs[x]["subject"], concludedGrade))
+			print("%s: %s (%s)" % (subs[x]["subject"], concludedGrade, strings.ConcludedGradeMinified))
 			fullgr.append(concludedGrade)
 		else:
 			ocj = []
@@ -63,19 +72,19 @@ if avgonly and not report:
 				z = int(round(sum(ocj)/len(ocj), 0))
 				print("%s: %s" % (subs[x]["subject"], z))
 				fullgr.append(z)
-	print("AVERAGE: %s" % (round(sum(fullgr)/len(fullgr), 2)) )
+	print(strings.AverageGradeMinified % round(sum(fullgr)/len(fullgr), 2))
 	exit()
 # Else ask for subject selection
 if not report:
-	print("\nSubjects:")
+	print(strings.SubjectsHeader)
 	subs = dnevnik.getSubjects(sel)
 	for x in range(len(subs)):
 		if subs[x]["professors"][0] != None:
 			y = ', '.join(subs[x]["professors"])
 		else:
-			y = "None"
-		print("ID: %s, subject: %s, professors: %s" % (x, subs[x]["subject"], y))
-	sel_2 = int(input("\nSelection (0 to %s): " % (len(subs)-1)))
+			y = strings.NoProfessorsForSubject
+		print(strings.SubjectSelDisplay % (x, subs[x]["subject"], y))
+	sel_2 = int(input(strings.SelectionTemplate % (len(subs)-1)))
 	dates = []
 	ocjene = []
 	status = []
@@ -86,17 +95,17 @@ if not report:
 			dates.append(x[0])
 			ocjene.append(int(x[2]))
 			status.append(x[1])
-		print("\n" + tabulate({"Date":dates, "Subject":status, "Grade":ocjene}, headers="keys"))
+		print("\n" + tabulate({strings.GradeDate:dates, strings.GradeSubject:status, strings.GradeNumber:ocjene}, headers="keys"))
 		# Calculate avg for subject, round to 2 decimals and 0 decimals
 		avg1 = round(sum(ocjene)/len(ocjene), 2)
 		avg2 = round(avg1, 0)
-		print("\nAVERAGE GRADE (calculated locally): %s (%s)" % (str(avg2)[:1], avg1))
+		print(strings.AverageGrade % (str(avg2)[:1], avg1))
 		hasConcludedGrade, concludedGrade = dnevnik.getConcludedGradeForSubject(sel, sel_2)
 		if hasConcludedGrade:
-			print("CONCLUDED GRADE: %s" % concludedGrade)
+			print(strings.ConcludedGrade % concludedGrade)
 	else:
-		print("\nNo grades for this subject")
-	print("\nTests:\n")
+		print("\n" + strings.NoGradesForSubject)
+	print(strings.TestsHeader)
 	subjnames = []
 	testsubjs = []
 	testdates = []
@@ -105,7 +114,7 @@ if not report:
 		subjnames.append(x[0])
 		testsubjs.append(x[1])
 		testdates.append(x[2])
-	print(tabulate({"Subject":subjnames,"Test subject":testsubjs,"Date":testdates}, headers="keys"))
+	print(tabulate({strings.TestSchoolSubject:subjnames,strings.TestSubject:testsubjs,strings.TestDate:testdates}, headers="keys"))
 else:
 	# Get subjects
 	subs = dnevnik.getSubjects(sel)
@@ -115,8 +124,8 @@ else:
 		if subs[x]["professors"][0] != None:
 			y = ', '.join(subs[x]["professors"])
 		else:
-			y = "No professors on record"
-		print("ID: %s, subject: %s, professors: %s" % (x, subs[x]["subject"], y))
+			y = strings.NoProfessorsForSubject
+		print(strings.SubjectSelDisplay % (x, subs[x]["subject"], y))
 		dates = []
 		ocjene = []
 		status = []
@@ -128,22 +137,22 @@ else:
 				dates.append(z[0])
 				ocjene.append(int(z[2]))
 				status.append(z[1])
-			reptext += tabulate({"Date":dates, "Subject":status, "Grade":ocjene}, headers="keys") + "\n\n"
+			reptext += tabulate({strings.GradeDate:dates, strings.GradeSubject:status, strings.GradeNumber:ocjene}, headers="keys")
 			# Calculate avg for subject, round to 2 decimals and 0 decimals
 			avg1 = round(sum(ocjene)/len(ocjene), 2)
 			avg2 = round(avg1, 0)
-			reptext += "AVERAGE GRADE (calculated locally): %s (%s)" % (str(avg2)[:1], avg1)
+			reptext += "\n" + strings.AverageGrade % (str(avg2)[:1], avg1) + "\n"
 			hasConcludedGrade, concludedGrade = dnevnik.getConcludedGradeForSubject(sel, x)
 			if hasConcludedGrade:
-				reptext += "\nCONCLUDED GRADE: %s" % concludedGrade
+				reptext += strings.ConcludedGrade % concludedGrade + "\n"
 				fullgr.append(concludedGrade)
 				concl += 1
 			else:
 				fullgr.append(int(str(avg2)[:1]))
 			reptext += "\n\n\n"
 		else:
-			reptext += "No grades for this subject\n\n\n"
-	reptext = reptext.replace("AVG_GRADE_PLACEHOLDER", "Current complete average: %s" % (str(round(sum(fullgr)/len(fullgr), 2)) + " (not all grades concluded!)" if concl != len(fullgr) else "") )
+			reptext += strings.NoGradesForSubject + "\n\n\n"
+	reptext = reptext.replace("AVG_GRADE_PLACEHOLDER", strings.CurrentCompleteAverage % (str(round(sum(fullgr)/len(fullgr), 2)) + strings.CurrentCompleteAverageIncomplete if concl != len(fullgr) else "") )
 	subjnames = []
 	testsubjs = []
 	testdates = []
@@ -151,6 +160,6 @@ else:
 		subjnames.append(x[0])
 		testsubjs.append(x[1])
 		testdates.append(x[2])
-	reptext += tabulate({"Subject":subjnames,"Test subject":testsubjs,"Date":testdates}, headers="keys") + "\n"
+	reptext += tabulate({strings.TestSchoolSubject:subjnames,strings.TestSubject:testsubjs,strings.TestDate:testdates}, headers="keys")
 	with open("report.txt", "wb") as f:
 		f.write(reptext.encode("utf-8"))
