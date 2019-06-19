@@ -1,5 +1,2 @@
-__pycache__
-report.txt
-dist
-build
-*.spec
+node_modules
+EDAP_LOG.log

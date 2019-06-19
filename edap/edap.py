@@ -13,30 +13,35 @@ class FatalLogExit(Exception):
 class WrongCredentials(Exception):
 	pass
 
+edap_version = "B2"
+
 class edap:
-	def __init__(self, user, pasw, parser="html.parser", edurl="https://ocjene.skole.hr", useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0", debug=False, loglevel=1, anon_err_report=True, hidepriv=True, log_func_name=True):
+	def __init__(self, user, pasw, parser="html.parser", edurl="https://ocjene.skole.hr", useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0", debug=False, loglevel=1, anon_err_report=True, hidepriv=True, log_func_name=True, redirect_log_to_file=False):
 		"""
 			Initialization function
 
 			Authenticates user for further actions.
 
 			ARGS: user [str/required], pasw [str/required], parser [str/optional],
-			      edurl [str/optional], useragent [str/optional],
-			      debug [bool/optional], loglevel [int/optional], hidepriv [bool/optional]
+			      edurl [str/optional], useragent [str/optional], debug [bool/optional],
+			      loglevel [int/optional], hidepriv [bool/optional], log_func_name [bool/optional],
+			      redirect_log_to_file [str|bool/optional]
 		"""
 		self.anon_err_report = anon_err_report
 		self.parser = parser
 		self.edurl = edurl
 		self.user = user
-		self.edap_version = "B2"
 		self.useragent = useragent
 		self.debug = debug
 		self.loglevel = loglevel
 		self.hidepriv = hidepriv
 		self.log_func_name = log_func_name
-		print("=> EDAP (eDnevnikAndroidProject) %s" % self.edap_version)
-		self.__edlog(1, "Init variables: anon_err_report=%s, parser=%s, edurl=%s, user=[{%s}], edap_version=%s, useragent=%s, debug=%s, loglevel=%s, hidepriv=%s, log_func_name=%s" %
-			(self.anon_err_report, self.parser, self.edurl, self.user, self.edap_version, self.useragent, self.debug, self.loglevel, self.hidepriv, self.log_func_name))
+		if redirect_log_to_file != False:
+			save_std = sys.stdout
+			sys.stdout = open(redirect_log_to_file, "w")
+		print("=> EDAP (eDnevnikAndroidProject) %s" % edap_version)
+		self.__edlog(1, "Init variables: anon_err_report=%s, parser=%s, edurl=%s, user=[{%s}], useragent=%s, debug=%s, loglevel=%s, hidepriv=%s, log_func_name=%s" %
+			(self.anon_err_report, self.parser, self.edurl, self.user, self.useragent, self.debug, self.loglevel, self.hidepriv, self.log_func_name))
 		self.__edlog(1, "Initializing requests.Session() object")
 		try:
 			self.session = requests.Session()

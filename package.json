@@ -1,0 +1,16 @@
+{
+  "name": "eDnevnik",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "zerorpc": "^0.9.7"
+  },
+  "devDependencies": {
+    "electron": "^2.0.7",
+    "electron-packager": "^13.1.1"
+  }
+}
