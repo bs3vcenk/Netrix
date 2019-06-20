@@ -222,6 +222,9 @@ class edap:
 			for x in range(len(xtab)):
 				xtab[x] = xtab[x].getText().strip()
 			af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
+			fg_list = []
+			for y in af:
+				fg_list.append({"date":y[0], "note":y[1], "grade":[2]})
 		else:
 			self.__edlog(3, "Method %s not yet implemented" % sorttype)
 			return []
@@ -229,7 +232,7 @@ class edap:
 			self.__edlog(1, "No grades found for this subject")
 			return []
 		else:
-			return af
+			return fg_list
 		#avg = float(soup.find("div", class_="average").getText().replace("Prosjek ocjena: ", "").replace(",", "."))
 		#return avg
 
