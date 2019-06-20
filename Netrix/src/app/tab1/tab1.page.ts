@@ -8,13 +8,23 @@ import { ToastController } from '@ionic/angular';
 })
 export class Tab1Page {
 
-  constructor(private toastCtrl: ToastController) {}
+  subjects: any;
+
+  constructor(private toastCtrl: ToastController) {
+
+  	this.subjects = [
+  		'Hrvatski jezik',
+  		'Engleski jezik',
+  		'Govno'
+  	]
+
+  }
 
   async switchToSubject(){
   	const toast = await this.toastCtrl.create({
   		message: "Switching to subject",
   		duration: 2000
-  	})
+  	});
   	toast.present();
   }
 }

@@ -1,7 +1,6 @@
-# e-Dnevnik for Android
-Python skripta za e-Dnevnik. Pisano za Python 3.
-
-Aplikacija za mobilne uređaje dostupna je [ovdje](https://github.com/btx3/eDnevnikAndroid).
+# Netrix (eDnevnik for Android)
+* Backend - EDAP (eDnevnikAndroidProject) [Python]
+* Frontend - [Netrix](https://github.com/btx3/eDnevnik/README_Netrix.md) [JS/Ionic]
 
 ## Upute za instalaciju
 Podržani i testirani operativni sustavi:

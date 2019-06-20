@@ -1,5 +1,7 @@
 {
   "name": "Netrix",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
