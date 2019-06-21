@@ -20,11 +20,12 @@ export class Tab1Page {
 
   }
 
-  async switchToSubject(){
-  	const toast = await this.toastCtrl.create({
-  		message: "Switching to subject",
-  		duration: 2000
-  	});
-  	toast.present();
-  }
+  /*async switchToSubject(){
+  	const animationsOptions = {
+      animation: 'ios-transition',
+      duration: 1000
+    }
+
+    //this.navCtrl.push(subjOverview, {}, animationsOptions);
+  }*/
 }

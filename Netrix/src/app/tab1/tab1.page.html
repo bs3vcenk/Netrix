@@ -10,7 +10,7 @@
   <ion-list lines="none">
     <ion-item-sliding *ngFor="let subject of subjects">
       <ion-item class="subj-item">
-        <ion-card class="welcome-card ion-activatable" href="/subj-overview">
+        <ion-card class="welcome-card ion-activatable" routerLink="/subj-overview" routerDirection="forward">
           <!-- <ion-img src="/assets/shapes.svg"></ion-img> -->
           <ion-ripple-effect></ion-ripple-effect>
           <ion-card-header>
