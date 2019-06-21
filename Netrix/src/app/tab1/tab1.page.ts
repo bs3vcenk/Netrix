@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { ToastController, NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab1',
@@ -10,7 +10,7 @@ export class Tab1Page {
 
   subjects: any;
 
-  constructor(private toastCtrl: ToastController) {
+  constructor(private toastCtrl: ToastController, public navCtrl: NavController) {
 
   	this.subjects = [
   		'Hrvatski jezik',
