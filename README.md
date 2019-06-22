@@ -1,6 +1,6 @@
 # Netrix (eDnevnik for Android)
-* Backend - [eDAP](https://github.com/btx3/eDnevnik/README_edap.md) (eDnevnikAndroidProject) [Python]
-* Frontend - [Netrix](https://github.com/btx3/eDnevnik/README_Netrix.md) [JS/Ionic]
+* Backend - [eDAP](https://github.com/btx3/eDnevnik/blob/master/README_edap.md) (eDnevnikAndroidProject) [Python]
+* Frontend - [Netrix](https://github.com/btx3/eDnevnik/blob/master/README_Netrix.md) [JS/Ionic]
 
 ## Kako funkcionira
 

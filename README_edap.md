@@ -31,6 +31,6 @@ Odgovor bi trebao biti ovakav:
 }
 ```
 
-Dovbiveni token stavite u datoteke navedene u [Netrix README-u](https://github.com/btx3/eDnevnik/README_Netrix.md).
+Dovbiveni token stavite u datoteke navedene u [Netrix README-u](https://github.com/btx3/eDnevnik/blob/master/README_Netrix.md).
 
 Zahtjev na login je potrebno napraviti nakon svakog restarta API servera (TODO).
