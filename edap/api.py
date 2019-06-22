@@ -1,6 +1,7 @@
 import edap, platform, threading
 from flask import Flask, jsonify, make_response, request, abort
 from flask import __version__ as _flaskVersion
+from flask_cors import CORS
 from hashlib import md5 as _MD5HASH
 from copy import deepcopy
 
@@ -15,6 +16,8 @@ class localFlask(Flask):
 		return response
 
 app = Flask("EDAP-API")
+CORS(app)
+
 users = {}
 threads = {}
 
@@ -49,6 +52,7 @@ def populateData(obj):
 			continue
 		for z in range(len(output[x]['subjects'])):
 			#self.status = {"status":"S_GRADES", "progress":"%s/%s" % (z+1, len(output[x]['subjects'])+1)}
+			output[x]['subjects'][z]['id'] = z
 			try:
 				output[x]['subjects'][z]['grades'] = obj.getGradesForSubject(x, z)
 			except Exception as e:
@@ -89,7 +93,7 @@ def login():
 		print("LOGIN || Invalid JSON [%s]" % request.data)
 		abort(400)
 	if hashString(request.json["username"]) in users.keys():
-		return make_response(jsonify({'token':token}), 200)
+		return make_response(jsonify({'token':hashString(request.json["username"])}), 200)
 	print("LOGIN || Attempting to log user %s in..." % request.json['username'])
 	try:
 		obj = edap.edap(request.json["username"], request.json["password"])
@@ -119,7 +123,17 @@ def getSubjects(token, class_id):
 	if token not in users.keys() or class_id not in range(len(users[token]['data'])):
 		print('SUBJS || Either token (%s) or class ID (%s) is invalid' % (token, class_id))
 		abort(401)
-	return "a"
+	o = deepcopy(users[token]['data']['classes'][class_id]['subjects'])
+	for i in o:
+		del i['grades']
+	return make_response(jsonify({'subjects': o}), 200)
+
+@app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>/grades', methods=["GET"])
+def getGrades(token, class_id, subject_id):
+	if token not in users.keys() or class_id not in range(len(users[token]['data'])) or subject_id not in range(len(users[token]['data']['classes'][class_id]['subjects'])):
+		print('GRADE || Either token (%s), class ID (%s) or subject ID (%s) is invalid' % (token, class_id, subject_id))
+		abort(401)
+	return make_response(jsonify({'grades': users[token]['data']['classes'][class_id]['subjects'][subject_id]['grades']}), 200)
 
 if __name__ == '__main__':
 	app.run(debug=True, host="0.0.0.0")
