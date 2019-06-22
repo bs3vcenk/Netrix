@@ -16,7 +16,7 @@ Netrix je frontend za EDAP library, pisan u [Ionic](https://ionicframework.com/)
 
 ### Postupak
 
-Potrebno je izmjeniti API adrese i tokene u `Netrix/src/app/tab1.page.ts` i `Netrix/src/app/subj-overview.page.ts`.
+Potrebno je promijeniti API_SERVER u `src/app/authentication.service.ts`.
 
 ```bash
 cd eDnevnik/Netrix
