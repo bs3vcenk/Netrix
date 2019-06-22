@@ -1,0 +1,11 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<ion-input type="text" placeholder="eDnevnik username" [(ngModel)]="loUsername"></ion-input>
+	<ion-input type="password" placeholder="eDnevnik password" [(ngModel)]="loPassword"></ion-input>
+	<ion-button (click)="login()" expand="block">Login</ion-button>
+</ion-content>
