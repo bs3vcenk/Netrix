@@ -128,12 +128,26 @@ def getSubjects(token, class_id):
 		del i['grades']
 	return make_response(jsonify({'subjects': o}), 200)
 
+@app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>', methods=["GET"])
+def getSpecSubject(token, class_id, subject_id):
+	if token not in users.keys() or class_id not in range(len(users[token]['data'])) or subject_id not in range(len(users[token]['data']['classes'][class_id]['subjects'])):
+		print('SPSBJ || Either token (%s), class ID (%s) or subject ID (%s) is invalid' % (token, class_id, subject_id))
+		abort(401)
+	o = deepcopy(users[token]['data']['classes'][class_id]['subjects'][subject_id])
+	del o['grades']
+	return make_response(jsonify(o), 200)
+
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>/grades', methods=["GET"])
 def getGrades(token, class_id, subject_id):
 	if token not in users.keys() or class_id not in range(len(users[token]['data'])) or subject_id not in range(len(users[token]['data']['classes'][class_id]['subjects'])):
 		print('GRADE || Either token (%s), class ID (%s) or subject ID (%s) is invalid' % (token, class_id, subject_id))
 		abort(401)
-	return make_response(jsonify({'grades': users[token]['data']['classes'][class_id]['subjects'][subject_id]['grades']}), 200)
+	o = users[token]['data']['classes'][class_id]['subjects'][subject_id]['grades']
+	lgrades = []
+	for i in o:
+		lgrades.append(i['grade'])
+	avg = round(sum(lgrades)/len(lgrades), 2)
+	return make_response(jsonify({'grades': users[token]['data']['classes'][class_id]['subjects'][subject_id]['grades'], 'average': avg}), 200)
 
 if __name__ == '__main__':
 	app.run(debug=True, host="0.0.0.0")

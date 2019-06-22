@@ -30,14 +30,16 @@
 	font-family: 'Eina';
 }
 
-ion-title {
+ion-title, h1 {
 	font-weight: 700;
 }
 
 h1 {
-    font-weight: 700;
-    margin-left: 20px;
     font-size: 40px;
+}
+
+h1, h2 {
+    margin-left: 20px;
 }
 
 ion-card-title {

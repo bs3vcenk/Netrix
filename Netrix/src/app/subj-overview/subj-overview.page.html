@@ -9,12 +9,27 @@
 
 <ion-content>
 	<ion-text>
-		<h1>subject name</h1>
+		<h1>{{subjName}}</h1>
+	</ion-text>
+	<ion-text>
+		<h2>{{subjProfs}}</h2>
 	</ion-text>
 	<ion-card class="ion-activatable">
 		<ion-ripple-effect></ion-ripple-effect>
-		<ion-card-content id="average">
-			<p>Average: 5.00</p>
+		<ion-card-content>
+			<p>Average: {{subjAvg}}</p>
 		</ion-card-content>
 	</ion-card>
+	<ion-list>
+		<ion-item *ngFor="let grInput of gradeList">
+			<ion-label>
+				<div class="mark">
+					{{grInput.grade}}
+				</div>
+				<div class="description">
+					{{grInput.note}}
+				</div>
+			</ion-label>
+		</ion-item>
+	</ion-list>
 </ion-content>
