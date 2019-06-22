@@ -1,6 +1,6 @@
 # Netrix
 
-Netrix je frontend za EDAP library, pisan u Ionic frameworku (Angular).
+Netrix je frontend za EDAP library, pisan u [Ionic](https://ionicframework.com/) frameworku (Angular).
 
 ![Screenshot](https://i.imgur.com/IabVfJy.jpg)
 
@@ -15,6 +15,8 @@ Netrix je frontend za EDAP library, pisan u Ionic frameworku (Angular).
 	* `npm install -g cordova ionic native-run` (nakon instalacije NodeJS)
 
 ### Postupak
+
+Potrebno je izmjeniti API adrese i tokene u `Netrix/src/app/tab1.page.ts` i `Netrix/src/app/subj-overview.page.ts`.
 
 ```bash
 cd eDnevnik/Netrix
