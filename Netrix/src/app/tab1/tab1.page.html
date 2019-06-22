@@ -14,13 +14,14 @@
           <!-- <ion-img src="/assets/shapes.svg"></ion-img> -->
           <ion-ripple-effect></ion-ripple-effect>
           <ion-card-header>
-            <ion-card-title><div id="subject">{{subject}}</div></ion-card-title>
+            <ion-card-title>{{subject.subject}}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <div id="professor">Professor</div>
+            {{subject.professors}}
           </ion-card-content>
         </ion-card>
       </ion-item>
     </ion-item-sliding>
   </ion-list>
+  <ion-button (click)="getSubjects()">Pull</ion-button>
 </ion-content>
