@@ -1,8 +1,7 @@
 import { Component, NgZone } from '@angular/core';
-import { ToastController, NavController } from '@ionic/angular';
+import { ToastController, NavController, AlertController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
-import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab1',
@@ -16,7 +15,7 @@ export class Tab1Page {
 
   constructor(private toastCtrl: ToastController, public navCtrl: NavController, private http: HttpClient, private authServ: AuthenticationService, public alertControl: AlertController) {
 
-    this.zone = new NgZone({enableLongStackTrace: false});
+    //this.zone = new NgZone({enableLongStackTrace: false});
 
     this.getSubjects();
 
@@ -33,12 +32,15 @@ export class Tab1Page {
   }
 
   getSubjects() {
+    // GET the subject list endpoint on the API server
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects').subscribe((response) => {
       let allsubs = response.subjects;
+      // Iterate over professors list and join it into a comma-separated string
       allsubs.forEach((subj) => {
         let profs = subj.professors;
         subj.professors = profs.join(", ");
       })
+      // Set for display
       this.subjects = allsubs;
     },
     (error) => {

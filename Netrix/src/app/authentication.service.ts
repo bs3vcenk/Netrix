@@ -3,6 +3,8 @@ import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
 import { Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
+import { map, catchError, switchAll } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -31,13 +33,32 @@ export class AuthenticationService {
   }
 
   login(username, password) {
-  	this.http.post<any>(this.API_SERVER + "/api/login", {"username":username, "password":password}).subscribe((response) => {
-  		return this.storage.set("auth-token", response.token).then(() => {
-  			this.token = response.token;
-  			console.log("AServ: login() good, token " + this.token);
-      		this.authenticationState.next(true);
-    	});
-  	})
+  	let response:Observable<Response> = this.http.post<Response>(this.API_SERVER + "/api/login", {"username":username, "password":password})
+
+    let jsonResponse = response.pipe(catchError(err => this.handleError(err)));
+
+    let userResponse = jsonResponse.pipe(map(
+      data => this.handleLogin(data)
+    ));
+
+    return userResponse;
+
+    /*let finalResponse = userResponse.pipe(switchAll());
+
+    return finalResponse.pipe(map(res => null));*/
+  }
+
+  private handleLogin(data) {
+    this.storage.set("auth-token", data.token).then(() => {
+      this.token = data.token;
+		  console.log("AServ/handleLogin(): Login good, token " + data.token);
+		  this.authenticationState.next(true);
+    })
+  }
+
+  private handleError(error) {
+    console.log("handleError(): handling")
+    return throwError(error);
   }
 
   logout() {
