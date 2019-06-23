@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-subj-overview',
@@ -17,7 +17,7 @@ export class SubjOverviewPage implements OnInit {
   subjAvg = null;
   gradeList = null;
 
-  constructor(private activatedRoute: ActivatedRoute, private http: HttpClient, private authServ: AuthenticationService, public alertControl: AlertController) { }
+  constructor(private activatedRoute: ActivatedRoute, private http: HttpClient, private authServ: AuthenticationService, public alertControl: AlertController, public navCtrl: NavController) { }
 
   ngOnInit() {
   	this.subjId = this.activatedRoute.snapshot.paramMap.get("subjid")
@@ -26,14 +26,26 @@ export class SubjOverviewPage implements OnInit {
     this.getSubjectGrades();
   }
 
-  async networkError() {
+  async networkError(header, msg) {
     const alert = await this.alertControl.create({
-      header: 'Network error',
-      message: 'There was an error while trying to fetch subject info.',
-      buttons: ['OK']
+      header: header,
+      message: msg,
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel',
+          handler: () => {
+            this.goBack();
+          }
+        }
+      ]
     });
 
     await alert.present();
+  }
+
+  goBack() {
+    this.navCtrl.back('/tabs/tabs/tab1');
   }
 
   getSubjectInfo() {
@@ -42,7 +54,8 @@ export class SubjOverviewPage implements OnInit {
       console.log("subjOverview/getSubjectInfo(): Subject name: " + this.subjName)
     	this.subjProfs = response.professors.join(", ");
     }, (error) => {
-      this.networkError()
+      console.log("Error while trying to get subj info, assuming network error")
+      this.networkError("Network error", "There was an error while trying to fetch subject info.")
     });
   }
 
@@ -50,6 +63,9 @@ export class SubjOverviewPage implements OnInit {
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId + '/grades').subscribe((response) => {
       this.subjAvg = response.average;
       this.gradeList = response.grades;
+    }, (error) => {
+      console.log("Something failed, assuming no grades for subject")
+      this.networkError("No grades", "This subject has no grades.")
     });
   }
 
