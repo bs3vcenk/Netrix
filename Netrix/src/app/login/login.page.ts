@@ -12,6 +12,7 @@ export class LoginPage implements OnInit {
   loUsername = null;
   loPassword = null;
   ldController = null;
+  isLoading = false;
 
   constructor(private authServ: AuthenticationService, private alertControl: AlertController, private loadControl: LoadingController) { }
 
@@ -29,15 +30,16 @@ export class LoginPage implements OnInit {
   }
 
   async loadDisplay(msg) {
+    this.isLoading = true;
     this.ldController = await this.loadControl.create({
       message: msg
-    });
-
+    })
     await this.ldController.present();
   }
 
   async stopLoad() {
-    await this.ldController.dismiss();
+    this.isLoading = false;
+    return await this.ldController.dismiss().then(() => console.log('dismissed'));
   }
 
   login() {
