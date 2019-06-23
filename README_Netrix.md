@@ -2,8 +2,6 @@
 
 Netrix je frontend za EDAP library, pisan u [Ionic](https://ionicframework.com/) frameworku (Angular).
 
-![Screenshot](https://i.imgur.com/IabVfJy.jpg)
-
 ## Upotreba
 
 ### Potrebni programi
