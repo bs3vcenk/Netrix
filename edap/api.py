@@ -42,23 +42,20 @@ def populateData(obj):
 		abort(500)
 
 	output = cl
-	for x in range(len(output)):
-		#self.status = {"status":"S_SUBJECTS","progress":"%s/%s" % (x, len(output))}
+	try:
+		output[0]['subjects'] = obj.getSubjects(0)
+	except Exception as e:
+		print('PDATA || Error getting subjects for class')
+		output[0]['subjects'] = None
+	for z in range(len(output[0]['subjects'])):
+		#self.status = {"status":"S_GRADES", "progress":"%s/%s" % (z+1, len(output[x]['subjects'])+1)}
+		output[0]['subjects'][z]['id'] = z
 		try:
-			output[x]['subjects'] = obj.getSubjects(x)
+			output[0]['subjects'][z]['grades'] = obj.getGradesForSubject(0, z)
 		except Exception as e:
-			print('PDATA || Error getting subjects for class %s: %s' % (x, e))
-			output[x]['subjects'] = None
+			print('PDATA || Error getting grades for subject %s: %s' % (z, e))
+			output[0]['subjects'][z]['grades'] = None
 			continue
-		for z in range(len(output[x]['subjects'])):
-			#self.status = {"status":"S_GRADES", "progress":"%s/%s" % (z+1, len(output[x]['subjects'])+1)}
-			output[x]['subjects'][z]['id'] = z
-			try:
-				output[x]['subjects'][z]['grades'] = obj.getGradesForSubject(x, z)
-			except Exception as e:
-				print('PDATA || Error getting grades for class %s, subject %s: %s' % (x, z, e))
-				output[x]['subjects'][z]['grades'] = None
-				continue
 	#self.status = {'status':'S_DONE', 'progress':None}
 	dataDict['classes'] = output
 	return dataDict
