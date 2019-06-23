@@ -45,7 +45,7 @@ export class SubjOverviewPage implements OnInit {
   }
 
   goBack() {
-    this.navCtrl.back('/tabs/tabs/tab1');
+    this.navCtrl.navigateBack('/tabs/tabs/tab1');
   }
 
   getSubjectInfo() {
