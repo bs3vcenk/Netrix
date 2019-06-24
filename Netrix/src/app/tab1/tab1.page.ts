@@ -2,6 +2,7 @@ import { Component, NgZone } from '@angular/core';
 import { ToastController, NavController, AlertController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-tab1',
@@ -13,7 +14,7 @@ export class Tab1Page {
   subjects: any;
   zone: any;
 
-  constructor(private toastCtrl: ToastController, public navCtrl: NavController, private http: HttpClient, private authServ: AuthenticationService, public alertControl: AlertController) {
+  constructor(private translate: TranslateService, private toastCtrl: ToastController, public navCtrl: NavController, private http: HttpClient, private authServ: AuthenticationService, public alertControl: AlertController) {
 
     //this.zone = new NgZone({enableLongStackTrace: false});
 
@@ -45,10 +46,10 @@ export class Tab1Page {
     },
     (error) => {
       if (error.error.error === "E_TOKEN_NONEXISTENT") { // lol
-        this.networkError("Login expired", "Your login has expired. You will need to log in again.");
+        this.networkError(this.translate.instant("tab1.alert.expiry.header"), this.translate.instant("tab1.alert.expiry.content"));
         this.authServ.logout();
       } else {
-        this.networkError("Network error", "There was a network-related problem while trying to fetch data from the server.")
+        this.networkError(this.translate.instant("tab1.alert.network.header"), this.translate.instant("tab1.alert.network.content"))
       }
     });
   }

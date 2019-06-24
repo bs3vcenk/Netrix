@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content>
-	<ion-input type="text" placeholder="eDnevnik username" [(ngModel)]="loUsername"></ion-input>
-	<ion-input type="password" placeholder="eDnevnik password" [(ngModel)]="loPassword"></ion-input>
-	<ion-button (click)="login()" expand="block">Login</ion-button>
+	<ion-input type="text" placeholder="{{ 'login.text.holder_user' | translate }}" [(ngModel)]="loUsername"></ion-input>
+	<ion-input type="password" placeholder="{{ 'login.text.holder_pass' | translate }}" [(ngModel)]="loPassword"></ion-input>
+	<ion-button (click)="login()" expand="block">{{ 'login.text.login' | translate }}</ion-button>
 </ion-content>

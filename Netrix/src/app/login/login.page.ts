@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../authentication.service';
 import { AlertController, LoadingController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,7 @@ export class LoginPage implements OnInit {
   ldController = null;
   isLoading = false;
 
-  constructor(private authServ: AuthenticationService, private alertControl: AlertController, private loadControl: LoadingController) { }
+  constructor(private translate: TranslateService, private authServ: AuthenticationService, private alertControl: AlertController, private loadControl: LoadingController) { }
 
   ngOnInit() {
   }
@@ -43,7 +44,7 @@ export class LoginPage implements OnInit {
   }
 
   login() {
-    this.loadDisplay("Logging in");
+    this.loadDisplay(this.translate.instant("login.alert.loggingin"));
   	console.log(this.loUsername);
   	console.log(this.loPassword);
 
@@ -54,10 +55,10 @@ export class LoginPage implements OnInit {
       this.stopLoad();
       console.log(err)
       if (err.error.error === "E_INVALID_CREDENTIALS") {
-        this.networkError("Invalid credentials", "Check your username and password, and try again.")
+        this.networkError(this.translate.instant("login.alert.credentials.header"), this.translate.instant("login.alert.credentials.content"))
         console.log("login() failed, wrong creds")
       } else {
-        this.networkError("Server offline", "The server is down, probably for maintenance.")
+        this.networkError(this.translate.instant("login.alert.serverdown.header"), this.translate.instant("login.alert.serverdown.content"))
       }
     })
   }

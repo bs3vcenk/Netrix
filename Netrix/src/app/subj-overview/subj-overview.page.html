@@ -3,7 +3,7 @@
   	<ion-buttons slot="start">
   		<ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
   	</ion-buttons>
-    <ion-title>Overview</ion-title>
+    <ion-title>{{ 'overview.title' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -17,7 +17,7 @@
 	<ion-card class="ion-activatable">
 		<ion-ripple-effect></ion-ripple-effect>
 		<ion-card-content>
-			<p>Average: {{subjAvg}}</p>
+			<p>{{ 'overview.text.average' | translate }}: {{subjAvg}}</p>
 		</ion-card-content>
 	</ion-card>
 	<ion-list>

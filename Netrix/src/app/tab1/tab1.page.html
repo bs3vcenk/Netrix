@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      Subjects
+      {{ 'tab1.title' | translate }}
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -12,7 +12,7 @@
       <ion-item class="subj-item">
         <ion-card class="welcome-card ion-activatable" routerLink="/subj-overview/{{subject.id}}" routerDirection="forward">
           <!-- <ion-img src="/assets/shapes.svg"></ion-img> -->
-          <ion-ripple-effect></ion-ripple-effect>
+          <!-- <ion-ripple-effect></ion-ripple-effect> -->
           <ion-card-header>
             <ion-card-title>{{subject.subject}}</ion-card-title>
           </ion-card-header>

@@ -1,0 +1,60 @@
+{
+  "tab1": {
+    "title": "Schulfächer",
+    "alert": {
+      "network": {
+        "header": "Netzwerkfehler",
+        "content": "Es gab ein Netzwerkproblem beim Versuch, Daten vom Server zu holen."
+      },
+      "expiry": {
+        "header": "Anmeldung abgelaufen",
+        "content": "Deine Anmeldung ist abgelaufen. Du musst dich erneut anmelden."
+      }
+    }
+  },
+  "tab3": {
+    "title": "Einstellungen",
+    "text": {
+      "logout": "Abmelden",
+      "settings": {
+        "api": "API-Einstellungen",
+        "lang": "Spracheinstellungen"
+      }
+    }
+  },
+  "overview": {
+    "title": "Übersicht",
+    "alert": {
+      "network": {
+        "header": "Netzwerkfehler",
+        "content": "Es gab ein Netzwerkproblem beim Versuch, Schulfachinfo vom Server zu holen."
+      },
+      "nogrades": {
+        "header": "Kein Noten",
+        "content": "Dieses Fach hat keine Noten."
+      }
+    },
+    "text": {
+      "average": "Durchschnitt"
+    }
+  },
+  "login": {
+    "title": "Anmeldung",
+    "alert": {
+      "credentials": {
+        "header": "Falsche Zugangsdaten",
+        "content": "Überprüfen Sie Ihren Benutzernamen und Ihr Passwort und versuchen Sie es erneut."
+      },
+      "serverdown": {
+        "header": "Der Server ist ausgefallen",
+        "content": "Der Server ist ausgefallen, wahrscheinlich wegen Wartungsarbeiten."
+      },
+      "loggingin": "Anmelden..."
+    },
+    "text": {
+      "login": "Einmelden",
+      "holder_user": "eDnevnik Benutzername",
+      "holder_pass": "eDnevnik Password"
+    }
+  }
+}

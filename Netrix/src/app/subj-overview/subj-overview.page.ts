@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
 import { AlertController, NavController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-subj-overview',
@@ -17,7 +18,7 @@ export class SubjOverviewPage implements OnInit {
   subjAvg = null;
   gradeList = null;
 
-  constructor(private activatedRoute: ActivatedRoute, private http: HttpClient, private authServ: AuthenticationService, public alertControl: AlertController, public navCtrl: NavController) { }
+  constructor(private translate: TranslateService, private activatedRoute: ActivatedRoute, private http: HttpClient, private authServ: AuthenticationService, public alertControl: AlertController, public navCtrl: NavController) { }
 
   ngOnInit() {
   	this.subjId = this.activatedRoute.snapshot.paramMap.get("subjid")
@@ -55,7 +56,7 @@ export class SubjOverviewPage implements OnInit {
     	this.subjProfs = response.professors.join(", ");
     }, (error) => {
       console.log("Error while trying to get subj info, assuming network error")
-      this.networkError("Network error", "There was an error while trying to fetch subject info.")
+      this.networkError(this.translate.instant("overview.alert.network.header"), this.translate.instant("overview.alert.network.content"))
     });
   }
 
@@ -65,7 +66,7 @@ export class SubjOverviewPage implements OnInit {
       this.gradeList = response.grades;
     }, (error) => {
       console.log("Something failed, assuming no grades for subject")
-      this.networkError("No grades", "This subject has no grades.")
+      this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"))
     });
   }
 
