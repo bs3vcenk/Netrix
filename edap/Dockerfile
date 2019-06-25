@@ -1,7 +1,5 @@
 FROM tiangolo/uwsgi-nginx:python3.7-alpine3.8
 
-LABEL maintainer="Sebastian Ramirez <tiangolo@gmail.com>"
-
 RUN pip install flask && apk add redis
 
 # URL under which static (not modified by Python) files will be requested
@@ -9,6 +7,10 @@ RUN pip install flask && apk add redis
 ENV STATIC_URL /static
 # Absolute path in where the static files wil be
 ENV STATIC_PATH /app/static
+
+# Username and SHA256 password for /dev/ endpoints
+ENV NETRIX_DEV_USER user
+ENV NETRIX_DEV_PASW 5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8
 
 # If STATIC_INDEX is 1, serve / with /static/index.html directly (or the static URL configured)
 # ENV STATIC_INDEX 1
