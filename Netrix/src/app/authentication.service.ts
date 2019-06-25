@@ -13,7 +13,7 @@ export class AuthenticationService {
 
   authenticationState = new BehaviorSubject(false);
   token = null;
-  API_SERVER = "http://192.168.43.96:5000";
+  API_SERVER = "https://api.netrix.io";
 
   constructor(private storage: Storage, private plt: Platform, private http: HttpClient) {
   	this.plt.ready().then(() => {
