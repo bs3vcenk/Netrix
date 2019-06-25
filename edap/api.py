@@ -7,6 +7,10 @@ from copy import deepcopy
 from time import sleep
 from random import randint
 
+from types import ModuleType, FunctionType
+from gc import get_referents
+from sys import getsizeof
+
 api_version = "1.0-dev"
 
 #server_header = "eDAP/%s eDAP-API/%s Flask/%s" % (edap.edap_version, api_version, _flaskVersion)
@@ -16,6 +20,23 @@ api_version = "1.0-dev"
 #		response.headers['Server'] = server_header
 #		super(localFlask, self).process_response(response)
 #		return response
+
+BLACKLIST = type, ModuleType, FunctionType
+def getsize(obj):
+	if isinstance(obj, BLACKLIST):
+		return None
+	seen_ids = set()
+	size = 0
+	objects = [obj]
+	while objects:
+		need_referents = []
+		for obj in objects:
+			if not isinstance(obj, BLACKLIST) and id(obj) not in seen_ids:
+				seen_ids.add(id(obj))
+				size += getsizeof(obj)
+				need_referents.append(obj)
+		objects = get_referents(*need_referents)
+	return size
 
 app = Flask("EDAP-API")
 CORS(app)
@@ -65,6 +86,7 @@ def populateData(obj):
 			continue
 	#self.status = {'status':'S_DONE', 'progress':None}
 	dataDict['classes'] = output
+	print("POPLD || dataDict is %s bytes" % getsize(dataDict))
 	return dataDict
 
 @app.errorhandler(404)
