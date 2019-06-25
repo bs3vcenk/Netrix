@@ -1,4 +1,4 @@
-import edap, platform, threading
+import edap, platform, threading, redis
 from flask import Flask, jsonify, make_response, request, abort
 from flask import __version__ as _flaskVersion
 from flask_cors import CORS
@@ -6,12 +6,14 @@ from hashlib import md5 as _MD5HASH
 from copy import deepcopy
 from time import sleep
 from random import randint
+from json import loads as _jsonLoad
+from json import dumps as _jsonConvert
 
 from types import ModuleType, FunctionType
 from gc import get_referents
 from sys import getsizeof
 
-api_version = "1.0-dev"
+api_version = "1.1-dev"
 
 #server_header = "eDAP/%s eDAP-API/%s Flask/%s" % (edap.edap_version, api_version, _flaskVersion)
 
@@ -41,13 +43,26 @@ def getsize(obj):
 app = Flask("EDAP-API")
 CORS(app)
 
-users = {}
+r = redis.Redis(host='localhost', port=6379, db=0)
+
 threads = {}
 
 logins_full = 0
 logins_fast = 0
 logins_fail_ge = 0
 logins_fail_wp = 0
+
+def getData(token):
+	 return _jsonLoad(r.get("token:" + token).decode("utf-8"))
+
+def userInDatabase(token):
+	return "token:" + token in [i.decode('utf-8') for i in r.keys('token:*')]
+
+def classIDExists(token, cid):
+	return cid in range(len(getData(token)['data']))
+
+def subjectIDExists(token, cid, sid):
+	return sid in range(len(getData(token)['data']['classes'][cid]['subjects']))
 
 def hashString(inp):
 	return _MD5HASH(inp.encode()).hexdigest()
@@ -62,7 +77,7 @@ def periodicDataUpdate(user_token):
 		sleep(randint(1200, 3600))
 		users[user_token]['data'] = populateData(users[user_token]['object'])
 
-def populateData(obj):
+def populateData(obj=None, username=None, password=None):
 	"""
 		Fill in the 'data' part of the user dict. This will contain subjects, grades, etc.
 	"""
@@ -122,6 +137,10 @@ def index():
 def info():
 	return '<!DOCTYPE html><html><head><title>eDAP dev info</title></head><body><h1>eDAP dev info</h1><h2>Tokens</h2><pre>%s</pre><h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p></body></html>' % ('\n'.join(users.keys()), logins_full, logins_fast, logins_fail_wp, logins_fail_ge)
 
+@app.route('/dev/info/tokendebug/<string:token>', methods=["GET"])
+def tokenDebug(token):
+	return '<!DOCTYPE html><html><head><title>eDAP dev token debug</title></head><body><h1>eDAP token debug</h1><pre>%s</pre></body></html>' % _jsonConvert(getData(token), indent=4, sort_keys=True)
+
 @app.route('/api/login', methods=["POST"])
 def login():
 	global logins_full
@@ -132,9 +151,10 @@ def login():
 		print("LOGIN || Invalid JSON [%s]" % request.data)
 		logins_fail_ge += 1
 		abort(400)
-	if hashString(request.json["username"] + ":" + request.json["password"]) in users.keys():
+	token = hashString(request.json["username"] + ":" + request.json["password"])
+	if userInDatabase(token):
 		logins_fast += 1
-		return make_response(jsonify({'token':hashString(request.json["username"] + ":" + request.json["password"])}), 200)
+		return make_response(jsonify({'token':token}), 200)
 	print("LOGIN || Attempting to log user %s in..." % request.json['username'])
 	try:
 		obj = edap.edap(request.json["username"], request.json["password"])
@@ -146,52 +166,55 @@ def login():
 		print("LOGIN || Failed for user %s, program error." % request.json["username"])
 		logins_fail_ge += 1
 		abort(500)
-	token = hashString(request.json["username"] + ":" + request.json["password"])
-	print("LOGIN || Success for user %s, saving to user list - token is %s." % (request.json["username"], token))
-	users[token] = {'user':request.json["username"], 'object':obj, 'data':populateData(obj), 'periodic_updates':0}
+	print("LOGIN || Success for user %s, saving to Redis - token is %s." % (request.json["username"], token))
+	dataObj = {'user':request.json["username"], 'pasw':request.json["password"], 'data':populateData(obj), 'periodic_updates':0}
+	r.set('token:' + token, _jsonConvert(dataObj))
 	logins_full += 1
 	return make_response(jsonify({'token':token}), 200)
 
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
 def getClasses(token):
-	if token not in users.keys():
+	if not userInDatabase(token):
 		print('CLASS || Token %s does not exist' % token)
 		abort(401)
-	o = deepcopy(users[token]['data'])
+	o = getData(token)['data']
 	for i in o['classes']:
-		del i['subjects']
+		try:
+			del i['subjects']
+		except:
+			pass
 	return make_response(jsonify(o), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects', methods=["GET"])
 def getSubjects(token, class_id):
-	if token not in users.keys() or class_id not in range(len(users[token]['data'])):
+	if not userInDatabase(token) or not classIDExists(token, class_id):
 		print('SUBJS || Either token (%s) or class ID (%s) is invalid' % (token, class_id))
 		abort(401)
-	o = deepcopy(users[token]['data']['classes'][class_id]['subjects'])
+	o = getData(token)['data']['classes'][class_id]['subjects']
 	for i in o:
 		del i['grades']
 	return make_response(jsonify({'subjects': o}), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>', methods=["GET"])
 def getSpecSubject(token, class_id, subject_id):
-	if token not in users.keys() or class_id not in range(len(users[token]['data'])) or subject_id not in range(len(users[token]['data']['classes'][class_id]['subjects'])):
+	if not userInDatabase(token) or not classIDExists(token, class_id) or not subjectIDExists(token, class_id, subject_id):
 		print('SPSBJ || Either token (%s), class ID (%s) or subject ID (%s) is invalid' % (token, class_id, subject_id))
 		abort(401)
-	o = deepcopy(users[token]['data']['classes'][class_id]['subjects'][subject_id])
+	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]
 	del o['grades']
 	return make_response(jsonify(o), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>/grades', methods=["GET"])
 def getGrades(token, class_id, subject_id):
-	if token not in users.keys() or class_id not in range(len(users[token]['data'])) or subject_id not in range(len(users[token]['data']['classes'][class_id]['subjects'])):
+	if not userInDatabase(token) or not classIDExists(token, class_id) or not subjectIDExists(token, class_id, subject_id):
 		print('GRADE || Either token (%s), class ID (%s) or subject ID (%s) is invalid' % (token, class_id, subject_id))
 		abort(401)
-	o = users[token]['data']['classes'][class_id]['subjects'][subject_id]['grades']
+	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]['grades']
 	lgrades = []
 	for i in o:
 		lgrades.append(i['grade'])
 	avg = round(sum(lgrades)/len(lgrades), 2)
-	return make_response(jsonify({'grades': users[token]['data']['classes'][class_id]['subjects'][subject_id]['grades'], 'average': avg}), 200)
+	return make_response(jsonify({'grades': o, 'average': avg}), 200)
 
 if __name__ == '__main__':
 	app.run(debug=True, host="0.0.0.0")
