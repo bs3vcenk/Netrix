@@ -4,16 +4,18 @@ from flask import __version__ as _flaskVersion
 from flask_cors import CORS
 from hashlib import md5 as _MD5HASH
 from copy import deepcopy
+from time import sleep
+from random import randint
 
 api_version = "1.0-dev"
 
-server_header = "eDAP/%s eDAP-API/%s Flask/%s" % (edap.edap_version, api_version, _flaskVersion)
+#server_header = "eDAP/%s eDAP-API/%s Flask/%s" % (edap.edap_version, api_version, _flaskVersion)
 
-class localFlask(Flask):
-	def process_response(self, response):
-		response.headers['Server'] = server_header
-		super(localFlask, self).process_response(response)
-		return response
+#class localFlask(Flask):
+#	def process_response(self, response):
+#		response.headers['Server'] = server_header
+#		super(localFlask, self).process_response(response)
+#		return response
 
 app = Flask("EDAP-API")
 CORS(app)
@@ -28,6 +30,11 @@ class DataPopulationThread(threading.Thread):
 	def __init__(self):
 		self.status = None
 		super().__init__()
+
+def periodicDataUpdate(user_token):
+	while True:
+		sleep(randint(1200, 3600))
+		users[user_token]['data'] = populateData(users[user_token]['object'])
 
 def populateData(obj):
 	"""
@@ -89,7 +96,7 @@ def login():
 	if not request.json or not 'username' in request.json or not 'password' in request.json:
 		print("LOGIN || Invalid JSON [%s]" % request.data)
 		abort(400)
-	if hashString(request.json["username"]) in users.keys():
+	if hashString(request.json["username"] + ":" + request.json["password"]) in users.keys():
 		return make_response(jsonify({'token':hashString(request.json["username"])}), 200)
 	print("LOGIN || Attempting to log user %s in..." % request.json['username'])
 	try:
@@ -100,7 +107,7 @@ def login():
 	except edap.FatalLogExit:
 		print("LOGIN || Failed for user %s, program error." % request.json["username"])
 		abort(500)
-	token = hashString(request.json["username"])
+	token = hashString(request.json["username"] + ":" + request.json["password"])
 	print("LOGIN || Success for user %s, saving to user list - token is %s." % (request.json["username"], token))
 	users[token] = {'user':request.json["username"], 'object':obj, 'data':populateData(obj)}
 	return make_response(jsonify({'token':token}), 200)
