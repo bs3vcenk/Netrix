@@ -44,6 +44,11 @@ CORS(app)
 users = {}
 threads = {}
 
+logins_full = 0
+logins_fast = 0
+logins_fail_ge = 0
+logins_fail_wp = 0
+
 def hashString(inp):
 	return _MD5HASH(inp.encode()).hexdigest()
 
@@ -113,25 +118,38 @@ def e500(err):
 def index():
 	return make_response(jsonify({'name':'eDnevnikAndroidProject', 'version':edap.edap_version, 'host-os':platform.system()+' '+platform.version(),'flask-version':_flaskVersion}), 200)
 
+@app.route('/dev/info', methods=["GET"])
+def info():
+	return '<!DOCTYPE html><html><head><title>eDAP dev info</title></head><body><h1>eDAP dev info</h1><h2>Tokens</h2><pre>%s</pre><h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p></body></html>' % ('\n'.join(users.keys()), logins_full, logins_fast, logins_fail_wp, logins_fail_ge)
+
 @app.route('/api/login', methods=["POST"])
 def login():
+	global logins_full
+	global logins_fast
+	global logins_fail_ge
+	global logins_fail_wp
 	if not request.json or not 'username' in request.json or not 'password' in request.json:
 		print("LOGIN || Invalid JSON [%s]" % request.data)
+		logins_fail_ge += 1
 		abort(400)
 	if hashString(request.json["username"] + ":" + request.json["password"]) in users.keys():
-		return make_response(jsonify({'token':hashString(request.json["username"])}), 200)
+		logins_fast += 1
+		return make_response(jsonify({'token':hashString(request.json["username"] + ":" + request.json["password"])}), 200)
 	print("LOGIN || Attempting to log user %s in..." % request.json['username'])
 	try:
 		obj = edap.edap(request.json["username"], request.json["password"])
 	except edap.WrongCredentials:
 		print("LOGIN || Failed for user %s, invalid credentials." % request.json["username"])
+		logins_fail_wp += 1
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	except edap.FatalLogExit:
 		print("LOGIN || Failed for user %s, program error." % request.json["username"])
+		logins_fail_ge += 1
 		abort(500)
 	token = hashString(request.json["username"] + ":" + request.json["password"])
 	print("LOGIN || Success for user %s, saving to user list - token is %s." % (request.json["username"], token))
-	users[token] = {'user':request.json["username"], 'object':obj, 'data':populateData(obj)}
+	users[token] = {'user':request.json["username"], 'object':obj, 'data':populateData(obj), 'periodic_updates':0}
+	logins_full += 1
 	return make_response(jsonify({'token':token}), 200)
 
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
