@@ -24,7 +24,6 @@ export class SubjOverviewPage implements OnInit {
   	this.subjId = this.activatedRoute.snapshot.paramMap.get("subjid")
     console.log("subjOverview: Getting data for subject ID " + this.subjId)
   	this.getSubjectInfo();
-    this.getSubjectGrades();
   }
 
   async networkError(header, msg) {
@@ -54,9 +53,14 @@ export class SubjOverviewPage implements OnInit {
     	this.subjName = response.subject;
       console.log("subjOverview/getSubjectInfo(): Subject name: " + this.subjName)
     	this.subjProfs = response.professors.join(", ");
+      this.getSubjectGrades();
     }, (error) => {
       console.log("subjOverview/getSubjectInfo(): Failed to fetch data from server (" + error.error + ")")
-      this.networkError(this.translate.instant("overview.alert.network.header"), this.translate.instant("overview.alert.network.content"))
+      if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
+        this.networkError(this.translate.instant("generic.alert.database.header"), this.translate.instant("generic.alert.database.content"));
+      } else {
+        this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
+      }
     });
   }
 
@@ -65,7 +69,7 @@ export class SubjOverviewPage implements OnInit {
       this.subjAvg = response.average;
       this.gradeList = response.grades;
     }, (error) => {
-      console.log("subjOverview/getSubjectGrades(): Failed to fetch data from server " + error.error + ")")
+      console.log("subjOverview/getSubjectGrades(): Failed to fetch data from server (" + error.error + ")")
       this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"))
     });
   }

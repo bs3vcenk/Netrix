@@ -49,7 +49,7 @@ export class Tab1Page {
         this.networkError(this.translate.instant("tab1.alert.expiry.header"), this.translate.instant("tab1.alert.expiry.content"));
         this.authServ.logout();
       } else {
-        this.networkError(this.translate.instant("tab1.alert.network.header"), this.translate.instant("tab1.alert.network.content"))
+        this.networkError(this.translate.instant("generic.alert.database.header"), this.translate.instant("generic.alert.database.content"))
       }
     });
   }
