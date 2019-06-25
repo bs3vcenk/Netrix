@@ -3,11 +3,14 @@ from flask import Flask, jsonify, make_response, request, abort
 from flask import __version__ as _flaskVersion
 from flask_cors import CORS
 from hashlib import md5 as _MD5HASH
+from hashlib import sha256 as _SHA256HASH
 from copy import deepcopy
 from time import sleep
 from random import randint
 from json import loads as _jsonLoad
 from json import dumps as _jsonConvert
+from functools import wraps
+from os import environ
 
 from types import ModuleType, FunctionType
 from gc import get_referents
@@ -42,20 +45,32 @@ def getsize(obj):
 		objects = get_referents(*need_referents)
 	return size
 
+try:
+	privUsername = environ["NETRIX_DEV_USER"]
+	privPassword = environ["NETRIX_DEV_PASW"]
+except:
+	privUsername = None
+	privPassword = None
+	ALLOW_DEV_ACCESS = False
+
 app = Flask("EDAP-API")
 CORS(app)
 
 r = redis.Redis(host='localhost', port=6379, db=0)
 
-threads = {}
-
-logins_full = 0
-logins_fast = 0
-logins_fail_ge = 0
-logins_fail_wp = 0
-
 def getData(token):
 	 return _jsonLoad(r.get("token:" + token).decode("utf-8"))
+
+def getTokens():
+	return [i.decode('utf-8').replace("token:", "") for i in r.keys('token:*')]
+
+def getLogins(logintype):
+	try:
+		return int(r.get("logincounter:" + logintype))
+	except TypeError:
+		print("TypeError for getLogins")
+		r.set("logincounter:" + logintype, 0)
+		return 0
 
 def userInDatabase(token):
 	return "token:" + token in [i.decode('utf-8') for i in r.keys('token:*')]
@@ -66,8 +81,34 @@ def classIDExists(token, cid):
 def subjectIDExists(token, cid, sid):
 	return sid in range(len(getData(token)['data']['classes'][cid]['subjects']))
 
+class PeriodicAnalyticsSave(threading.Thread):
+	def run(self):
+		while True:
+			global logins_full
+			global logins_fast
+			global logins_fail_ge
+			global logins_fail_wp
+			r.set("logincounter:full", logins_full)
+			r.set("logincounter:fast", logins_fast)
+			r.set("logincounter:fail:generic", logins_fail_ge)
+			r.set("logincounter:fail:password", logins_fail_wp)
+			sleep(5)
+
+logins_full = getLogins("full")
+logins_fast = getLogins("fast")
+logins_fail_ge = getLogins("fail:generic")
+logins_fail_wp = getLogins("fail:password")
+
+threads = {}
+
+threads["analytics"] = PeriodicAnalyticsSave()
+threads["analytics"].start()
+
 def hashString(inp):
 	return _MD5HASH(inp.encode()).hexdigest()
+
+def hashPassword(inp):
+	return _SHA256HASH(inp.encode()).hexdigest()
 
 class DataPopulationThread(threading.Thread):
 	def __init__(self):
@@ -111,6 +152,28 @@ def populateData(obj=None, username=None, password=None):
 	print("POPLD || dataDict is %s bytes" % getsize(dataDict))
 	return dataDict
 
+def check_auth(username, password):
+    """This function is called to check if a username /
+    password combination is valid.
+    """
+    return username == privUsername and hashPassword(password) == privPassword
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
 @app.errorhandler(404)
 def e404(err):
 	return make_response(jsonify({'error':'E_UNKNOWN_ENDPOINT'}), 404)
@@ -140,18 +203,38 @@ def exh_RedisDatabaseFailure(e):
 	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
 
 @app.route('/dev/info', methods=["GET"])
+@requires_auth
 def info():
 	if ALLOW_DEV_ACCESS:
-		return '<!DOCTYPE html><html><head><title>eDAP dev info</title></head><body><h1>eDAP dev info</h1><h2>Tokens</h2><pre>%s</pre><h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p></body></html>' % ('\n'.join(users.keys()), logins_full, logins_fast, logins_fail_wp, logins_fail_ge)
+		return '<!DOCTYPE html><html><head><title>eDAP dev info</title></head><body><h1>eDAP dev info</h1><h2>Tokens</h2><pre>%s</pre><h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p></body></html>' % ('\n'.join(getTokens()), logins_full, logins_fast, logins_fail_wp, logins_fail_ge)
 	else:
-		return make_response('<!DOCTYPE html><html><head><title>Dev mode disabled</title></head><body><h1>Dev mode disabled</h1><p>Developer mode has been disabled.</p></body></html>', 403)
+		abort(404)
+
+@app.route('/dev/threads', methods=["GET"])
+@requires_auth
+def threadList():
+	if ALLOW_DEV_ACCESS:
+		return '<!DOCTYPE html><html><head><title>eDAP dev thread info</title></head><body><h1>eDAP thread info</h1><h2>List</h2><pre>%s</pre></body></html>' % '\n'.join(threads.keys())
+	else:
+		abort(404)
+
+@app.route('/dev/threads/<string:threadname>', methods=["GET"])
+@requires_auth
+def threadInfo(threadname):
+	if ALLOW_DEV_ACCESS:
+		if threadname not in threads:
+			return make_response('Thread does not exist', 404)
+		return '<!DOCTYPE html><html><head><title>eDAP dev thread info</title></head><body><h1>eDAP thread info</h1><pre>isAlive: %s</pre></body></html>' % threads[threadname].isAlive()
+	else:
+		abort(404)
 
 @app.route('/dev/info/tokendebug/<string:token>', methods=["GET"])
+@requires_auth
 def tokenDebug(token):
 	if ALLOW_DEV_ACCESS:
 		return '<!DOCTYPE html><html><head><title>eDAP dev token debug</title></head><body><h1>eDAP token debug</h1><pre>%s</pre></body></html>' % _jsonConvert(getData(token), indent=4, sort_keys=True)
 	else:
-		return make_response('<!DOCTYPE html><html><head><title>Dev mode disabled</title></head><body><h1>Dev mode disabled</h1><p>Developer mode has been disabled.</p></body></html>', 403)
+		abort(404)
 
 @app.route('/api/login', methods=["POST"])
 def login():
