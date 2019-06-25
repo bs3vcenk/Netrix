@@ -43,7 +43,7 @@
     "alert": {
       "credentials": {
         "header": "Falsche Zugangsdaten",
-        "content": "Überprüfen Sie Ihren Benutzernamen und Ihr Passwort und versuchen Sie es erneut."
+        "content": "Überprüfen Sie Ihren Benutzernamen und Ihr Passwort, und versuchen Sie es erneut."
       },
       "serverdown": {
         "header": "Der Server ist ausgefallen",
