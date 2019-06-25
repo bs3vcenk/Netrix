@@ -1,10 +1,13 @@
 # eDnevnikAndroidProject - main library
-import sys, inspect, re
+import sys, inspect, re, requests
 try:
 	from bs4 import BeautifulSoup
-	import requests
 except ModuleNotFoundError:
-	print("ERROR: BeautifulSoup or requests isn't installed -- check the instructions and try again.")
+	print("ERROR: BeautifulSoup isn't installed -- check the instructions and try again.")
+	sys.exit(1)
+
+if sys.version[0] == "2":
+	print("ERROR: eDAP does not support Python 2! Upgrade to Python 3 to use eDAP.")
 	sys.exit(1)
 
 class FatalLogExit(Exception):
@@ -264,4 +267,3 @@ class edap:
 		else:
 			self.__edlog(0, "No concluded grade found for this subject")
 			return False, None
-		
