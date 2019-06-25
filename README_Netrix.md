@@ -16,7 +16,7 @@ Netrix je frontend za EDAP library, pisan u [Ionic](https://ionicframework.com/)
 
 Potrebno je promijeniti API_SERVER u `src/app/authentication.service.ts`.
 
-```bash
+```console
 cd eDnevnik/Netrix
 npm install
 ionic serve # lokalno, na računalu

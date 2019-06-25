@@ -3,7 +3,7 @@
 eDAP je library za interfacing sa servisom [eDnevnik](https://ocjene.skole.hr), u Pythonu 3. Uključuje i [ReST](https://en.wikipedia.org/wiki/Representational_State_Transfer) API pisan pomoću Flask frameworka, default na portu 5000.
 
 ## Instalacija
-```bash
+```console
 cd eDnevnik/edap
 pip install -r requirements.txt
 python ednevnik.py # Demo skripta
