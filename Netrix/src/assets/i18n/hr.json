@@ -1,0 +1,60 @@
+{
+  "tab1": {
+    "title": "Predmeti",
+    "alert": {
+      "network": {
+        "header": "Greška kod povezivanja",
+        "content": "Dogodio se problem s vezom tijekom hvatanja podataka sa servera."
+      },
+      "expiry": {
+        "header": "Prijava istekla",
+        "content": "Tvoja prijava je istekla. Trebaš se prijaviti ponovo."
+      }
+    }
+  },
+  "tab3": {
+    "title": "Postavke",
+    "text": {
+      "logout": "Odjava",
+      "settings": {
+        "api": "Postavke API-a",
+        "lang": "Postavke jezika"
+      }
+    }
+  },
+  "overview": {
+    "title": "Pregled",
+    "alert": {
+      "network": {
+        "header": "Greška kod povezivanja",
+        "content": "Dogodila se greška tijekom hvatanja podataka za ovaj predmet."
+      },
+      "nogrades": {
+        "header": "Nema ocjena",
+        "content": "Ovaj predmet nema ocjena."
+      }
+    },
+    "text": {
+      "average": "Prosjek"
+    }
+  },
+  "login": {
+    "title": "Prijava",
+    "alert": {
+      "credentials": {
+        "header": "Netočni podaci za prijavu",
+        "content": "Provjeri svoje korisničko ime i lozinu, pa pokušaj ponovo."
+      },
+      "serverdown": {
+        "header": "Server nedostupan",
+        "content": "Server je nedostupan, vjerojatno zbog održavanja."
+      },
+      "loggingin": "Prijavljivanje..."
+    },
+    "text": {
+      "login": "Prijavi se",
+      "holder_user": "Korisničko ime za eDnevnike",
+      "holder_pass": "Lozinka za eDnevnik"
+    }
+  }
+}
