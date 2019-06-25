@@ -1,11 +1,19 @@
 {
-  "tab1": {
-    "title": "Schulfächer",
+  "generic": {
     "alert": {
       "network": {
         "header": "Netzwerkfehler",
         "content": "Es gab ein Netzwerkproblem beim Versuch, Daten vom Server zu holen."
       },
+      "database": {
+        "header": "Datenbankverbindung fehlgeschlagen",
+        "content": "Der Server konnte keine Verbindung zu seiner Datenbank herstellen. Versuch, sich später wieder zu verbinden."
+      }
+    }
+  },
+  "tab1": {
+    "title": "Schulfächer",
+    "alert": {
       "expiry": {
         "header": "Anmeldung abgelaufen",
         "content": "Deine Anmeldung ist abgelaufen. Du musst dich erneut anmelden."
@@ -25,10 +33,6 @@
   "overview": {
     "title": "Übersicht",
     "alert": {
-      "network": {
-        "header": "Netzwerkfehler",
-        "content": "Es gab ein Netzwerkproblem beim Versuch, Schulfachinfo vom Server zu holen."
-      },
       "nogrades": {
         "header": "Kein Noten",
         "content": "Dieses Fach hat keine Noten."

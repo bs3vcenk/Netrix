@@ -1,11 +1,19 @@
 {
-  "tab1": {
-    "title": "Predmeti",
+  "generic": {
     "alert": {
       "network": {
         "header": "Greška kod povezivanja",
         "content": "Dogodio se problem s vezom tijekom hvatanja podataka sa servera."
       },
+      "database": {
+        "header": "Neuspjelo povezivanje sa bazom podataka",
+        "content": "Server se nije uspio povezati sa svojom bazom podataka. Pokušaj ponovo kasnije."
+      }
+    }
+  },
+  "tab1": {
+    "title": "Predmeti",
+    "alert": {
       "expiry": {
         "header": "Prijava istekla",
         "content": "Tvoja prijava je istekla. Trebaš se prijaviti ponovo."
@@ -25,10 +33,6 @@
   "overview": {
     "title": "Pregled",
     "alert": {
-      "network": {
-        "header": "Greška kod povezivanja",
-        "content": "Dogodila se greška tijekom hvatanja podataka za ovaj predmet."
-      },
       "nogrades": {
         "header": "Nema ocjena",
         "content": "Ovaj predmet nema ocjena."

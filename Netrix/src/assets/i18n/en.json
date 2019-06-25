@@ -1,11 +1,19 @@
 {
-  "tab1": {
-    "title": "Subjects",
+  "generic": {
     "alert": {
       "network": {
         "header": "Network error",
         "content": "There was a network-related problem while trying to fetch data from the server."
       },
+      "database": {
+        "header": "Database connection failed",
+        "content": "The server failed to connect to its database. Try connecting again later."
+      }
+    }
+  },
+  "tab1": {
+    "title": "Subjects",
+    "alert": {
       "expiry": {
         "header": "Login expired",
         "content": "Your login has expired. You will need to log in again."
@@ -25,10 +33,6 @@
   "overview": {
     "title": "Overview",
     "alert": {
-      "network": {
-        "header": "Network error",
-        "content": "There was an error while trying to fetch subject info."
-      },
       "nogrades": {
         "header": "No grades",
         "content": "This subject has no grades."
