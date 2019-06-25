@@ -92,6 +92,7 @@ class PeriodicAnalyticsSave(threading.Thread):
 			r.set("logincounter:fast", logins_fast)
 			r.set("logincounter:fail:generic", logins_fail_ge)
 			r.set("logincounter:fail:password", logins_fail_wp)
+			r.save()
 			sleep(5)
 
 logins_full = getLogins("full")
@@ -160,7 +161,7 @@ def check_auth(username, password):
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
-    return Response(
+    return make_response(
     'Could not verify your access level for that URL.\n'
     'You have to login with proper credentials', 401,
     {'WWW-Authenticate': 'Basic realm="Login Required"'})
