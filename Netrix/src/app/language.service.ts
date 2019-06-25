@@ -30,6 +30,7 @@ export class LanguageService {
       { text: 'English', value: 'en' },
       { text: 'Deutsch', value: 'de' },
       { text: 'Hrvatski', value: 'hr' },
+      { text: 'Русский', value: 'ru' },
     ];
   }
 
