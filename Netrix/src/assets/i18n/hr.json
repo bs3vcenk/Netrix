@@ -61,5 +61,10 @@
     "subjects": "Predmeti",
     "tests": "Ispiti",
     "settings": "Postavke"
+  },
+  "settings": {
+    "lang": {
+      "sysdefault": "Jezik operativnog sustava"
+    }
   }
 }

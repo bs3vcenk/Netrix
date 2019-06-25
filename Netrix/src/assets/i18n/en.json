@@ -61,5 +61,10 @@
     "subjects": "Subjects",
     "tests": "Tests",
     "settings": "Settings"
+  },
+  "settings": {
+    "lang": {
+      "sysdefault": "System default"
+    }
   }
 }

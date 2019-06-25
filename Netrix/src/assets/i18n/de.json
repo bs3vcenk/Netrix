@@ -61,5 +61,10 @@
     "subjects": "Schulfächer",
     "tests": "Prüfungen",
     "settings": "Einstellungen"
+  },
+  "settings": {
+    "lang": {
+      "sysdefault": "Systemstandard"
+    }
   }
 }
