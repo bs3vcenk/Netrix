@@ -56,5 +56,10 @@
       "holder_user": "eDnevnik Benutzername",
       "holder_pass": "eDnevnik Password"
     }
+  },
+  "tabs": {
+    "subjects": "Schulfächer",
+    "tests": "Prüfungen",
+    "settings": "Einstellungen"
   }
 }

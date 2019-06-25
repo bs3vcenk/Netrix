@@ -56,5 +56,10 @@
       "holder_user": "eDnevnik username",
       "holder_pass": "eDnevnik password"
     }
+  },
+  "tabs": {
+    "subjects": "Subjects",
+    "tests": "Tests",
+    "settings": "Settings"
   }
 }

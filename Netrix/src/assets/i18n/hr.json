@@ -56,5 +56,10 @@
       "holder_user": "Korisničko ime za eDnevnike",
       "holder_pass": "Lozinka za eDnevnik"
     }
+  },
+  "tabs": {
+    "subjects": "Predmeti",
+    "tests": "Ispiti",
+    "settings": "Postavke"
   }
 }
