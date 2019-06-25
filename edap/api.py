@@ -13,6 +13,8 @@ from types import ModuleType, FunctionType
 from gc import get_referents
 from sys import getsizeof
 
+ALLOW_DEV_ACCESS = True
+
 api_version = "1.1-dev"
 
 #server_header = "eDAP/%s eDAP-API/%s Flask/%s" % (edap.edap_version, api_version, _flaskVersion)
@@ -133,13 +135,23 @@ def e500(err):
 def index():
 	return make_response(jsonify({'name':'eDnevnikAndroidProject', 'version':edap.edap_version, 'host-os':platform.system()+' '+platform.version(),'flask-version':_flaskVersion}), 200)
 
+@app.errorhandler(redis.exceptions.ConnectionError)
+def exh_RedisDatabaseFailure(e):
+	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
+
 @app.route('/dev/info', methods=["GET"])
 def info():
-	return '<!DOCTYPE html><html><head><title>eDAP dev info</title></head><body><h1>eDAP dev info</h1><h2>Tokens</h2><pre>%s</pre><h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p></body></html>' % ('\n'.join(users.keys()), logins_full, logins_fast, logins_fail_wp, logins_fail_ge)
+	if ALLOW_DEV_ACCESS:
+		return '<!DOCTYPE html><html><head><title>eDAP dev info</title></head><body><h1>eDAP dev info</h1><h2>Tokens</h2><pre>%s</pre><h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p></body></html>' % ('\n'.join(users.keys()), logins_full, logins_fast, logins_fail_wp, logins_fail_ge)
+	else:
+		return make_response('<!DOCTYPE html><html><head><title>Dev mode disabled</title></head><body><h1>Dev mode disabled</h1><p>Developer mode has been disabled.</p></body></html>', 403)
 
 @app.route('/dev/info/tokendebug/<string:token>', methods=["GET"])
 def tokenDebug(token):
-	return '<!DOCTYPE html><html><head><title>eDAP dev token debug</title></head><body><h1>eDAP token debug</h1><pre>%s</pre></body></html>' % _jsonConvert(getData(token), indent=4, sort_keys=True)
+	if ALLOW_DEV_ACCESS:
+		return '<!DOCTYPE html><html><head><title>eDAP dev token debug</title></head><body><h1>eDAP token debug</h1><pre>%s</pre></body></html>' % _jsonConvert(getData(token), indent=4, sort_keys=True)
+	else:
+		return make_response('<!DOCTYPE html><html><head><title>Dev mode disabled</title></head><body><h1>Dev mode disabled</h1><p>Developer mode has been disabled.</p></body></html>', 403)
 
 @app.route('/api/login', methods=["POST"])
 def login():
