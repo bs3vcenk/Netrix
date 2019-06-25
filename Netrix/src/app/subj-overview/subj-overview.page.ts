@@ -22,7 +22,7 @@ export class SubjOverviewPage implements OnInit {
 
   ngOnInit() {
   	this.subjId = this.activatedRoute.snapshot.paramMap.get("subjid")
-    console.log("subjOverview: Getting data for subjId " + this.subjId)
+    console.log("subjOverview: Getting data for subject ID " + this.subjId)
   	this.getSubjectInfo();
     this.getSubjectGrades();
   }
@@ -55,7 +55,7 @@ export class SubjOverviewPage implements OnInit {
       console.log("subjOverview/getSubjectInfo(): Subject name: " + this.subjName)
     	this.subjProfs = response.professors.join(", ");
     }, (error) => {
-      console.log("Error while trying to get subj info, assuming network error")
+      console.log("subjOverview/getSubjectInfo(): Failed to fetch data from server (" + error.error + ")")
       this.networkError(this.translate.instant("overview.alert.network.header"), this.translate.instant("overview.alert.network.content"))
     });
   }
@@ -65,7 +65,7 @@ export class SubjOverviewPage implements OnInit {
       this.subjAvg = response.average;
       this.gradeList = response.grades;
     }, (error) => {
-      console.log("Something failed, assuming no grades for subject")
+      console.log("subjOverview/getSubjectGrades(): Failed to fetch data from server " + error.error + ")")
       this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"))
     });
   }

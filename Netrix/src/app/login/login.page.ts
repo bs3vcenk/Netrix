@@ -40,24 +40,23 @@ export class LoginPage implements OnInit {
 
   async stopLoad() {
     this.isLoading = false;
-    return await this.ldController.dismiss().then(() => console.log('dismissed'));
+    return await this.ldController.dismiss().then(() => console.log('login/stopLoad(): Dismissed loading screen'));
   }
 
   login() {
     this.loadDisplay(this.translate.instant("login.alert.loggingin"));
-  	console.log(this.loUsername);
-  	console.log(this.loPassword);
 
   	this.authServ.login(this.loUsername, this.loPassword).subscribe((stat) => {
-      console.log("all good")
+      console.log("login/login(): Successful login")
       this.stopLoad();
     },(err) => {
       this.stopLoad();
       console.log(err)
       if (err.error.error === "E_INVALID_CREDENTIALS") {
+        console.log("login/login(): Failed - Invalid credentials")
         this.networkError(this.translate.instant("login.alert.credentials.header"), this.translate.instant("login.alert.credentials.content"))
-        console.log("login() failed, wrong creds")
       } else {
+        console.log("login/login(): Failed - Server error")
         this.networkError(this.translate.instant("login.alert.serverdown.header"), this.translate.instant("login.alert.serverdown.content"))
       }
     })

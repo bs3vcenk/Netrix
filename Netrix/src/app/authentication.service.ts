@@ -17,7 +17,7 @@ export class AuthenticationService {
 
   constructor(private storage: Storage, private plt: Platform, private http: HttpClient) {
   	this.plt.ready().then(() => {
-  		console.log("AServ: Initializing: API server is " + this.API_SERVER)
+  		console.log("AuthenticationService: API server is " + this.API_SERVER)
   		this.checkToken()
   	})
   }
@@ -26,7 +26,7 @@ export class AuthenticationService {
   	this.storage.get("auth-token").then(res => {
       if (res) {
       	this.token = res;
-      	console.log("AServ: checkToken() good, token " + this.token);
+      	console.log("AuthenticationService/checkToken(): Found saved token (" + this.token + ")");
         this.authenticationState.next(true);
       }
     })
@@ -42,22 +42,17 @@ export class AuthenticationService {
     ));
 
     return userResponse;
-
-    /*let finalResponse = userResponse.pipe(switchAll());
-
-    return finalResponse.pipe(map(res => null));*/
   }
 
   private handleLogin(data) {
     this.storage.set("auth-token", data.token).then(() => {
       this.token = data.token;
-		  console.log("AServ/handleLogin(): Login good, token " + data.token);
+		  console.log("AuthenticationService/handleLogin(): Login successful, got token (" + data.token + ")");
 		  this.authenticationState.next(true);
     })
   }
 
   private handleError(error) {
-    console.log("handleError(): handling")
     return throwError(error);
   }
 

@@ -23,7 +23,7 @@ export class LangPage implements OnInit {
 
   select(lng) {
     this.translateManager.setLanguage(lng);
-    console.log("settings/lang: Changed language to " + lng + ", navigating back to Settings.");
+    console.log("settings/lang/select(): Changed language to " + lng + ", navigating back to Settings.");
     this.navCtrl.navigateBack('/tabs/tabs/tab3');
   }
 
