@@ -265,7 +265,7 @@ def login():
 		devPlatform = request.json['platform']
 	if 'device' in request.json:
 		devModel = request.json['device']
-	log.info("Logging %s in (platform=%s, device=%s)" % (devPlatform, devModel))
+	log.info("Logging %s in (platform=%s, device=%s)" % (token, devPlatform, devModel))
 	if userInDatabase(token):
 		log.info("Processed fast login for token %s" % token)
 		logins_fast.value += 1
