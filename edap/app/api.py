@@ -277,7 +277,14 @@ def login():
 		log.error("Bad JSON")
 		logins_fail_ge.value += 1
 		abort(400)
+	devPlatform = None
+	devModel = None
 	token = hashString(request.json["username"] + ":" + request.json["password"])
+	if 'platform' in request.json:
+		devPlatform = request.json['platform']
+	if 'device' in request.json:
+		devModel = request.json['device']
+	log.info("Logging %s in (platform=%s, device=%s)" % (devPlatform, devModel))
 	if userInDatabase(token):
 		log.info("Processed fast login for token %s" % token)
 		logins_fast.value += 1
@@ -304,6 +311,7 @@ def getClasses(token):
 	if not userInDatabase(token):
 		log.warning("Token %s not in DB" % token)
 		abort(401)
+	log.info("Getting classes for %s" % token)
 	o = getData(token)['data']
 	for i in o['classes']:
 		try:
@@ -320,6 +328,7 @@ def getSubjects(token, class_id):
 	elif not classIDExists(token, class_id):
 		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
 		abort(401)
+	log.info("Getting subjects for %s (cID=%s)" % (token, class_id))
 	o = getData(token)['data']['classes'][class_id]['subjects']
 	for i in o:
 		del i['grades']
@@ -336,6 +345,7 @@ def getSpecSubject(token, class_id, subject_id):
 	elif not subjectIDExists(token, class_id, subject_id):
 		log.warning("Subject ID %s does not exist for class ID %s for token %s" % (subject_id, class_id, token))
 		abort(401)
+	log.info("Getting subject info for %s (cID=%s, sID=%s)" % (token, class_id, subject_id))
 	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]
 	del o['grades']
 	return make_response(jsonify(o), 200)
