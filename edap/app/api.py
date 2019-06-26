@@ -232,20 +232,19 @@ def devGetLog():
 @app.route('/dev/info', methods=["GET"])
 @dev_area
 def info():
-	return '<!DOCTYPE html><html><head><title>eDAP dev info</title></head><body><h1>eDAP dev info</h1><h2>Tokens</h2><pre>%s</pre><h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p></body></html>' % ('\n'.join(getTokens()), logins_full.value, logins_fast.value, logins_fail_wp.value, logins_fail_ge.value)
+	return makeHTML(title="eDAP dev info", content="<h2>Tokens</h2>%s<h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p>" % ('<br>'.join(['%s || <a href="/dev/info/tokendebug/%s">Manage</a>' % (i, i) for i in getTokens()]), logins_full.value, logins_fast.value, logins_fail_wp.value, logins_fail_ge.value))
 
 @app.route('/dev/threads', methods=["GET"])
 @dev_area
 def threadList():
-	return '<!DOCTYPE html><html><head><title>eDAP dev thread info</title></head><body><h1>eDAP thread info</h1><h2>List</h2><pre>%s</pre></body></html>' % '\n'.join(threads.keys())
-
+	return makeHTML(title="eDAP dev thread info" content='<h2>List</h2><pre>%s</pre>' % '\n'.join(threads.keys()))
 
 @app.route('/dev/threads/<string:threadname>', methods=["GET"])
 @dev_area
 def threadInfo(threadname):
 	if threadname not in threads:
 		return make_response('Thread does not exist', 404)
-	return '<!DOCTYPE html><html><head><title>eDAP dev thread info</title></head><body><h1>eDAP thread info</h1><pre>isAlive: %s</pre></body></html>' % threads[threadname].isAlive()
+	return makeHTML(title="eDAP dev thread info", '<pre>isAlive: %s</pre>' % threads[threadname].isAlive())
 
 @app.route('/dev/info/tokendebug/<string:token>', methods=["GET"])
 @dev_area
@@ -260,6 +259,7 @@ def login():
 		abort(400)
 	devPlatform = None
 	devModel = None
+	devIP = request.remote_addr
 	token = hashString(request.json["username"] + ":" + request.json["password"])
 	if 'platform' in request.json:
 		devPlatform = request.json['platform']
@@ -268,6 +268,12 @@ def login():
 	log.info("Logging %s in (platform=%s, device=%s)" % (token, devPlatform, devModel))
 	if userInDatabase(token):
 		log.info("Processed fast login for token %s" % token)
+		log.info("Updating user data with new info")
+		dataObj = getData(token)
+		dataObj['last_ip'] = devIP
+		dataObj['device']['platform'] = devPlatform
+		dataObj['device']['model'] = devModel
+		r.set('token:' + token, _jsonConvert(dataObj))
 		logins_fast.value += 1
 		return make_response(jsonify({'token':token}), 200)
 	log.info("Slow login start for %s" % token)
@@ -282,7 +288,7 @@ def login():
 		logins_fail_ge.value += 1
 		abort(500)
 	log.info("Success for %s, saving to Redis" % token)
-	dataObj = {'user':request.json["username"], 'pasw':request.json["password"], 'data':populateData(obj), 'periodic_updates':0}
+	dataObj = {'user':request.json["username"], 'pasw':request.json["password"], 'data':populateData(obj), 'periodic_updates':0, 'last_ip':devIP, 'device':{'platform':devPlatform, 'model':devModel}}
 	r.set('token:' + token, _jsonConvert(dataObj))
 	logins_full.value += 1
 	return make_response(jsonify({'token':token}), 200)
