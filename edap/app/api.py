@@ -256,7 +256,18 @@ def tokenDebug(token):
 	html += "<h2>Device</h2>"
 	html += "<p>OS: <pre>%s</pre></p>" % data["device"]["platform"]
 	html += "<p>Device: <pre>%s</pre></p>" % data["device"]["model"]
+	html += "<h2>Management</h2>"
+	html += "<p><a href=\"/dev/info/tokendebug/%s/revoke\">Remove from DB</a></p>"
 	return makeHTML(title="eDAP dev token manage", content=html)
+
+@app.route('/dev/info/tokendebug/<string:token>/revoke', methods=["GET"])
+@dev_area
+def removeToken(token):
+	try:
+		r.delete('token:' + token)
+		return 'Success!'
+	except Exception as e:
+		return make_response("Error! %s" % e, 500)
 
 @app.route('/api/login', methods=["POST"])
 def login():
