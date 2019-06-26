@@ -12,6 +12,7 @@ from json import dumps as _jsonConvert
 from functools import wraps
 from os import environ
 from multiprocessing import Value
+from sys import exit as _exit
 
 from types import ModuleType, FunctionType
 from gc import get_referents
@@ -72,6 +73,10 @@ def getLogins(logintype):
 		print("TypeError for getLogins")
 		r.set("logincounter:" + logintype, 0)
 		return 0
+	except redis.exceptions.ConnectionError:
+		# This is one of the first connections to the database, so we can handle connection errors here
+		print("Database connection failed!")
+		_exit(1)
 
 def userInDatabase(token):
 	return "token:" + token in [i.decode('utf-8') for i in r.keys('token:*')]
@@ -89,8 +94,13 @@ class PeriodicAnalyticsSave(threading.Thread):
 			r.set("logincounter:fast", logins_fast.value)
 			r.set("logincounter:fail:generic", logins_fail_ge.value)
 			r.set("logincounter:fail:password", logins_fail_wp.value)
-			r.save()
 			sleep(5)
+
+class PeriodicDatabaseSaveToDisk(threading.Thread):
+	def run(self):
+		while True:
+			r.save()
+			sleep(120)
 
 logins_full = getLogins("full")
 logins_fast = getLogins("fast")
@@ -101,6 +111,8 @@ threads = {}
 
 threads["analytics"] = PeriodicAnalyticsSave()
 threads["analytics"].start()
+threads["database"] = PeriodicDatabaseSaveToDisk()
+threads["database"].start()
 
 def hashString(inp):
 	return _MD5HASH(inp.encode()).hexdigest()
