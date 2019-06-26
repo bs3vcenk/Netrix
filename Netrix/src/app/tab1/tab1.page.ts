@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { ToastController, NavController, AlertController } from '@ionic/angular';
+import { ToastController, NavController, AlertController, Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -14,12 +14,35 @@ export class Tab1Page {
   subjects: any;
   zone: any;
 
-  constructor(private translate: TranslateService, private toastCtrl: ToastController, public navCtrl: NavController, private http: HttpClient, private authServ: AuthenticationService, public alertControl: AlertController) {
+  constructor(private translate: TranslateService, private toastCtrl: ToastController, private navCtrl: NavController, private http: HttpClient, private authServ: AuthenticationService, private alertControl: AlertController, private platform: Platform) {
 
     //this.zone = new NgZone({enableLongStackTrace: false});
 
     this.getSubjects();
 
+  }
+
+  ionViewDidLoad() {
+    this.platform.backButton.subscribe(() => {
+      const alert = this.alertControl.create({
+        header: this.translate.instant("generic.alert.quit.header"),
+        message: this.translate.instant("generic.alert.quit.content"),
+        buttons: [
+          {
+            text: this.translate.instant("generic.alert.quit.choices.cancel"),
+            role: 'cancel'
+          },
+          {
+            text: this.translate.instant("generic.alert.quit.choices.quit"),
+            handler: () => {
+              navigator['app'].exitApp()
+            }
+          }
+        ]
+      }).then((alert) => {
+        alert.present();
+      })
+    });
   }
 
   async networkError(header, msg) {

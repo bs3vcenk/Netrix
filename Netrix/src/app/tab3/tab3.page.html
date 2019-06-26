@@ -15,5 +15,9 @@
       <ion-label>{{ 'tab3.text.settings.lang' | translate }}</ion-label>
     </ion-item>
   </ion-list>
-	<ion-button expand="full" fill="outline" (click)="logout()">{{ 'tab3.text.logout' | translate }}</ion-button>
+	<ion-list>
+    <ion-item button (click)="logout()">
+      <ion-label>{{ 'tab3.text.logout' | translate }}</ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>

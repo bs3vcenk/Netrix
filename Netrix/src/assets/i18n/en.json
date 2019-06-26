@@ -8,6 +8,14 @@
       "database": {
         "header": "Database connection failed",
         "content": "The server failed to connect to its database. Try connecting again later."
+      },
+      "quit": {
+        "header": "Quit app",
+        "content": "Do you want to exit the app?",
+        "choices": {
+          "cancel": "Cancel",
+          "quit": "Quit"
+        }
       }
     }
   },

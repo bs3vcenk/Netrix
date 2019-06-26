@@ -5,4 +5,19 @@ ion-card ion-img {
 
 ion-card {
   width: 100%;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+#title {
+  float: left;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+#average {
+  float: right;
+  margin-bottom: 18px;
+  font-weight: 700;
+	font-size: 29px;
 }

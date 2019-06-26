@@ -7,20 +7,23 @@
 </ion-header>
 
 <ion-content>
-  <ion-list lines="none">
-    <ion-item-sliding *ngFor="let subject of subjects">
+  <ion-list>
+    <ion-item button *ngFor="let subject of subjects" routerLink="/subj-overview/{{subject.id}}" routerDirection="forward">
+      <ion-label><div id="title">{{subject.subject}}</div><div id="average">{{subject.average}}</div></ion-label>
+    </ion-item>
+    <!--<ion-item-sliding *ngFor="let subject of subjects">
       <ion-item class="subj-item">
         <ion-card class="welcome-card ion-activatable" routerLink="/subj-overview/{{subject.id}}" routerDirection="forward">
-          <!-- <ion-img src="/assets/shapes.svg"></ion-img> -->
-          <!-- <ion-ripple-effect></ion-ripple-effect> -->
+          <!-- <ion-img src="/assets/shapes.svg"></ion-img>
+          <!-- <ion-ripple-effect></ion-ripple-effect>
           <ion-card-header>
-            <ion-card-title>{{subject.subject}}</ion-card-title>
+            <ion-card-title><div id="title">{{subject.subject}}</div><div id="average">{{subject.average}}</div></ion-card-title>
           </ion-card-header>
           <ion-card-content>
             {{subject.professors}}
           </ion-card-content>
         </ion-card>
       </ion-item>
-    </ion-item-sliding>
+    </ion-item-sliding> -->
   </ion-list>
 </ion-content>

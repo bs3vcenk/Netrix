@@ -8,6 +8,14 @@
       "database": {
         "header": "Datenbankverbindung fehlgeschlagen",
         "content": "Der Server konnte keine Verbindung zu seiner Datenbank herstellen. Versuch, sich später wieder zu verbinden."
+      },
+      "quit": {
+        "header": "App beenden",
+        "content": "Mochtest du die App beenden?",
+        "choices": {
+          "cancel": "Abbrechen",
+          "quit": "Beenden"
+        }
       }
     }
   },
