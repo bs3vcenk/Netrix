@@ -9,18 +9,18 @@
 
 <ion-content>
 	<ion-text>
-		<h1>{{subjName}}</h1>
+		<h1 [@animChange]="titleState">{{subjName}}</h1>
 	</ion-text>
 	<ion-text>
-		<h2>{{subjProfs}}</h2>
+		<h2 [@animChange]="titleState">{{subjProfs}}</h2>
 	</ion-text>
-	<ion-card class="ion-activatable">
+	<ion-card class="ion-activatable" [@animChange]="gradeState">
 		<ion-ripple-effect></ion-ripple-effect>
 		<ion-card-content>
 			<p>{{ 'overview.text.average' | translate }}: {{subjAvg}}</p>
 		</ion-card-content>
 	</ion-card>
-	<ion-list>
+	<ion-list [@animChange]="gradeState">
 		<ion-item *ngFor="let grInput of gradeList">
 			<ion-label>
 				<div class="mark">

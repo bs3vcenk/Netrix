@@ -4,11 +4,19 @@ import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
 import { AlertController, NavController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
+import { trigger, state, style, animate, transition } from "@angular/animations";
 
 @Component({
   selector: 'app-subj-overview',
   templateUrl: './subj-overview.page.html',
   styleUrls: ['./subj-overview.page.scss'],
+  animations: [
+    trigger('animChange', [
+      state('opaque', style({ opacity: 1 })),
+      state('transparent', style({ opacity: 0 })),
+      transition('transparent => opaque', animate('500ms ease-out'))
+    ])
+  ],
 })
 export class SubjOverviewPage implements OnInit {
 
@@ -18,9 +26,16 @@ export class SubjOverviewPage implements OnInit {
   subjAvg = null;
   gradeList = null;
 
+  titleState = "transparent";
+  gradeState = "transparent";
+
   constructor(private translate: TranslateService, private activatedRoute: ActivatedRoute, private http: HttpClient, private authServ: AuthenticationService, public alertControl: AlertController, public navCtrl: NavController) { }
 
   ngOnInit() {
+
+  }
+
+  ionViewDidEnter() {
   	this.subjId = this.activatedRoute.snapshot.paramMap.get("subjid")
     console.log("subjOverview: Getting data for subject ID " + this.subjId)
   	this.getSubjectInfo();
@@ -53,6 +68,7 @@ export class SubjOverviewPage implements OnInit {
     	this.subjName = response.subject;
       console.log("subjOverview/getSubjectInfo(): Subject name: " + this.subjName)
     	this.subjProfs = response.professors.join(", ");
+      this.titleState = "opaque";
       this.getSubjectGrades();
     }, (error) => {
       console.log("subjOverview/getSubjectInfo(): Failed to fetch data from server (" + error.error + ")")
@@ -68,6 +84,7 @@ export class SubjOverviewPage implements OnInit {
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId + '/grades').subscribe((response) => {
       this.subjAvg = response.average;
       this.gradeList = response.grades;
+      this.gradeState = "opaque";
     }, (error) => {
       console.log("subjOverview/getSubjectGrades(): Failed to fetch data from server (" + error.error + ")")
       this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"))

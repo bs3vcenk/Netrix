@@ -15,6 +15,8 @@ import { IonicStorageModule } from '@ionic/storage';
 import { TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 export function createTranslateLoader(http: HttpClient) {
 	return new TranslateHttpLoader(http, 'assets/i18n/', '.json')
 }
@@ -28,6 +30,7 @@ export function createTranslateLoader(http: HttpClient) {
   	AppRoutingModule,
   	HttpClientModule,
     IonicStorageModule.forRoot(),
+		BrowserAnimationsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
