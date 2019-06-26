@@ -244,7 +244,7 @@ def threadList():
 def threadInfo(threadname):
 	if threadname not in threads:
 		return make_response('Thread does not exist', 404)
-	return makeHTML(title="eDAP dev thread info", '<pre>isAlive: %s</pre>' % threads[threadname].isAlive())
+	return makeHTML(title="eDAP dev thread info", content='<pre>isAlive: %s</pre>' % threads[threadname].isAlive())
 
 @app.route('/dev/info/tokendebug/<string:token>', methods=["GET"])
 @dev_area
