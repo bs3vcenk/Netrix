@@ -11,6 +11,7 @@ from json import loads as _jsonLoad
 from json import dumps as _jsonConvert
 from functools import wraps
 from os import environ
+from multiprocessing import Value
 
 from types import ModuleType, FunctionType
 from gc import get_referents
@@ -66,7 +67,7 @@ def getTokens():
 
 def getLogins(logintype):
 	try:
-		return int(r.get("logincounter:" + logintype))
+		return Value('i', int(r.get("logincounter:" + logintype)))
 	except TypeError:
 		print("TypeError for getLogins")
 		r.set("logincounter:" + logintype, 0)
@@ -84,14 +85,10 @@ def subjectIDExists(token, cid, sid):
 class PeriodicAnalyticsSave(threading.Thread):
 	def run(self):
 		while True:
-			global logins_full
-			global logins_fast
-			global logins_fail_ge
-			global logins_fail_wp
-			r.set("logincounter:full", logins_full)
-			r.set("logincounter:fast", logins_fast)
-			r.set("logincounter:fail:generic", logins_fail_ge)
-			r.set("logincounter:fail:password", logins_fail_wp)
+			r.set("logincounter:full", logins_full.value)
+			r.set("logincounter:fast", logins_fast.value)
+			r.set("logincounter:fail:generic", logins_fail_ge.value)
+			r.set("logincounter:fail:password", logins_fail_wp.value)
 			r.save()
 			sleep(5)
 
@@ -239,33 +236,29 @@ def tokenDebug(token):
 
 @app.route('/api/login', methods=["POST"])
 def login():
-	global logins_full
-	global logins_fast
-	global logins_fail_ge
-	global logins_fail_wp
 	if not request.json or not 'username' in request.json or not 'password' in request.json:
 		print("LOGIN || Invalid JSON [%s]" % request.data)
-		logins_fail_ge += 1
+		logins_fail_ge.value += 1
 		abort(400)
 	token = hashString(request.json["username"] + ":" + request.json["password"])
 	if userInDatabase(token):
-		logins_fast += 1
+		logins_fast.value += 1
 		return make_response(jsonify({'token':token}), 200)
 	print("LOGIN || Attempting to log user %s in..." % request.json['username'])
 	try:
 		obj = edap.edap(request.json["username"], request.json["password"])
 	except edap.WrongCredentials:
 		print("LOGIN || Failed for user %s, invalid credentials." % request.json["username"])
-		logins_fail_wp += 1
+		logins_fail_wp.value += 1
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	except edap.FatalLogExit:
 		print("LOGIN || Failed for user %s, program error." % request.json["username"])
-		logins_fail_ge += 1
+		logins_fail_ge.value += 1
 		abort(500)
 	print("LOGIN || Success for user %s, saving to Redis - token is %s." % (request.json["username"], token))
 	dataObj = {'user':request.json["username"], 'pasw':request.json["password"], 'data':populateData(obj), 'periodic_updates':0}
 	r.set('token:' + token, _jsonConvert(dataObj))
-	logins_full += 1
+	logins_full.value += 1
 	return make_response(jsonify({'token':token}), 200)
 
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
