@@ -257,7 +257,7 @@ def tokenDebug(token):
 	html += "<p>OS: <pre>%s</pre></p>" % data["device"]["platform"]
 	html += "<p>Device: <pre>%s</pre></p>" % data["device"]["model"]
 	html += "<h2>Management</h2>"
-	html += "<p><a href=\"/dev/info/tokendebug/%s/revoke\">Remove from DB</a></p>"
+	html += "<p><a href=\"/dev/info/tokendebug/%s/revoke\">Remove from DB</a></p>" % token
 	return makeHTML(title="eDAP dev token manage", content=html)
 
 @app.route('/dev/info/tokendebug/<string:token>/revoke', methods=["GET"])
