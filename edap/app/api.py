@@ -1,6 +1,4 @@
 import edap, platform, threading, redis, logging
-from io import TextIOBase
-from collections import deque
 from flask import Flask, jsonify, make_response, request, abort
 from flask import __version__ as _flaskVersion
 from flask_cors import CORS
@@ -13,6 +11,7 @@ from json import loads as _jsonLoad
 from json import dumps as _jsonConvert
 from functools import wraps
 from os import environ
+from os.path import join as _joinPath
 from multiprocessing import Value
 from sys import exit as _exit
 
@@ -41,28 +40,10 @@ except:
 	privPassword = None
 	ALLOW_DEV_ACCESS = False
 
-class FIFOIO(TextIOBase):
-	def __init__(self, size, *args):
-		self.maxsize = size
-		TextIOBase.__init__(self, *args)
-		self.deque = deque()
-	def getvalue(self):
-		return ''.join(self.deque)
-	def write(self, x):
-		self.deque.append(x)
-		self.shrink()
-	def shrink(self):
-		if self.maxsize is None:
-			return
-		size = sum(len(x) for x in self.deque)
-		while size > self.maxsize:
-			x = self.deque.popleft()
-			size -= len(x)
-
 log = logging.getLogger('EDAP-API')
 log.setLevel(logging.DEBUG)
 log_capture_string = FIFOIO(256)
-ch = logging.StreamHandler(log_capture_string)
+ch = logging.FileHandler(_joinPath(DATA_FOLDER, "edap_api.log"))
 ch.setLevel(logging.DEBUG)
 ch.setFormatter(logging.Formatter('%(asctime)s || %(funcName)s || %(levelname)s => %(message)s'))
 log.addHandler(ch)
@@ -241,12 +222,13 @@ def exh_RedisDatabaseFailure(e):
 @app.route('/dev', methods=["GET"])
 @dev_area
 def devStartPage():
-	return makeHTML(content='<a href="info">Generic info + counters page</a><br><a href="threads">Running thread info</a><br><a href="log">View log</a>')
+	return makeHTML(content='<a href="/dev/info">Generic info + counters page</a><br><a href="/dev/threads">Running thread info</a><br><a href="/dev/log">View log</a>')
 
 @app.route('/dev/log', methods=["GET"])
 @dev_area
 def devGetLog():
-	return makeHTML(bare=True, content='<pre>%s</pre>' % log_capture_string.getvalue())
+	with open(_joinPath(DATA_FOLDER, "edap_api.log"), "r") as f:
+		return makeHTML(bare=True, content='<pre>%s</pre>' % f.read())
 
 @app.route('/dev/info', methods=["GET"])
 @dev_area
