@@ -335,9 +335,9 @@ def getSubjects(token, class_id):
 		abort(401)
 	log.info("Getting subjects for %s (cID=%s)" % (token, class_id))
 	o = getData(token)['data']['classes'][class_id]['subjects']
-	lgrades = []
 	for i in o:
 		if i['grades'] != None:
+			lgrades = []
 			for x in i['grades']:
 				lgrades.append(x['grade'])
 			i['average'] = round(sum(lgrades)/len(lgrades), 2)
