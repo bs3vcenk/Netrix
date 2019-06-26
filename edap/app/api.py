@@ -64,7 +64,7 @@ log.setLevel(logging.DEBUG)
 log_capture_string = FIFOIO(256)
 ch = logging.StreamHandler(log_capture_string)
 ch.setLevel(logging.DEBUG)
-ch.setFormatter('%(asctime)s || %(funcName)s || %(levelname)s => %(message)s')
+ch.setFormatter(logging.Formatter('%(asctime)s || %(funcName)s || %(levelname)s => %(message)s'))
 log.addHandler(ch)
 
 app = Flask("EDAP-API")
