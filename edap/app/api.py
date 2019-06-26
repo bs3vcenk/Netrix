@@ -249,7 +249,14 @@ def threadInfo(threadname):
 @app.route('/dev/info/tokendebug/<string:token>', methods=["GET"])
 @dev_area
 def tokenDebug(token):
-	return '<!DOCTYPE html><html><head><title>eDAP dev token debug</title></head><body><h1>eDAP token debug</h1><pre>%s</pre></body></html>' % _jsonConvert(getData(token), indent=4, sort_keys=True)
+	data = getData(token)
+	html = "<h2>General</h2>"
+	html += "<p>Username: <pre>%s</pre></p>" % data["user"]
+	html += "<p>Last login from: <pre>%s</pre></p>"  % data["last_ip"]
+	html += "<h2>Device</h2>"
+	html += "<p>OS: <pre>%s</pre></p>" % data["device"]["platform"]
+	html += "<p>Device: <pre>%s</pre></p>" % data["device"]["model"]
+	return makeHTML(title="eDAP dev token manage", content=html)
 
 @app.route('/api/login', methods=["POST"])
 def login():
