@@ -5,64 +5,65 @@ import { Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError, switchAll } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
+import { Device } from '@ionic-native/device/ngx';
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 export class AuthenticationService {
 
-  authenticationState = new BehaviorSubject(false);
-  token = null;
-  API_SERVER = "https://api.netrix.io";
+	authenticationState = new BehaviorSubject(false);
+	token = null;
+	API_SERVER = "https://api.netrix.io";
 
-  constructor(private storage: Storage, private plt: Platform, private http: HttpClient) {
-  	this.plt.ready().then(() => {
-  		console.log("AuthenticationService: API server is " + this.API_SERVER)
-  		this.checkToken()
-  	})
-  }
+	constructor(private storage: Storage, private plt: Platform, private http: HttpClient, private device: Device) {
+		this.plt.ready().then(() => {
+			console.log("AuthenticationService: API server is " + this.API_SERVER)
+			this.checkToken()
+		})
+	}
 
-  checkToken() {
-  	this.storage.get("auth-token").then(res => {
-      if (res) {
-      	this.token = res;
-      	console.log("AuthenticationService/checkToken(): Found saved token (" + this.token + ")");
-        this.authenticationState.next(true);
-      }
-    })
-  }
+	checkToken() {
+		this.storage.get("auth-token").then(res => {
+			if (res) {
+				this.token = res;
+				console.log("AuthenticationService/checkToken(): Found saved token (" + this.token + ")");
+				this.authenticationState.next(true);
+			}
+		})
+	}
 
-  login(username, password) {
-  	let response:Observable<Response> = this.http.post<Response>(this.API_SERVER + "/api/login", {"username":username, "password":password})
+	login(username, password) {
+		let response:Observable<Response> = this.http.post<Response>(this.API_SERVER + "/api/login", {"username":username, "password":password, "platform":this.device.platform, "device":this.device.model});
 
-    let jsonResponse = response.pipe(catchError(err => this.handleError(err)));
+		let jsonResponse = response.pipe(catchError(err => this.handleError(err)));
 
-    let userResponse = jsonResponse.pipe(map(
-      data => this.handleLogin(data)
-    ));
+		let userResponse = jsonResponse.pipe(map(
+			data => this.handleLogin(data)
+		));
 
-    return userResponse;
-  }
+		return userResponse;
+	}
 
-  private handleLogin(data) {
-    this.storage.set("auth-token", data.token).then(() => {
-      this.token = data.token;
-		  console.log("AuthenticationService/handleLogin(): Login successful, got token (" + data.token + ")");
-		  this.authenticationState.next(true);
-    })
-  }
+	private handleLogin(data) {
+		this.storage.set("auth-token", data.token).then(() => {
+			this.token = data.token;
+			console.log("AuthenticationService/handleLogin(): Login successful, got token (" + data.token + ")");
+			this.authenticationState.next(true);
+		})
+	}
 
-  private handleError(error) {
-    return throwError(error);
-  }
+	private handleError(error) {
+		return throwError(error);
+	}
 
-  logout() {
-  	return this.storage.remove("auth-token").then(() => {
-      this.authenticationState.next(false);
-  	})
-  }
+	logout() {
+		return this.storage.remove("auth-token").then(() => {
+			this.authenticationState.next(false);
+		})
+	}
 
-  isAuthenticated() {
-  	return this.authenticationState.value
-  }
+	isAuthenticated() {
+		return this.authenticationState.value;
+	}
 }
