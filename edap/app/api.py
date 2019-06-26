@@ -237,7 +237,7 @@ def info():
 @app.route('/dev/threads', methods=["GET"])
 @dev_area
 def threadList():
-	return makeHTML(title="eDAP dev thread info" content='<h2>List</h2><pre>%s</pre>' % '\n'.join(threads.keys()))
+	return makeHTML(title="eDAP dev thread info", content='<h2>List</h2><pre>%s</pre>' % '\n'.join(threads.keys()))
 
 @app.route('/dev/threads/<string:threadname>', methods=["GET"])
 @dev_area
