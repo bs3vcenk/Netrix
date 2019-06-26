@@ -64,7 +64,7 @@ def getLogins(logintype):
 	except TypeError:
 		log.warning("TypeError for getLogins")
 		r.set("logincounter:" + logintype, 0)
-		return 0
+		return Value('i', 0)
 	except redis.exceptions.ConnectionError:
 		# This is one of the first connections to the database, so we can handle connection errors here
 		log.fatal("Database connection failed!")
