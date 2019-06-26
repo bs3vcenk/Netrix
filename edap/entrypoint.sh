@@ -3,7 +3,7 @@ set -e
 
 /uwsgi-nginx-entrypoint.sh
 
-redis-server --daemonize yes --dir /data
+redis-server --daemonize yes --dir /data --appendonly yes
 
 # Explicitly add installed Python packages and uWSGI Python packages to PYTHONPATH
 # Otherwise uWSGI can't import Flask
