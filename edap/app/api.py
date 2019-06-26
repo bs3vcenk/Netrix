@@ -216,7 +216,7 @@ def exh_RedisDatabaseFailure(e):
 @requires_auth
 def info():
 	if ALLOW_DEV_ACCESS:
-		return '<!DOCTYPE html><html><head><title>eDAP dev info</title></head><body><h1>eDAP dev info</h1><h2>Tokens</h2><pre>%s</pre><h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p></body></html>' % ('\n'.join(getTokens()), logins_full, logins_fast, logins_fail_wp, logins_fail_ge)
+		return '<!DOCTYPE html><html><head><title>eDAP dev info</title></head><body><h1>eDAP dev info</h1><h2>Tokens</h2><pre>%s</pre><h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p></body></html>' % ('\n'.join(getTokens()), logins_full.value, logins_fast.value, logins_fail_wp.value, logins_fail_ge.value)
 	else:
 		abort(404)
 
