@@ -1,29 +1,29 @@
 // App Styles
 // ----------------------------------------------------------------------------
-// Put style rules here that you want to apply to the entire application. These 
-// styles are for the entire app and not just one component. Additionally, this 
-// file can hold Sass mixins, functions, and placeholder classes to be imported 
+// Put style rules here that you want to apply to the entire application. These
+// styles are for the entire app and not just one component. Additionally, this
+// file can hold Sass mixins, functions, and placeholder classes to be imported
 // and used throughout the application.
 
 @font-face {
-    font-family: Eina;
-    src: url(../assets/fonts/eina-01-bold.woff2) format("woff2");
-    font-weight: 700;
-    unicode-range: U+000-5FF
+  font-family: Eina;
+  src: url(../assets/fonts/eina-01-bold.woff2) format("woff2");
+  font-weight: 700;
+  unicode-range: U+000-5FF
 }
 
 @font-face {
-    font-family: Eina;
-    src: url(../assets/fonts/eina-01-semibold.woff2) format("woff2");
-    font-weight: 600;
-    unicode-range: U+000-5FF
+  font-family: Eina;
+  src: url(../assets/fonts/eina-01-semibold.woff2) format("woff2");
+  font-weight: 600;
+  unicode-range: U+000-5FF
 }
 
 @font-face {
-    font-family: Eina;
-    src: url(../assets/fonts/eina-01-regular.woff2) format("woff2");
-    font-weight: 400;
-    unicode-range: U+000-5FF
+  font-family: Eina;
+  src: url(../assets/fonts/eina-01-regular.woff2) format("woff2");
+  font-weight: 400;
+  unicode-range: U+000-5FF
 }
 
 * {
@@ -31,15 +31,16 @@
 }
 
 ion-title, h1 {
-	font-weight: 700;
+  font-weight: 700;
 }
 
 h1 {
-    font-size: 40px;
+  font-size: 40px;
 }
 
 h1, h2 {
-    margin-left: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 ion-card-title {
