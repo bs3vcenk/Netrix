@@ -335,7 +335,14 @@ def getSubjects(token, class_id):
 		abort(401)
 	log.info("Getting subjects for %s (cID=%s)" % (token, class_id))
 	o = getData(token)['data']['classes'][class_id]['subjects']
+	lgrades = []
 	for i in o:
+		if i['grades'] != None:
+			for x in i['grades']:
+				lgrades.append(x['grade'])
+			i['average'] = round(sum(lgrades)/len(lgrades), 2)
+		else:
+			i['average'] = None
 		del i['grades']
 	return make_response(jsonify({'subjects': o}), 200)
 
