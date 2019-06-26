@@ -42,7 +42,6 @@ except:
 
 log = logging.getLogger('EDAP-API')
 log.setLevel(logging.DEBUG)
-log_capture_string = FIFOIO(256)
 ch = logging.FileHandler(_joinPath(DATA_FOLDER, "edap_api.log"))
 ch.setLevel(logging.DEBUG)
 ch.setFormatter(logging.Formatter('%(asctime)s || %(funcName)s || %(levelname)s => %(message)s'))
