@@ -22,27 +22,8 @@ export class Tab1Page {
 
   }
 
-  ionViewDidLoad() {
-    this.platform.backButton.subscribe(() => {
-      const alert = this.alertControl.create({
-        header: this.translate.instant("generic.alert.quit.header"),
-        message: this.translate.instant("generic.alert.quit.content"),
-        buttons: [
-          {
-            text: this.translate.instant("generic.alert.quit.choices.cancel"),
-            role: 'cancel'
-          },
-          {
-            text: this.translate.instant("generic.alert.quit.choices.quit"),
-            handler: () => {
-              navigator['app'].exitApp()
-            }
-          }
-        ]
-      }).then((alert) => {
-        alert.present();
-      })
-    });
+  ngOnInit() {
+    this.platform.backButton.subscribe(() => {});
   }
 
   async networkError(header, msg) {
@@ -68,11 +49,13 @@ export class Tab1Page {
       this.subjects = allsubs;
     },
     (error) => {
-      if (error.error.error === "E_TOKEN_NONEXISTENT") { // lol
+      if (error.error.error === "E_TOKEN_NONEXISTENT") {
         this.networkError(this.translate.instant("tab1.alert.expiry.header"), this.translate.instant("tab1.alert.expiry.content"));
         this.authServ.logout();
+      } else if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
+        this.networkError(this.translate.instant("generic.alert.database.header"), this.translate.instant("generic.alert.database.content"));
       } else {
-        this.networkError(this.translate.instant("generic.alert.database.header"), this.translate.instant("generic.alert.database.content"))
+        this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
       }
     });
   }
