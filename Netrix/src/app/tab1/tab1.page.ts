@@ -13,6 +13,7 @@ export class Tab1Page {
 
   subjects: any;
   zone: any;
+  subjsLoaded = false;
 
   constructor(private translate: TranslateService, private toastCtrl: ToastController, private navCtrl: NavController, private http: HttpClient, private authServ: AuthenticationService, private alertControl: AlertController, private platform: Platform) {
 
@@ -40,6 +41,7 @@ export class Tab1Page {
     // GET the subject list endpoint on the API server
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects').subscribe((response) => {
       let allsubs = response.subjects;
+      this.subjsLoaded = true;
       // Iterate over professors list and join it into a comma-separated string
       allsubs.forEach((subj) => {
         let profs = subj.professors;
