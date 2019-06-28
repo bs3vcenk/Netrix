@@ -20,8 +20,9 @@ export class AuthenticationService {
 
 	constructor(private storage: Storage, private plt: Platform, private http: HttpClient, private device: Device) {
 		this.plt.ready().then(() => {
-			console.log("AuthenticationService: API server is " + this.API_SERVER)
-			this.checkToken()
+			console.log("AuthenticationService: API server is " + this.API_SERVER);
+			this.initDataPreference();
+			this.checkToken();
 		})
 	}
 
@@ -32,6 +33,7 @@ export class AuthenticationService {
 	}
 
 	checkToken() {
+		// Check if user has already logged in (meaning has a token already)
 		this.storage.get("auth-token").then(res => {
 			if (res) {
 				this.token = res;
@@ -45,8 +47,38 @@ export class AuthenticationService {
 		})
 	}
 
+	private initDataPreference() {
+		this.storage.get("data-preference").then(res => {
+			// Check if it is stored at all
+			if (res) {
+				this.dataPreference = res;
+			} else { // If it isn't stored, store it and set default (true)
+				this.storage.set("data-preference", true).then(() => {
+					console.log("AuthenticationService/handleLogin(): Analytics preference defaulted to true");
+				});
+			}
+		})
+	}
+
+	private getPlatform() {
+		if (this.dataPreference === true) {
+			console.log('AuthenticationService/getPlatform(): Returning actual platform ('+ this.device.platform + ')');
+			return this.device.platform;
+		} else {
+			return null;
+		}
+	}
+
+	private getDevice() {
+		if (this.dataPreference === true) {
+			return this.device.model;
+		} else {
+			return null;
+		}
+	}
+
 	login(username, password) {
-		let response:Observable<Response> = this.http.post<Response>(this.API_SERVER + "/api/login", {"username":username, "password":password, "platform":this.device.platform, "device":this.device.model});
+		let response:Observable<Response> = this.http.post<Response>(this.API_SERVER + "/api/login", {"username":username, "password":password, "platform":this.getPlatform(), "device":this.getDevice()});
 
 		let jsonResponse = response.pipe(catchError(err => this.handleError(err)));
 
@@ -61,9 +93,6 @@ export class AuthenticationService {
 		this.storage.set("auth-token", data.token).then(() => {
 			this.token = data.token;
 			console.log("AuthenticationService/handleLogin(): Login successful, got token (" + data.token + ")");
-			this.storage.set("data-preference", true).then(() => {
-				console.log("AuthenticationService/handleLogin(): Analytics preference defaulted to true")
-			})
 			this.authenticationState.next(true);
 		})
 	}
