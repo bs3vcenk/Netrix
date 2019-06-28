@@ -14,13 +14,13 @@
 	<ion-text>
 		<h2 [@animChange]="titleState">{{subjProfs}}</h2>
 	</ion-text>
-	<ion-card class="ion-activatable" [@animChange]="gradeState">
-		<ion-ripple-effect></ion-ripple-effect>
-		<ion-card-content>
-			<p>{{ 'overview.text.average' | translate }}: {{subjAvg}}</p>
-		</ion-card-content>
-	</ion-card>
-	<ion-list [@animChange]="gradeState">
+	<ion-list lines="inset">
+		<ion-item [@animChange]="gradeState">
+			<ion-label text-left>{{ 'overview.text.average' | translate }}</ion-label>
+			<ion-label item-right text-right>{{subjAvg}}</ion-label>
+		</ion-item>
+	</ion-list>
+	<ion-list [@animChange]="gradeState" lines="full">
 		<ion-item *ngFor="let grInput of gradeList">
 			<ion-label>
 				<div class="mark">
