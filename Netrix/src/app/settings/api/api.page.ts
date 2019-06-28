@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from '../../authentication.service';
 
 @Component({
   selector: 'app-api',
@@ -7,9 +8,25 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ApiPage implements OnInit {
 
-  constructor() { }
+  dataPreference = null;
+  notifPreference = null;
+
+  constructor(private authServ: AuthenticationService) { }
 
   ngOnInit() {
+    this.dataPreference = this.authServ.dataPreference;
+    this.notifPreference = this.authServ.notifPreference;
+    console.log("settings/api: Analytics preference is " + this.dataPreference);
+  }
+
+  updDeviceInfoPreference() {
+    console.log("settings/api/updDeviceInfoPreference(): Updated analytics preference to " + this.dataPreference);
+    this.authServ.changePreference("data-preference", this.dataPreference);
+  }
+
+  updNotificationPreference() {
+    console.log("settings/api/updNotificationPreference(): Updated push notification preference to " + this.notifPreference);
+    this.authServ.changePreference("notif-preference", this.notifPreference);
   }
 
 }

@@ -61,6 +61,10 @@
         "header": "Server nedostupan",
         "content": "Server je nedostupan, vjerojatno zbog održavanja."
       },
+      "data": {
+        "header": "Prikupljanje podataka",
+        "content": "Model vašeg telefona i njegov operativni sustav se šalje na server prilikom prijave, te za svako otvaranje aplikacije. Možete to promijeniti u Postavke > Postavke API-a."
+      },
       "loggingin": "Prijavljivanje..."
     },
     "text": {
@@ -76,7 +80,14 @@
   },
   "settings": {
     "lang": {
+      "title": "Postavke jezika",
       "sysdefault": "Jezik operativnog sustava"
+    },
+    "api": {
+      "title": "Postavke API-a",
+      "setserver": "API poslužitelj",
+      "analytics": "Analitika",
+      "devinfo": "Šalji informacije o uređaju"
     }
   }
 }

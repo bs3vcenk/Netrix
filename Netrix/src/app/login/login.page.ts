@@ -14,20 +14,39 @@ export class LoginPage implements OnInit {
   loPassword = null;
   ldController = null;
   isLoading = false;
+  dataAlertShown = false;
 
   constructor(private translate: TranslateService, private authServ: AuthenticationService, private alertControl: AlertController, private loadControl: LoadingController) { }
 
   ngOnInit() {
   }
 
-  async networkError(header, msg) {
-    const alert = await this.alertControl.create({
+  networkError(header, msg) {
+    this.alertControl.create({
       header: header,
       message: msg,
       buttons: ["OK"]
+    }).then(alert => {
+      alert.present();
     });
+  }
 
-    await alert.present();
+  dataAlert() {
+    this.alertControl.create({
+      header: this.translate.instant("login.alert.data.header"),
+      message: this.translate.instant("login.alert.data.content"),
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel',
+          handler: () => {
+            this.login();
+          }
+        }
+      ]
+    }).then(alert => {
+      alert.present();
+    })
   }
 
   async loadDisplay(msg) {
@@ -41,6 +60,17 @@ export class LoginPage implements OnInit {
   async stopLoad() {
     this.isLoading = false;
     return await this.ldController.dismiss().then(() => console.log('login/stopLoad(): Dismissed loading screen'));
+  }
+
+  _login() {
+    if (this.dataAlertShown === false) {
+      console.log("login/_login(): Data alert wasn't shown, showing it now")
+      this.dataAlertShown = true;
+      this.dataAlert();
+    } else {
+      console.log("login/_login(): Data alert already shown, skipping")
+      login()
+    }
   }
 
   login() {

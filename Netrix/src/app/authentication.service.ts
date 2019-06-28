@@ -14,6 +14,8 @@ export class AuthenticationService {
 
 	authenticationState = new BehaviorSubject(false);
 	token = null;
+	dataPreference = null;
+	notifPreference = null;
 	API_SERVER = "https://api.netrix.io";
 
 	constructor(private storage: Storage, private plt: Platform, private http: HttpClient, private device: Device) {
@@ -23,11 +25,21 @@ export class AuthenticationService {
 		})
 	}
 
+	changePreference(pref, prefValue) {
+		this.storage.set(pref, prefValue).then(() => {
+			console.log("AuthenticationService/changePreference(): Set " + pref + " to " + prefValue);
+		})
+	}
+
 	checkToken() {
 		this.storage.get("auth-token").then(res => {
 			if (res) {
 				this.token = res;
 				console.log("AuthenticationService/checkToken(): Found saved token (" + this.token + ")");
+				this.storage.get("data-preference").then(res => {
+					this.dataPreference = res;
+					console.log("AuthenticationService/checkToken(): Found analytics preference (" + this.dataPreference + ")");
+				})
 				this.authenticationState.next(true);
 			}
 		})
@@ -49,6 +61,9 @@ export class AuthenticationService {
 		this.storage.set("auth-token", data.token).then(() => {
 			this.token = data.token;
 			console.log("AuthenticationService/handleLogin(): Login successful, got token (" + data.token + ")");
+			this.storage.set("data-preference", true).then(() => {
+				console.log("AuthenticationService/handleLogin(): Analytics preference defaulted to true")
+			})
 			this.authenticationState.next(true);
 		})
 	}

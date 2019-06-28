@@ -61,6 +61,10 @@
         "header": "Server offline",
         "content": "The server is down, probably for maintenance."
       },
+      "data": {
+        "header": "Data collection",
+        "content": "Your phone model and OS is sent to the server on login, and every time you open the app. You can change this in Settings > API Settings."
+      },
       "loggingin": "Logging in..."
     },
     "text": {
@@ -76,7 +80,14 @@
   },
   "settings": {
     "lang": {
+      "title": "Language settings",
       "sysdefault": "System default"
+    },
+    "api": {
+      "title": "API Settings",
+      "setserver": "API Server",
+      "analytics": "Analytics",
+      "devinfo": "Send device info"
     }
   }
 }
