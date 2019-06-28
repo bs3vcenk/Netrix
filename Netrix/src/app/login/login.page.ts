@@ -69,7 +69,7 @@ export class LoginPage implements OnInit {
       this.dataAlert();
     } else {
       console.log("login/_login(): Data alert already shown, skipping")
-      login()
+      this.login()
     }
   }
 
