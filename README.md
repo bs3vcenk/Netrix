@@ -4,6 +4,14 @@
 
 ![Banner za Netrix](https://i.imgur.com/SCOxrvT.png)
 
+## Buildovi/APKovi
+
+Buildovi (.apk) su dostupni na [releases](https://github.com/btx3/Netrix/releases) stranici.
+
+Molimo pazite kako se projekt još uvijek razvija, pa stoga nemojte očekivati iskustvo bez grešaka.
+
+Svaku nađenu grešku je poželjno [prijaviti](https://github.com/btx3/Netrix/issues/new) (ako je moguće uz logove, screenshote itd.).
+
 ## Kako funkcionira
 
 ```
