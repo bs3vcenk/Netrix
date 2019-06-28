@@ -22,6 +22,7 @@ export class LoginPage implements OnInit {
   }
 
   networkError(header, msg) {
+    // Simple present error function
     this.alertControl.create({
       header: header,
       message: msg,
@@ -32,6 +33,7 @@ export class LoginPage implements OnInit {
   }
 
   dataAlert() {
+    // Data collection alert
     this.alertControl.create({
       header: this.translate.instant("login.alert.data.header"),
       message: this.translate.instant("login.alert.data.content"),
@@ -40,11 +42,13 @@ export class LoginPage implements OnInit {
           text: 'OK',
           role: 'cancel',
           handler: () => {
+            // Proceed to login when accepted
             this.login();
           }
         }
       ]
     }).then(alert => {
+      // Show the alert
       alert.present();
     })
   }
@@ -64,28 +68,37 @@ export class LoginPage implements OnInit {
 
   _login() {
     if (this.dataAlertShown === false) {
+      // User hasn't seen alert, so we show it and set dataAlertShown to true,
+      // so we don't show it again
       console.log("login/_login(): Data alert wasn't shown, showing it now")
       this.dataAlertShown = true;
       this.dataAlert();
     } else {
+      // User has seen alert, so no need to show it
       console.log("login/_login(): Data alert already shown, skipping")
       this.login()
     }
   }
 
   login() {
+    // Show "Logging in..."
     this.loadDisplay(this.translate.instant("login.alert.loggingin"));
 
+    // Send the request
   	this.authServ.login(this.loUsername, this.loPassword).subscribe((stat) => {
+      // Everything fine
       console.log("login/login(): Successful login")
-      this.stopLoad();
+      this.stopLoad(); // Stop the "Logging in..." alert
     },(err) => {
-      this.stopLoad();
-      console.log(err)
+      this.stopLoad(); // Stop alert
+      console.log(err) // Log error
       if (err.error.error === "E_INVALID_CREDENTIALS") {
+        // Bad creds
         console.log("login/login(): Failed - Invalid credentials")
         this.networkError(this.translate.instant("login.alert.credentials.header"), this.translate.instant("login.alert.credentials.content"))
       } else {
+        // Server/network error
+        // TODO: Handle server and network errors separately
         console.log("login/login(): Failed - Server error")
         this.networkError(this.translate.instant("login.alert.serverdown.header"), this.translate.instant("login.alert.serverdown.content"))
       }

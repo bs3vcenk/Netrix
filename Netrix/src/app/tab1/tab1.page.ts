@@ -52,22 +52,16 @@ export class Tab1Page {
     },
     (error) => {
       if (error.error.error === "E_TOKEN_NONEXISTENT") {
+        // User is not authenticated (possibly token purged from server DB)
         this.networkError(this.translate.instant("tab1.alert.expiry.header"), this.translate.instant("tab1.alert.expiry.content"));
         this.authServ.logout();
       } else if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
+        // Server-side issue
         this.networkError(this.translate.instant("generic.alert.database.header"), this.translate.instant("generic.alert.database.content"));
       } else {
+        // No network on client
         this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
       }
     });
   }
-
-  /*async switchToSubject(){
-  	const animationsOptions = {
-      animation: 'ios-transition',
-      duration: 1000
-    }
-
-    //this.navCtrl.push(subjOverview, {}, animationsOptions);
-  }*/
 }
