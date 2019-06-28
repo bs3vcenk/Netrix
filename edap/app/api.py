@@ -383,5 +383,24 @@ def getGrades(token, class_id, subject_id):
 	avg = round(sum(lgrades)/len(lgrades), 2)
 	return make_response(jsonify({'grades': o, 'average': avg}), 200)
 
+@app.route('/api/stats', methods=["POST"])
+def logStats():
+	if not "token" in request.json or not "platform" in request.json or not "device" in request.json:
+		log.warning("Invalid JSON from %s" % request.remote_addr)
+		abort(400)
+	elif None in [request.json[i] for i in request.json.keys()]:
+		log.warning("One or more fields in JSON is null")
+		abort(400)
+	elif not userInDatabase(request.json["token"]):
+		log.warning("Token %s not in DB" % token)
+		abort(401)
+	log.info("APP LAUNCH: Updating stats for %s" % token)
+	dataObj = getData(token)
+	dataObj['last_ip'] = request.remote_addr
+	dataObj['device']['platform'] = request.json["platform"]
+	dataObj['device']['model'] = request.json["device"]
+	r.set('token:' + token, _jsonConvert(dataObj))
+	return make_response(jsonify({"result":"ok"}), 200)
+
 if __name__ == '__main__':
 	app.run(debug=True, host="0.0.0.0")

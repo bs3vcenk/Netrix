@@ -41,7 +41,13 @@ export class AuthenticationService {
 				this.storage.get("data-preference").then(res => {
 					this.dataPreference = res;
 					console.log("AuthenticationService/checkToken(): Found analytics preference (" + this.dataPreference + ")");
-				})
+					this.http.post(this.API_SERVER + "/api/stats", {"token":this.token, "platform":getPlatform(), "device":getDevice()}).subscribe((res) => {
+						console.log("AuthenticationService/checkToken(): Successfully sent device info");
+					}, (err) => {
+						console.log("AuthenticationService/checkToken(): Failed to send device info:");
+						console.log(err);
+					})
+				});
 				this.authenticationState.next(true);
 			}
 		})
