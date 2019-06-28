@@ -35,7 +35,7 @@ export class SubjOverviewPage implements OnInit {
 
   }
 
-  ionViewDidEnter() {
+  ionViewWillEnter() {
   	this.subjId = this.activatedRoute.snapshot.paramMap.get("subjid")
     console.log("subjOverview: Getting data for subject ID " + this.subjId)
   	this.getSubjectInfo();
