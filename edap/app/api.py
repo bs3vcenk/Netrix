@@ -331,7 +331,7 @@ def getInfoUser(token):
 	if not userInDatabase(token):
 		log.warning("Token %s not in DB" % token)
 		abort(401)
-	return getData(token)['info']
+	return make_response(jsonify(getData(token)['info']), 200)
 
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
 def getClasses(token):
