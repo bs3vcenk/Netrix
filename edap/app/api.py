@@ -1,5 +1,5 @@
 import edap, platform, threading, redis, logging
-from flask import Flask, jsonify, make_response, request, abort
+from flask import Flask, jsonify, make_response, request, abort, redirect
 from flask import __version__ as _flaskVersion
 from flask_cors import CORS
 from hashlib import md5 as _MD5HASH
@@ -211,7 +211,7 @@ def e500(err):
 
 @app.route('/', methods=["GET"])
 def index():
-	return make_response(jsonify({'name':'eDnevnikAndroidProject', 'version':edap.edap_version, 'host-os':platform.system()+' '+platform.version(),'flask-version':_flaskVersion}), 200)
+	return redirect('https://netrix.io/')
 
 @app.errorhandler(redis.exceptions.ConnectionError)
 def exh_RedisDatabaseFailure(e):
