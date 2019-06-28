@@ -17,7 +17,7 @@ Osim ako želite hostati server za testing novih funkcija, dostupan je već konf
 ### Instalacija
 
 Za vrijeme razvijanja projekta je dovoljno ovo:
-```console
+```bash
 cd eDnevnik/edap
 pip install -r requirements.txt
 python api.py # ReST API, za frontend (u Flask developer načinu)
@@ -25,7 +25,7 @@ python api.py # ReST API, za frontend (u Flask developer načinu)
 
 Ako bi se aplikacija postavljala u "production" okruženje, potrebno ju je integrirati sa uWSGI i web-serverom po želji (najbolje nginx). Mapa `/edap/` već sadrži unaprijed konfiguriran Dockerfile, te je za hostanje servera potrebno pokrenuti samo ovo:
 
-```console
+```bash
 cd eDnevnik/edap
 docker build -t netrix:latest .
 docker volume create redis-data # Ovo će biti spremnik za bazu podataka

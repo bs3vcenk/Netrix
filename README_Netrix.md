@@ -18,7 +18,7 @@ Android Studio i JDK su potrebni samo ako želite aplikaciju instalirati na Andr
 
 Ako želite konfigurirati svoj server (self-hosted), potrebno je promijeniti `API_SERVER` varijablu u `src/app/authentication.service.ts`. Ako ne želite, već uneseni server https://api.netrix.io je dovoljan.
 
-```console
+```bash
 cd eDnevnik/Netrix
 npm install
 ionic serve # lokalno, na računalu
