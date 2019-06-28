@@ -1,11 +1,21 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
+	<ion-toolbar>
+		<ion-title>Login</ion-title>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content>
-	<ion-input type="text" placeholder="{{ 'login.text.holder_user' | translate }}" [(ngModel)]="loUsername"></ion-input>
-	<ion-input type="password" placeholder="{{ 'login.text.holder_pass' | translate }}" [(ngModel)]="loPassword"></ion-input>
-	<ion-button (click)="_login()" expand="block">{{ 'login.text.login' | translate }}</ion-button>
+	<ion-list lines="full" class="ion-no-margin ion-no-padding">
+		<ion-item>
+			<ion-label position="stacked">{{ 'login.text.holder_user' | translate }}</ion-label>
+			<ion-input required type="text" [(ngModel)]="loUsername"></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label position="stacked">{{ 'login.text.holder_pass' | translate }}</ion-label>
+			<ion-input required type="password" [(ngModel)]="loPassword"></ion-input>
+		</ion-item>
+	</ion-list>
+	<div class="ion-padding">
+		<ion-button (click)="_login()" expand="block">{{ 'login.text.login' | translate }}</ion-button>
+	</div>
 </ion-content>
