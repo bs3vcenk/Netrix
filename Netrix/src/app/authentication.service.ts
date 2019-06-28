@@ -54,6 +54,7 @@ export class AuthenticationService {
 				this.dataPreference = res;
 			} else { // If it isn't stored, store it and set default (true)
 				this.storage.set("data-preference", true).then(() => {
+					this.dataPreference = true;
 					console.log("AuthenticationService/handleLogin(): Analytics preference defaulted to true");
 				});
 			}
