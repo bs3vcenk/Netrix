@@ -19,7 +19,7 @@ class WrongCredentials(Exception):
 edap_version = "B2"
 
 class edap:
-	def __init__(self, user, pasw, parser="html.parser", edurl="https://ocjene.skole.hr", useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0", debug=False, loglevel=1, anon_err_report=True, hidepriv=True, log_func_name=True, redirect_log_to_file=False):
+	def __init__(self, user, pasw, parser="html.parser", edurl="https://ocjene.skole.hr", useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0", debug=False, loglevel=1, anon_err_report=True, hidepriv=True, log_func_name=True, redirect_log_to_file=False, hideConfidential=True):
 		"""
 			Initialization function
 
@@ -28,7 +28,7 @@ class edap:
 			ARGS: user [str/required], pasw [str/required], parser [str/optional],
 			      edurl [str/optional], useragent [str/optional], debug [bool/optional],
 			      loglevel [int/optional], hidepriv [bool/optional], log_func_name [bool/optional],
-			      redirect_log_to_file [str|bool/optional]
+			      redirect_log_to_file [str|bool/optional], hideConfidential [bool/optional]
 		"""
 		self.anon_err_report = anon_err_report
 		self.parser = parser
@@ -39,6 +39,7 @@ class edap:
 		self.loglevel = loglevel
 		self.hidepriv = hidepriv
 		self.log_func_name = log_func_name
+		self.hideConfidential = hideConfidential
 		if redirect_log_to_file != False:
 			save_std = sys.stdout
 			sys.stdout = open(redirect_log_to_file, "w")
@@ -267,3 +268,28 @@ class edap:
 		else:
 			self.__edlog(0, "No concluded grade found for this subject")
 			return False, None
+
+	def getInfoForUser(self, class_id):
+		"""
+			Return the info on a eDnevnik user.
+
+			ARGS: class_id [int/required]
+		"""
+		self.__edlog(0, "Getting info for class id %s" % class_id)
+		try:
+			o = self.session.get("%s/pregled/osobni_podaci/%s" % (self.edurl, self.class_ids[class_id]))
+			o.raise_for_status()
+			response = o.text
+		except Exception as e:
+			self.__edlog(4, "Failed to get info for class (%s)" % e)
+		self.__edlog(0, "Initializing BeautifulSoup with response")
+		soup = BeautifulSoup(response, self.parser)
+		try:
+			xtab = soup.find_all("div", class_="student-details")[0].find("table").find_all("td")
+		except Exception as e:
+			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,soup))
+		oData = {"number":int(xtab[0].getText()), "name":xtab[1].getText(), "oib":xtab[2].getText(), "birthdate":xtab[3].getText(), "birthplace":xtab[4].getText(), "matbroj":xtab[5].getText(), "address":xtab[6].getText(), "program":xtab[7].getText()}
+		if self.hideConfidential:
+			del oData['oib']
+			del oData['matbroj']
+		return oData

@@ -126,7 +126,7 @@ def populateData(obj=None, username=None, password=None):
 	"""
 		Fill in the 'data' part of the user dict. This will contain subjects, grades, etc.
 	"""
-	dataDict = {'classes':None, 'tests':None}
+	dataDict = {'classes':None, 'tests':None, 'info':None}
 	try:
 		cl = obj.getClasses()
 	except Exception as e:
@@ -156,6 +156,10 @@ def populateData(obj=None, username=None, password=None):
 			output[0]['subjects'][z]['grades'] = None
 			continue
 	dataDict['classes'] = output
+	try:
+		dataDict['info'] = obj.getInfoForUser(0)
+	except Exception as e:
+		log.error("Error getting info for %s: %s" % (token, str(e)))
 	return dataDict
 
 def check_auth(username, password):
@@ -321,6 +325,13 @@ def dataExport(token):
 		log.warning("Token %s not in DB" % token)
 		abort(401)
 	return make_response(jsonify(getData(token)), 200)
+
+@app.route('/api/user/<string:token>/info', methods=["GET"])
+def getInfoUser(token):
+	if not userInDatabase(token):
+		log.warning("Token %s not in DB" % token)
+		abort(401)
+	return getData(token)['info']
 
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
 def getClasses(token):
