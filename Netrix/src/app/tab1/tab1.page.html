@@ -10,7 +10,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
+  <ion-list lines="full">
     <ion-item button *ngFor="let subject of subjects" routerLink="/subj-overview/{{subject.id}}" routerDirection="forward">
       <ion-label><div id="title">{{subject.subject}}</div><div id="average">{{subject.average}}</div></ion-label>
     </ion-item>

@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
+  <ion-list lines="full">
     <ion-item button *ngFor="let langObj of languages" (click)="select(langObj.value)" detail="false">
       <ion-label>{{ langObj.text }}</ion-label>
       <ion-icon slot="end" name="checkmark" *ngIf="langObj.value == selectedLang"></ion-icon>
