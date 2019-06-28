@@ -128,7 +128,6 @@ def populateData(obj=None, username=None, password=None):
 	"""
 	dataDict = {'classes':None, 'tests':None}
 	try:
-		#self.status = {"status":"S_CLASSES","progress":None}
 		cl = obj.getClasses()
 	except Exception as e:
 		log.error("Error getting classes: %s" % e)
@@ -141,17 +140,22 @@ def populateData(obj=None, username=None, password=None):
 		log.error("Error getting subjects for class: %s" % e)
 		output[0]['subjects'] = None
 	for z in range(len(output[0]['subjects'])):
-		#self.status = {"status":"S_GRADES", "progress":"%s/%s" % (z+1, len(output[x]['subjects'])+1)}
 		output[0]['subjects'][z]['id'] = z
 		try:
 			output[0]['subjects'][z]['grades'] = obj.getGradesForSubject(0, z)
+			isconcl, concluded = obj.getConcludedGradeForSubject(0, z)
+			if isconcl:
+				output[0]['subjects'][z]['average'] = concluded
+			else:
+				lgrades = []
+				for i in output[0]['subjects'][z]['grades']:
+					lgrades.append(x['grade'])
+				output[0]['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
 		except Exception as e:
 			log.error("Error getting grades for subject %s: %s" % (z, e))
 			output[0]['subjects'][z]['grades'] = None
 			continue
-	#self.status = {'status':'S_DONE', 'progress':None}
 	dataDict['classes'] = output
-	#print("POPLD || dataDict is %s bytes" % getsize(dataDict))
 	return dataDict
 
 def check_auth(username, password):
@@ -251,11 +255,11 @@ def threadInfo(threadname):
 def tokenDebug(token):
 	data = getData(token)
 	html = "<h2>General</h2>"
-	html += "<p>Username: <pre>%s</pre></p>" % data["user"]
-	html += "<p>Last login from: <pre>%s</pre></p>"  % data["last_ip"]
+	html += "<p>Username: %s</p>" % data["user"]
+	html += "<p>Last login from: %s</p>"  % data["last_ip"]
 	html += "<h2>Device</h2>"
-	html += "<p>OS: <pre>%s</pre></p>" % data["device"]["platform"]
-	html += "<p>Device: <pre>%s</pre></p>" % data["device"]["model"]
+	html += "<p>OS: %s</p>" % data["device"]["platform"]
+	html += "<p>Device: %s</p>" % data["device"]["model"]
 	html += "<h2>Management</h2>"
 	html += "<p><a href=\"/dev/info/tokendebug/%s/revoke\">Remove from DB</a></p>" % token
 	return makeHTML(title="eDAP dev token manage", content=html)
@@ -311,6 +315,13 @@ def login():
 	logins_full.value += 1
 	return make_response(jsonify({'token':token}), 200)
 
+@app.route('/api/user/<string:token>/dataexport', methods=["GET"])
+def dataExport(token):
+	if not userInDatabase(token):
+		log.warning("Token %s not in DB" % token)
+		abort(401)
+	return make_response(jsonify(getData(token)), 200)
+
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
 def getClasses(token):
 	if not userInDatabase(token):
@@ -335,15 +346,6 @@ def getSubjects(token, class_id):
 		abort(401)
 	log.info("Getting subjects for %s (cID=%s)" % (token, class_id))
 	o = getData(token)['data']['classes'][class_id]['subjects']
-	for i in o:
-		if i['grades'] != None:
-			lgrades = []
-			for x in i['grades']:
-				lgrades.append(x['grade'])
-			i['average'] = round(sum(lgrades)/len(lgrades), 2)
-		else:
-			i['average'] = None
-		del i['grades']
 	return make_response(jsonify({'subjects': o}), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>', methods=["GET"])
