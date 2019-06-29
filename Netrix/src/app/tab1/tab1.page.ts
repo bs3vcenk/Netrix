@@ -71,7 +71,7 @@ export class Tab1Page {
       } else {
         // No network on client
         //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
-        this.toastError("Failed to connect to server", [{text: 'Reload', handler: () => {this.getSubjects()}}])
+        this.toastError("Failed to connect to server", [{text: 'Reload', handler: () => {this.getSubjects()}}], null)
       }
     });
   }
