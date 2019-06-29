@@ -63,7 +63,7 @@ export class SubjOverviewPage implements OnInit {
     this.navCtrl.navigateBack('/tabs/tabs/tab1');
   }
 
-  getSubjectInfo() {
+  async getSubjectInfo() {
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId).subscribe((response) => {
     	this.subjName = response.subject;
       console.log("subjOverview/getSubjectInfo(): Subject name: " + this.subjName)
