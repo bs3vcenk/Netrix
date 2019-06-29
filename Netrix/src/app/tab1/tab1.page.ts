@@ -3,6 +3,7 @@ import { ToastController, NavController, AlertController, Platform } from '@ioni
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
 import { TranslateService } from '@ngx-translate/core';
+import { timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tab1',
@@ -16,8 +17,6 @@ export class Tab1Page {
   subjsLoaded = false;
 
   constructor(private translate: TranslateService, private toastCtrl: ToastController, private navCtrl: NavController, private http: HttpClient, private authServ: AuthenticationService, private alertControl: AlertController, private platform: Platform) {
-
-    //this.zone = new NgZone({enableLongStackTrace: false});
 
     this.getSubjects();
 
@@ -37,9 +36,20 @@ export class Tab1Page {
     await alert.present();
   }
 
-  getSubjects() {
+  toastError(msg, btns, dur) {
+    this.toastCtrl.create({
+      message: msg,
+      buttons: btns,
+      color: 'dark',
+      duration: dur
+    }).then((toast) => {
+      toast.present();
+    });
+  }
+
+  async getSubjects() {
     // GET the subject list endpoint on the API server
-    this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects').subscribe((response) => {
+    this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects').pipe(timeout(3000)).subscribe((response) => {
       let allsubs = response.subjects;
       this.subjsLoaded = true;
       // Iterate over professors list and join it into a comma-separated string
@@ -60,7 +70,8 @@ export class Tab1Page {
         this.networkError(this.translate.instant("generic.alert.database.header"), this.translate.instant("generic.alert.database.content"));
       } else {
         // No network on client
-        this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
+        //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
+        this.toastError("Failed to connect to server", [{text: 'Reload', handler: () => {this.getSubjects()}}])
       }
     });
   }
