@@ -4,24 +4,99 @@ Netrix je frontend za EDAP library, pisan u [Ionic](https://ionicframework.com/)
 
 ## Upotreba
 
-### Potrebni programi
+### Linux (Ubuntu)
 
-* [Android Studio](https://developer.android.com/studio)
-* [JDK 8](https://github.com/frekele/oracle-java/releases) (odabrati `jdk-8u*`)
-	* `set PATH=%PATH%;C:\Program Files\Java\jdk1.8.0_*\bin` (nakon instalacije JDK)
-* [NodeJS + NPM](https://nodejs.org/en/download/)
-	* `npm install -g cordova cordova-res ionic native-run` (nakon instalacije NodeJS)
-
-Android Studio i JDK su potrebni samo ako želite aplikaciju instalirati na Android uređaj.
-
-### Postupak
-
-Ako želite konfigurirati svoj server (self-hosted), potrebno je promijeniti `API_SERVER` varijablu u `src/app/authentication.service.ts`. Ako ne želite, već uneseni server https://api.netrix.io je dovoljan.
+1. Klonirati repository na disk i `cd` u njega:
 
 ```bash
-cd eDnevnik/Netrix
-npm install
-ionic serve # lokalno, na računalu
-ionic cordova run android # na emulatoru/ADB uređaju
-ionic cordova run ios # macOS only, na iOS simulatoru
+git clone git@github.com:btx3/Netrix # ili "git clone https://github.com/btx3/Netrix" ako nemate SSH podešen
+cd Netrix/Netrix
 ```
+
+2. Instalirati potrebne programe:
+
+```bash
+sudo apt install npm nodejs -y # NodeJS i package manager NPM
+curl https://github.com/frekele/oracle-java/releases/download/8u212-b10/jdk-8u212-linux-x64.tar.gz | tar xz
+cd jdk1.8.0_212
+sudo cp -r bin/ lib/ include/ /usr/
+sudo cp -r jre/{bin,lib} /usr/
+cd .. && rm -rf jdk1.8.0_212
+```
+
+Testirajte radi li sve kako treba:
+
+```bash
+btx3@machine:~/Dokumente/Projects/Netrix/Netrix$ javac -version
+javac 1.8.0_212
+```
+
+Nakon toga treba instalirati `gradle`:
+```bash
+curl https://services.gradle.org/distributions/gradle-5.5-bin.zip | tar xz
+sudo cp -r gradle-5.5/{bin,lib} /usr/
+rm -rf gradle-5.5
+```
+
+Opet, provjerite radi li:
+```bash
+btx3@machine:~$ gradle -v
+
+------------------------------------------------------------
+Gradle 5.5
+------------------------------------------------------------
+
+Build time:   2019-06-28 17:36:05 UTC
+Revision:     83820928f3ada1a3a1dbd9a6c0d47eb3f199378f
+
+Kotlin:       1.3.31
+Groovy:       2.5.4
+Ant:          Apache Ant(TM) version 1.9.14 compiled on March 12 2019
+JVM:          1.8.0_212 (Oracle Corporation 25.212-b10)
+OS:           Linux 5.0.0-20-generic amd64
+
+```
+
+Zatim trebate skinuti [Android Studio](https://developer.android.com/studio) (bit će u .tar.gz formatu) i instalirati ga:
+
+(u novom terminalu [Ctrl+Alt+T]):
+```bash
+mv Downloads/android-studio-* .
+tar xzf android-studio-*
+rm -f android-studio-*
+cd android-studio/bin/
+./studio.sh
+```
+
+Kroz instalaciju sve "Next", a nakon što završi, odite pod "Configure" u donjem desnom kutu na "SDK Manager" i odaberite "Android 9.0 (Pie)", pa onda gore "SDK Tools" gdje treba odabrati "NDK". Pritisnite "Apply", označite "Accept" na prozoru koji se otvori i stisnite "Next".
+
+Ovo preuzimanje i instalacija će možda potrajati (pošto ima ~1GB za preuzeti).
+
+Nakon toga, potrebno je konfigurirati SDK instalaciju (ovo u prvotno otvorenom terminalu):
+```bash
+echo -e "ANDROID_HOME=$HOME/Android/Sdk\nPATH=\${PATH}:\$ANDROID_HOME/tools:\$ANDROID_HOME/platform-tools" >> ~/.bashrc
+source ~/.bashrc
+```
+
+I, na kraju, provjerite je li SDK dobro konfiguriran:
+```bash
+btx3@machine:~/Dokumente/Projects/Netrix/Netrix$ adb --version
+Android Debug Bridge version 1.0.41
+Version 29.0.1-5644136
+Installed as /home/btx3/Android/Sdk/platform-tools/adb
+```
+
+3. Instalirati NodeJS module:
+
+```bash
+npm i
+sudo npm i --unsafe-perm -g cordova cordova-res ionic native-run
+```
+
+4. Pokretanje:
+
+Možete Netrix pokrenuti kao testnu web aplikaciju s komandom `ionic s`, ili možete buildati APK za Android s komandom `ionic cordova build android --prod --release -- -- --minSdkVersion=23` (dugo traje).
+
+### Windows
+
+Još nije gotovo, ali postupak je otprilike isti.
