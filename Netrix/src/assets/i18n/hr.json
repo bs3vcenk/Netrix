@@ -1,10 +1,8 @@
 {
   "generic": {
     "alert": {
-      "network": {
-        "header": "Greška kod povezivanja",
-        "content": "Dogodio se problem s vezom tijekom hvatanja podataka sa servera."
-      },
+      "network": "Greška kod povezivanja",
+      "expiry": "Tvoja prijava je istekla",
       "database": {
         "header": "Neuspjelo povezivanje sa bazom podataka",
         "content": "Server se nije uspio povezati sa svojom bazom podataka. Pokušaj ponovo kasnije."
@@ -20,13 +18,7 @@
     }
   },
   "tab1": {
-    "title": "Predmeti",
-    "alert": {
-      "expiry": {
-        "header": "Prijava istekla",
-        "content": "Tvoja prijava je istekla. Trebaš se prijaviti ponovo."
-      }
-    }
+    "title": "Predmeti"
   },
   "tab3": {
     "title": "Postavke",

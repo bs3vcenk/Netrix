@@ -1,10 +1,8 @@
 {
   "generic": {
     "alert": {
-      "network": {
-        "header": "Netzwerkfehler",
-        "content": "Es gab ein Netzwerkproblem beim Versuch, Daten vom Server zu holen."
-      },
+      "network": "Netzwerkfehler",
+      "expiry": "Deine Einmeldung ist abgelaufen",
       "database": {
         "header": "Datenbankverbindung fehlgeschlagen",
         "content": "Der Server konnte keine Verbindung zu seiner Datenbank herstellen. Versuch, sich später wieder zu verbinden."
@@ -20,13 +18,7 @@
     }
   },
   "tab1": {
-    "title": "Schulfächer",
-    "alert": {
-      "expiry": {
-        "header": "Anmeldung abgelaufen",
-        "content": "Deine Anmeldung ist abgelaufen. Du musst dich erneut anmelden."
-      }
-    }
+    "title": "Schulfächer"
   },
   "tab3": {
     "title": "Einstellungen",

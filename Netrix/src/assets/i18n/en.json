@@ -1,10 +1,8 @@
 {
   "generic": {
     "alert": {
-      "network": {
-        "header": "Network error",
-        "content": "There was a network-related problem while trying to fetch data from the server."
-      },
+      "network": "Network error",
+      "expiry": "Your login has expired",
       "database": {
         "header": "Database connection failed",
         "content": "The server failed to connect to its database. Try connecting again later."
@@ -20,13 +18,7 @@
     }
   },
   "tab1": {
-    "title": "Subjects",
-    "alert": {
-      "expiry": {
-        "header": "Login expired",
-        "content": "Your login has expired. You will need to log in again."
-      }
-    }
+    "title": "Subjects"
   },
   "tab3": {
     "title": "Settings",

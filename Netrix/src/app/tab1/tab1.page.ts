@@ -63,7 +63,7 @@ export class Tab1Page {
     (error) => {
       if (error.error.error === "E_TOKEN_NONEXISTENT") {
         // User is not authenticated (possibly token purged from server DB)
-        this.networkError(this.translate.instant("tab1.alert.expiry.header"), this.translate.instant("tab1.alert.expiry.content"));
+        this.toastError(this.translate.instant("generic.alert.expiry"), null, 2500);
         this.authServ.logout();
       } else if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
         // Server-side issue
@@ -71,7 +71,7 @@ export class Tab1Page {
       } else {
         // No network on client
         //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
-        this.toastError("Failed to connect to server", [{text: 'Reload', handler: () => {this.getSubjects()}}], null)
+        this.toastError(this.translate.instant("generic.alert.network"), [{text: 'Reload', handler: () => {this.getSubjects()}}], null)
       }
     });
   }

@@ -1,9 +1,15 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      Tab Two
+      Tests
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content></ion-content>
+<ion-content>
+  <ion-list lines="full">
+    <ion-item *ngFor="let testObj of tests">
+      <ion-label>{{ testObj.test }}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

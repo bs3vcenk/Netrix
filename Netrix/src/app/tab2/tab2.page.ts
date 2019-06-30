@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AuthenticationService } from '../authentication.service';
+import { timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tab2',
@@ -7,6 +10,18 @@ import { Component } from '@angular/core';
 })
 export class Tab2Page {
 
-  constructor() {}
+  tests = null;
+
+  constructor(private authServ: AuthenticationService, private http: HttpClient) {
+    console.log("HTTP nigga");
+    this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/tests').pipe(timeout(3000)).subscribe((response) => {
+      this.tests = response.tests;
+    }, (error) => {
+      console.log(error);
+    })
+  }
+
+  ionViewDidLoad() {
+  }
 
 }
