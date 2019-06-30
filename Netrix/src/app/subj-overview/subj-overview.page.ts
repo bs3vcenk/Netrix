@@ -37,8 +37,7 @@ export class SubjOverviewPage implements OnInit {
 
   }
 
-  ionViewWillEnter() {
-    console.log("subjOverview: Getting data for subject ID " + this.subjId)
+  ionViewDidEnter() {
   	this.getSubjectInfo();
   }
 
@@ -85,13 +84,11 @@ export class SubjOverviewPage implements OnInit {
       this.getSubjectGrades();
     }, (error) => {
       console.log("subjOverview/getSubjectInfo(): Failed to fetch data from server (" + error.error + ")")
-      if (error.error) {
-        if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
-          this.networkError(this.translate.instant("generic.alert.database.header"), this.translate.instant("generic.alert.database.content"));
-        } else if (error.error.error === "E_TOKEN_NONEXISTENT") {
-          this.toastError(this.translate.instant("generic.alert.expiry"), null, 2500);
-          this.authServ.logout();
-        }
+      if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
+        this.networkError(this.translate.instant("generic.alert.database.header"), this.translate.instant("generic.alert.database.content"));
+      } else if (error.error.error === "E_TOKEN_NONEXISTENT") {
+        this.toastError(this.translate.instant("generic.alert.expiry"), null, 2500);
+        this.authServ.logout();
       } else {
         this.toastError(this.translate.instant("generic.alert.network"), [{text: 'Reload', handler: () => {this.getSubjectInfo()}}], null)
       }
