@@ -20,6 +20,9 @@
   "tab1": {
     "title": "Subjects"
   },
+  "tab2": {
+    "title": "Tests"
+  },
   "tab3": {
     "title": "Settings",
     "text": {
@@ -28,6 +31,13 @@
         "api": "API Settings",
         "lang": "Language Settings"
       }
+    }
+  },
+  "tab4": {
+    "title": "Info",
+    "text": {
+      "birthdate": "Birth date",
+      "address": "Address"
     }
   },
   "overview": {

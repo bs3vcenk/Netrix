@@ -20,6 +20,9 @@
   "tab1": {
     "title": "Schulfächer"
   },
+  "tab2": {
+    "title": "Prüfungen"
+  },
   "tab3": {
     "title": "Einstellungen",
     "text": {
@@ -28,6 +31,13 @@
         "api": "API-Einstellungen",
         "lang": "Spracheinstellungen"
       }
+    }
+  },
+  "tab4": {
+    "title": "Info",
+    "text": {
+      "birthdate": "Geburtsdatum",
+      "address": "Adresse"
     }
   },
   "overview": {

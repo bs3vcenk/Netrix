@@ -20,6 +20,9 @@
   "tab1": {
     "title": "Predmeti"
   },
+  "tab2": {
+    "title": "Ispiti"
+  },
   "tab3": {
     "title": "Postavke",
     "text": {
@@ -28,6 +31,13 @@
         "api": "Postavke API-a",
         "lang": "Postavke jezika"
       }
+    }
+  },
+  "tab4": {
+    "title": "Informacije",
+    "text": {
+      "birthdate": "Datum rođenja",
+      "address": "Adresa"
     }
   },
   "overview": {
