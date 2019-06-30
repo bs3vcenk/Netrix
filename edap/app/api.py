@@ -134,8 +134,8 @@ def populateData(obj=None, username=None, password=None):
 		abort(500)
 
 	try:
-		tests_nowonly = getTests(0, alltests=False)
-		tests_all = getTests(0, alltests=True)
+		tests_nowonly = obj.getTests(0, alltests=False)
+		tests_all = obj.getTests(0, alltests=True)
 		for x in tests_all:
 			if x not in tests_nowonly:
 				x['current'] = False
