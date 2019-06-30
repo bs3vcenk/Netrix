@@ -6,9 +6,11 @@
 
 ## Buildovi/APKovi
 
-Buildovi (.apk) su dostupni na [releases](https://github.com/btx3/Netrix/releases) stranici.
+Buildovi (.apk) su dostupni na [Releases](https://github.com/btx3/Netrix/releases) stranici.
 
 Molimo pazite kako se projekt još uvijek razvija, pa stoga nemojte očekivati iskustvo bez grešaka.
+
+Ako je moguće, nemojte koristiti master branch za build, već koristite unaprijed testirane i provjerene verzije preuzimanjem sa [Releases](https://github.com/btx3/Netrix/releases) stranice ili pomoću [`git checkout`](https://stackoverflow.com/a/792027) komande.
 
 Svaku nađenu grešku je poželjno [prijaviti](https://github.com/btx3/Netrix/issues/new) (ako je moguće uz logove, screenshote itd.).
 
