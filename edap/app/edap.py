@@ -154,6 +154,7 @@ class edap:
 				h = i.find_all("div", class_="course")[0].get_text("\n").split("\n")
 			except Exception as e:
 				self.__edlog(3, "HTML parsing error! [%s] Probably new grade notification, attempting workaround..." % (e,i))
+				h = i.find_all("div", class_="course")[1].get_text("\n").split("\n")
 			prof = ''.join(h[1:]).split(", ")
 			try:
 				t = prof.index("/")
@@ -201,8 +202,9 @@ class edap:
 		for i in range(len(xtab)):
 			xtab[i] = xtab[i].getText()
 		af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
-		self.__edlog(1, "Completed with %s tests processed" % len(af))
-		return af
+		afx = [{"subject": x, "test":y, "date":z} for x, y, z in af]
+		self.__edlog(1, "Completed with %s tests processed" % len(afx))
+		return afx
 
 	def getGradesForSubject(self, class_id, subject_id, sorttype="note"):
 		"""

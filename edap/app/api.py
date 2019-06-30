@@ -101,8 +101,8 @@ logins_fail_wp = getLogins("fail:password")
 
 threads = {}
 
-threads["analytics"] = PeriodicAnalyticsSave()
-threads["analytics"].start()
+#threads["analytics"] = PeriodicAnalyticsSave()
+#threads["analytics"].start()
 #threads["database"] = PeriodicDatabaseSaveToDisk()
 #threads["database"].start()
 
@@ -126,14 +126,26 @@ def populateData(obj=None, username=None, password=None):
 	"""
 		Fill in the 'data' part of the user dict. This will contain subjects, grades, etc.
 	"""
-	dataDict = {'classes':None, 'tests':None, 'info':None}
+	dataDict = {'classes':None, 'info':None}
 	try:
-		cl = obj.getClasses()
+		output = obj.getClasses()
 	except Exception as e:
 		log.error("Error getting classes: %s" % e)
 		abort(500)
 
-	output = cl
+	try:
+		tests_nowonly = getTests(0, alltests=False)
+		tests_all = getTests(0, alltests=True)
+		for x in tests_all:
+			if x not in tests_nowonly:
+				x['current'] = False
+			else:
+				x['current'] = True
+		output[0]['tests'] = tests_all
+	except Exception as e:
+		log.error("Error getting tests for class: %s" % e)
+		output[0]['tests'] = None
+
 	try:
 		output[0]['subjects'] = obj.getSubjects(0)
 	except Exception as e:
@@ -358,6 +370,18 @@ def getSubjects(token, class_id):
 	log.info("Getting subjects for %s (cID=%s)" % (token, class_id))
 	o = getData(token)['data']['classes'][class_id]['subjects']
 	return make_response(jsonify({'subjects': o}), 200)
+
+@app.route('/api/user/<string:token>/classes/<int:class_id>/tests', methods=["GET"])
+def getTests(token, class_id):
+	if not userInDatabase(token):
+		log.warning("Token %s not in DB" % token)
+		abort(401)
+	elif not classIDExists(token, class_id):
+		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
+		abort(401)
+	log.info("Getting tests for %s (cID=%s)" % (token, class_id))
+	o = getData(token)['data']['classes'][class_id]['tests']
+	return make_response(jsonify({'tests': o}), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>', methods=["GET"])
 def getSpecSubject(token, class_id, subject_id):
