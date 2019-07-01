@@ -91,6 +91,7 @@ export class SubjOverviewPage implements OnInit {
         this.authServ.logout();
       } else {
         this.toastError(this.translate.instant("generic.alert.network"), [{text: 'Reload', handler: () => {this.getSubjectInfo()}}], null)
+        throw new Error('Network error: ' + error);
       }
     });
   }
@@ -102,7 +103,7 @@ export class SubjOverviewPage implements OnInit {
       this.gradeState = "opaque";
     }, (error) => {
       console.log("subjOverview/getSubjectGrades(): Failed to fetch data from server (" + error.error + ")")
-      this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"))
+      this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"));
     });
   }
 

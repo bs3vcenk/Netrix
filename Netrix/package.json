@@ -1,8 +1,8 @@
 {
   "name": "Netrix",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "version": "1.1.9",
+  "author": "btx3",
+  "homepage": "https://netrix.io/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -33,6 +33,7 @@
     "cordova-plugin-statusbar": "^2.4.2",
     "core-js": "^2.5.4",
     "rxjs": "~6.5.1",
+    "sentry-cordova": "^0.15.0",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.29"
   },
@@ -67,7 +68,7 @@
     "tslint": "~5.17.0",
     "typescript": "~3.1.6"
   },
-  "description": "An Ionic project",
+  "description": "A modern client for e-Dnevnik.",
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
@@ -77,10 +78,14 @@
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-statusbar": {}
+      "cordova-plugin-statusbar": {},
+      "sentry-cordova": {}
     },
     "platforms": [
       "android"
     ]
+  },
+  "config": {
+    "ionic_generate_source_map": "true"
   }
 }

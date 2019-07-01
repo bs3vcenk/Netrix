@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../authentication.service';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -16,7 +16,7 @@ export class LoginPage implements OnInit {
   isLoading = false;
   dataAlertShown = false;
 
-  constructor(private translate: TranslateService, private authServ: AuthenticationService, private alertControl: AlertController, private loadControl: LoadingController) { }
+  constructor(private toastCtrl: ToastController, private translate: TranslateService, private authServ: AuthenticationService, private alertControl: AlertController, private loadControl: LoadingController) { }
 
   ngOnInit() {
   }
@@ -29,6 +29,17 @@ export class LoginPage implements OnInit {
       buttons: ["OK"]
     }).then(alert => {
       alert.present();
+    });
+  }
+
+  toastError(msg, btns, dur) {
+    this.toastCtrl.create({
+      message: msg,
+      buttons: btns,
+      color: 'dark',
+      duration: dur
+    }).then((toast) => {
+      toast.present();
     });
   }
 
@@ -100,7 +111,8 @@ export class LoginPage implements OnInit {
         // Server/network error
         // TODO: Handle server and network errors separately
         console.log("login/login(): Failed - Network error");
-        this.networkError(this.translate.instant("login.alert.serverdown.header"), this.translate.instant("login.alert.serverdown.content"))
+        this.toastError(this.translate.instant("generic.alert.network"), null, 2500);
+        throw new Error('Network error');
       }
     })
   }
