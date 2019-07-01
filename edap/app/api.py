@@ -425,9 +425,6 @@ def logStats():
 	if not "token" in request.json or not "platform" in request.json or not "device" in request.json:
 		log.warning("Invalid JSON from %s" % request.remote_addr)
 		abort(400)
-	elif None in [request.json[i] for i in request.json.keys()]:
-		log.warning("One or more fields in JSON is null")
-		abort(400)
 	elif not userInDatabase(request.json["token"]):
 		log.warning("Token %s not in DB" % token)
 		abort(401)
