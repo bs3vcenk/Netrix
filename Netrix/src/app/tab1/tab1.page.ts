@@ -26,16 +26,6 @@ export class Tab1Page {
     this.platform.backButton.subscribe(() => {});
   }
 
-  async networkError(header, msg) {
-    const alert = await this.alertControl.create({
-      header: header,
-      message: msg,
-      buttons: ['OK']
-    });
-
-    await alert.present();
-  }
-
   toastError(msg, btns, dur) {
     this.toastCtrl.create({
       message: msg,
