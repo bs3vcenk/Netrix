@@ -296,7 +296,11 @@ def login():
 		logins_fail_ge.value += 1
 		abort(400)
 	devIP = request.remote_addr
-	token = hashString(request.json["username"] + ":" + request.json["password"])
+	username = request.json["username"]
+	password = request.json["password"]
+	if "@skole.hr" in username:
+		username = username.replace("@skole.hr", "")
+	token = hashString(username + ":" + password)
 	log.info("Logging %s in (platform=%s, device=%s)" % (token, devPlatform, devModel))
 	if userInDatabase(token):
 		log.info("Processed fast login for token %s" % token)
@@ -305,7 +309,7 @@ def login():
 		return make_response(jsonify({'token':token}), 200)
 	log.info("Slow login start for %s" % token)
 	try:
-		obj = edap.edap(request.json["username"], request.json["password"])
+		obj = edap.edap(username, password)
 	except edap.WrongCredentials:
 		log.error("Wrong credentials for %s" % token)
 		logins_fail_wp.value += 1
@@ -315,7 +319,7 @@ def login():
 		logins_fail_ge.value += 1
 		abort(500)
 	log.info("Success for %s, saving to Redis" % token)
-	dataObj = {'user':request.json["username"], 'pasw':request.json["password"], 'data':populateData(obj), 'periodic_updates':0, 'last_ip':devIP, 'device':{'platform':None, 'model':None}, 'lang':None, 'resolution':None}
+	dataObj = {'user':username, 'pasw':password, 'data':populateData(obj), 'periodic_updates':0, 'last_ip':devIP, 'device':{'platform':None, 'model':None}, 'lang':None, 'resolution':None}
 	r.set('token:' + token, _jsonConvert(dataObj))
 	logins_full.value += 1
 	return make_response(jsonify({'token':token}), 200)
