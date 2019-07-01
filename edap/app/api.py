@@ -425,7 +425,8 @@ def logStats():
 	if not "token" in request.json or not "platform" in request.json or not "device" in request.json:
 		log.warning("Invalid JSON from %s" % request.remote_addr)
 		abort(400)
-	elif not userInDatabase(request.json["token"]):
+	token = request.json["token"]
+	if not userInDatabase(token):
 		log.warning("Token %s not in DB" % token)
 		abort(401)
 	log.info("APP LAUNCH: Updating stats for %s" % token)
