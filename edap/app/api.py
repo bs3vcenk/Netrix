@@ -295,22 +295,11 @@ def login():
 		log.error("Bad JSON")
 		logins_fail_ge.value += 1
 		abort(400)
-	devPlatform = None
-	devModel = None
 	devIP = request.remote_addr
 	token = hashString(request.json["username"] + ":" + request.json["password"])
-	if 'platform' in request.json:
-		devPlatform = request.json['platform']
-	if 'device' in request.json:
-		devModel = request.json['device']
 	log.info("Logging %s in (platform=%s, device=%s)" % (token, devPlatform, devModel))
 	if userInDatabase(token):
 		log.info("Processed fast login for token %s" % token)
-		log.info("Updating user data with new info")
-		dataObj = getData(token)
-		dataObj['last_ip'] = devIP
-		dataObj['device']['platform'] = devPlatform
-		dataObj['device']['model'] = devModel
 		r.set('token:' + token, _jsonConvert(dataObj))
 		logins_fast.value += 1
 		return make_response(jsonify({'token':token}), 200)
@@ -326,17 +315,10 @@ def login():
 		logins_fail_ge.value += 1
 		abort(500)
 	log.info("Success for %s, saving to Redis" % token)
-	dataObj = {'user':request.json["username"], 'pasw':request.json["password"], 'data':populateData(obj), 'periodic_updates':0, 'last_ip':devIP, 'device':{'platform':devPlatform, 'model':devModel}}
+	dataObj = {'user':request.json["username"], 'pasw':request.json["password"], 'data':populateData(obj), 'periodic_updates':0, 'last_ip':devIP, 'device':{'platform':None, 'model':None}, 'lang':None, 'resolution':None}
 	r.set('token:' + token, _jsonConvert(dataObj))
 	logins_full.value += 1
 	return make_response(jsonify({'token':token}), 200)
-
-@app.route('/api/user/<string:token>/dataexport', methods=["GET"])
-def dataExport(token):
-	if not userInDatabase(token):
-		log.warning("Token %s not in DB" % token)
-		abort(401)
-	return make_response(jsonify(getData(token)), 200)
 
 @app.route('/api/user/<string:token>/info', methods=["GET"])
 def getInfoUser(token):
@@ -422,7 +404,7 @@ def getGrades(token, class_id, subject_id):
 
 @app.route('/api/stats', methods=["POST"])
 def logStats():
-	if not "token" in request.json or not "platform" in request.json or not "device" in request.json:
+	if not "token" in request.json or not "platform" in request.json or not "device" in request.json or not "language" in request.json or not "resolution" in request.json:
 		log.warning("Invalid JSON from %s" % request.remote_addr)
 		abort(400)
 	token = request.json["token"]
@@ -434,6 +416,8 @@ def logStats():
 	dataObj['last_ip'] = request.remote_addr
 	dataObj['device']['platform'] = request.json["platform"]
 	dataObj['device']['model'] = request.json["device"]
+	dataObj['lang'] = request.json["language"]
+	dataObj['resolution'] = request.json["resolution"]
 	r.set('token:' + token, _jsonConvert(dataObj))
 	return make_response(jsonify({"result":"ok"}), 200)
 
