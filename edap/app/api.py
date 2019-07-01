@@ -276,6 +276,8 @@ def tokenDebug(token):
 	html += "<h2>Device</h2>"
 	html += "<p>OS: %s</p>" % data["device"]["platform"]
 	html += "<p>Device: %s</p>" % data["device"]["model"]
+	html += "<p>Language: %s</p>" % data["lang"]
+	html += "<p>Resolution: %s</p>" % data["resolution"]
 	html += "<h2>Management</h2>"
 	html += "<p><a href=\"/dev/info/tokendebug/%s/revoke\">Remove from DB</a></p>" % token
 	return makeHTML(title="eDAP dev token manage", content=html)
@@ -301,24 +303,23 @@ def login():
 	if "@skole.hr" in username:
 		username = username.replace("@skole.hr", "")
 	token = hashString(username + ":" + password)
-	log.info("Logging %s in (platform=%s, device=%s)" % (token, devPlatform, devModel))
 	if userInDatabase(token):
-		log.info("Processed fast login for token %s" % token)
+		log.info("FAST => %s" % username)
 		r.set('token:' + token, _jsonConvert(dataObj))
 		logins_fast.value += 1
 		return make_response(jsonify({'token':token}), 200)
-	log.info("Slow login start for %s" % token)
+	log.info("SLOW => %s" % username)
 	try:
 		obj = edap.edap(username, password)
 	except edap.WrongCredentials:
-		log.error("Wrong credentials for %s" % token)
+		log.error("SLOW => WRONG CREDS => %s" % username)
 		logins_fail_wp.value += 1
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
-	except edap.FatalLogExit:
-		log.error("eDAP failure for %s" % token)
+	except edap.FatalLogExit as e:
+		log.error("SLOW => eDAP FAIL => %s => %s" % (username, str(e)))
 		logins_fail_ge.value += 1
 		abort(500)
-	log.info("Success for %s, saving to Redis" % token)
+	log.info("Success for %s, saving to Redis (%s)" % (username, token))
 	dataObj = {'user':username, 'pasw':password, 'data':populateData(obj), 'periodic_updates':0, 'last_ip':devIP, 'device':{'platform':None, 'model':None}, 'lang':None, 'resolution':None}
 	r.set('token:' + token, _jsonConvert(dataObj))
 	logins_full.value += 1
@@ -329,6 +330,7 @@ def getInfoUser(token):
 	if not userInDatabase(token):
 		log.warning("Token %s not in DB" % token)
 		abort(401)
+	log.info("INFO => %s" % username)
 	return make_response(jsonify(getData(token)['data']['info']), 200)
 
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
@@ -336,7 +338,7 @@ def getClasses(token):
 	if not userInDatabase(token):
 		log.warning("Token %s not in DB" % token)
 		abort(401)
-	log.info("Getting classes for %s" % token)
+	log.info("CLASS LIST => %s" % username)
 	o = getData(token)['data']
 	for i in o['classes']:
 		try:
@@ -353,7 +355,7 @@ def getSubjects(token, class_id):
 	elif not classIDExists(token, class_id):
 		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
 		abort(401)
-	log.info("Getting subjects for %s (cID=%s)" % (token, class_id))
+	log.info("SUBJECT LIST => %s => %s" % (username, class_id))
 	o = getData(token)['data']['classes'][class_id]['subjects']
 	return make_response(jsonify({'subjects': o}), 200)
 
@@ -365,7 +367,7 @@ def getTests(token, class_id):
 	elif not classIDExists(token, class_id):
 		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
 		abort(401)
-	log.info("Getting tests for %s (cID=%s)" % (token, class_id))
+	log.info("TESTS => %s => %s" % (username, class_id))
 	o = getData(token)['data']['classes'][class_id]['tests']
 	return make_response(jsonify({'tests': o}), 200)
 
@@ -380,7 +382,7 @@ def getSpecSubject(token, class_id, subject_id):
 	elif not subjectIDExists(token, class_id, subject_id):
 		log.warning("Subject ID %s does not exist for class ID %s for token %s" % (subject_id, class_id, token))
 		abort(401)
-	log.info("Getting subject info for %s (cID=%s, sID=%s)" % (token, class_id, subject_id))
+	log.info("SUBJECT INFO => %s => %s => %s" % (username, class_id, subject_id))
 	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]
 	del o['grades']
 	return make_response(jsonify(o), 200)
@@ -415,7 +417,7 @@ def logStats():
 	if not userInDatabase(token):
 		log.warning("Token %s not in DB" % token)
 		abort(401)
-	log.info("APP LAUNCH: Updating stats for %s" % token)
+	log.info("STATS => %s => %s, %s, %s, %s" % (username, request.json["platform"], request.json["device"], request.json["language"], request.json["resolution"]))
 	dataObj = getData(token)
 	dataObj['last_ip'] = request.remote_addr
 	dataObj['device']['platform'] = request.json["platform"]
