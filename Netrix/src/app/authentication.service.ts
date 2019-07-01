@@ -40,11 +40,11 @@ export class AuthenticationService {
 				console.log("AuthenticationService/checkToken(): Found saved token (" + this.token + ")");
 				console.log("AuthenticationService/checkToken(): Found analytics preference (" + this.dataPreference + ")");
 				if (this.dataPreference === true) {
-					this.http.post(this.API_SERVER + "/api/stats", {"token":this.token, "platform":this.getPlatform(), "device":this.getDevice()}).subscribe((res) => {
+					this.http.post(this.API_SERVER + "/api/stats", {"token":this.token, "platform":this.getPlatform(), "device":this.getDevice(), "language":this.getLanguage(), "resolution":this.getResolution()}).subscribe((res) => {
 						console.log("AuthenticationService/checkToken(): Successfully sent device info");
 					}, (err) => {
 						console.log("AuthenticationService/checkToken(): Failed to send device info:");
-						console.log(err);
+						throw new Error('Stats send fail: ' + err);
 					});
 				}
 				this.authenticationState.next(true);
