@@ -67,7 +67,7 @@ export class Tab1Page {
         this.authServ.logout();
       } else if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
         // Server-side issue
-        this.networkError(this.translate.instant("generic.alert.database.header"), this.translate.instant("generic.alert.database.content"));
+        this.toastError(this.translate.instant("generic.alert.database"), null, 2500);
       } else {
         // No network on client
         //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));

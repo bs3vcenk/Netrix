@@ -3,10 +3,7 @@
     "alert": {
       "network": "Network error",
       "expiry": "Your login has expired",
-      "database": {
-        "header": "Database connection failed",
-        "content": "The server failed to connect to its database. Try connecting again later."
-      },
+      "database": "Database connection failed",
       "quit": {
         "header": "Quit app",
         "content": "Do you want to exit the app?",

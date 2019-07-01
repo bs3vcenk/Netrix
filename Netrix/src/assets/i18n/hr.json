@@ -3,10 +3,7 @@
     "alert": {
       "network": "Greška kod povezivanja",
       "expiry": "Tvoja prijava je istekla",
-      "database": {
-        "header": "Neuspjelo povezivanje sa bazom podataka",
-        "content": "Server se nije uspio povezati sa svojom bazom podataka. Pokušaj ponovo kasnije."
-      },
+      "database": "Neuspjelo povezivanje sa bazom podataka",
       "quit": {
         "header": "Izlaz iz aplikacije",
         "content": "Želite li zatvoriti aplikaciju?",
