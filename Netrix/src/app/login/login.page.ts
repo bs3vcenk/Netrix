@@ -94,12 +94,12 @@ export class LoginPage implements OnInit {
       console.log(err) // Log error
       if (err.error.error === "E_INVALID_CREDENTIALS") {
         // Bad creds
-        console.log("login/login(): Failed - Invalid credentials")
+        console.log("login/login(): Failed - Invalid credentials");
         this.networkError(this.translate.instant("login.alert.credentials.header"), this.translate.instant("login.alert.credentials.content"))
       } else {
         // Server/network error
         // TODO: Handle server and network errors separately
-        console.log("login/login(): Failed - Server error")
+        console.log("login/login(): Failed - Network error");
         this.networkError(this.translate.instant("login.alert.serverdown.header"), this.translate.instant("login.alert.serverdown.content"))
       }
     })

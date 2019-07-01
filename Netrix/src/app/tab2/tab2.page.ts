@@ -13,7 +13,6 @@ export class Tab2Page {
   tests = null;
 
   constructor(private authServ: AuthenticationService, private http: HttpClient) {
-    console.log("HTTP nigga");
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/tests').pipe(timeout(3000)).subscribe((response) => {
       this.tests = response.tests;
     }, (error) => {
