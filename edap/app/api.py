@@ -330,7 +330,7 @@ def getInfoUser(token):
 	if not userInDatabase(token):
 		log.warning("Token %s not in DB" % token)
 		abort(401)
-	username = getData(token)["username"]
+	username = getData(token)["user"]
 	log.info("INFO => %s" % username)
 	return make_response(jsonify(getData(token)['data']['info']), 200)
 
@@ -339,7 +339,7 @@ def getClasses(token):
 	if not userInDatabase(token):
 		log.warning("Token %s not in DB" % token)
 		abort(401)
-	username = getData(token)["username"]
+	username = getData(token)["user"]
 	log.info("CLASS LIST => %s" % username)
 	o = getData(token)['data']
 	for i in o['classes']:
@@ -357,7 +357,7 @@ def getSubjects(token, class_id):
 	elif not classIDExists(token, class_id):
 		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
 		abort(401)
-	username = getData(token)["username"]
+	username = getData(token)["user"]
 	log.info("SUBJECT LIST => %s => %s" % (username, class_id))
 	o = getData(token)['data']['classes'][class_id]['subjects']
 	return make_response(jsonify({'subjects': o}), 200)
@@ -370,7 +370,7 @@ def getTests(token, class_id):
 	elif not classIDExists(token, class_id):
 		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
 		abort(401)
-	username = getData(token)["username"]
+	username = getData(token)["user"]
 	log.info("TESTS => %s => %s" % (username, class_id))
 	o = getData(token)['data']['classes'][class_id]['tests']
 	return make_response(jsonify({'tests': o}), 200)
@@ -386,7 +386,7 @@ def getSpecSubject(token, class_id, subject_id):
 	elif not subjectIDExists(token, class_id, subject_id):
 		log.warning("Subject ID %s does not exist for class ID %s for token %s" % (subject_id, class_id, token))
 		abort(401)
-	username = getData(token)["username"]
+	username = getData(token)["user"]
 	log.info("SUBJECT INFO => %s => %s => %s" % (username, class_id, subject_id))
 	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]
 	del o['grades']
@@ -418,6 +418,7 @@ def logStats():
 	if not "token" in request.json or not "platform" in request.json or not "device" in request.json or not "language" in request.json or not "resolution" in request.json:
 		log.warning("Invalid JSON from %s" % request.remote_addr)
 		abort(400)
+	username = getData(token)["user"]
 	token = request.json["token"]
 	if not userInDatabase(token):
 		log.warning("Token %s not in DB" % token)
