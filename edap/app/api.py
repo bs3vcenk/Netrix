@@ -252,7 +252,7 @@ def devGetLog():
 @app.route('/dev/info', methods=["GET"])
 @dev_area
 def info():
-	return makeHTML(title="eDAP dev info", content="<h2>Tokens</h2>%s<h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p>" % ('<br>'.join(['%s || <a href="/dev/info/tokendebug/%s">Manage</a>' % (getData(i)["username"], i) for i in getTokens()]), logins_full.value, logins_fast.value, logins_fail_wp.value, logins_fail_ge.value))
+	return makeHTML(title="eDAP dev info", content="<h2>Tokens</h2>%s<h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p>" % ('<br>'.join(['%s || <a href="/dev/info/tokendebug/%s">Manage</a>' % (getData(i)["user"], i) for i in getTokens()]), logins_full.value, logins_fast.value, logins_fail_wp.value, logins_fail_ge.value))
 
 @app.route('/dev/threads', methods=["GET"])
 @dev_area
