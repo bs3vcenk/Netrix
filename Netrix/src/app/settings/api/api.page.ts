@@ -9,7 +9,6 @@ import { AuthenticationService } from '../../authentication.service';
 export class ApiPage implements OnInit {
 
   dataPreference = null;
-  notifPreference = null;
   apiServer = null;
 
   constructor(private authServ: AuthenticationService) { }
@@ -18,7 +17,6 @@ export class ApiPage implements OnInit {
     // Load default preferences
     this.apiServer = this.authServ.API_SERVER;
     this.dataPreference = this.authServ.dataPreference;
-    this.notifPreference = this.authServ.notifPreference;
     console.log("settings/api: Analytics preference is " + this.dataPreference);
   }
 
@@ -27,13 +25,6 @@ export class ApiPage implements OnInit {
     console.log("settings/api/updDeviceInfoPreference(): Updated analytics preference to " + this.dataPreference);
     this.authServ.dataPreference = this.dataPreference;
     this.authServ.changePreference("data-preference", this.dataPreference);
-  }
-
-  updNotificationPreference() {
-    // Called on switch change
-    console.log("settings/api/updNotificationPreference(): Updated push notification preference to " + this.notifPreference);
-    this.authServ.notifPreference = this.notifPreference;
-    this.authServ.changePreference("notif-preference", this.notifPreference);
   }
 
 }
