@@ -56,10 +56,6 @@
         "header": "Netočni podaci za prijavu",
         "content": "Provjeri svoje korisničko ime i lozinu, pa pokušaj ponovo."
       },
-      "serverdown": {
-        "header": "Server nedostupan",
-        "content": "Server je nedostupan, vjerojatno zbog održavanja."
-      },
       "data": {
         "header": "Prikupljanje podataka",
         "content": "Model vašeg telefona i njegov operativni sustav se šalje na server prilikom prijave, te za svako otvaranje aplikacije. Možete to promijeniti u Postavke > Postavke API-a."

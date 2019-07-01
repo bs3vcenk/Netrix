@@ -56,10 +56,6 @@
         "header": "Invalid credentials",
         "content": "Check your username and password, and try again."
       },
-      "serverdown": {
-        "header": "Server offline",
-        "content": "The server is down, probably for maintenance."
-      },
       "data": {
         "header": "Data collection",
         "content": "Your phone model and OS is sent to the server on login, and every time you open the app. You can change this in Settings > API Settings."

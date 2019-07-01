@@ -56,10 +56,6 @@
         "header": "Falsche Zugangsdaten",
         "content": "Überprüfen Sie Ihren Benutzernamen und Ihr Passwort, und versuchen Sie es erneut."
       },
-      "serverdown": {
-        "header": "Der Server ist ausgefallen",
-        "content": "Der Server ist ausgefallen, wahrscheinlich wegen Wartungsarbeiten."
-      },
       "data": {
         "header": "Datenerhebung",
         "content": "Dein Handy-Modell und Betriebssystem wird beim Anmelden und bei jedem Öffnen der App an den Server gesendet. Du kannst dies unter Einstellungen > API-Einstellungen ändern."
