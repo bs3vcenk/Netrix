@@ -15,7 +15,7 @@
 		<h2 [@animChange]="titleState">{{subjProfs}}</h2>
 	</ion-text>
 	<ion-list lines="inset">
-		<ion-item [@animChange]="gradeState">
+		<ion-item [@animChange]="gradeState" lines="full">
 			<ion-label text-left>{{ 'overview.text.average' | translate }}</ion-label>
 			<ion-label item-right text-right>{{subjAvg}}</ion-label>
 		</ion-item>
