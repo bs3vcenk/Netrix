@@ -24,14 +24,6 @@ DATA_FOLDER = "/data" # For logs, etc.
 
 api_version = "1.1-dev"
 
-#server_header = "eDAP/%s eDAP-API/%s Flask/%s" % (edap.edap_version, api_version, _flaskVersion)
-
-#class localFlask(Flask):
-#	def process_response(self, response):
-#		response.headers['Server'] = server_header
-#		super(localFlask, self).process_response(response)
-#		return response
-
 try:
 	privUsername = environ["NETRIX_DEV_USER"]
 	privPassword = environ["NETRIX_DEV_PASW"]
@@ -155,6 +147,8 @@ def populateData(obj=None, username=None, password=None):
 		output[0]['subjects'][z]['id'] = z
 		try:
 			output[0]['subjects'][z]['grades'] = obj.getGradesForSubject(0, z)
+			if len(output[0]['subjects'][z]['grades']) == 0:
+				output[0]['subjects'][z]['grades'] = None
 			isconcl, concluded = obj.getConcludedGradeForSubject(0, z)
 			if isconcl:
 				output[0]['subjects'][z]['average'] = concluded
@@ -166,6 +160,14 @@ def populateData(obj=None, username=None, password=None):
 		except Exception as e:
 			log.error("Error getting grades for subject %s: %s" % (z, e))
 			output[0]['subjects'][z]['grades'] = None
+			continue
+		try:
+			output[0]['subjects'][z]['notes'] = obj.getNotesForSubject(0, z)
+			if len(output[0]['subjects'][z]['notes']) == 0:
+				output[0]['subjects'][z]['notes'] = None
+		except Exception as e:
+			log.error("Error getting notes for subject %s: %s" % (z, e))
+			output[0]['subjects'][z]['notes'] = None
 			continue
 	dataDict['classes'] = output
 	try:
@@ -411,6 +413,23 @@ def getGrades(token, class_id, subject_id):
 		lgrades.append(i['grade'])
 	avg = round(sum(lgrades)/len(lgrades), 2)
 	return make_response(jsonify({'grades': o, 'average': avg}), 200)
+
+@app.route('/api/user/<string:token>/classes/<int:class_id>/subject/<int:subject_id>/notes', methods=["GET"])
+def getNotes(token, class_id, subject_id):
+	if not userInDatabase(token):
+		log.warning("Token %s not in DB" % token)
+		abort(401)
+	elif not classIDExists(token, class_id):
+		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
+		abort(401)
+	elif not subjectIDExists(token, class_id, subject_id):
+		log.warning("Subject ID %s does not exist for class ID %s for token %s" % (subject_id, class_id, token))
+		abort(401)
+	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]['notes']
+	if o == None:
+		log.info("No notes for subject ID %s" % subject_id)
+		return make_response(jsonify({'error':'E_NO_NOTES'}), 404)
+	return make_response(jsonify({'notes':o}), 200)
 
 @app.route('/api/stats', methods=["POST"])
 def logStats():
