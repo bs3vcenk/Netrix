@@ -40,15 +40,19 @@ export class AuthenticationService {
 				console.log("AuthenticationService/checkToken(): Found saved token (" + this.token + ")");
 				console.log("AuthenticationService/checkToken(): Found analytics preference (" + this.dataPreference + ")");
 				if (this.dataPreference === true) {
-					this.http.post(this.API_SERVER + "/api/stats", {"token":this.token, "platform":this.getPlatform(), "device":this.getDevice(), "language":this.getLanguage(), "resolution":this.getResolution()}).subscribe((res) => {
-						console.log("AuthenticationService/checkToken(): Successfully sent device info");
-					}, (err) => {
-						console.log("AuthenticationService/checkToken(): Failed to send device info:");
-						throw new Error('Stats send fail: ' + err);
-					});
+					this.sendDeviceInfo();
 				}
 				this.authenticationState.next(true);
 			}
+		});
+	}
+
+	private sendDeviceInfo() {
+		this.http.post(this.API_SERVER + "/api/stats", {"token":this.token, "platform":this.getPlatform(), "device":this.getDevice(), "language":this.getLanguage(), "resolution":this.getResolution()}).subscribe((res) => {
+			console.log("AuthenticationService/sendDeviceInfo(): Successfully sent device info");
+		}, (err) => {
+			console.log("AuthenticationService/sendDeviceInfo(): Failed to send device info:");
+			throw new Error('Stats send fail: ' + err);
 		});
 	}
 
@@ -115,12 +119,7 @@ export class AuthenticationService {
 			this.token = data.token;
 			console.log("AuthenticationService/handleLogin(): Login successful, got token (" + data.token + ")");
 			if (this.dataPreference === true) {
-				this.http.post(this.API_SERVER + "/api/stats", {"token":this.token, "platform":this.getPlatform(), "device":this.getDevice(), "language":this.getLanguage(), "resolution":this.getResolution()}).subscribe((res) => {
-					console.log("AuthenticationService/checkToken(): Successfully sent device info");
-				}, (err) => {
-					console.log("AuthenticationService/checkToken(): Failed to send device info:");
-					throw new Error('Stats send fail: ' + err);
-				});
+				this.sendDeviceInfo();
 			}
 			this.authenticationState.next(true);
 		})
