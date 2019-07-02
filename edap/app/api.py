@@ -414,7 +414,7 @@ def getGrades(token, class_id, subject_id):
 	avg = round(sum(lgrades)/len(lgrades), 2)
 	return make_response(jsonify({'grades': o, 'average': avg}), 200)
 
-@app.route('/api/user/<string:token>/classes/<int:class_id>/subject/<int:subject_id>/notes', methods=["GET"])
+@app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>/notes', methods=["GET"])
 def getNotes(token, class_id, subject_id):
 	if not userInDatabase(token):
 		log.warning("Token %s not in DB" % token)
