@@ -21,7 +21,7 @@ import { Device } from '@ionic-native/device/ngx';
 import * as Sentry from 'sentry-cordova';
 import { SentryErrorHandler } from './sentryerrorhandler.service'
 
-Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605' })
+Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.2.0' })
 
 export function createTranslateLoader(http: HttpClient) {
 	return new TranslateHttpLoader(http, 'assets/i18n/', '.json')
