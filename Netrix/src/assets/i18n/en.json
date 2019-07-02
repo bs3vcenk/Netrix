@@ -46,7 +46,9 @@
       }
     },
     "text": {
-      "average": "Average"
+      "average": "Average",
+      "grades": "Grades",
+      "notes": "Notes"
     }
   },
   "login": {

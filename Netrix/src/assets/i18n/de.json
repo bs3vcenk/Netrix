@@ -46,7 +46,9 @@
       }
     },
     "text": {
-      "average": "Durchschnitt"
+      "average": "Durchschnitt",
+      "grades": "Noten",
+      "notes": "Notizen"
     }
   },
   "login": {

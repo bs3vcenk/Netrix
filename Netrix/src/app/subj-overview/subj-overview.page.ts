@@ -27,6 +27,8 @@ export class SubjOverviewPage implements OnInit {
   subjAvg = null;
 
   gradeList = null;
+  noteList = null;
+  notesAvailable = null;
 
   titleState = "transparent";
   gradeState = "transparent";
@@ -89,7 +91,7 @@ export class SubjOverviewPage implements OnInit {
       } else if (error.error.error === "E_TOKEN_NONEXISTENT") {
         this.toastError(this.translate.instant("generic.alert.expiry"), null, 2500);
         this.authServ.logout();
-      } else {
+      } else if (!error.error.error) {
         this.toastError(this.translate.instant("generic.alert.network"), [{text: 'Reload', handler: () => {this.getSubjectInfo()}}], null)
         throw new Error('Network error: ' + error);
       }
@@ -100,10 +102,21 @@ export class SubjOverviewPage implements OnInit {
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId + '/grades').pipe(timeout(3000)).subscribe((response) => {
       this.subjAvg = response.average;
       this.gradeList = response.grades;
+      this.getSubjectNotes();
       this.gradeState = "opaque";
     }, (error) => {
       console.log("subjOverview/getSubjectGrades(): Failed to fetch data from server (" + error.error + ")")
       this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"));
+    });
+  }
+
+  async getSubjectNotes() {
+    this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId + '/notes').pipe(timeout(3000)).subscribe((response) => {
+      this.noteList = response.notes;
+      this.notesAvailable = true;
+    }, (error) => {
+      console.log("subjOverview/getSubjectNotes(): Failed to fetch data from server (" + error.error.error + ")")
+      this.notesAvailable = false;
     });
   }
 

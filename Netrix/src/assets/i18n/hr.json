@@ -46,7 +46,9 @@
       }
     },
     "text": {
-      "average": "Prosjek"
+      "average": "Prosjek",
+      "grades": "Ocjene",
+      "notes": "Bilješke"
     }
   },
   "login": {
