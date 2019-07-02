@@ -305,7 +305,6 @@ def login():
 	token = hashString(username + ":" + password)
 	if userInDatabase(token):
 		log.info("FAST => %s" % username)
-		r.set('token:' + token, _jsonConvert(dataObj))
 		logins_fast.value += 1
 		return make_response(jsonify({'token':token}), 200)
 	log.info("SLOW => %s" % username)
