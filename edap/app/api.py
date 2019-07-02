@@ -21,6 +21,7 @@ from sys import getsizeof
 
 ALLOW_DEV_ACCESS = True # Allow access to /dev endpoints
 DATA_FOLDER = "/data" # For logs, etc.
+USE_CLOUDFLARE = True # Add data from Cloudflare to tokendebug
 
 api_version = "1.1-dev"
 
@@ -274,7 +275,11 @@ def tokenDebug(token):
 	data = getData(token)
 	html = "<h2>General</h2>"
 	html += "<p>Username: %s</p>" % data["user"]
-	html += "<p>Last login from: %s</p>"  % data["last_ip"]
+	if USE_CLOUDFLARE:
+		html += "<p>Originating IP: %s</p>" % data["cloudflare"]["last_ip"]
+		html += "<p>Country: %s</p>" % data["cloudflare"]["country"]
+	else:
+		html += "<p>Last login from: %s</p>"  % data["last_ip"]
 	html += "<h2>Device</h2>"
 	html += "<p>OS: %s</p>" % data["device"]["platform"]
 	html += "<p>Device: %s</p>" % data["device"]["model"]
@@ -322,6 +327,10 @@ def login():
 		abort(500)
 	log.info("Success for %s, saving to Redis (%s)" % (username, token))
 	dataObj = {'user':username, 'pasw':password, 'data':populateData(obj), 'periodic_updates':0, 'last_ip':devIP, 'device':{'platform':None, 'model':None}, 'lang':None, 'resolution':None}
+	if USE_CLOUDFLARE:
+		dataObj["cloudflare"] = {}
+		dataObj["cloudflare"]["last_ip"] = None
+		dataObj["cloudflare"]["country"] = None
 	r.set('token:' + token, _jsonConvert(dataObj))
 	logins_full.value += 1
 	return make_response(jsonify({'token':token}), 200)
@@ -448,6 +457,9 @@ def logStats():
 	dataObj['device']['model'] = request.json["device"]
 	dataObj['lang'] = request.json["language"]
 	dataObj['resolution'] = request.json["resolution"]
+	if USE_CLOUDFLARE:
+		dataObj['cloudflare']['country'] = request.headers["CF-IPCountry"]
+		dataObj['cloudflare']['last_ip'] = request.headers["CF-Connecting-IP"]
 	r.set('token:' + token, _jsonConvert(dataObj))
 	return make_response(jsonify({"result":"ok"}), 200)
 
