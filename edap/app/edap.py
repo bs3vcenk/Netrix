@@ -64,7 +64,7 @@ class edap:
 		try:
 			t = self.session.post("%s/pocetna/posalji/" % self.edurl, data={"csrf_token":self.csrf, "user_login":user, "user_password":pasw})
 			t.raise_for_status()
-			if "Krivo korisničko ime i/ili lozinka." in t.text:
+			if "Krivo korisničko ime i/ili lozinka." in t.text or "Potrebno je upisati korisničko ime i lozinku." in t.text:
 				raise WrongCredentials
 		except requests.HTTPError as e:
 			self.__edlog(4, "Failed to connect to eDnevnik (%s)" % e)
