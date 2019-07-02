@@ -206,13 +206,11 @@ class edap:
 		self.__edlog(1, "Completed with %s tests processed" % len(afx))
 		return afx
 
-	def getGradesForSubject(self, class_id, subject_id, sorttype="note"):
+	def getGradesForSubject(self, class_id, subject_id):
 		"""
-			Return grade list for a subject_id
+			Return grade list (dict, values "date", "note" and "grade") for a subject_id
 
-			sorttype can be "gradelist" (list of ints) or "note" (list of dictionaries with date, grade and note)
-
-			ARGS: class_id [int/required], subject_id [int/required], sorttype [str/optional]
+			ARGS: class_id [int/required], subject_id [int/required]
 		"""
 		self.__edlog(0, "Getting grade list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
@@ -223,24 +221,45 @@ class edap:
 			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		if sorttype == "note":
-			xtab = soup.find("div", class_="grades").find_all("table")[1].find_all("td")
-			for x in range(len(xtab)):
-				xtab[x] = xtab[x].getText().strip()
-			af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
-			fg_list = []
-			for y in af:
-				fg_list.append({"date":y[0], "note":y[1], "grade":int(y[2])})
-		else:
-			self.__edlog(3, "Method %s not yet implemented" % sorttype)
-			return []
+		xtab = soup.find("div", class_="grades").find_all("table")[1].find_all("td")
+		for x in range(len(xtab)):
+			xtab[x] = xtab[x].getText().strip()
+		print(xtab)
+		af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
+		fg_list = []
 		if af[0][0] == "Nema ostalih bilježaka":
 			self.__edlog(1, "No grades found for this subject")
 			return []
-		else:
-			return fg_list
-		#avg = float(soup.find("div", class_="average").getText().replace("Prosjek ocjena: ", "").replace(",", "."))
-		#return avg
+		for y in af:
+			fg_list.append({"date":y[0], "note":y[1], "grade":int(y[2])})
+		return fg_list
+
+	def getNotesForSubject(self, class_id, subject_id):
+		"""
+			Return list of notes for subject
+
+			ARGS: class_id [int/required], subject_id [int/required]
+		"""
+		self.__edlog(0, "Getting note list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
+		try:
+			o = self.session.get("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			o.raise_for_status()
+			response = o.text
+		except Exception as e:
+			self.__edlog(4, "Failed getting notes for subject (%s)" % e)
+		self.__edlog(0, "Initializing BeautifulSoup with response")
+		soup = BeautifulSoup(response, self.parser)
+		xtab = soup.find("div", class_="grades").find_all("table")[2].find_all("td")
+		for x in range(len(xtab)):
+			xtab[x] = xtab[x].getText().strip()
+		af = [xtab[x:x+2] for x in range(0, len(xtab), 2)] # Every two items get grouped into a list
+		fn_list = []
+		if af[0][0] == "Nema ostalih bilježaka":
+			self.__edlog(1, "No notes found for this subject")
+			return []
+		for y in af:
+			fn_list.append({"date":y[0], "note":y[1]})
+		return fn_list
 
 	def getConcludedGradeForSubject(self, class_id, subject_id):
 		"""
