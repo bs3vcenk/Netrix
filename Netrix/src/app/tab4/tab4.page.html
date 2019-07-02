@@ -11,7 +11,7 @@
   <ion-text>
     <h2 [@animChange]="titleState">Škola Nekog Netkića, 2.Ž</h2>
   </ion-text>
-  <ion-list lines="full">
+  <ion-list lines="full" [@animChange]="titleState">
     <ion-item>
       <ion-label text-left>{{ 'tab4.text.address' | translate }}</ion-label>
       <ion-label item-right text-right>{{ student.address }}</ion-label>
