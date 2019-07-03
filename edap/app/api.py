@@ -269,7 +269,7 @@ def exh_RedisDatabaseFailure(e):
 def devStartPage():
 	html = '<a href="/dev/info">Generic info + counters page</a><br>'
 	html += '<a href="/dev/threads">Running thread info</a><br>'
-	html += '<a href="/dev/log">View log</a>'
+	html += '<a href="/dev/log">View log</a><br>'
 	html += '<a href="/dev/dbinfo">Database info</a>'
 	return makeHTML(content=html)
 
