@@ -37,7 +37,7 @@ log = logging.getLogger('EDAP-API')
 log.setLevel(logging.DEBUG)
 ch = logging.FileHandler(_joinPath(DATA_FOLDER, "edap_api.log"))
 ch.setLevel(logging.DEBUG)
-ch.setFormatter(logging.Formatter('%(asctime)s || %(funcName)s || %(levelname)-8s => %(message)s'))
+ch.setFormatter(logging.Formatter('%(asctime)s || %(funcName)-14s || %(levelname)-8s => %(message)s'))
 log.addHandler(ch)
 
 app = Flask("EDAP-API")
