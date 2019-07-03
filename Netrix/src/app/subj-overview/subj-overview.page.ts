@@ -29,9 +29,11 @@ export class SubjOverviewPage implements OnInit {
   gradeList = null;
   noteList = null;
   notesAvailable = null;
+  gradesAvailable = null;
 
   titleState = "transparent";
   gradeState = "transparent";
+  noteState = "transparent";
 
   constructor(private toastCtrl: ToastController, private translate: TranslateService, private activatedRoute: ActivatedRoute, private http: HttpClient, private authServ: AuthenticationService, public alertControl: AlertController, public navCtrl: NavController) { }
 
@@ -40,6 +42,7 @@ export class SubjOverviewPage implements OnInit {
   }
 
   ionViewDidEnter() {
+    this.subjId = this.activatedRoute.snapshot.paramMap.get("subjid");
   	this.getSubjectInfo();
   }
 
@@ -77,7 +80,6 @@ export class SubjOverviewPage implements OnInit {
   }
 
   async getSubjectInfo() {
-    this.subjId = this.activatedRoute.snapshot.paramMap.get("subjid");
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId).pipe(timeout(3000)).subscribe((response) => {
     	this.subjName = response.subject;
       console.log("subjOverview/getSubjectInfo(): Subject name: " + this.subjName)
@@ -102,11 +104,13 @@ export class SubjOverviewPage implements OnInit {
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId + '/grades').pipe(timeout(3000)).subscribe((response) => {
       this.subjAvg = response.average;
       this.gradeList = response.grades;
+      this.gradesAvailable = true;
       this.getSubjectNotes();
       this.gradeState = "opaque";
     }, (error) => {
-      console.log("subjOverview/getSubjectGrades(): Failed to fetch data from server (" + error.error + ")")
-      this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"));
+      console.log("subjOverview/getSubjectGrades(): Failed to fetch data from server (" + error.error + ")");
+      this.gradesAvailable = false;
+      this.getSubjectNotes();
     });
   }
 
@@ -114,9 +118,13 @@ export class SubjOverviewPage implements OnInit {
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId + '/notes').pipe(timeout(3000)).subscribe((response) => {
       this.noteList = response.notes;
       this.notesAvailable = true;
+      this.noteState = "opaque";
     }, (error) => {
       console.log("subjOverview/getSubjectNotes(): Failed to fetch data from server (" + error.error.error + ")")
       this.notesAvailable = false;
+      if (this.gradesAvailable != true) {
+        this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"));
+      }
     });
   }
 
