@@ -9,14 +9,13 @@ ion-card {
   margin: 0 !important;
 }
 
-.warning {
-  text-align: center;
-}
-
-#title {
-  float: left;
+#title h3 {
   font-weight: 600;
   font-size: 20px;
+}
+
+#avgLabel {
+  max-width: 20px !important;
 }
 
 #average {
