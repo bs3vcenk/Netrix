@@ -12,12 +12,12 @@ from json import dumps as _jsonConvert
 from functools import wraps
 from os import environ
 from os.path import join as _joinPath
+from os.path import getsize as _getFileSize
+from math import floor as _mFloor
+from math import log as _mLog
+from math import pow as _mPow
 from multiprocessing import Value
 from sys import exit as _exit
-
-from types import ModuleType, FunctionType
-from gc import get_referents
-from sys import getsizeof
 
 ALLOW_DEV_ACCESS = True # Allow access to /dev endpoints
 DATA_FOLDER = "/data" # For logs, etc.
@@ -225,6 +225,16 @@ def verifyRequest(token, class_id=None, subject_id=None):
 			return False
 	return True
 
+# https://stackoverflow.com/a/14822210
+def convertSize(size_bytes):
+	if size_bytes == 0:
+		return "0B"
+	size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+	i = int(_mFloor(_mLog(size_bytes, 1024)))
+	p = _mPow(1024, i)
+	s = round(size_bytes / p, 2)
+	return "%s %s" % (s, size_name[i])
+
 @app.errorhandler(404)
 def e404(err):
 	return make_response(jsonify({'error':'E_UNKNOWN_ENDPOINT'}), 404)
@@ -257,7 +267,17 @@ def exh_RedisDatabaseFailure(e):
 @app.route('/dev', methods=["GET"])
 @dev_area
 def devStartPage():
-	return makeHTML(content='<a href="/dev/info">Generic info + counters page</a><br><a href="/dev/threads">Running thread info</a><br><a href="/dev/log">View log</a>')
+	html = '<a href="/dev/info">Generic info + counters page</a><br>'
+	html += '<a href="/dev/threads">Running thread info</a><br>'
+	html += '<a href="/dev/log">View log</a>'
+	html += '<a href="/dev/dbinfo">Database info</a>'
+	return makeHTML(content=html)
+
+@app.route('/dev/dbinfo', methods=["GET"])
+@dev_area
+def devDBInfo():
+	html = '<p>DB Size: %s</p>' % convertSize(_getFileSize(_joinPath(DATA_FOLDER, "appendonly.aof")))
+	return makeHTML(title="eDAP dev DB info", content=html)
 
 @app.route('/dev/log', methods=["GET"])
 @dev_area
@@ -267,24 +287,33 @@ def devGetLog():
 
 @app.route('/dev/info', methods=["GET"])
 @dev_area
-def info():
-	return makeHTML(title="eDAP dev info", content="<h2>Tokens</h2>%s<h2>Logins</h2><h3>Successful</h3><p>Full (with data fetch): %i</p><p>Fast (data cached): %i</p><h3>Failed</h3><p>Wrong password: %i</p><p>Generic (bad JSON, library exception etc.): %i</p>" % ('<br>'.join(['%s || <a href="/dev/info/tokendebug/%s">Manage</a>' % (getData(i)["user"], i) for i in getTokens()]), logins_full.value, logins_fast.value, logins_fail_wp.value, logins_fail_ge.value))
+def devInfo():
+	html = "<h2>Tokens</h2>"
+	html += '<br>'.join(['%s || <a href="/dev/info/tokendebug/%s">Manage</a>' % (getData(i)["user"], i) for i in getTokens()])
+	html += "<h2>Logins</h2>"
+	html += "<h3>Successful</h3>"
+	html += "<p>Full (with data fetch): %i</p>" % logins_full.value
+	html += "<p>Fast (data cached): %i</p>" % logins_fast.value
+	html += "<h3>Failed</h3>"
+	html += "<p>Wrong password: %i</p>" % logins_fail_wp.value
+	html += "<p>Generic (bad JSON, library exception etc.): %i</p>" % logins_fail_ge.value
+	return makeHTML(title="eDAP dev info", content=html)
 
 @app.route('/dev/threads', methods=["GET"])
 @dev_area
-def threadList():
+def devThreadList():
 	return makeHTML(title="eDAP dev thread info", content='<h2>List</h2><pre>%s</pre>' % '\n'.join(threads.keys()))
 
 @app.route('/dev/threads/<string:threadname>', methods=["GET"])
 @dev_area
-def threadInfo(threadname):
+def devThreadInfo(threadname):
 	if threadname not in threads:
 		return make_response('Thread does not exist', 404)
 	return makeHTML(title="eDAP dev thread info", content='<pre>isAlive: %s</pre>' % threads[threadname].isAlive())
 
 @app.route('/dev/info/tokendebug/<string:token>', methods=["GET"])
 @dev_area
-def tokenDebug(token):
+def devTokenDebug(token):
 	data = getData(token)
 	html = "<h2>General</h2>"
 	html += "<p>Username: %s</p>" % data["user"]
@@ -304,7 +333,7 @@ def tokenDebug(token):
 
 @app.route('/dev/info/tokendebug/<string:token>/revoke', methods=["GET"])
 @dev_area
-def removeToken(token):
+def devRemoveToken(token):
 	try:
 		r.delete('token:' + token)
 		return 'Success!'
