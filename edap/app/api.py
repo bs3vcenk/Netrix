@@ -354,7 +354,7 @@ def getInfoUser(token):
 		log.warning("Token %s failed verification" % token)
 		abort(401)
 	username = getData(token)["user"]
-	log.info("INFO => %s" % username)
+	log.info(username)
 	return make_response(jsonify(getData(token)['data']['info']), 200)
 
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
@@ -363,7 +363,7 @@ def getClasses(token):
 		log.warning("Token %s failed verification" % token)
 		abort(401)
 	username = getData(token)["user"]
-	log.info("CLASS LIST => %s" % username)
+	log.info(username)
 	o = getData(token)['data']
 	for i in o['classes']:
 		try:
@@ -378,7 +378,7 @@ def getSubjects(token, class_id):
 		log.warning("Token %s failed verification" % token)
 		abort(401)
 	username = getData(token)["user"]
-	log.info("SUBJECT LIST => %s => %s" % (username, class_id))
+	log.info("%s => Class %s" % (username, class_id))
 	o = getData(token)['data']['classes'][class_id]['subjects']
 	return make_response(jsonify({'subjects': o}), 200)
 
@@ -388,17 +388,17 @@ def getTests(token, class_id):
 		log.warning("Token %s failed verification" % token)
 		abort(401)
 	username = getData(token)["user"]
-	log.info("TESTS => %s => %s" % (username, class_id))
+	log.info("%s => Class %s" % (username, class_id))
 	o = getData(token)['data']['classes'][class_id]['tests']
 	return make_response(jsonify({'tests': o}), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>', methods=["GET"])
-def getSpecSubject(token, class_id, subject_id):
+def getSubject(token, class_id, subject_id):
 	if not verifyRequest(token, class_id, subject_id):
 		log.warning("Token %s failed verification" % token)
 		abort(401)
 	username = getData(token)["user"]
-	log.info("SUBJECT INFO => %s => %s => %s" % (username, class_id, subject_id))
+	log.info("%s => Class %s => Subject %s" % (username, class_id, subject_id))
 	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]
 	del o['grades']
 	return make_response(jsonify(o), 200)
