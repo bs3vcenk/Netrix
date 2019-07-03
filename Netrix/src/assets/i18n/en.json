@@ -18,7 +18,8 @@
     "title": "Subjects"
   },
   "tab2": {
-    "title": "Tests"
+    "title": "Tests",
+    "showall": "Show all tests"
   },
   "tab3": {
     "title": "Settings",

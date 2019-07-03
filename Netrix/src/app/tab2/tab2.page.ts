@@ -11,10 +11,12 @@ import { timeout } from 'rxjs/operators';
 export class Tab2Page {
 
   tests = null;
+  showAllPreference = false;
 
   constructor(private authServ: AuthenticationService, private http: HttpClient) {
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/tests').pipe(timeout(3000)).subscribe((response) => {
       this.tests = response.tests;
+      console.log(this.tests);
     }, (error) => {
       console.log(error);
     })

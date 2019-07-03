@@ -1,15 +1,27 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      Tests
+      {{ 'tab2.title' | translate }}
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-list lines="full">
-    <ion-item *ngFor="let testObj of tests">
-      <ion-label>{{ testObj.test }}</ion-label>
+    <ion-item>
+      <ion-label>{{ 'tab2.showall' | translate }}</ion-label>
+      <ion-toggle slot="end" [(ngModel)]="showAllPreference"></ion-toggle>
     </ion-item>
+  </ion-list>
+  <ion-list lines="full">
+    <ng-container *ngFor="let testObj of tests">
+      <ion-item *ngIf="testObj.current || showAllPreference">
+        <ion-label>
+          <h2 text-wrap>{{ testObj.test }}</h2>
+          <h3>{{ testObj.date }}</h3>
+          <ion-note>{{ testObj.subject }}</ion-note>
+        </ion-label>
+      </ion-item>
+    </ng-container>
   </ion-list>
 </ion-content>

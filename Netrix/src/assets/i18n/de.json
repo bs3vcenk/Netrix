@@ -18,7 +18,8 @@
     "title": "Schulfächer"
   },
   "tab2": {
-    "title": "Prüfungen"
+    "title": "Prüfungen",
+    "showall": "Zeige alle Prüfungen"
   },
   "tab3": {
     "title": "Einstellungen",

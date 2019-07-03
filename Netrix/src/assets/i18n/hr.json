@@ -18,7 +18,8 @@
     "title": "Predmeti"
   },
   "tab2": {
-    "title": "Ispiti"
+    "title": "Ispiti",
+    "showall": "Prikaži sve ispite"
   },
   "tab3": {
     "title": "Postavke",
