@@ -37,7 +37,7 @@ log = logging.getLogger('EDAP-API')
 log.setLevel(logging.DEBUG)
 ch = logging.FileHandler(_joinPath(DATA_FOLDER, "edap_api.log"))
 ch.setLevel(logging.DEBUG)
-ch.setFormatter(logging.Formatter('%(asctime)s || %(funcName)s || %(levelname)s => %(message)s'))
+ch.setFormatter(logging.Formatter('%(asctime)s || %(funcName)s || %(levelname)-8s => %(message)s'))
 log.addHandler(ch)
 
 app = Flask("EDAP-API")
@@ -211,6 +211,19 @@ def makeHTML(title="eDAP dev", content="None", bare=False):
 	elif bare == True:
 		return '<!DOCTYPE html><html><head><title>%s</title></head><body>%s</body></html>' % (title, content)
 
+def verifyRequest(token, class_id=None, subject_id=None):
+	if not userInDatabase(token):
+		log.warning("Token %s not in DB" % token)
+		return False
+	if class_id:
+		if not classIDExists(token, class_id):
+			log.warning("Class ID %s does not exist for token %s" % (class_id, token))
+			return False
+	if subject_id:
+		if not subjectIDExists(token, class_id, subject_id):
+			log.warning("Subject ID %s does not exist for class ID %s for token %s" % (subject_id, class_id, token))
+			return False
+	return True
 
 @app.errorhandler(404)
 def e404(err):
@@ -337,8 +350,8 @@ def login():
 
 @app.route('/api/user/<string:token>/info', methods=["GET"])
 def getInfoUser(token):
-	if not userInDatabase(token):
-		log.warning("Token %s not in DB" % token)
+	if not verifyRequest(token):
+		log.warning("Token %s failed verification" % token)
 		abort(401)
 	username = getData(token)["user"]
 	log.info("INFO => %s" % username)
@@ -346,8 +359,8 @@ def getInfoUser(token):
 
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
 def getClasses(token):
-	if not userInDatabase(token):
-		log.warning("Token %s not in DB" % token)
+	if not verifyRequest(token):
+		log.warning("Token %s failed verification" % token)
 		abort(401)
 	username = getData(token)["user"]
 	log.info("CLASS LIST => %s" % username)
@@ -361,11 +374,8 @@ def getClasses(token):
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects', methods=["GET"])
 def getSubjects(token, class_id):
-	if not userInDatabase(token):
-		log.warning("Token %s not in DB" % token)
-		abort(401)
-	elif not classIDExists(token, class_id):
-		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
+	if not verifyRequest(token, class_id):
+		log.warning("Token %s failed verification" % token)
 		abort(401)
 	username = getData(token)["user"]
 	log.info("SUBJECT LIST => %s => %s" % (username, class_id))
@@ -374,11 +384,8 @@ def getSubjects(token, class_id):
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/tests', methods=["GET"])
 def getTests(token, class_id):
-	if not userInDatabase(token):
-		log.warning("Token %s not in DB" % token)
-		abort(401)
-	elif not classIDExists(token, class_id):
-		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
+	if not verifyRequest(token, class_id):
+		log.warning("Token %s failed verification" % token)
 		abort(401)
 	username = getData(token)["user"]
 	log.info("TESTS => %s => %s" % (username, class_id))
@@ -387,14 +394,8 @@ def getTests(token, class_id):
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>', methods=["GET"])
 def getSpecSubject(token, class_id, subject_id):
-	if not userInDatabase(token):
-		log.warning("Token %s not in DB" % token)
-		abort(401)
-	elif not classIDExists(token, class_id):
-		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
-		abort(401)
-	elif not subjectIDExists(token, class_id, subject_id):
-		log.warning("Subject ID %s does not exist for class ID %s for token %s" % (subject_id, class_id, token))
+	if not verifyRequest(token, class_id, subject_id):
+		log.warning("Token %s failed verification" % token)
 		abort(401)
 	username = getData(token)["user"]
 	log.info("SUBJECT INFO => %s => %s => %s" % (username, class_id, subject_id))
@@ -404,14 +405,8 @@ def getSpecSubject(token, class_id, subject_id):
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>/grades', methods=["GET"])
 def getGrades(token, class_id, subject_id):
-	if not userInDatabase(token):
-		log.warning("Token %s not in DB" % token)
-		abort(401)
-	elif not classIDExists(token, class_id):
-		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
-		abort(401)
-	elif not subjectIDExists(token, class_id, subject_id):
-		log.warning("Subject ID %s does not exist for class ID %s for token %s" % (subject_id, class_id, token))
+	if not verifyRequest(token, class_id, subject_id):
+		log.warning("Token %s failed verification" % token)
 		abort(401)
 	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]['grades']
 	if o == None:
@@ -425,14 +420,8 @@ def getGrades(token, class_id, subject_id):
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>/notes', methods=["GET"])
 def getNotes(token, class_id, subject_id):
-	if not userInDatabase(token):
-		log.warning("Token %s not in DB" % token)
-		abort(401)
-	elif not classIDExists(token, class_id):
-		log.warning("Class ID %s does not exist for token %s" % (class_id, token))
-		abort(401)
-	elif not subjectIDExists(token, class_id, subject_id):
-		log.warning("Subject ID %s does not exist for class ID %s for token %s" % (subject_id, class_id, token))
+	if not verifyRequest(token, class_id, subject_id):
+		log.warning("Token %s failed verification" % token)
 		abort(401)
 	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]['notes']
 	if o == None:
@@ -446,8 +435,8 @@ def logStats():
 		log.warning("Invalid JSON from %s" % request.remote_addr)
 		abort(400)
 	token = request.json["token"]
-	if not userInDatabase(token):
-		log.warning("Token %s not in DB" % token)
+	if not verifyRequest(token):
+		log.warning("Token %s failed verification" % token)
 		abort(401)
 	username = getData(token)["user"]
 	log.info("STATS => %s => %s, %s, %s, %s" % (username, request.json["platform"], request.json["device"], request.json["language"], request.json["resolution"]))
