@@ -24,4 +24,9 @@
       </ion-item>
     </ng-container>
   </ion-list>
+  <ion-item text-center *ngIf="currentTests == 0 && showAllPreference == false" lines="none">
+    <ion-label>
+      <h1>Nema testova :)</h1>
+    </ion-label>
+  </ion-item>
 </ion-content>

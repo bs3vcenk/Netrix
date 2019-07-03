@@ -12,11 +12,20 @@ export class Tab2Page {
 
   tests = null;
   showAllPreference = false;
+  currentTests = 0;
+
+  async countTests() {
+    this.tests.forEach((test) => {
+      if (test.current === true) {
+        this.currentTests += 1;
+      }
+    });
+  }
 
   constructor(private authServ: AuthenticationService, private http: HttpClient) {
     this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/tests').pipe(timeout(3000)).subscribe((response) => {
       this.tests = response.tests;
-      console.log(this.tests);
+      this.countTests();
     }, (error) => {
       console.log(error);
     })
