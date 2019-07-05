@@ -409,8 +409,17 @@ def devStartPage():
 	html = '<a href="/dev/info">Generic info + counters page</a><br>'
 	html += '<a href="/dev/threads">Running thread info</a><br>'
 	html += '<a href="/dev/log">View log</a><br>'
-	html += '<a href="/dev/dbinfo">Database info</a>'
+	html += '<a href="/dev/dbinfo">Database info</a><br>'
+	html += '<a href="/dev/vars">Config/env variables</a>'
 	return makeHTML(content=html)
+
+@app.route('/dev/vars', methods=["GET"])
+@dev_area
+def devShowVars():
+	html = '<pre>'
+	html += '\n'.join(["%s=%s" % (x, environ[x]) for x in environ])
+	html += '</pre>'
+	return makeHTML(bare=True, title="eDAP dev variables", content=html)
 
 @app.route('/dev/dbinfo', methods=["GET"])
 @dev_area
