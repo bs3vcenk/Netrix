@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Platform } from '@ionic/angular';
+import { Platform, ToastController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './authentication.service'
 import { LanguageService } from './language.service';
+
+import { FirebaseService } from './firebase.service';
 
 @Component({
   selector: 'app-root',
@@ -18,9 +20,28 @@ export class AppComponent {
     private statusBar: StatusBar,
     private authenticationService: AuthenticationService,
     private router: Router,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private toastController: ToastController,
+    private fcm: FirebaseService
   ) {
     this.initializeApp();
+  }
+
+  private async presentToast(message) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color: 'dark'
+    });
+    toast.present();
+  }
+
+  private notificationSetup(token) {
+    this.fcm.getToken(token);
+    this.fcm.onNotifications().subscribe(
+      (msg) => {
+        this.presentToast(msg.body);
+      });
   }
 
   initializeApp() {
@@ -33,6 +54,8 @@ export class AppComponent {
 
       this.authenticationService.authenticationState.subscribe(state => {
         if (state) {
+          let token = this.authenticationService.token;
+          this.notificationSetup(token);
           this.router.navigate(["tabs", "tabs", "tab1"])
         } else {
           this.router.navigate(["login"])

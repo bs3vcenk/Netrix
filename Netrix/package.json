@@ -94,6 +94,6 @@
     ]
   },
   "config": {
-    "ionic_generate_source_map": "true"
+    "ionic_generate_source_map": "false"
   }
 }
