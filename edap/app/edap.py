@@ -224,7 +224,6 @@ class edap:
 		xtab = soup.find("div", class_="grades").find_all("table")[1].find_all("td")
 		for x in range(len(xtab)):
 			xtab[x] = xtab[x].getText().strip()
-		print(xtab)
 		af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
 		fg_list = []
 		if af[0][0] == "Nema ostalih bilježaka":

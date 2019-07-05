@@ -1,6 +1,7 @@
 requests
 BeautifulSoup4
-tabulate
 flask
 flask-cors
 redis
+pyfcm
+google-cloud-firestore
