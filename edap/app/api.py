@@ -564,7 +564,7 @@ def login():
 		logins_fail_ge.value += 1
 		abort(500)
 	log.info("Success for %s, saving to Redis (%s)" % (username, token))
-	dataObj = {'user':username, 'pasw':password, 'data':populateData(obj), 'last_ip':devIP, 'device':{'platform':None, 'model':None}, 'lang':None, 'resolution':None}
+	dataObj = {'user':username, 'pasw':password, 'data':populateData(obj), 'last_ip':devIP, 'device':{'platform':None, 'model':None}, 'lang':None, 'resolution':None, 'generated_with':api_version}
 	if USE_CLOUDFLARE:
 		dataObj["cloudflare"] = {}
 		dataObj["cloudflare"]["last_ip"] = None
