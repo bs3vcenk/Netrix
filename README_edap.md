@@ -2,6 +2,8 @@
 
 eDAP je library za interfacing sa CARNetovim servisom [eDnevnik](https://ocjene.skole.hr), u Pythonu 3. Uključuje i [ReST](https://en.wikipedia.org/wiki/Representational_State_Transfer) API pisan pomoću Flask frameworka, default na portu 5000. Za bazu podataka koristi [Redis](https://redis.io/).
 
+**UPOZORENJE**: Trenutno nedostaje dosta toga iz instalacije. Potrebno je ispočetka napisati upute pošto je mnogo toga promijenjeno od zadnje izmjene. Zadnji *provjeren* commit gdje eDAP-API funkcionira s ovim uputama je [ovdje](https://github.com/btx3/Netrix/tree/c21213c8a7f977e6bc392d5062f913f99fa5bdc7).
+
 ## Upotreba
 
 Osim ako želite hostati server za testing novih funkcija, dostupan je već konfigurirani i službeni server na https://api.netrix.io - ne trebate ništa mijenjati, već je upisan po defaultu u Netrix.
