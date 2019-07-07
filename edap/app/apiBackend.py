@@ -1,8 +1,10 @@
-import logging, redis
+import logging, redis, edap
 from hashlib import md5 as _MD5HASH
 from hashlib import sha256 as _SHA256HASH
 from json import loads as _jsonLoad
 from json import dumps as _jsonConvert
+from copy import deepcopy
+from random import randint
 from sys import exit as _exit
 from math import floor as _mFloor
 from math import log as _mLog
@@ -13,7 +15,7 @@ from os.path import join as _joinPath
 from os.path import getsize as _getFileSize
 from google.cloud import firestore
 from pyfcm import FCMNotification
-from threading import Timer
+from threading import Thread
 from time import time as _time
 
 log = logging.getLogger(__name__)
@@ -21,13 +23,106 @@ fbPushService = None
 fbFirestoreDB = None
 r = None
 
+threads = {}
+
+def stopSync(token):
+	if "sync:" + token in threads.keys():
+		threads["sync:" + token].stop()
+
+def getSyncThreads():
+	return [i.replace("sync:", "") for i in threads.keys()]
+
+def startSync(token):
+	"""
+		Start a sync thread for a given token.
+	"""
+	global threads
+	if "sync:" + token not in threads:
+		to = Thread(target=_sync, args=(token,))
+		to.start()
+		threads["sync:" + token] = to
+
+def restoreSyncs():
+	"""
+		Restore all sync threads (on startup).
+	"""
+	global threads
+	for token in getTokens():
+		startSync(token)
+
+def sync(token):
+	"""
+		Pull remote data, compare with current and replace if needed.
+	"""
+	fData = getData(token)
+	data = fData["data"] # Old data
+	nData = populateData(edap.edap(fData["user"], fData["pasw"])) # New data
+	diff = profileDifference(data, nData)
+	if len(diff) > 0:
+		fData["data"] = nData
+		fData["new"] = diff
+		saveData(token, fData)
+
+def profileDifference(dObj1, dObj2):
+	"""
+		Return the difference between two student data dicts.
+	"""
+	_finalReturn = []
+	## CLASS DIFFERENCE ##
+	t1 = deepcopy(dObj1['classes'])
+	t2 = deepcopy(dObj2['classes'])
+	for y in [t1,t2]:
+		del y[0]['tests']
+		del y[0]['subjects']
+	difflist = [x for x in t2 if x not in t1]
+	if len(difflist) > 0:
+		log.info("Found difference in classes")
+		for i in difflist:
+			_finalReturn.append({'type':'class', 'data':{'year':i["year"], 'class':i["class"]}})
+		# At this point, we can't compare anything else, as only the
+		# first class' information is pulled by populateData(), so
+		# we'll just return.
+		return _finalReturn
+	## TEST DIFFERENCE (FIRST CLASS ONLY) ##
+	t1 = deepcopy(dObj1['classes'][0]['tests'])
+	t2 = deepcopy(dObj2['classes'][0]['tests'])
+	difflist = [x for x in t2 if x not in t1]
+	if len(difflist) > 0:
+		log.info("Found difference in tests")
+		for i in difflist:
+			_finalReturn.append({'type':'test', 'classId':0, 'data':i})
+	## PER-SUBJECT GRADE DIFFERENCE (FIRST CLASS ONLY) ##
+	# https://stackoverflow.com/a/1663826
+	for i, j in zip(dObj1['classes'][0]['subjects'], dObj2['classes'][0]['subjects']):
+		if j['grades']:
+			t1 = deepcopy(i['grades'])
+			t2 = deepcopy(j['grades'])
+			difflist = [x for x in t2 if x not in t1]
+			if len(difflist) > 0:
+				log.info("Found difference in grades")
+				for x in difflist:
+					_finalReturn.append({'type':'grade', 'classId':0, 'data':x})
+		else:
+			continue
+	return _finalReturn
+
 def saveData(token, dataObj):
+	"""
+		Save data for a token.
+	"""
 	r.set('token:' + token, _jsonConvert(dataObj))
 
 def getDBSize():
+	"""
+		Get the size of Redis' appendonly.aof database in bytes.
+	"""
 	return _getFileSize(_joinPath(config["DATA_FOLDER"], "appendonly.aof"))
 
 def timeGenerated(startTime):
+	"""
+		Return a templated "Page generated in <time>" footer for dynamic
+		/dev/ pages.
+	"""
 	return "<small>Page generated in %0.3f ms</small>" % ((_time() - startTime)*1000.0)
 
 def sendNotification(token, title, content):
@@ -55,37 +150,15 @@ def sendNotification(token, title, content):
 		log.error('Unknown error (Firebase Cloud Messaging) => %s' % str(e))
 		raise e
 
-class RepeatedTimer(object):
+def _sync(token):
 	"""
-		Taken from https://stackoverflow.com/a/13151299
-
-		Runs a given function x every y seconds, with x being defined
-		in self.function (2nd argument) and y being defined in
-		in self.interval (1st argument).
+		Wrapper around sync, for bg execution (random timeout).
 	"""
-	def __init__(self, interval, function, *args, **kwargs):
-		self._timer     = None
-		self.interval   = interval
-		self.function   = function
-		self.args       = args
-		self.kwargs     = kwargs
-		self.is_running = False
-		self.start()
-
-	def _run(self):
-		self.is_running = False
-		self.start()
-		self.function(*self.args, **self.kwargs)
-
-	def start(self):
-		if not self.is_running:
-			self._timer = Timer(self.interval, self._run)
-			self._timer.start()
-			self.is_running = True
-
-	def stop(self):
-		self._timer.cancel()
-		self.is_running = False
+	while True:
+		val = randint(500,5000)
+		log.info("Sleeping for %i s" % val)
+		sleep(val)
+		sync(token)
 
 def getVar(varname, _bool=False, default=None):
 	"""

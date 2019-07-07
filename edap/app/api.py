@@ -7,7 +7,7 @@ from random import randint
 from functools import wraps
 from time import time as _time
 
-api_version = "2.0-dev"
+api_version = "2.1-dev"
 
 log = logging.getLogger('EDAP-API')
 
@@ -21,8 +21,7 @@ logins_fast = 0
 logins_fail_ge = 0
 logins_fail_wp = 0
 
-threads = {}
-
+restoreSyncs()
 
 def check_auth(username, password):
 	"""
@@ -47,14 +46,20 @@ def dev_area(f):
 	"""
 	@wraps(f)
 	def decorated(*args, **kwargs):
+		if config["USE_CLOUDFLARE"]:
+			ip = request.headers["CF-Connecting-IP"]
+			country = request.headers["CF-IPCountry"]
+		else:
+			ip = request.remote_addr
+			country = "Unknown"
 		if config["ALLOW_DEV_ACCESS"]:
 			auth = request.authorization
 			if not auth or not check_auth(auth.username, auth.password):
 				if auth:
-					log.warning("Dev access attempt by %s, but wrong auth data" % request.remote_addr)
+					log.warning("Dev access attempt by %s from %s, but wrong auth data" % (ip, country))
 				return authenticate()
 		else:
-			log.warning("Dev access attempt by %s, but it is disabled" % request.remote_addr)
+			log.warning("Dev access attempt by %s from %s, but it is disabled" % (ip, country))
 			abort(404)
 		return f(*args, **kwargs)
 	return decorated
@@ -121,7 +126,7 @@ def devStartPage():
 		DEV: Main dev page listing all available functions
 	"""
 	html = '<a href="/dev/info">Generic info + counters page</a><br>'
-	html += '<a href="/dev/threads">Running thread info</a><br>'
+	html += '<a href="/dev/threads">Sync thread info</a><br>'
 	html += '<a href="/dev/log">View log</a><br>'
 	html += '<a href="/dev/dbinfo">Database info</a><br>'
 	html += '<a href="/dev/vars">Config/env variables</a>'
@@ -182,7 +187,7 @@ def devThreadList():
 	"""
 		DEV: List running background threads.
 	"""
-	return makeHTML(title="eDAP dev thread info", content='<h2>List</h2><pre>%s</pre>' % '\n'.join(threads.keys()))
+	return makeHTML(title="eDAP dev thread info", content='<h2>List</h2><pre>%s</pre>' % '\n'.join(getSyncThreads()))
 
 @app.route('/dev/threads/<string:threadname>', methods=["GET"])
 @dev_area
@@ -209,10 +214,10 @@ def devTokenDebug(token):
 	html = "<h2>General</h2>"
 	html += "<p>Username: %s</p>" % data["user"]
 	if config["USE_CLOUDFLARE"]:
-		html += "<p>Originating IP: %s</p>" % data["cloudflare"]["last_ip"]
-		html += "<p>Country: %s</p>" % data["cloudflare"]["country"]
+		html += "<p>Last originating IP: %s</p>" % data["cloudflare"]["last_ip"]
+		html += "<p>Last country: %s</p>" % data["cloudflare"]["country"]
 	else:
-		html += "<p>Last login from: %s</p>"  % data["last_ip"]
+		html += "<p>Last originating IP: %s</p>"  % data["last_ip"]
 	html += "<h2>Device</h2>"
 	html += "<p>OS: %s</p>" % data["device"]["platform"]
 	html += "<p>Device: %s</p>" % data["device"]["model"]
@@ -220,8 +225,17 @@ def devTokenDebug(token):
 	html += "<p>Resolution: %s</p>" % data["resolution"]
 	html += "<h2>Management</h2>"
 	html += "<p><a href=\"/dev/info/tokendebug/%s/revoke\">Remove from DB</a></p>" % token
+	html += "<p><a href=\"/dev/info/tokendebug/%s/diff\">Update local data</a></p>" % token
 	html += timeGenerated(start)
 	return makeHTML(title="eDAP dev token manage", content=html)
+
+@app.route('/dev/info/tokendebug/<string:token>/diff', methods=["GET"])
+@dev_area
+def devDiffToken(token):
+	"""
+		DEV: Use profileDifference() to show upstream profile changes.
+	"""
+	return make_response(jsonify(sync(token)), 200)
 
 @app.route('/dev/info/tokendebug/<string:token>/revoke', methods=["GET"])
 @dev_area
@@ -309,12 +323,14 @@ def login():
 		},
 		'lang': None,
 		'resolution': None,
+		'new': None,
 		'generated_with': api_version
 	}
 	if config["USE_CLOUDFLARE"]:
 		dataObj["cloudflare"] = {}
 		dataObj["cloudflare"]["last_ip"] = None
 		dataObj["cloudflare"]["country"] = None
+	startSync(token)
 	saveData(token, dataObj)
 	logins_full += 1
 	return make_response(jsonify({'token':token}), 200)
@@ -443,4 +459,4 @@ def logStats():
 	return make_response(jsonify({"result":"ok"}), 200)
 
 if __name__ == '__main__':
-	app.run()
+	app.run(debug=True)
