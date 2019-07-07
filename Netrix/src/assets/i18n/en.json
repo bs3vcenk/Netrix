@@ -19,7 +19,8 @@
   },
   "tab2": {
     "title": "Tests",
-    "showall": "Show all tests"
+    "showall": "Show all tests",
+    "notests": "No tests"
   },
   "tab3": {
     "title": "Settings",

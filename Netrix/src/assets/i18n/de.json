@@ -19,7 +19,8 @@
   },
   "tab2": {
     "title": "Prüfungen",
-    "showall": "Zeige alle Prüfungen"
+    "showall": "Zeige alle Prüfungen",
+    "notests": "Keine Prüfungen"
   },
   "tab3": {
     "title": "Einstellungen",
@@ -60,7 +61,7 @@
         "content": "Überprüfen Sie Ihren Benutzernamen und Ihr Passwort, und versuchen Sie es erneut."
       },
       "data": {
-        "header": "Datenerhebung",
+        "header": "Datenerfassung",
         "content": "Dein Handy-Modell und Betriebssystem wird beim Anmelden und bei jedem Öffnen der App an den Server gesendet. Du kannst dies unter Einstellungen > API-Einstellungen ändern."
       },
       "loggingin": "Anmelden..."

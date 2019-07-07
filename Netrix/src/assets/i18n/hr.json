@@ -19,7 +19,8 @@
   },
   "tab2": {
     "title": "Ispiti",
-    "showall": "Prikaži sve ispite"
+    "showall": "Prikaži sve ispite",
+    "notests": "Nema testova"
   },
   "tab3": {
     "title": "Postavke",
