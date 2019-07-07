@@ -384,7 +384,6 @@ def getSubject(token, class_id, subject_id):
 	username = getData(token)["user"]
 	log.info("%s => Class %s => Subject %s" % (username, class_id, subject_id))
 	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]
-	del o['grades']
 	return make_response(jsonify(o), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>/grades', methods=["GET"])
@@ -393,6 +392,7 @@ def getGrades(token, class_id, subject_id):
 		Get the grades for a given subject ID (TODO: Unify into getSubject(),
 		calculate grade in populateData()).
 	"""
+	log.warning("DEPRECATION :: Deprecated endpoint getGrades() used")
 	if not verifyRequest(token, class_id, subject_id):
 		abort(401)
 	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]['grades']
@@ -410,6 +410,7 @@ def getNotes(token, class_id, subject_id):
 	"""
 		Get only the "additional notes" for a given subject ID.
 	"""
+	log.warning("DEPRECATION :: Deprecated endpoint getNotes() used")
 	if not verifyRequest(token, class_id, subject_id):
 		abort(401)
 	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]['notes']
