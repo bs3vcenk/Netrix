@@ -311,7 +311,7 @@ def login():
 		dataObj["cloudflare"] = {}
 		dataObj["cloudflare"]["last_ip"] = None
 		dataObj["cloudflare"]["country"] = None
-	r.set('token:' + token, _jsonConvert(dataObj))
+	saveData(token, dataObj)
 	logins_full += 1
 	return make_response(jsonify({'token':token}), 200)
 
@@ -322,8 +322,7 @@ def getInfoUser(token):
 	"""
 	if not verifyRequest(token):
 		abort(401)
-	username = getData(token)["user"]
-	log.info(username)
+	log.info(token)
 	return make_response(jsonify(getData(token)['data']['info']), 200)
 
 @app.route('/api/user/<string:token>/new', methods=["GET"])
@@ -340,8 +339,7 @@ def getClasses(token):
 	"""
 	if not verifyRequest(token):
 		abort(401)
-	username = getData(token)["user"]
-	log.info(username)
+	log.info(token)
 	o = getData(token)['data']
 	for i in o['classes']:
 		try:
@@ -357,8 +355,7 @@ def getSubjects(token, class_id):
 	"""
 	if not verifyRequest(token, class_id):
 		abort(401)
-	username = getData(token)["user"]
-	log.info("%s => Class %s" % (username, class_id))
+	log.info("%s => Class %s" % (token, class_id))
 	o = getData(token)['data']['classes'][class_id]['subjects']
 	return make_response(jsonify({'subjects': o}), 200)
 
@@ -369,8 +366,7 @@ def getTests(token, class_id):
 	"""
 	if not verifyRequest(token, class_id):
 		abort(401)
-	username = getData(token)["user"]
-	log.info("%s => Class %s" % (username, class_id))
+	log.info("%s => Class %s" % (token, class_id))
 	o = getData(token)['data']['classes'][class_id]['tests']
 	return make_response(jsonify({'tests': o}), 200)
 
@@ -381,8 +377,7 @@ def getSubject(token, class_id, subject_id):
 	"""
 	if not verifyRequest(token, class_id, subject_id):
 		abort(401)
-	username = getData(token)["user"]
-	log.info("%s => Class %s => Subject %s" % (username, class_id, subject_id))
+	log.info("%s => Class %s => Subject %s" % (token, class_id, subject_id))
 	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]
 	return make_response(jsonify(o), 200)
 
@@ -430,8 +425,7 @@ def logStats():
 	token = request.json["token"]
 	if not verifyRequest(token):
 		abort(401)
-	username = getData(token)["user"]
-	log.info("STATS => %s => %s, %s, %s, %s" % (username, request.json["platform"], request.json["device"], request.json["language"], request.json["resolution"]))
+	log.info("STATS => %s => %s, %s, %s, %s" % (token, request.json["platform"], request.json["device"], request.json["language"], request.json["resolution"]))
 	dataObj = getData(token)
 	dataObj['last_ip'] = request.remote_addr
 	dataObj['device']['platform'] = request.json["platform"]
@@ -441,7 +435,7 @@ def logStats():
 	if config["USE_CLOUDFLARE"]:
 		dataObj['cloudflare']['country'] = request.headers["CF-IPCountry"]
 		dataObj['cloudflare']['last_ip'] = request.headers["CF-Connecting-IP"]
-	r.set('token:' + token, _jsonConvert(dataObj))
+	saveData(token, dataObj)
 	return make_response(jsonify({"result":"ok"}), 200)
 
 if __name__ == '__main__':

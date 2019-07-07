@@ -21,6 +21,9 @@ fbPushService = None
 fbFirestoreDB = None
 r = None
 
+def saveData(token, dataObj):
+	r.set('token:' + token, _jsonConvert(dataObj))
+
 def getDBSize():
 	return _getFileSize(_joinPath(config["DATA_FOLDER"], "appendonly.aof"))
 
@@ -33,6 +36,7 @@ def sendNotification(token, title, content):
 	"""
 	if not verifyRequest(token):
 		raise Exception("Bad token")
+	log.info("Sending notification to %s" % token)
 	documentReference = fbFirestoreDB.collection('devices').document(token)
 
 	try:
