@@ -16,7 +16,13 @@ export class LoginPage implements OnInit {
   isLoading = false;
   dataAlertShown = false;
 
-  constructor(private toastCtrl: ToastController, private translate: TranslateService, private authServ: AuthenticationService, private alertControl: AlertController, private loadControl: LoadingController) { }
+  constructor(
+    private toastCtrl: ToastController,
+    private translate: TranslateService,
+    private authServ: AuthenticationService,
+    private alertControl: AlertController,
+    private loadControl: LoadingController
+  ) { }
 
   ngOnInit() {
   }

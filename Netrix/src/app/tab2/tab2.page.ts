@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
 import { timeout } from 'rxjs/operators';
+import { SettingsService } from '../settings.service';
 
 @Component({
   selector: 'app-tab2',
@@ -22,8 +23,12 @@ export class Tab2Page {
     });
   }
 
-  constructor(private authServ: AuthenticationService, private http: HttpClient) {
-    this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/tests').pipe(timeout(3000)).subscribe((response) => {
+  constructor(
+    private authServ: AuthenticationService,
+    private http: HttpClient,
+    private settings: SettingsService
+  ) {
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/tests').pipe(timeout(3000)).subscribe((response) => {
       this.tests = response.tests;
       this.countTests();
     }, (error) => {

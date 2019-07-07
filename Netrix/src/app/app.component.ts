@@ -6,8 +6,8 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './authentication.service'
 import { LanguageService } from './language.service';
-
 import { FirebaseService } from './firebase.service';
+import { SettingsService } from './settings.service';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +22,8 @@ export class AppComponent {
     private router: Router,
     private languageService: LanguageService,
     private toastController: ToastController,
-    private fcm: FirebaseService
+    private fcm: FirebaseService,
+    private settings: SettingsService
   ) {
     this.initializeApp();
   }
@@ -51,7 +52,7 @@ export class AppComponent {
       this.splashScreen.hide();
 
       this.languageService.setInitialLang();
-
+      this.settings.readPrefs();
       this.authenticationService.authenticationState.subscribe(state => {
         if (state) {
           let token = this.authenticationService.token;

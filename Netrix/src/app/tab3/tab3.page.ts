@@ -8,7 +8,9 @@ import { AuthenticationService } from '../authentication.service';
 })
 export class Tab3Page {
 
-  constructor(private authServ: AuthenticationService) {}
+  constructor(
+    private authServ: AuthenticationService
+  ) {}
 
   logout() {
   	this.authServ.logout()

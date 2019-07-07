@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
 import { TranslateService } from '@ngx-translate/core';
 import { timeout } from 'rxjs/operators';
+import { SettingsService } from '../settings.service';
 
 @Component({
   selector: 'app-tab1',
@@ -16,10 +17,17 @@ export class Tab1Page {
   zone: any;
   subjsLoaded = false;
 
-  constructor(private translate: TranslateService, private toastCtrl: ToastController, private navCtrl: NavController, private http: HttpClient, private authServ: AuthenticationService, private alertControl: AlertController, private platform: Platform) {
-
+  constructor(
+    private translate: TranslateService,
+    private toastCtrl: ToastController,
+    private navCtrl: NavController,
+    private http: HttpClient,
+    private authServ: AuthenticationService,
+    private alertControl: AlertController,
+    private platform: Platform,
+    private settings: SettingsService
+  ) {
     this.getSubjects();
-
   }
 
   ngOnInit() {
@@ -39,7 +47,7 @@ export class Tab1Page {
 
   async getSubjects() {
     // GET the subject list endpoint on the API server
-    this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects').pipe(timeout(3000)).subscribe((response) => {
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects').pipe(timeout(3000)).subscribe((response) => {
       let allsubs = response.subjects;
       this.subjsLoaded = true;
       // Iterate over professors list and join it into a comma-separated string

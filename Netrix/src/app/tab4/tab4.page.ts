@@ -5,6 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastController } from '@ionic/angular';
 import { trigger, state, style, animate, transition } from "@angular/animations";
 import { timeout } from 'rxjs/operators';
+import { SettingsService } from '../settings.service';
 
 @Component({
   selector: 'app-tab4',
@@ -23,7 +24,13 @@ export class Tab4Page {
   student = {"name":null, "birthdate":null, "address":null};
   titleState = "transparent";
 
-  constructor(private translate: TranslateService, private toastCtrl: ToastController, private http: HttpClient, private authServ: AuthenticationService) {
+  constructor(
+    private translate: TranslateService,
+    private toastCtrl: ToastController,
+    private http: HttpClient,
+    private authServ: AuthenticationService,
+    private settings: SettingsService
+  ) {
     this.collectStudentData();
   }
 
@@ -39,7 +46,7 @@ export class Tab4Page {
   }
 
   async collectStudentData() {
-    this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/info').pipe(timeout(3000)).subscribe((response) => {
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/info').pipe(timeout(3000)).subscribe((response) => {
       this.student = response;
       console.log("tab4/collectStudentData(): Got user info successfully");
       this.titleState = "opaque";

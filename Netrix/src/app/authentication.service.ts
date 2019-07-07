@@ -7,6 +7,7 @@ import { map, catchError, switchAll } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { Device } from '@ionic-native/device/ngx';
 import { LanguageService } from './language.service';
+import { SettingsService } from './settings.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -16,19 +17,18 @@ export class AuthenticationService {
 	authenticationState = new BehaviorSubject(false);
 	token = null;
 	dataPreference = null;
-	API_SERVER = "https://api.netrix.io";
 
-	constructor(private translate: LanguageService, private storage: Storage, private plt: Platform, private http: HttpClient, private device: Device) {
+	constructor(
+	  private translate: LanguageService,
+	  private storage: Storage,
+	  private plt: Platform,
+	  private http: HttpClient,
+	  private device: Device,
+	  private settings: SettingsService
+	) {
 		this.plt.ready().then(() => {
-			console.log("AuthenticationService: API server is " + this.API_SERVER);
-			this.initPreferences();
+			console.log("AuthenticationService: API server is " + this.settings.apiServer);
 			this.checkToken();
-		})
-	}
-
-	changePreference(pref, prefValue) {
-		this.storage.set(pref, prefValue).then(() => {
-			console.log("AuthenticationService/changePreference(): Set " + pref + " to " + prefValue);
 		})
 	}
 
@@ -38,8 +38,8 @@ export class AuthenticationService {
 			if (res) {
 				this.token = res;
 				console.log("AuthenticationService/checkToken(): Found saved token (" + this.token + ")");
-				console.log("AuthenticationService/checkToken(): Found analytics preference (" + this.dataPreference + ")");
-				if (this.dataPreference === true) {
+				console.log("AuthenticationService/checkToken(): Found analytics preference (" + this.settings.dataPreference + ")");
+				if (this.settings.dataPreference === true) {
 					this.sendDeviceInfo();
 				}
 				this.authenticationState.next(true);
@@ -48,7 +48,7 @@ export class AuthenticationService {
 	}
 
 	private sendDeviceInfo() {
-		this.http.post(this.API_SERVER + "/api/stats", {"token":this.token, "platform":this.getPlatform(), "device":this.getDevice(), "language":this.getLanguage(), "resolution":this.getResolution()}).subscribe((res) => {
+		this.http.post(this.settings.apiServer + "/api/stats", {"token":this.token, "platform":this.getPlatform(), "device":this.getDevice(), "language":this.getLanguage(), "resolution":this.getResolution()}).subscribe((res) => {
 			console.log("AuthenticationService/sendDeviceInfo(): Successfully sent device info");
 		}, (err) => {
 			console.log("AuthenticationService/sendDeviceInfo(): Failed to send device info:");
@@ -56,54 +56,24 @@ export class AuthenticationService {
 		});
 	}
 
-	private initPreferences() {
-		this.storage.get("data-preference").then(res => {
-			// Check if it is stored at all
-			if (res) {
-				this.dataPreference = res;
-			} else { // If it isn't stored, store it and set default (true)
-				this.storage.set("data-preference", true).then(() => {
-					this.dataPreference = true;
-					console.log("AuthenticationService/initPreferences(): Analytics preference defaulted to true");
-				});
-			}
-		});
-	}
-
 	private getPlatform() {
-		if (this.dataPreference === true) {
-			return this.device.platform;
-		} else {
-			return null;
-		}
+		return this.device.platform;
 	}
 
 	private getDevice() {
-		if (this.dataPreference === true) {
-			return this.device.model;
-		} else {
-			return null;
-		}
+		return this.device.model;
 	}
 
 	private getResolution() {
-		if (this.dataPreference === true) {
-			return this.plt.width() + "x" + this.plt.height();
-		} else {
-			return null;
-		}
+		return this.plt.width() + "x" + this.plt.height();
 	}
 
 	private getLanguage() {
-		if (this.dataPreference === true) {
-			return this.translate.selected;
-		} else {
-			return null;
-		}
+		return this.settings.language;
 	}
 
 	login(username, password) {
-		let response:Observable<Response> = this.http.post<Response>(this.API_SERVER + "/api/login", {"username":username, "password":password});
+		let response:Observable<Response> = this.http.post<Response>(this.settings.apiServer + "/api/login", {"username":username, "password":password});
 
 		let jsonResponse = response.pipe(catchError(err => this.handleError(err)));
 
@@ -118,7 +88,7 @@ export class AuthenticationService {
 		this.storage.set("auth-token", data.token).then(() => {
 			this.token = data.token;
 			console.log("AuthenticationService/handleLogin(): Login successful, got token (" + data.token + ")");
-			if (this.dataPreference === true) {
+			if (this.settings.dataPreference === true) {
 				this.sendDeviceInfo();
 			}
 			this.authenticationState.next(true);
