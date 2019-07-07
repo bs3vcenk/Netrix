@@ -268,14 +268,14 @@ def login():
 		in the DB, meaning no full fetch is needed, and the user's token
 		is instantly returned.
 	"""
-	if not request.json or not 'username' in request.json or not 'password' in request.json:
-		log.error("Bad JSON")
-		logins_fail_ge += 1
-		abort(400)
 	global logins_fast
 	global logins_fail_ge
 	global logins_fail_wp
 	global logins_full
+	if not request.json or not 'username' in request.json or not 'password' in request.json:
+		log.error("Bad JSON")
+		logins_fail_ge += 1
+		abort(400)
 	devIP = request.remote_addr
 	username = request.json["username"]
 	password = request.json["password"]
