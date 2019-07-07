@@ -6,6 +6,7 @@ import { AlertController, NavController, ToastController } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core';
 import { trigger, state, style, animate, transition } from "@angular/animations";
 import { timeout } from 'rxjs/operators';
+import { SettingsService } from '../settings.service';
 
 @Component({
   selector: 'app-subj-overview',
@@ -35,7 +36,16 @@ export class SubjOverviewPage implements OnInit {
   gradeState = "transparent";
   noteState = "transparent";
 
-  constructor(private toastCtrl: ToastController, private translate: TranslateService, private activatedRoute: ActivatedRoute, private http: HttpClient, private authServ: AuthenticationService, public alertControl: AlertController, public navCtrl: NavController) { }
+  constructor(
+    private toastCtrl: ToastController,
+    private translate: TranslateService,
+    private activatedRoute: ActivatedRoute,
+    private http: HttpClient,
+    private authServ: AuthenticationService,
+    private alertControl: AlertController,
+    private navCtrl: NavController,
+    private settings: SettingsService
+  ) { }
 
   ngOnInit() {
 
@@ -80,12 +90,25 @@ export class SubjOverviewPage implements OnInit {
   }
 
   async getSubjectInfo() {
-    this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId).pipe(timeout(3000)).subscribe((response) => {
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId).pipe(timeout(3000)).subscribe((response) => {
     	this.subjName = response.subject;
       console.log("subjOverview/getSubjectInfo(): Subject name: " + this.subjName)
     	this.subjProfs = response.professors.join(", ");
       this.titleState = "opaque";
-      this.getSubjectGrades();
+      if (response.grades) {
+        this.subjAvg = response.average;
+        this.gradeList = response.grades;
+        this.gradesAvailable = true;
+        this.gradeState = "opaque";
+      }
+      if (response.notes) {
+        this.noteList = response.notes;
+        this.notesAvailable = true;
+        this.gradeState = "opaque";
+      }
+      if (response.gradesAvailable == false && response.notesAvailable == false) {
+        this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"));
+      }
     }, (error) => {
       console.log("subjOverview/getSubjectInfo(): Failed to fetch data from server (" + error.error + ")")
       if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
@@ -100,32 +123,5 @@ export class SubjOverviewPage implements OnInit {
     });
   }
 
-  getSubjectGrades() {
-    this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId + '/grades').pipe(timeout(3000)).subscribe((response) => {
-      this.subjAvg = response.average;
-      this.gradeList = response.grades;
-      this.gradesAvailable = true;
-      this.getSubjectNotes();
-      this.gradeState = "opaque";
-    }, (error) => {
-      console.log("subjOverview/getSubjectGrades(): Failed to fetch data from server (" + error.error + ")");
-      this.gradesAvailable = false;
-      this.getSubjectNotes();
-    });
-  }
-
-  async getSubjectNotes() {
-    this.http.get<any>(this.authServ.API_SERVER + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId + '/notes').pipe(timeout(3000)).subscribe((response) => {
-      this.noteList = response.notes;
-      this.notesAvailable = true;
-      this.noteState = "opaque";
-    }, (error) => {
-      console.log("subjOverview/getSubjectNotes(): Failed to fetch data from server (" + error.error.error + ")")
-      this.notesAvailable = false;
-      if (this.gradesAvailable != true) {
-        this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"));
-      }
-    });
-  }
 
 }
