@@ -350,6 +350,11 @@ def getNewGrades(token):
 	"""
 		Get the user's new grades/tests.
 	"""
+	if not verifyRequest(token):
+		abort(401)
+	log.info(token)
+	o = getData(token)['new']
+	return make_response(jsonify({'new':o}), 200)
 
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
 def getClasses(token):
