@@ -391,6 +391,14 @@ def populateData(obj=None, username=None, password=None):
 		output[0]['tests'] = None
 
 	try:
+		absences_overview = obj.getAbsentOverviewForClass(0)
+		absences_full = obj.getAbsentFullListForClass(0)
+		output[0]['absences'] = {'overview':absences_overview, 'full':absences_full}
+	except Exception as e:
+		log.error("Error getting absences for class: %s" % e)
+		output[0]['absences'] = None
+
+	try:
 		output[0]['subjects'] = obj.getSubjects(0)
 	except Exception as e:
 		log.error("Error getting subjects for class: %s" % e)
