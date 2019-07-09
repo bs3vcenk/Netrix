@@ -4,6 +4,9 @@
       {{ 'tab2.title' | translate }}
     </ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+      <ion-searchbar (ionInput)="searchHandler($event)"></ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
@@ -14,8 +17,8 @@
     </ion-item>
   </ion-list>
   <ion-list lines="full">
-    <ng-container *ngFor="let testObj of tests">
-      <ion-item *ngIf="testObj.current || showAllPreference">
+    <ng-container *ngFor="let testObj of results">
+      <ion-item [@fadeInOut] *ngIf="testObj.current || showAllPreference">
         <ion-label>
           <h2 text-wrap>{{ testObj.test }}</h2>
           <h3>{{ testObj.date }}</h3>
@@ -24,7 +27,7 @@
       </ion-item>
     </ng-container>
   </ion-list>
-  <ion-item text-center *ngIf="currentTests == 0 && showAllPreference == false" lines="none">
+  <ion-item text-center [@fadeInOut] *ngIf="currentTests == 0 && showAllPreference == false" lines="none">
     <ion-label>
       <h1>{{ 'tab2.notests' | translate }} :)</h1>
     </ion-label>
