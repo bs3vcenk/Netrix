@@ -367,16 +367,18 @@ class edap:
 				abslist.append({
 					'span': spanning,
 					'loc': lastSearched,
-					'data': []
+					'date': y[0].getText("\n").split()[1]
 				})
 			lastSearched += 1
 		abslist2 = []
 		for x in abslist:
+			absLst = {'date':x['date'], 'absences':[]}
 			for absence in o[x['loc']:x['loc']+x['span']]:
 				absObj = {}
 				absObj["period"] = absence.find("td", class_="sat").getText()
 				absObj["subject"] = absence.find("td", class_="predmet").getText()
 				absObj["reason"] = absence.find("td", class_="razlog").getText()
 				absObj["justified"] = absence.find("td", class_="opravdano").find("img").get("alt") == "Opravdano"
-				abslist2.append(absObj)
+				absLst['absences'].append(absObj)
+			abslist2.append(absLst)
 		return abslist2
