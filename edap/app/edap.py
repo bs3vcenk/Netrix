@@ -339,7 +339,7 @@ class edap:
 
 	def getAbsentFullListForClass(self, class_id):
 		"""
-			Return a full list of all marked abscences for a given class ID.
+			Return a full list of all marked absences for a given class ID.
 
 			ARGS: class_id [int/required]
 		"""
