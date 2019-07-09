@@ -51,6 +51,7 @@ export class Tab2Page {
   }
 
   searchHandler(event) {
+    this.reInit()
     const val = event.target.value;
     //console.log(val);
     if (val && val.trim() != '') {
