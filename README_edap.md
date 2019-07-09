@@ -34,6 +34,25 @@ docker volume create redis-data # Ovo će biti spremnik za bazu podataka
 docker run -d --name netrix -p 80:80 -v redis-data:/data netrix # eDAP-API je dostupan na portu 80
 ```
 
+Dodatna konfiguracija (npr. Firebase ili Cloudflare integracija) je moguća pomoću varijabla okruženja (environment variables) koje se definiraju pomoću Docker argumenta `-e`, na primjer:
+
+```bash
+docker run -d --name netrix -p 80:80 -v redis-data:/data -e CLOUDFLARE=Y netrix # Omogućuje integraciju sa Cloudflareom
+```
+
+### Lista konfiguracijskih varijabla
+
+```bash
+DATA_FOLDER=[/data] # Mapa za logove, DB i Firebase token JSON
+CLOUDFLARE=[N] # Cloudflare integracije (hvatanje pravog IP-a iza Cloudflare servera)
+FIREBASE=[N] # Firebase integracija (obavijesti)
+  GOOGLE_TOKEN_FILE=[google_creds.json] # https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk
+  FIREBASE_TOKEN=[] # Token za Firebase Cloud Messaging
+DEV_ACCESS=[N] # /dev/ interface
+  DEV_USER=[] # Username za /dev/ interface
+  DEV_PASW=[] # SHA256 lozinke za /dev/ interface
+```
+
 ## Korištenje s frontendom (tijekom razvijanja)
 ### URL
 Potrebno je u frontendu promijeniti adresu API-a. Ako aplikaciju mislite korisiti samo kao web-aplikaciju (`ionic serve`), za adresu uzmite `http://localhost:5000` (port se može mijenjati, provjerite `app.run()` u `api.py`).

@@ -195,6 +195,13 @@ RUN apk add --no-cache --virtual .pydeps python3-dev openssl-dev \
 COPY ./app /app
 WORKDIR /app
 
+# Default env
+ENV DATA_FOLDER /data
+ENV GOOGLE_TOKEN_FILE google_creds.json
+ENV DEV_ACCESS N
+ENV CLOUDFLARE N
+ENV FIREBASE N
+
 # Copy start.sh script that will check for a /app/prestart.sh script and run it before starting the app
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
