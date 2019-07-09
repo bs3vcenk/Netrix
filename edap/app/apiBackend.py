@@ -17,6 +17,7 @@ from google.cloud import firestore
 from pyfcm import FCMNotification
 from threading import Thread
 from time import time as _time
+from time import sleep
 
 log = logging.getLogger(__name__)
 fbPushService = None
@@ -25,11 +26,60 @@ r = None
 
 threads = {}
 
+def formatAndSendNotification(token, notifData):
+	"""
+		Format a notification for the user based on data gotten from
+		profileDifference() in sync().
+	"""
+	classNotif = []
+	gradeNotif = []
+	testNotif = []
+	toSendQueue = []
+	for x in notifData:
+		if x['type'] == 'class':
+			classNotif.append("%s (%s)" % (x['data']['class'], x['data']['class']))
+		elif x['type'] == 'test':
+			testNotif.append("%s: %s" % (x['data']['subject'], x['data']['test']))
+		elif x['type'] == 'grade':
+			gradeNotif.append("%s: %s (%s)" % (getNameForSubjId(token, x['classId'], x['subjectId']), x['date']['grade'], x['data']['note']))
+	if len(classNotif) > 0:
+		toSendQueue.append({
+			'head': "NEW_CLASS_HEADER",
+			'content': ", ".join(classNotif)
+		})
+	if len(gradeNotif) > 0:
+		toSendQueue.append({
+			'head': "NEW_GRADE_HEADER",
+			'content': ", ".join(gradeNotif)
+		})
+	if len(testNotif) > 0:
+		toSendQueue.append({
+			'head': "NEW_TEST_HEADER",
+			'content': ", ".join(testNotif)
+		})
+	for i in toSendQueue:
+		sendNotification(token, i['head'], i['content'])
+
+def getNameForSubjId(token, class_id, subject_id):
+	"""
+		Get the name belonging to a subject ID.
+	"""
+	if not verifyRequest(token, class_id, subject_id):
+		raise Exception('Bad auth data')
+	return getData(token)['data']['classes'][class_id]['subjects'][subject_id]['subject']
+
 def stopSync(token):
+	"""
+		Stop background sync thread for a given token, e.g. if
+		terminated.
+	"""
 	if "sync:" + token in threads.keys():
 		threads["sync:" + token].stop()
 
 def getSyncThreads():
+	"""
+		Get a list of sync threads.
+	"""
 	return [i.replace("sync:", "") for i in threads.keys()]
 
 def startSync(token):
@@ -93,6 +143,7 @@ def profileDifference(dObj1, dObj2):
 			_finalReturn.append({'type':'test', 'classId':0, 'data':i})
 	## PER-SUBJECT GRADE DIFFERENCE (FIRST CLASS ONLY) ##
 	# https://stackoverflow.com/a/1663826
+	sId = 0
 	for i, j in zip(dObj1['classes'][0]['subjects'], dObj2['classes'][0]['subjects']):
 		if j['grades']:
 			t1 = deepcopy(i['grades'])
@@ -101,9 +152,10 @@ def profileDifference(dObj1, dObj2):
 			if len(difflist) > 0:
 				log.info("Found difference in grades")
 				for x in difflist:
-					_finalReturn.append({'type':'grade', 'classId':0, 'data':x})
+					_finalReturn.append({'type':'grade', 'classId':0, 'subjectId': sId, 'data':x})
 		else:
 			continue
+		sId += 1
 	return _finalReturn
 
 def saveData(token, dataObj):
