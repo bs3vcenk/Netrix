@@ -56,10 +56,10 @@ def dev_area(f):
 			auth = request.authorization
 			if not auth or not check_auth(auth.username, auth.password):
 				if auth:
-					log.warning("Dev access attempt by %s from %s, but wrong auth data" % (ip, country))
+					log.warning("FAIL => %s (%s) => Bad auth" % (ip, country))
 				return authenticate()
 		else:
-			log.warning("Dev access attempt by %s from %s, but it is disabled" % (ip, country))
+			log.warning("FAIL => %s (%s) => DEV endpoints disabled" % (ip, country))
 			abort(404)
 		return f(*args, **kwargs)
 	return decorated
@@ -116,7 +116,7 @@ def exh_RedisDatabaseFailure(e):
 	"""
 		Default handler in case the Redis DB fails.
 	"""
-	log.critical("DATBASE ACCESS FAILURE!!!!!")
+	log.critical(" ==> DATBASE ACCESS FAILURE!!!!! <==")
 	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
 
 @app.route('/dev', methods=["GET"])
@@ -311,7 +311,11 @@ def login():
 		log.error("SLOW => eDAP FAIL => %s => %s" % (username, str(e)))
 		logins_fail_ge += 1
 		abort(500)
-	log.info("Success for %s, saving to Redis (%s)" % (username, token))
+	except Exception as e:
+		log.error("SLOW => UNHANDLED EXCEPTION => %s => %s" % (username, str(e)))
+		logins_fail_ge += 1
+		abort(500)
+	log.info("SLOW => SUCCESS => %s (%s)" % (username, token))
 	dataObj = {
 		'user': username,
 		'pasw': password,
@@ -330,8 +334,9 @@ def login():
 		dataObj["cloudflare"] = {}
 		dataObj["cloudflare"]["last_ip"] = None
 		dataObj["cloudflare"]["country"] = None
-	startSync(token)
 	saveData(token, dataObj)
+	log.info("SLOW => Starting sync for %s" % username)
+	startSync(token)
 	logins_full += 1
 	return make_response(jsonify({'token':token}), 200)
 
