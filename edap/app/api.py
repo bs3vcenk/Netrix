@@ -406,39 +406,6 @@ def getSubject(token, class_id, subject_id):
 	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]
 	return make_response(jsonify(o), 200)
 
-@app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>/grades', methods=["GET"])
-def getGrades(token, class_id, subject_id):
-	"""
-		Get the grades for a given subject ID (TODO: Unify into getSubject(),
-		calculate grade in populateData()).
-	"""
-	log.warning("DEPRECATION :: Deprecated endpoint getGrades() used")
-	if not verifyRequest(token, class_id, subject_id):
-		abort(401)
-	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]['grades']
-	if o == None:
-		log.info("No grades for subject ID %s" % subject_id)
-		return make_response(jsonify({'error':'E_NO_GRADES'}), 404)
-	lgrades = []
-	for i in o:
-		lgrades.append(i['grade'])
-	avg = round(sum(lgrades)/len(lgrades), 2)
-	return make_response(jsonify({'grades': o, 'average': avg}), 200)
-
-@app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>/notes', methods=["GET"])
-def getNotes(token, class_id, subject_id):
-	"""
-		Get only the "additional notes" for a given subject ID.
-	"""
-	log.warning("DEPRECATION :: Deprecated endpoint getNotes() used")
-	if not verifyRequest(token, class_id, subject_id):
-		abort(401)
-	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]['notes']
-	if o == None:
-		log.info("No notes for subject ID %s" % subject_id)
-		return make_response(jsonify({'error':'E_NO_NOTES'}), 404)
-	return make_response(jsonify({'notes':o}), 200)
-
 @app.route('/api/stats', methods=["POST"])
 def logStats():
 	"""
