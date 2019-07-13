@@ -23,7 +23,7 @@ import { Chart } from 'chart.js';
 export class Tab4Page {
   @ViewChild("absenceCanvas") absenceCanvas: ElementRef;
 
-  absencesOverview = null;
+  absences = null;
 
   private absenceChart: Chart;
 
