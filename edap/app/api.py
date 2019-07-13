@@ -382,6 +382,16 @@ def getClasses(token):
 			pass
 	return make_response(jsonify(o), 200)
 
+@app.route('/api/user/<string:token>/absences', methods=["GET"])
+def getAbsences(token):
+	"""
+		Get the user's absences.
+	"""
+	if not verifyRequest(token):
+		abort(401)
+	log.info(token)
+	return make_response(jsonify(getData(token)['data']['absences']), 200)
+
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects', methods=["GET"])
 def getSubjects(token, class_id):
 	"""
