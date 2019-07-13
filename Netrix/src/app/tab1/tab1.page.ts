@@ -5,17 +5,26 @@ import { AuthenticationService } from '../authentication.service';
 import { TranslateService } from '@ngx-translate/core';
 import { timeout } from 'rxjs/operators';
 import { SettingsService } from '../settings.service';
+import { trigger, state, style, animate, transition } from "@angular/animations";
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
-  styleUrls: ['tab1.page.scss']
+  styleUrls: ['tab1.page.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({ opacity: '0' })),
+      state('*', style({ opacity: '1' })),
+      transition('void <=> *', animate('150ms ease-in'))
+    ])
+  ]
 })
 export class Tab1Page {
 
   subjects: any;
   zone: any;
   subjsLoaded = false;
+  noItemsLoaded = false;
 
   constructor(
     private translate: TranslateService,
@@ -57,6 +66,7 @@ export class Tab1Page {
       })
       // Set for display
       this.subjects = allsubs;
+      this.noItemsLoaded = false;
     },
     (error) => {
       if (error.error.error === "E_TOKEN_NONEXISTENT") {
@@ -67,12 +77,13 @@ export class Tab1Page {
         // Server-side issue
         this.toastError(this.translate.instant("generic.alert.database"), null, 2500);
         throw new Error('Database connection failed');
-      } else {
+      } /*else {
         // No network on client
         //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
         this.toastError(this.translate.instant("generic.alert.network"), [{text: 'Reload', handler: () => {this.getSubjects()}}], null)
         throw new Error('Network error: ' + error);
-      }
+      }*/
+      this.noItemsLoaded = true;
     });
   }
 }

@@ -1,14 +1,3 @@
-ion-card ion-img {
-  max-height: 35vh;
-  overflow: hidden;
-}
-
-ion-card {
-  width: 100%;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
 #title h3 {
   font-weight: 600;
   font-size: 20px;
@@ -23,4 +12,21 @@ ion-card {
   line-height: 100%;
   font-weight: 700;
 	font-size: 29px;
+}
+
+#cntr {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#netHeader {
+  font-weight: 700 !important;
+  font-size: 40px;
+}
+
+#netHeroImage {
+  font-size: 80px;
 }

@@ -7,8 +7,18 @@
 </ion-header>
 
 <ion-content>
+  <ion-item text-center [@fadeInOut] *ngIf="noItemsLoaded" lines="none" id="cntr">
+    <ion-label>
+      <h1 id="netHeroImage">😔</h1>
+      <h1 id="netHeader" text-wrap>{{ 'tab1.text.nonetwork.header' | translate }}</h1>
+      <h2 id="netContent" text-wrap>{{ 'tab1.text.nonetwork.content' | translate }}</h2>
+      <ion-button (click)="getSubjects()" fill="clear">
+        <ion-icon slot="icon-only" name="refresh"></ion-icon>
+      </ion-button>
+    </ion-label>
+  </ion-item>
   <ion-list lines="full">
-    <ion-item button *ngFor="let subject of subjects" routerLink="/subj-overview/{{subject.id}}" routerDirection="forward">
+    <ion-item [@fadeInOut] button *ngFor="let subject of subjects" routerLink="/subj-overview/{{subject.id}}" routerDirection="forward">
       <ion-label>
         <div id="title" stacked>
           <h3>{{subject.subject}}</h3>
