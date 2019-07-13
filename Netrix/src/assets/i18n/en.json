@@ -21,6 +21,10 @@
       "nonetwork": {
         "header": "No network",
         "content": "Check your network connection and try again."
+      },
+      "nodb": {
+        "header": "Server error",
+        "content": "Something went wrong at the server side. We're working quickly to fix it!"
       }
     }
   },

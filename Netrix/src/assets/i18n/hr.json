@@ -21,6 +21,10 @@
       "nonetwork": {
         "header": "Nema mreže",
         "content": "Provjeri svoju vezu s Internetom pa pokušaj ponovo."
+      },
+      "nodb": {
+        "header": "Serverska greška",
+        "content": "Dogodila se greška kod servera. Radimo da ju što prije riješimo!"
       }
     }
   },

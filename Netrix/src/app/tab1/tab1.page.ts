@@ -25,6 +25,7 @@ export class Tab1Page {
   zone: any;
   subjsLoaded = false;
   noItemsLoaded = false;
+  dbError = false;
 
   constructor(
     private translate: TranslateService,
@@ -75,14 +76,14 @@ export class Tab1Page {
         this.authServ.logout();
       } else if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
         // Server-side issue
-        this.toastError(this.translate.instant("generic.alert.database"), null, 2500);
+        this.dbError = true;
         throw new Error('Database connection failed');
-      } /*else {
+      } else {
         // No network on client
         //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
         this.toastError(this.translate.instant("generic.alert.network"), [{text: 'Reload', handler: () => {this.getSubjects()}}], null)
         throw new Error('Network error: ' + error);
-      }*/
+      }
       this.noItemsLoaded = true;
     });
   }
