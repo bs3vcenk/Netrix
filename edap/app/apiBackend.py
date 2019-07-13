@@ -432,7 +432,7 @@ def populateData(obj=None, username=None, password=None):
 			log.error("Error getting notes for subject %s: %s" % (z, e))
 			output[0]['subjects'][z]['notes'] = None
 			continue
-	output[0]['subjects']['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
+	output[0]['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
 	dataDict['classes'] = output
 	try:
 		dataDict['info'] = obj.getInfoForUser(0)
