@@ -43,7 +43,7 @@
     }
   },
   "tab4": {
-    "title": "Informacije",
+    "title": "Izostanci",
     "text": {
       "birthdate": "Datum rođenja",
       "address": "Adresa"
@@ -85,7 +85,8 @@
   "tabs": {
     "subjects": "Predmeti",
     "tests": "Ispiti",
-    "settings": "Postavke"
+    "settings": "Postavke",
+    "absences": "Izostanci"
   },
   "settings": {
     "lang": {

@@ -43,7 +43,7 @@
     }
   },
   "tab4": {
-    "title": "Info",
+    "title": "Absences",
     "text": {
       "birthdate": "Birth date",
       "address": "Address"
@@ -85,7 +85,8 @@
   "tabs": {
     "subjects": "Subjects",
     "tests": "Tests",
-    "settings": "Settings"
+    "settings": "Settings",
+    "absences": "Absences"
   },
   "settings": {
     "lang": {

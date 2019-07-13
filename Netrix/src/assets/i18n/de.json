@@ -43,7 +43,7 @@
     }
   },
   "tab4": {
-    "title": "Info",
+    "title": "Abwesenheiten",
     "text": {
       "birthdate": "Geburtsdatum",
       "address": "Adresse"
@@ -85,7 +85,8 @@
   "tabs": {
     "subjects": "Schulfächer",
     "tests": "Prüfungen",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "absences": "Abwesenheiten"
   },
   "settings": {
     "lang": {

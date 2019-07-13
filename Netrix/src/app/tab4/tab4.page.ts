@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service'
 import { TranslateService } from '@ngx-translate/core';
@@ -6,6 +6,7 @@ import { ToastController } from '@ionic/angular';
 import { trigger, state, style, animate, transition } from "@angular/animations";
 import { timeout } from 'rxjs/operators';
 import { SettingsService } from '../settings.service';
+import { Chart } from 'chart.js';
 
 @Component({
   selector: 'app-tab4',
@@ -20,9 +21,11 @@ import { SettingsService } from '../settings.service';
   ]
 })
 export class Tab4Page {
+  @ViewChild("absenceCanvas") absenceCanvas: ElementRef;
 
-  student = {"name":null, "birthdate":null, "address":null};
-  titleState = "transparent";
+  absencesOverview = null;
+
+  private absenceChart: Chart;
 
   constructor(
     private translate: TranslateService,
@@ -45,11 +48,27 @@ export class Tab4Page {
     });
   }
 
-  async collectStudentData() {
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/info').pipe(timeout(3000)).subscribe((response) => {
-      this.student = response;
-      console.log("tab4/collectStudentData(): Got user info successfully");
-      this.titleState = "opaque";
+  initGraph() {
+    this.absenceChart = new Chart(this.absenceCanvas.nativeElement, {
+    type: "doughnut",
+    data: {
+      labels: ["Justified", "Unjustified", "Waiting"],
+      datasets: [
+        {
+          label: "# of classes",
+          data: [this.absences.overview.justified, this.absences.overview.unjustified, this.absences.overview.waiting],
+          backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+          //hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#FF6384", "#36A2EB", "#FFCE56"]
+        }
+      ]
+    }
+    });
+  }
+
+  collectStudentData() {
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences').pipe(timeout(3000)).subscribe((response) => {
+      this.absences = response;
+      this.initGraph();
     }, (error) => {
       if (error.error.error === "E_TOKEN_NONEXISTENT") {
         // User is not authenticated (possibly token purged from server DB)
@@ -63,7 +82,7 @@ export class Tab4Page {
         // No network on client
         //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
         this.toastError(this.translate.instant("generic.alert.network"), [{text: 'Reload', handler: () => {this.collectStudentData()}}], null)
-        throw new Error('[collectStudentData()] Network error');
+        throw new Error('Network error');
       }
     })
   }
