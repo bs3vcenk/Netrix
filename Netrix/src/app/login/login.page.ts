@@ -71,7 +71,6 @@ export class LoginPage implements OnInit {
   }
 
   async loadDisplay(msg) {
-    this.isLoading = true;
     this.ldController = await this.loadControl.create({
       message: msg
     })
@@ -79,7 +78,6 @@ export class LoginPage implements OnInit {
   }
 
   async stopLoad() {
-    this.isLoading = false;
     return await this.ldController.dismiss().then(() => console.log('login/stopLoad(): Dismissed loading screen'));
   }
 

@@ -79,7 +79,8 @@
     "text": {
       "login": "Prijavi se",
       "holder_user": "Korisničko ime za eDnevnik",
-      "holder_pass": "Lozinka za eDnevnik"
+      "holder_pass": "Lozinka za eDnevnik",
+      "appdesc": "Moderno sučelje za eDnevnik"
     }
   },
   "tabs": {

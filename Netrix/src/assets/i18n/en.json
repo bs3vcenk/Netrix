@@ -79,7 +79,8 @@
     "text": {
       "login": "Log in",
       "holder_user": "eDnevnik username",
-      "holder_pass": "eDnevnik password"
+      "holder_pass": "eDnevnik password",
+      "appdesc": "A modern interface for eDnevnik"
     }
   },
   "tabs": {
