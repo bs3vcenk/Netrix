@@ -35,7 +35,9 @@ export class AppComponent {
     const toast = await this.toastController.create({
       message,
       duration: 3000,
-      color: 'dark'
+      color: 'dark',
+      cssClass: 'notifToast',
+      position: 'top'
     });
     toast.present();
   }
