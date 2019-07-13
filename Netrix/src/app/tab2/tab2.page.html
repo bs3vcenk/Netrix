@@ -16,7 +16,7 @@
       <ion-toggle slot="end" [(ngModel)]="showAllPreference"></ion-toggle>
     </ion-item>
   </ion-list>
-  <ion-item text-center [@fadeInOut] *ngIf="currentTests == 0 && showAllPreference == false" lines="none">
+  <ion-item text-center [@fadeInOut] *ngIf="currentTests == 0 && showAllPreference == false" lines="none" id="cntr">
     <ion-label>
       <object width="150" type="image/svg+xml" data="./assets/emoji/thumbsup.svg"></object>
       <h1 id="netHeader" text-wrap>{{ 'tab2.notests' | translate }}</h1>
