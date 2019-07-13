@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Platform, ToastController } from '@ionic/angular';
+import { Platform, ToastController, Config } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './authentication.service'
 import { LanguageService } from './language.service';
 import { FirebaseService } from './firebase.service';
 import { SettingsService } from './settings.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +24,9 @@ export class AppComponent {
     private languageService: LanguageService,
     private toastController: ToastController,
     private fcm: FirebaseService,
-    private settings: SettingsService
+    private settings: SettingsService,
+    private translate: TranslateService,
+    private config: Config
   ) {
     this.initializeApp();
   }
@@ -53,6 +56,9 @@ export class AppComponent {
 
       this.languageService.setInitialLang();
       this.settings.readPrefs();
+      this.translate.get('generic.back').subscribe((res: string) => {
+        this.config.set('backButtonText', res);
+      });
       this.authenticationService.authenticationState.subscribe(state => {
         if (state) {
           let token = this.authenticationService.token;
