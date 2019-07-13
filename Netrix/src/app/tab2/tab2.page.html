@@ -16,6 +16,11 @@
       <ion-toggle slot="end" [(ngModel)]="showAllPreference"></ion-toggle>
     </ion-item>
   </ion-list>
+  <ion-item text-center [@fadeInOut] *ngIf="currentTests == 0 && showAllPreference == false" lines="none">
+    <ion-label>
+      <h1>{{ 'tab2.notests' | translate }} :)</h1>
+    </ion-label>
+  </ion-item>
   <ion-list lines="full">
     <ng-container *ngFor="let testObj of results">
       <ion-item [@fadeInOut] *ngIf="testObj.current || showAllPreference">
@@ -27,9 +32,4 @@
       </ion-item>
     </ng-container>
   </ion-list>
-  <ion-item text-center [@fadeInOut] *ngIf="currentTests == 0 && showAllPreference == false" lines="none">
-    <ion-label>
-      <h1>{{ 'tab2.notests' | translate }} :)</h1>
-    </ion-label>
-  </ion-item>
 </ion-content>
