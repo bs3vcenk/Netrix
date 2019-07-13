@@ -2,7 +2,7 @@
 * Backend - [eDAP](https://github.com/btx3/eDnevnik/blob/master/README_edap.md) (eDnevnikAndroidProject) [Python]
 * Frontend - [Netrix](https://github.com/btx3/eDnevnik/blob/master/README_Netrix.md) [JS/Ionic]
 
-![Banner za Netrix](https://i.imgur.com/SCOxrvT.png)
+![Banner za Netrix](https://i.imgur.com/VkQ7SQX.jpg)
 
 ## Buildovi/APKovi
 
