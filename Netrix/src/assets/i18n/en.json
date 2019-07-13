@@ -12,10 +12,17 @@
           "quit": "Quit"
         }
       }
-    }
+    },
+    "back": "Back"
   },
   "tab1": {
-    "title": "Subjects"
+    "title": "Subjects",
+    "text": {
+      "nonetwork": {
+        "header": "No network",
+        "content": "Check your network connection and try again."
+      }
+    }
   },
   "tab2": {
     "title": "Tests",
@@ -27,8 +34,7 @@
     "text": {
       "logout": "Log out",
       "settings": {
-        "api": "API Settings",
-        "lang": "Language Settings"
+        "api": "API Settings"
       }
     }
   },
@@ -61,8 +67,8 @@
         "content": "Check your username and password, and try again."
       },
       "data": {
-        "header": "Data collection",
-        "content": "Your phone model and OS is sent to the server on login, and every time you open the app. You can change this in Settings > API Settings."
+        "header": "Data collection (in developer mode)",
+        "content": "Some information about your device is sent to the API server to help categorize and debug errors. You can change this in Settings > API Settings."
       },
       "loggingin": "Logging in..."
     },

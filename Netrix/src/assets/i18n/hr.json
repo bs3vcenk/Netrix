@@ -12,10 +12,17 @@
           "quit": "Izađi"
         }
       }
-    }
+    },
+    "back": "Natrag"
   },
   "tab1": {
-    "title": "Predmeti"
+    "title": "Predmeti",
+    "text": {
+      "nonetwork": {
+        "header": "Nema mreže",
+        "content": "Provjeri svoju vezu s Internetom pa pokušaj ponovo."
+      }
+    }
   },
   "tab2": {
     "title": "Ispiti",
@@ -27,8 +34,7 @@
     "text": {
       "logout": "Odjava",
       "settings": {
-        "api": "Postavke API-a",
-        "lang": "Postavke jezika"
+        "api": "Postavke API-a"
       }
     }
   },
@@ -61,8 +67,8 @@
         "content": "Provjeri svoje korisničko ime i lozinu, pa pokušaj ponovo."
       },
       "data": {
-        "header": "Prikupljanje podataka",
-        "content": "Model vašeg telefona i njegov operativni sustav se šalje na server prilikom prijave, te za svako otvaranje aplikacije. Možete to promijeniti u Postavke > Postavke API-a."
+        "header": "Prikupljanje podataka (u načinu razvijanja)",
+        "content": "Neki podaci o tvojem uređaju se šalju API serveru kako bi se greške lakše razvrstavale i uklonile. Možete to promijeniti u Postavke > Postavke API-a."
       },
       "loggingin": "Prijavljivanje..."
     },
