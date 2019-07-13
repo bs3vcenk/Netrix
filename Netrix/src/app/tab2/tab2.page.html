@@ -18,7 +18,8 @@
   </ion-list>
   <ion-item text-center [@fadeInOut] *ngIf="currentTests == 0 && showAllPreference == false" lines="none">
     <ion-label>
-      <h1>{{ 'tab2.notests' | translate }} :)</h1>
+      <h1 id="netHeroImage">👍</h1>
+      <h1 id="netHeader" text-wrap>{{ 'tab2.notests' | translate }}</h1>
     </ion-label>
   </ion-item>
   <ion-list lines="full">
@@ -29,6 +30,7 @@
           <h3>{{ testObj.date }}</h3>
           <ion-note>{{ testObj.subject }}</ion-note>
         </ion-label>
+        <ion-icon item-right name="checkmark" *ngIf="!testObj.current"></ion-icon>
       </ion-item>
     </ng-container>
   </ion-list>
