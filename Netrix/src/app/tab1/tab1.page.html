@@ -9,7 +9,7 @@
 <ion-content>
   <ion-item text-center [@fadeInOut] *ngIf="noItemsLoaded" lines="none" id="cntr">
     <ion-label>
-      <h1 id="netHeroImage">😔</h1>
+      <object width="150" type="image/svg+xml" data="./assets/emoji/pensive.svg"></object>
       <h1 id="netHeader" text-wrap>{{ 'tab1.text.nonetwork.header' | translate }}</h1>
       <h2 id="netContent" text-wrap>{{ 'tab1.text.nonetwork.content' | translate }}</h2>
       <ion-button (click)="getSubjects()" fill="clear">
