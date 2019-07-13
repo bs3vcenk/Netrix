@@ -403,6 +403,7 @@ def populateData(obj=None, username=None, password=None):
 	except Exception as e:
 		log.error("Error getting subjects for class: %s" % e)
 		output[0]['subjects'] = None
+	allSubjAverageGrades = []
 	for z in range(len(output[0]['subjects'])):
 		output[0]['subjects'][z]['id'] = z
 		try:
@@ -412,11 +413,13 @@ def populateData(obj=None, username=None, password=None):
 			isconcl, concluded = obj.getConcludedGradeForSubject(0, z)
 			if isconcl:
 				output[0]['subjects'][z]['average'] = concluded
+				allSubjAverageGrades.append(concluded)
 			else:
 				lgrades = []
 				for i in output[0]['subjects'][z]['grades']:
 					lgrades.append(x['grade'])
 				output[0]['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
+				allSubjAverageGrades.append(round(sum(lgrades)/len(lgrades), 0))
 		except Exception as e:
 			log.error("Error getting grades for subject %s: %s" % (z, e))
 			output[0]['subjects'][z]['grades'] = None
@@ -429,6 +432,7 @@ def populateData(obj=None, username=None, password=None):
 			log.error("Error getting notes for subject %s: %s" % (z, e))
 			output[0]['subjects'][z]['notes'] = None
 			continue
+	output[0]['subjects']['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
 	dataDict['classes'] = output
 	try:
 		dataDict['info'] = obj.getInfoForUser(0)
