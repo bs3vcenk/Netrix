@@ -18,7 +18,7 @@ import { SettingsService } from '../settings.service';
       state('transparent', style({ opacity: 0 })),
       transition('transparent => opaque', animate('500ms ease-out'))
     ])
-  ],
+  ]
 })
 export class SubjOverviewPage implements OnInit {
 
@@ -32,9 +32,7 @@ export class SubjOverviewPage implements OnInit {
   notesAvailable = null;
   gradesAvailable = null;
 
-  titleState = "transparent";
   gradeState = "transparent";
-  noteState = "transparent";
 
   constructor(
     private toastCtrl: ToastController,
@@ -94,20 +92,19 @@ export class SubjOverviewPage implements OnInit {
     	this.subjName = response.subject;
       console.log("subjOverview/getSubjectInfo(): Subject name: " + this.subjName)
     	this.subjProfs = response.professors.join(", ");
-      this.titleState = "opaque";
       if (response.grades) {
         this.subjAvg = response.average;
         this.gradeList = response.grades;
         this.gradesAvailable = true;
-        this.gradeState = "opaque";
       }
       if (response.notes) {
         this.noteList = response.notes;
         this.notesAvailable = true;
-        this.gradeState = "opaque";
       }
       if (response.gradesAvailable == false && response.notesAvailable == false) {
         this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"));
+      } else {
+        this.gradeState = "opaque";
       }
     }, (error) => {
       console.log("subjOverview/getSubjectInfo(): Failed to fetch data from server (" + error.error + ")")
