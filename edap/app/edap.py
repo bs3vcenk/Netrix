@@ -140,8 +140,6 @@ class edap:
 		self.__edlog(1, "Getting subject list for class id %s (remote ID [{%s}])" % (class_id, self.class_ids[class_id]))
 		try:
 			response = self.__fetchUrl("%s/pregled/predmeti/%s" % (self.edurl, self.class_ids[class_id]))
-			o.raise_for_status()
-			response = o.text
 		except Exception as e:
 			self.__edlog(4, "Failed getting subject list (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
