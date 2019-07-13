@@ -20,11 +20,11 @@
 			<ion-label item-right text-right>{{subjAvg}}</ion-label>
 		</ion-item>
 	</ion-list>
-	<ion-list [@animChange]="gradeState" lines="full" *ngIf="gradesAvailable">
+	<ion-list lines="full" *ngIf="gradesAvailable">
     <ion-list-header>
       <ion-label>{{ 'overview.text.grades' | translate }}</ion-label>
     </ion-list-header>
-		<ion-item *ngFor="let grInput of gradeList">
+		<ion-item [@animChange]="gradeState" *ngFor="let grInput of gradeList">
 			<ion-label>
 				<div class="mark">
 					{{grInput.grade}}
@@ -35,11 +35,11 @@
 			</ion-label>
 		</ion-item>
 	</ion-list>
-  <ion-list [@animChange]="gradeState" lines="full" *ngIf="notesAvailable">
+  <ion-list lines="full" *ngIf="notesAvailable">
     <ion-list-header>
       <ion-label>{{ 'overview.text.notes' | translate }}</ion-label>
     </ion-list-header>
-		<ion-item *ngFor="let noteObj of noteList">
+		<ion-item [@animChange]="gradeState" *ngFor="let noteObj of noteList">
 			<ion-label>
 				<div text-wrap>
 					{{ noteObj.note }}
