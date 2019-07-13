@@ -290,6 +290,10 @@ def login():
 		log.error("Bad JSON")
 		logins_fail_ge += 1
 		abort(400)
+	elif len(request.json["username"]) < 4 or len(request.json["password"]) < 4:
+		log.error("Bad auth data")
+		logins_fail_ge += 1
+		abort(400)
 	devIP = request.remote_addr
 	username = request.json["username"]
 	password = request.json["password"]
