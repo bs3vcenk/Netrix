@@ -70,6 +70,7 @@ export class Tab1Page {
       this.noItemsLoaded = false;
     },
     (error) => {
+      this.noItemsLoaded = true;
       if (error.error.error === "E_TOKEN_NONEXISTENT") {
         // User is not authenticated (possibly token purged from server DB)
         this.toastError(this.translate.instant("generic.alert.expiry"), null, 2500);
@@ -84,7 +85,6 @@ export class Tab1Page {
         this.toastError(this.translate.instant("generic.alert.network"), [{text: 'Reload', handler: () => {this.getSubjects()}}], null)
         throw new Error('Network error: ' + error);
       }
-      this.noItemsLoaded = true;
     });
   }
 }
