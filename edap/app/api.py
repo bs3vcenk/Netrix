@@ -309,7 +309,7 @@ def login():
 	elif len(request.json["username"]) < 4 or len(request.json["password"]) < 4:
 		log.error("Bad auth data")
 		logins_fail_ge += 1
-		abort(400)
+		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	devIP = request.remote_addr
 	username = request.json["username"]
 	password = request.json["password"]
