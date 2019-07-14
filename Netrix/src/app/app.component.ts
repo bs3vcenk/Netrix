@@ -31,9 +31,10 @@ export class AppComponent {
     this.initializeApp();
   }
 
-  private async presentToast(message) {
+  private async presentToast(header, message) {
     const toast = await this.toastController.create({
-      message,
+      header: header,
+      message: message,
       duration: 3000,
       color: 'dark',
       position: 'top'
@@ -45,7 +46,7 @@ export class AppComponent {
     this.fcm.getToken(token);
     this.fcm.onNotifications().subscribe(
       (msg) => {
-        this.presentToast(msg.body);
+        this.presentToast("Header", msg.body);
       });
   }
 
