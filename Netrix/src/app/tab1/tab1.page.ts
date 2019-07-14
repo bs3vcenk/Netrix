@@ -68,22 +68,31 @@ export class Tab1Page {
       // Set for display
       this.subjects = allsubs;
       this.noItemsLoaded = false;
+      this.dbError = false;
     },
     (error) => {
       this.noItemsLoaded = true;
-      if (error.error.error === "E_TOKEN_NONEXISTENT") {
-        // User is not authenticated (possibly token purged from server DB)
-        this.toastError(this.translate.instant("generic.alert.expiry"), null, 2500);
-        this.authServ.logout();
-      } else if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
-        // Server-side issue
-        this.dbError = true;
-        throw new Error('Database connection failed');
+      if (error.error) {
+        console.log(error)
+        if (error.error.error === "E_TOKEN_NONEXISTENT") {
+          // User is not authenticated (possibly token purged from server DB)
+          this.toastError(this.translate.instant("generic.alert.expiry"), null, 2500);
+          this.authServ.logout();
+        } else if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
+          // Server-side issue
+          this.dbError = true;
+          throw new Error('Database connection failed');
+        } else if (error.status === 0) {
+          // Server did not respond
+          this.dbError = true;
+          throw new Error('Server down');
+        } else {
+          // No network on client
+          //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
+          throw new Error('Network error: ' + error);
+        }
       } else {
-        // No network on client
-        //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
-        this.toastError(this.translate.instant("generic.alert.network"), [{text: 'Reload', handler: () => {this.getSubjects()}}], null)
-        throw new Error('Network error: ' + error);
+        throw new Error("Network error: " + error);
       }
     });
   }
