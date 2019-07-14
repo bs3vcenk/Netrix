@@ -6,32 +6,32 @@
 // and used throughout the application.
 
 @font-face {
-  font-family: Eina;
-  src: url(../assets/fonts/eina-01-bold.woff2) format("woff2");
-  font-weight: 700;
-  unicode-range: U+000-5FF
-}
-
-@font-face {
-  font-family: Eina;
-  src: url(../assets/fonts/eina-01-semibold.woff2) format("woff2");
-  font-weight: 600;
-  unicode-range: U+000-5FF
-}
-
-@font-face {
-  font-family: Eina;
-  src: url(../assets/fonts/eina-01-regular.woff2) format("woff2");
+  font-family: 'San Francisco';
+  src: url(../assets/fonts/SF-Pro-Display-Regular.otf);
   font-weight: 400;
-  unicode-range: U+000-5FF
+  unicode-range: U+000-5FF;
+}
+
+@font-face {
+  font-family: 'San Francisco';
+  src: url(../assets/fonts/SF-Pro-Display-Bold.otf);
+  font-weight: 600;
+  unicode-range: U+000-5FF;
+}
+
+@font-face {
+  font-family: 'San Francisco';
+  src: url(../assets/fonts/SF-Pro-Display-Heavy.otf);
+  font-weight: 700;
+  unicode-range: U+000-5FF;
 }
 
 * {
-	font-family: 'Eina';
+	font-family: 'San Francisco';
 }
 
 ion-title, h1 {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 h1 {
@@ -48,5 +48,5 @@ ion-card-title {
 }
 
 ion-label, ion-text {
-  font-family: 'Eina' !important;
+  font-family: 'San Francisco' !important;
 }
