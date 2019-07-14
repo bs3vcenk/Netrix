@@ -104,6 +104,7 @@ def sync(token):
 	"""
 		Pull remote data, compare with current and replace if needed.
 	"""
+	log.info("Syncing %s" % token)
 	fData = getData(token)
 	data = fData["data"] # Old data
 	nData = populateData(edap.edap(fData["user"], fData["pasw"])) # New data
