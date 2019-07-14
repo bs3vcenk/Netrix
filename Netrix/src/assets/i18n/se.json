@@ -1,0 +1,103 @@
+{
+  "generic": {
+    "alert": {
+      "network": "Nätverksfel",
+      "expiry": "Din inloggning har löpt ut",
+      "database": "Databasanslutning misslyckades",
+      "quit": {
+        "header": "Avsluta appen",
+        "content": "Vill du lämna appen?",
+        "choices": {
+          "cancel": "Annullera",
+          "quit": "Sluta med"
+        }
+      }
+    },
+    "back": "Tillbaka",
+    "text": {
+      "nonetwork": {
+        "header": "Inget nätverk",
+        "content": "Kontrollera din nätverksanslutning och försök igen."
+      },
+      "nodb": {
+        "header": "Serverfel",
+        "content": "Något gick fel på serverns sida. Vi jobbar snabbt för att fixa det!"
+      }
+    }
+  },
+  "tab1": {
+    "title": "Skolämnen"
+  },
+  "tab2": {
+    "title": "Tester",
+    "showall": "Visa alla tester",
+    "notests": "Inga tester"
+  },
+  "tab3": {
+    "title": "Inställningar",
+    "text": {
+      "logout": "Logga ut",
+      "settings": {
+        "api": "API-Inställningar"
+      }
+    }
+  },
+  "tab4": {
+    "title": "Frånvaro",
+    "text": {
+      "noabsences": "Inga frånvaro"
+    }
+  },
+  "overview": {
+    "title": "Översikt",
+    "alert": {
+      "nogrades": {
+        "header": "Inga betyg",
+        "content": "Det här skolämnet har inga betyg."
+      }
+    },
+    "text": {
+      "average": "Medel",
+      "grades": "Betyg",
+      "notes": "Anteckningar"
+    }
+  },
+  "login": {
+    "title": "Logga in",
+    "alert": {
+      "credentials": {
+        "header": "Ogiltiga uppgifter",
+        "content": "Kontrollera ditt användarnamn och lösenord och försök igen."
+      },
+      "data": {
+        "header": "Datainsamling (i utvecklare läge)",
+        "content": "Vissa uppgifter om din enhet skickas till API-servern för att hjälpa till att kategorisera och felsöka fel. Du kan ändra detta i Inställningar > API-Inställningar."
+      },
+      "loggingin": "Loggar in..."
+    },
+    "text": {
+      "login": "Logga in",
+      "holder_user": "eDnevnik användarnamn",
+      "holder_pass": "eDnevnik lösenord",
+      "appdesc": "Ett modernt gränssnitt för eDnevnik"
+    }
+  },
+  "tabs": {
+    "subjects": "Skolämnen",
+    "tests": "Tester",
+    "settings": "Inställningar",
+    "absences": "Frånvaro"
+  },
+  "settings": {
+    "lang": {
+      "title": "Språkinställningar",
+      "sysdefault": "Systemfel"
+    },
+    "api": {
+      "title": "API-Inställningar",
+      "setserver": "API Server",
+      "analytics": "Analytics",
+      "devinfo": "Skicka information om enheten"
+    }
+  }
+}
