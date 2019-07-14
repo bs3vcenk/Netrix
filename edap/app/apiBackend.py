@@ -41,7 +41,7 @@ def formatAndSendNotification(token, notifData):
 		elif x['type'] == 'test':
 			testNotif.append("%s: %s" % (x['data']['subject'], x['data']['test']))
 		elif x['type'] == 'grade':
-			gradeNotif.append("%s: %s (%s)" % (getNameForSubjId(token, x['classId'], x['subjectId']), x['date']['grade'], x['data']['note']))
+			gradeNotif.append("%s: %s (%s)" % (getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['grade'], x['data']['note']))
 	if len(classNotif) > 0:
 		toSendQueue.append({
 			'head': "NEW_CLASS_HEADER",
@@ -100,6 +100,19 @@ def restoreSyncs():
 	for token in getTokens():
 		startSync(token)
 
+def syncDev(data2, token):
+	"""
+		DEV: Simulate sync with two objects.
+	"""
+	log.info("Simulating sync")
+	o = getData(token)
+	diff = profileDifference(o["data"], data2)
+	if len(diff) > 0:
+		log.info("Difference detected")
+		o["new"] = diff
+		saveData(token, o)
+		formatAndSendNotification(token, diff)
+
 def sync(token):
 	"""
 		Pull remote data, compare with current and replace if needed.
@@ -113,6 +126,7 @@ def sync(token):
 		fData["data"] = nData
 		fData["new"] = diff
 		saveData(token, fData)
+		formatAndSendNotification(token, diff)
 
 def profileDifference(dObj1, dObj2):
 	"""

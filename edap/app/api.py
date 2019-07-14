@@ -237,6 +237,22 @@ def devDiffToken(token):
 	"""
 	return make_response(jsonify(sync(token)), 200)
 
+@app.route('/dev/info/tokendebug/<string:token>/testdiff', methods=["POST"])
+@dev_area
+def devTestDiff(token):
+	if not request.json or not "subjId" in request.json or not "gradeData" in request.json:
+		log.error("Bad JSON")
+		abort(400)
+	elif not "grade" in request.json["gradeData"] or not "note" in request.json["gradeData"]:
+		log.error("Bad grade spec in JSON")
+		abort(400)
+	elif not verifyRequest(token):
+		abort(401)
+	o = getData(token)["data"]
+	o['classes'][0]['subjects'][request.json["subjId"]]['grades'].append(request.json["gradeData"])
+	syncDev(o, token)
+	return make_response(jsonify({'status':'ok'}), 200)
+
 @app.route('/dev/info/tokendebug/<string:token>/revoke', methods=["GET"])
 @dev_area
 def devRemoveToken(token):
