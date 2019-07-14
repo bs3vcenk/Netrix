@@ -29,8 +29,8 @@ export class SubjOverviewPage implements OnInit {
 
   gradeList = null;
   noteList = null;
-  notesAvailable = null;
-  gradesAvailable = null;
+  notesAvailable = false;
+  gradesAvailable = false;
 
   gradeState = "transparent";
 
@@ -101,7 +101,7 @@ export class SubjOverviewPage implements OnInit {
         this.noteList = response.notes;
         this.notesAvailable = true;
       }
-      if (response.gradesAvailable == false && response.notesAvailable == false) {
+      if (this.gradesAvailable == false && this.notesAvailable == false) {
         this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"));
       } else {
         this.gradeState = "opaque";
