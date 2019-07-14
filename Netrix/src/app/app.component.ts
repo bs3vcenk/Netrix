@@ -36,7 +36,6 @@ export class AppComponent {
       message,
       duration: 3000,
       color: 'dark',
-      cssClass: 'notifToast',
       position: 'top'
     });
     toast.present();
