@@ -4,6 +4,8 @@ import { AuthenticationService } from '../authentication.service';
 import { timeout } from 'rxjs/operators';
 import { SettingsService } from '../settings.service';
 import { trigger, state, style, animate, transition } from "@angular/animations";
+import { ToastController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-tab2',
@@ -23,19 +25,62 @@ export class Tab2Page {
   showAllPreference = false;
   currentTests = 0;
   results = null;
+  dbError = false;
+  noItemsLoaded = false;
 
   constructor(
     private authServ: AuthenticationService,
     private http: HttpClient,
-    private settings: SettingsService
+    private settings: SettingsService,
+    private toastCtrl: ToastController,
+    private translate: TranslateService
   ) {
+    this.getTests();
+  }
+
+  async getTests() {
     this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/tests').pipe(timeout(3000)).subscribe((response) => {
       this.tests = response.tests;
       this.results = response.tests;
       this.countTests();
+      this.noItemsLoaded = false;
+      this.dbError = false;
     }, (error) => {
-      console.log(error);
-    })
+      this.noItemsLoaded = true;
+      if (error.error) {
+        console.log(error)
+        if (error.error.error === "E_TOKEN_NONEXISTENT") {
+          // User is not authenticated (possibly token purged from server DB)
+          this.toastError(this.translate.instant("generic.alert.expiry"), null, 2500);
+          this.authServ.logout();
+        } else if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
+          // Server-side issue
+          this.dbError = true;
+          throw new Error('Database connection failed');
+        } else if (error.status === 0) {
+          // Server did not respond
+          this.dbError = true;
+          throw new Error('Server down');
+        } else {
+          // No network on client
+          //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
+          throw new Error('Network error: ' + error);
+        }
+      } else {
+        throw new Error("Network error: " + error);
+      }
+    });
+  }
+
+  toastError(msg, btns, dur) {
+    this.toastCtrl.create({
+      message: msg,
+      buttons: btns,
+      color: 'dark',
+      duration: dur
+    }).then((toast) => {
+      toast.present();
+    });
   }
 
   async countTests() {
