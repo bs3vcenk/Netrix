@@ -13,10 +13,7 @@
         }
       }
     },
-    "back": "Back"
-  },
-  "tab1": {
-    "title": "Subjects",
+    "back": "Back",
     "text": {
       "nonetwork": {
         "header": "No network",
@@ -27,6 +24,9 @@
         "content": "Something went wrong at the server side. We're working quickly to fix it!"
       }
     }
+  },
+  "tab1": {
+    "title": "Subjects"
   },
   "tab2": {
     "title": "Tests",

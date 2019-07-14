@@ -13,10 +13,7 @@
         }
       }
     },
-    "back": "Natrag"
-  },
-  "tab1": {
-    "title": "Predmeti",
+    "back": "Natrag",
     "text": {
       "nonetwork": {
         "header": "Nema mreže",
@@ -27,6 +24,9 @@
         "content": "Dogodila se greška kod servera. Radimo da ju što prije riješimo!"
       }
     }
+  },
+  "tab1": {
+    "title": "Predmeti"
   },
   "tab2": {
     "title": "Ispiti",

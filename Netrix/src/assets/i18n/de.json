@@ -13,10 +13,7 @@
         }
       }
     },
-    "back": "Zurück"
-  },
-  "tab1": {
-    "title": "Schulfächer",
+    "back": "Zurück",
     "text": {
       "nonetwork": {
         "header": "Kein Netzwerk",
@@ -27,6 +24,9 @@
         "content": "Auf der Serverseite ist etwas schief gelaufen. Wir arbeiten schnell daran, es zu reparieren!"
       }
     }
+  },
+  "tab1": {
+    "title": "Schulfächer"
   },
   "tab2": {
     "title": "Prüfungen",
