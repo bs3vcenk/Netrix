@@ -17,7 +17,7 @@
 	<ion-list lines="inset">
 		<ion-item [@animChange]="gradeState" lines="full">
 			<ion-label text-left>{{ 'overview.text.average' | translate }}</ion-label>
-			<ion-label item-right text-right>{{subjAvg}}</ion-label>
+			<ion-label item-right text-right style="font-weight: 600;">{{subjAvg}}</ion-label>
 		</ion-item>
 	</ion-list>
 	<ion-list lines="full" *ngIf="gradesAvailable">
