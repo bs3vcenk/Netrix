@@ -45,8 +45,7 @@
   "tab4": {
     "title": "Izostanci",
     "text": {
-      "birthdate": "Datum rođenja",
-      "address": "Adresa"
+      "noabsences": "Nema izostanaka"
     }
   },
   "overview": {

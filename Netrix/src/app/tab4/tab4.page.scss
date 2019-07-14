@@ -1,0 +1,16 @@
+#netHeader {
+  font-weight: 700 !important;
+  font-size: 40px;
+}
+
+#cntr {
+  height: 80%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+ion-content {
+  --overflow: hidden;
+}

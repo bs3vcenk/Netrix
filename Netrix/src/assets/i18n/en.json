@@ -45,8 +45,7 @@
   "tab4": {
     "title": "Absences",
     "text": {
-      "birthdate": "Birth date",
-      "address": "Address"
+      "noabsences": "No absences"
     }
   },
   "overview": {

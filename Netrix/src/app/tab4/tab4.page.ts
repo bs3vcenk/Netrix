@@ -13,10 +13,10 @@ import { Chart } from 'chart.js';
   templateUrl: 'tab4.page.html',
   styleUrls: ['tab4.page.scss'],
   animations: [
-    trigger('animChange', [
-      state('opaque', style({ opacity: 1 })),
-      state('transparent', style({ opacity: 0 })),
-      transition('transparent => opaque', animate('500ms ease-out'))
+    trigger('fadeInOut', [
+      state('void', style({ opacity: '0' })),
+      state('*', style({ opacity: '1' })),
+      transition('void <=> *', animate('150ms ease-in'))
     ])
   ]
 })
