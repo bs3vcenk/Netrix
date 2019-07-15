@@ -26,7 +26,10 @@
     }
   },
   "tab1": {
-    "title": "Subjects"
+    "title": "Subjects",
+    "text": {
+      "other": "and NUM_PROFS more"
+    }
   },
   "tab2": {
     "title": "Tests",

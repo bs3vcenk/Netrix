@@ -26,7 +26,10 @@
     }
   },
   "tab1": {
-    "title": "Predmeti"
+    "title": "Predmeti",
+    "text": {
+      "other": "i još NUM_PROFS"
+    }
   },
   "tab2": {
     "title": "Ispiti",

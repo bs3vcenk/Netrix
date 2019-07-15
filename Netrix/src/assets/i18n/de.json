@@ -26,7 +26,10 @@
     }
   },
   "tab1": {
-    "title": "Schulfächer"
+    "title": "Schulfächer",
+    "text": {
+      "other": "und NUM_PROFS weiter"
+    }
   },
   "tab2": {
     "title": "Prüfungen",
