@@ -45,7 +45,10 @@
   "tab4": {
     "title": "Izostanci",
     "text": {
-      "noabsences": "Nema izostanaka"
+      "noabsences": "Nema izostanaka",
+      "justified": "Opravdani",
+      "unjustified": "Neopravdani",
+      "waiting": "Na čekanju"
     }
   },
   "overview": {

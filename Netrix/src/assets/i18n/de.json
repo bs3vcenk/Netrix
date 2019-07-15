@@ -45,7 +45,10 @@
   "tab4": {
     "title": "Abwesenheiten",
     "text": {
-      "noabsences": "Keine Abwesenheiten"
+      "noabsences": "Keine Abwesenheiten",
+      "justified": "Rechtfertigte",
+      "unjustified": "Ungerechtfertigte",
+      "waiting": "Warten"
     }
   },
   "overview": {

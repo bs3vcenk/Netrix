@@ -45,7 +45,10 @@
   "tab4": {
     "title": "Absences",
     "text": {
-      "noabsences": "No absences"
+      "noabsences": "No absences",
+      "justified": "Justified",
+      "unjustified": "Unjustified",
+      "waiting": "Waiting"
     }
   },
   "overview": {
