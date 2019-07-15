@@ -51,7 +51,8 @@
       "noabsences": "Nema izostanaka",
       "justified": "Opravdani",
       "unjustified": "Neopravdani",
-      "waiting": "Na čekanju"
+      "waiting": "Na čekanju",
+      "viewall": "Detaljni pregled"
     }
   },
   "overview": {
@@ -105,5 +106,8 @@
       "analytics": "Analitika",
       "devinfo": "Šalji informacije o uređaju"
     }
+  },
+  "absences": {
+    "title": "Detaljni pregled"
   }
 }

@@ -51,7 +51,8 @@
       "noabsences": "No absences",
       "justified": "Justified",
       "unjustified": "Unjustified",
-      "waiting": "Waiting"
+      "waiting": "Waiting",
+      "viewall": "Detailed overview"
     }
   },
   "overview": {
@@ -105,5 +106,8 @@
       "analytics": "Analytics",
       "devinfo": "Send device info"
     }
+  },
+  "absences": {
+    "title": "Detailed overview"
   }
 }

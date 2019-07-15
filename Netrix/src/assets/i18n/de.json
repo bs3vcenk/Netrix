@@ -51,7 +51,8 @@
       "noabsences": "Keine Abwesenheiten",
       "justified": "Rechtfertigte",
       "unjustified": "Ungerechtfertigte",
-      "waiting": "Warten"
+      "waiting": "Warten",
+      "viewall": "Detaillierte Übersicht"
     }
   },
   "overview": {
@@ -105,5 +106,8 @@
       "analytics": "Analytics",
       "devinfo": "Geräteinformationen senden"
     }
+  },
+  "absences": {
+    "title": "Detaillierte Übersicht"
   }
 }

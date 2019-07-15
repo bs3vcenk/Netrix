@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+  		<ion-back-button defaultHref="/tabs/tab4"></ion-back-button>
+  	</ion-buttons>
+    <ion-title>{{ 'absences.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full">
+    <ng-container *ngFor="let absObj of absences.full">
+      <ion-list-header [@fadeInOut]>
+        <ion-label>{{ absObj.date }}</ion-label>
+      </ion-list-header>
+      <ion-item [@fadeInOut] *ngFor="let mcl of absObj.absences">
+        <ion-label>
+          <div class="number">
+            {{mcl.period}}
+          </div>
+          <div class="subject" text-wrap>
+            {{mcl.subject}}
+          </div>
+          <div class="reason" text-wrap>
+            {{mcl.reason}}
+          </div>
+        </ion-label>
+        <ion-icon item-right name="checkmark" *ngIf="mcl.justified"></ion-icon>
+        <ion-icon item-right name="close" *ngIf="!mcl.justified"></ion-icon>
+      </ion-item>
+    </ng-container>
+  </ion-list>
+</ion-content>
