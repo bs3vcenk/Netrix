@@ -7,7 +7,7 @@ from random import randint
 from functools import wraps
 from time import time as _time
 
-api_version = "2.1-dev"
+api_version = "2.2-dev"
 
 log = logging.getLogger('EDAP-API')
 
@@ -306,7 +306,7 @@ def login():
 		log.error("Bad JSON")
 		logins_fail_ge += 1
 		abort(400)
-	elif len(request.json["username"]) < 4 or len(request.json["password"]) < 4:
+	elif request.json["username"] == None or request.json["password"] == None len(request.json["username"]) < 4 or len(request.json["password"]) < 4:
 		log.error("Bad auth data")
 		logins_fail_ge += 1
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
