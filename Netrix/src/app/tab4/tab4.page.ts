@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthenticationService } from '../authentication.service'
+import { AuthenticationService } from '../authentication.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastController } from '@ionic/angular';
 import { trigger, state, style, animate, transition } from "@angular/animations";
@@ -98,17 +98,17 @@ export class Tab4Page {
         {
           label: "# of classes",
           data: [this.absences.overview.justified, this.absences.overview.unjustified, this.absences.overview.waiting],
-          backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+          backgroundColor: ["#5C6BC0", "#F44336", "#FFCE56"]
         }
       ]
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false,
+      aspectRatio: 1.2,
       elements: {
         center: {
           text: this.absences.overview.sum,
-          color: '#FF6384', // Default is #000000
+          color: '#5C6BC0', // Default is #000000
           fontStyle: 'San Francisco', // Default is Arial
           sidePadding: 20 // Defualt is 20 (as a percentage)
         }
@@ -138,5 +138,4 @@ export class Tab4Page {
       }
     })
   }
-
 }
