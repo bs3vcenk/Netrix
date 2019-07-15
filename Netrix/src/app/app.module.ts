@@ -25,7 +25,7 @@ import { Firebase } from '@ionic-native/firebase/ngx';
 import * as Sentry from 'sentry-cordova';
 import { SentryErrorHandler } from './sentryerrorhandler.service'
 
-Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.5.0' })
+Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.6.0' })
 
 var firebaseConfig = {
     apiKey: "AIzaSyDL7WpxGbkahzg6KJqqyxgQO0h-bez0MyY",
