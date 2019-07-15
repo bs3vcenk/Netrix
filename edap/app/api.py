@@ -16,11 +16,6 @@ log.info("eDAP-API v%s starting up..." % api_version)
 app = Flask("EDAP-API")
 CORS(app)
 
-logins_full = 0
-logins_fast = 0
-logins_fail_ge = 0
-logins_fail_wp = 0
-
 restoreSyncs()
 
 def check_auth(username, password):
@@ -173,11 +168,11 @@ def devInfo():
 	html += '<br>'.join(['%s || <a href="/dev/info/tokendebug/%s">Manage</a>' % (getData(i)["user"], i) for i in getTokens()])
 	html += "<h2>Logins</h2>"
 	html += "<h3>Successful</h3>"
-	html += "<p>Full (with data fetch): %i</p>" % logins_full
-	html += "<p>Fast (data cached): %i</p>" % logins_fast
+	html += "<p>Full/slow (with data fetch): %i</p>" % getCounter("logins:success:slow")
+	html += "<p>Fast (data cached): %i</p>" % getCounter("logins:success:fast")
 	html += "<h3>Failed</h3>"
-	html += "<p>Wrong password: %i</p>" % logins_fail_wp
-	html += "<p>Generic (bad JSON, library exception etc.): %i</p>" % logins_fail_ge
+	html += "<p>Wrong password: %i</p>" % getCounter("logins:fail:credentials")
+	html += "<p>Generic (bad JSON, library exception etc.): %i</p>" % getCounter("logins:fail:generic")
 	html += timeGenerated(start)
 	return makeHTML(title="eDAP dev info", content=html)
 
@@ -298,17 +293,13 @@ def login():
 		in the DB, meaning no full fetch is needed, and the user's token
 		is instantly returned.
 	"""
-	global logins_fast
-	global logins_fail_ge
-	global logins_fail_wp
-	global logins_full
 	if not request.json or not 'username' in request.json or not 'password' in request.json:
 		log.error("Bad JSON")
-		logins_fail_ge += 1
+		updateCounter("logins:fail:generic")
 		abort(400)
 	elif request.json["username"] == None or request.json["password"] == None or len(request.json["username"]) < 4 or len(request.json["password"]) < 4:
 		log.error("Bad auth data")
-		logins_fail_ge += 1
+		updateCounter("logins:fail:generic")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	devIP = request.remote_addr
 	username = request.json["username"]
@@ -318,22 +309,22 @@ def login():
 	token = hashString(username + ":" + password)
 	if userInDatabase(token):
 		log.info("FAST => %s" % username)
-		logins_fast += 1
+		updateCounter("logins:success:fast")
 		return make_response(jsonify({'token':token}), 200)
 	log.info("SLOW => %s" % username)
 	try:
 		obj = edap.edap(username, password)
 	except edap.WrongCredentials:
 		log.error("SLOW => WRONG CREDS => %s" % username)
-		logins_fail_wp += 1
+		updateCounter("logins:fail:credentials")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	except edap.FatalLogExit as e:
 		log.error("SLOW => eDAP FAIL => %s => %s" % (username, str(e)))
-		logins_fail_ge += 1
+		updateCounter("logins:fail:generic")
 		abort(500)
 	except Exception as e:
 		log.error("SLOW => UNHANDLED EXCEPTION => %s => %s" % (username, str(e)))
-		logins_fail_ge += 1
+		updateCounter("logins:fail:generic")
 		abort(500)
 	log.info("SLOW => SUCCESS => %s (%s)" % (username, token))
 	dataObj = {
@@ -357,7 +348,7 @@ def login():
 	saveData(token, dataObj)
 	log.info("SLOW => Starting sync for %s" % username)
 	startSync(token)
-	logins_full += 1
+	updateCounter("logins:success:slow")
 	return make_response(jsonify({'token':token}), 200)
 
 @app.route('/api/user/<string:token>/info', methods=["GET"])

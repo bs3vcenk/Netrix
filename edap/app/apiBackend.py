@@ -34,6 +34,8 @@ def formatAndSendNotification(token, notifData):
 	classNotif = []
 	gradeNotif = []
 	testNotif = []
+	noteNotif = []
+	absenceNotif = ""
 	toSendQueue = []
 	for x in notifData:
 		if x['type'] == 'class':
@@ -42,20 +44,34 @@ def formatAndSendNotification(token, notifData):
 			testNotif.append("%s: %s" % (x['data']['subject'], x['data']['test']))
 		elif x['type'] == 'grade':
 			gradeNotif.append("%s: %s (%s)" % (getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['grade'], x['data']['note']))
+		elif x['type'] == 'note':
+			noteNotif.append("%s: %s" % (getNameForSubjId(token, x['classId']), x['data']['note']))
+		elif x['type'] == 'absence':
+			absenceNotif = "ABS"
 	if len(classNotif) > 0:
 		toSendQueue.append({
-			'head': "NEW_CLASS_HEADER",
+			'head': "NEW_CLASS",
 			'content': ", ".join(classNotif)
 		})
 	if len(gradeNotif) > 0:
 		toSendQueue.append({
-			'head': "NEW_GRADE_HEADER",
+			'head': "NEW_GRADE",
 			'content': ", ".join(gradeNotif)
 		})
 	if len(testNotif) > 0:
 		toSendQueue.append({
-			'head': "NEW_TEST_HEADER",
+			'head': "NEW_TEST",
 			'content': ", ".join(testNotif)
+		})
+	if len(noteNotif) > 0:
+		toSendQueue.append({
+			'head': "NEW_NOTE",
+			'content': ", ".join(noteNotif)
+		})
+	if len(absenceNotif) > 0:
+		toSendQueue.append({
+			'head': "NEW_ABSENCE",
+			'content': absenceNotif
 		})
 	for i in toSendQueue:
 		sendNotification(token, i['head'], i['content'])
@@ -163,6 +179,14 @@ def profileDifference(dObj1, dObj2):
 		log.info("Found difference in tests")
 		for i in difflist:
 			_finalReturn.append({'type':'test', 'classId':0, 'data':i})
+	## ABSENCE DIFFERENCE (FIRST CLASS ONLY) ##
+	# Only check length to avoid spamming notifications for
+	# each class period.
+	t1 = deepcopy(dObj1['classes'][0]['absences']['full'])
+	t2 = deepcopy(dObj2['classes'][0]['absences']['full'])
+	if len(t1) != len(t2):
+		log.info("Found difference in absences")
+		_finalReturn.append({'type':'absence', 'classId':0, 'data':{'diff':len(t2)-len(t1)}})
 	## PER-SUBJECT GRADE DIFFERENCE (FIRST CLASS ONLY) ##
 	# https://stackoverflow.com/a/1663826
 	sId = 0
@@ -175,6 +199,15 @@ def profileDifference(dObj1, dObj2):
 				log.info("Found difference in grades")
 				for x in difflist:
 					_finalReturn.append({'type':'grade', 'classId':0, 'subjectId': sId, 'data':x})
+		elif j['notes']:
+			t1 = deepcopy(i['notes'])
+			t2 = deepcopy(j['notes'])
+			difflist = [x for x in t2 if x not in t1]
+			if len(difflist) > 0:
+				log.info("Found difference in notes")
+				for x in difflist:
+					_finalReturn.append({'type':'note', 'classId':0, 'subjectId': sId, 'data':x})
+
 		else:
 			continue
 		sId += 1
@@ -502,6 +535,25 @@ def hashPassword(inp):
 		Return the SHA256 hash of a string. Used for the /dev/ password.
 	"""
 	return _SHA256HASH(inp.encode()).hexdigest()
+
+def getCounter(counter_id):
+	val = r.get("counter:"+counter_id)
+	if val == None:
+		r.set("counter:"+counter_id, 0)
+		return 0
+	else:
+		try:
+			return int(val)
+		except:
+			r.set("counter:"+counter_id, 0)
+			return 0
+
+def setCounter(counter_id, value):
+	r.set("counter:"+counter_id, value)
+
+def updateCounter(counter_id):
+	val = getCounter(counter_id)
+	setCounter(counter_id, val+1)
 
 config = readConfig()
 logging.basicConfig(
