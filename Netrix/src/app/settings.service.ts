@@ -9,6 +9,7 @@ export class SettingsService {
   dataPreference = null;
   language = null;
   apiServer = "https://api.netrix.io";
+  httpLimit = 5000;
 
   constructor(private storage: Storage) {}
 

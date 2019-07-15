@@ -39,7 +39,7 @@ export class Tab2Page {
   }
 
   async getTests() {
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/tests').pipe(timeout(3000)).subscribe((response) => {
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/tests').pipe(timeout(this.settings.httpLimit)).subscribe((response) => {
       this.tests = response.tests;
       this.results = response.tests;
       this.countTests();

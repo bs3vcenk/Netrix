@@ -88,7 +88,7 @@ export class SubjOverviewPage implements OnInit {
   }
 
   async getSubjectInfo() {
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId).pipe(timeout(3000)).subscribe((response) => {
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId).pipe(timeout(this.settings.httpLimit)).subscribe((response) => {
     	this.subjName = response.subject;
       console.log("subjOverview/getSubjectInfo(): Subject name: " + this.subjName)
     	this.subjProfs = response.professors.join(", ");

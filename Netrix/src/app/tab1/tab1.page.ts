@@ -57,7 +57,7 @@ export class Tab1Page {
 
   async getSubjects() {
     // GET the subject list endpoint on the API server
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects').pipe(timeout(3000)).subscribe((response) => {
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects').pipe(timeout(this.settings.httpLimit)).subscribe((response) => {
       let allsubs = response.subjects;
       this.subjsLoaded = true;
       // Iterate over professors list and join it into a comma-separated string

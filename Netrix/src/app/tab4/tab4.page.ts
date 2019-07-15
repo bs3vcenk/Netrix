@@ -118,7 +118,7 @@ export class Tab4Page {
   }
 
   collectStudentData() {
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences').pipe(timeout(3000)).subscribe((response) => {
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences').pipe(timeout(this.settings.httpLimit)).subscribe((response) => {
       this.absences = response;
       this.initGraph();
     }, (error) => {
