@@ -63,12 +63,13 @@ export class Tab1Page {
       // Iterate over professors list and join it into a comma-separated string
       allsubs.forEach((subj) => {
         let profs = subj.professors;
+        let profsC = null;
         if (profs.length > 3) {
           console.log("tab1/getSubjects(): Hit professor limit");
-          let profsC = profs.slice(0, 3);
+          profsC = profs.slice(0, 3);
           profsC.push(this.translate.instant('tab1.text.other').replace("NUM_PROFS", profs.slice(3,profs.length).length));
         } else {
-          let profsC = profs;
+          profsC = profs;
         }
         subj.professors = profsC.join(", ");
       })
