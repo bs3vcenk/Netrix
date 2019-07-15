@@ -189,15 +189,15 @@ def devThreadList():
 	"""
 	return makeHTML(title="eDAP dev thread info", content='<h2>List</h2><pre>%s</pre>' % '\n'.join(getSyncThreads()))
 
-@app.route('/dev/threads/<string:threadname>', methods=["GET"])
+@app.route('/dev/threads/<string:token>', methods=["GET"])
 @dev_area
-def devThreadInfo(threadname):
+def devThreadInfo(token):
 	"""
 		DEV: Show if a thread is still running.
 	"""
-	if threadname not in threads:
-		return make_response('Thread does not exist', 404)
-	return makeHTML(title="eDAP dev thread info", content='<pre>isAlive: %s</pre>' % threads[threadname].isAlive())
+	if not verifyRequest(token):
+		return make_response('Token does not exist', 404)
+	return makeHTML(title="eDAP dev thread info", content='<pre>isAlive: %s</pre>' % isThreadAlive(token))
 
 @app.route('/dev/info/tokendebug/<string:token>', methods=["GET"])
 @dev_area

@@ -82,6 +82,13 @@ def getSyncThreads():
 	"""
 	return [i.replace("sync:", "") for i in threads.keys()]
 
+def isThreadAlive(token):
+	"""
+		Return the isAlive() of the sync thread belonging to a
+		given token.
+	"""
+	return threads["sync:" + token].isAlive()
+
 def startSync(token):
 	"""
 		Start a sync thread for a given token.
@@ -223,7 +230,7 @@ def _sync(token):
 	"""
 	while True:
 		val = randint(500,5000)
-		log.info("Sleeping for %i s" % val)
+		log.info("Waiting %i s for %s" % (val, token))
 		sleep(val)
 		sync(token)
 
