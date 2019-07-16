@@ -192,6 +192,8 @@ def profileDifference(dObj1, dObj2):
 	sId = 0
 	for i, j in zip(dObj1['classes'][0]['subjects'], dObj2['classes'][0]['subjects']):
 		if "grades" in j.keys():
+			if j["grades"] == None:
+				continue
 			t1 = deepcopy(i['grades'])
 			t2 = deepcopy(j['grades'])
 			difflist = [x for x in t2 if x not in t1]
@@ -200,6 +202,8 @@ def profileDifference(dObj1, dObj2):
 				for x in difflist:
 					_finalReturn.append({'type':'grade', 'classId':0, 'subjectId': sId, 'data':x})
 		elif "notes" in j.keys():
+			if j["notes"] == None:
+				continue
 			t1 = deepcopy(i['notes'])
 			t2 = deepcopy(j['notes'])
 			difflist = [x for x in t2 if x not in t1]
@@ -207,7 +211,6 @@ def profileDifference(dObj1, dObj2):
 				log.info("Found difference in notes")
 				for x in difflist:
 					_finalReturn.append({'type':'note', 'classId':0, 'subjectId': sId, 'data':x})
-
 		else:
 			continue
 		sId += 1
