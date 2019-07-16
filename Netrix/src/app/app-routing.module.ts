@@ -5,8 +5,8 @@ const routes: Routes = [
   { path: 'tabs', loadChildren: './tabs/tabs.module#TabsPageModule' },
   { path: 'subj-overview/:subjid', loadChildren: './subj-overview/subj-overview.module#SubjOverviewPageModule' },
   { path: 'login', loadChildren: './login/login.module#LoginPageModule' },
-  { path: 'settings/api', loadChildren: './settings/api/api.module#ApiPageModule' },
-  { path: 'absences', loadChildren: './absences/absences.module#AbsencesPageModule' }
+  { path: 'absences', loadChildren: './absences/absences.module#AbsencesPageModule' },
+  { path: 'privacy', loadChildren: './privacy/privacy.module#PrivacyPageModule' }
 ];
 @NgModule({
   imports: [
