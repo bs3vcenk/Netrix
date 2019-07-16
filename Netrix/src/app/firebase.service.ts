@@ -28,6 +28,10 @@ export class FirebaseService {
     return devicesRef.doc(userid).set(data);
   }
 
+  setAnalytics(val) {
+    this.firebase.setAnalyticsCollectionEnabled(val);
+  }
+
   onNotifications() {
     return this.firebase.onNotificationOpen();
   }

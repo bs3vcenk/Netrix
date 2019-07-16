@@ -8,12 +8,27 @@
 
 <ion-content>
   <ion-list lines="full">
-    <ion-item button routerLink="/settings/api" routerDirection="forward">
-      <ion-label>{{ 'tab3.text.settings.api' | translate }}</ion-label>
+    <ion-list-header>
+      <ion-label>{{ 'settings.api.analytics' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label>{{ 'settings.api.devinfo' | translate }}</ion-label>
+      <ion-toggle slot="end" [(ngModel)]="dataPreference" (ionChange)="updDeviceInfoPreference()"></ion-toggle>
     </ion-item>
+    <!--<ion-item>
+      <ion-label>{{ 'settings.api.errreport' | translate }}</ion-label>
+      <ion-toggle slot="end" [(ngModel)]="errorPreference" (ionChange)="updErrorReportPreference()"></ion-toggle>
+    </ion-item>-->
+    <!--<ion-list-header>
+      <ion-label>{{ 'settings.api.notifs' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label>{{ 'settings.api.notifs_master' | translate }}</ion-label>
+      <ion-toggle slot="end" [(ngModel)]="notifPreference" (ionChange)="updMainNotificationPreference()"></ion-toggle>
+    </ion-item>-->
   </ion-list>
 	<ion-list>
-    <ion-item button (click)="logout()">
+    <ion-item button (click)="logout()" lines="full">
       <ion-label>{{ 'tab3.text.logout' | translate }}</ion-label>
     </ion-item>
   </ion-list>
