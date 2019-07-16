@@ -40,6 +40,7 @@
     "firebase": "^6.2.4",
     "rxjs": "~6.5.1",
     "sentry-cordova": "^0.15.0",
+    "showdown": "^1.9.0",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.29"
   },
@@ -53,6 +54,7 @@
     "@angular/compiler-cli": "~7.2.2",
     "@angular/language-service": "~7.2.2",
     "@ionic/angular-toolkit": "~1.5.1",
+    "@ionic/lab": "2.0.6",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~12.0.0",

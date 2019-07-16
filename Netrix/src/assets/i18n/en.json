@@ -77,8 +77,12 @@
         "content": "Check your username and password, and try again."
       },
       "data": {
-        "header": "Data collection (in developer mode)",
-        "content": "Some information about your device is sent to the API server to help categorize and debug errors. You can change this in Settings > API Settings."
+        "header": "Do you want to enable data collection?",
+        "content": "Some information about your device is sent to the API server to help categorize and debug errors. You can change this later in settings.",
+        "choice": {
+          "yes": "Yes",
+          "no": "No"
+        }
       },
       "loggingin": "Logging in..."
     },
@@ -86,7 +90,8 @@
       "login": "Log in",
       "holder_user": "eDnevnik username",
       "holder_pass": "eDnevnik password",
-      "appdesc": "A modern interface for eDnevnik"
+      "appdesc": "A modern interface for eDnevnik",
+      "privacy": "Privacy policy"
     }
   },
   "tabs": {
@@ -101,10 +106,10 @@
       "sysdefault": "System default"
     },
     "api": {
-      "title": "API Settings",
-      "setserver": "API Server",
       "analytics": "Analytics",
-      "devinfo": "Send device info"
+      "devinfo": "Send device info",
+      "notifs": "Notifications",
+      "notifs_master": "All notifications"
     }
   },
   "absences": {

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../authentication.service';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
+import { SettingsService } from '../settings.service';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,8 @@ export class LoginPage implements OnInit {
     private translate: TranslateService,
     private authServ: AuthenticationService,
     private alertControl: AlertController,
-    private loadControl: LoadingController
+    private loadControl: LoadingController,
+    private settings: SettingsService
   ) { }
 
   ngOnInit() {
@@ -56,13 +58,21 @@ export class LoginPage implements OnInit {
       message: this.translate.instant("login.alert.data.content"),
       buttons: [
         {
-          text: 'OK',
-          role: 'cancel',
+          text: this.translate.instant("login.alert.data.choice.no"),
           handler: () => {
             // Proceed to login when accepted
+            this.settings.setDataCollection(false);
             this.login();
           }
-        }
+        },
+        {
+          text: this.translate.instant("login.alert.data.choice.yes"),
+          handler: () => {
+            // Proceed to login when accepted
+            this.settings.setDataCollection(true);
+            this.login();
+          }
+        },
       ]
     }).then(alert => {
       // Show the alert
@@ -82,11 +92,10 @@ export class LoginPage implements OnInit {
   }
 
   _login() {
-    if (this.dataAlertShown === false) {
+    if (this.settings.dataPrefUnset === true) {
       // User hasn't seen alert, so we show it and set dataAlertShown to true,
       // so we don't show it again
       console.log("login/_login(): Data alert wasn't shown, showing it now")
-      this.dataAlertShown = true;
       this.dataAlert();
     } else {
       // User has seen alert, so no need to show it

@@ -77,8 +77,12 @@
         "content": "Provjeri svoje korisničko ime i lozinu, pa pokušaj ponovo."
       },
       "data": {
-        "header": "Prikupljanje podataka (u načinu razvijanja)",
-        "content": "Neki podaci o tvojem uređaju se šalju API serveru kako bi se greške lakše razvrstavale i uklonile. Možete to promijeniti u Postavke > Postavke API-a."
+        "header": "Želiš li omogućiti prikupljanje podataka?",
+        "content": "Neki podaci o tvojem uređaju se šalju API serveru kako bi se greške lakše razvrstale i uklonile. Možeš to kasnije promijeniti u postavkama.",
+        "choice": {
+          "yes": "Da",
+          "no": "Ne"
+        }
       },
       "loggingin": "Prijavljivanje..."
     },
@@ -86,7 +90,8 @@
       "login": "Prijavi se",
       "holder_user": "Korisničko ime za eDnevnik",
       "holder_pass": "Lozinka za eDnevnik",
-      "appdesc": "Moderno sučelje za eDnevnik"
+      "appdesc": "Moderno sučelje za eDnevnik",
+      "privacy": "Pravila o privatnosti"
     }
   },
   "tabs": {
@@ -101,10 +106,10 @@
       "sysdefault": "Jezik operativnog sustava"
     },
     "api": {
-      "title": "Postavke API-a",
-      "setserver": "API poslužitelj",
       "analytics": "Analitika",
-      "devinfo": "Šalji informacije o uređaju"
+      "devinfo": "Šalji informacije o uređaju",
+      "notifs": "Obavijesti",
+      "notifs_master": "Sve obavijesti"
     }
   },
   "absences": {
