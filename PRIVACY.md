@@ -20,14 +20,14 @@ eDAP sprema sljedeće podatke pri prijavi, bez obzira na postavku "Šalji inform
 * **Lozinka** - koristi se za pozadinsku sinkronizaciju i uspoređivanje podataka (za obavijesti o novostima) -- CARNet nema dostupan API, stoga je ovo zasad potrebno, barem dok implementacija sinkronizacije na korisničkoj strani nije dovršena (u tom slučaju bi lozinka bila samo na korisničkoj strani)
 * **Token** - hash korisničkog imena i lozinke algoritma MD5, koji se koristi za daljnju upotrebu API-a i identifikaciju u zapisima na strani servera
 * **Informacije o školskoj godini**, što uključuje:
-  * **Popis razreda i pripadajuće informacije** - oznaka (npr. 2.e), školska godina (npr. 2018./2019.), ime i mjesto škole te ime razrednika
-  * **Popis predmeta i pripadajuće informacije** (samo aktualni razred) - ime predmeta, imena profesora koji predaju ili su predavali taj predmet i prosjek (zaključna ocjena, ako je dostupna, a ako nije onda se koristi izračunati prosjek)
-  * **Popis ocjena, bilježaka za pojedini predmet i pripadajuće informacije** (samo aktualni razred) - datum upisivanja ocjene odnosno bilješke te bilješka uz ocjenu
-  * **Popis ispita za pojedini razred i pripadajuće informacije** (samo aktualni razred) - datum ispita, predmet ispita te školski predmet za koji se taj ispit piše
-  * **Popis izostanaka za pojedini razred i pripadajuće informacije** (samo aktualni razred)
-    * **U načinu pregleda** - broj sati na čekanju, broj opravdanih i neopravdanih sati, zbroj svih zbroj neodlučenih sati
-    * **U detaljnom načinu** - datum skupine izostanaka, te za svaku skupino izostanaka: status (opravdan/neopravdan), redni broj školskog sata, razlog i ime predmeta
-  * **Informacije o korisniku** (samo aktualni razred, trenutno se ne koristi nigdje u aplikaciji) - adresa stanovanja, datum rođenja, rodno mjesto, puno ime, redni broj i školski program
+    * **Popis razreda i pripadajuće informacije** - oznaka (npr. 2.e), školska godina (npr. 2018./2019.), ime i mjesto škole te ime razrednika
+    * **Popis predmeta i pripadajuće informacije** (samo aktualni razred) - ime predmeta, imena profesora koji predaju ili su predavali taj predmet i prosjek (zaključna ocjena, ako je dostupna, a ako nije onda se koristi izračunati prosjek)
+    * **Popis ocjena, bilježaka za pojedini predmet i pripadajuće informacije** (samo aktualni razred) - datum upisivanja ocjene odnosno bilješke te bilješka uz ocjenu
+    * **Popis ispita za pojedini razred i pripadajuće informacije** (samo aktualni razred) - datum ispita, predmet ispita te školski predmet za koji se taj ispit piše
+    * **Popis izostanaka za pojedini razred i pripadajuće informacije** (samo aktualni razred)
+        * **U načinu pregleda** - broj sati na čekanju, broj opravdanih i neopravdanih sati, zbroj svih zbroj neodlučenih sati
+        * **U detaljnom načinu** - datum skupine izostanaka, te za svaku skupinu izostanaka: status (opravdan/neopravdan), redni broj školskog sata, razlog i ime predmeta
+    * **Informacije o korisniku** (samo aktualni razred, trenutno se ne koristi nigdje u aplikaciji) - adresa stanovanja, datum rođenja, rodno mjesto, puno ime, redni broj i školski program
 * **IP adresa s koje je zahtjev prijave stigao** - u slučaju javnog servisa https://api.netrix.io, to je adresa Cloudflare servera koji je primio zahtjev
 * **IP adresa i država korisnika iza Cloudflare servera** - Cloudflare javlja stvarnu IP adresu koja šalje zahtjev, te se ona zapisuje u korisnikov profil kako bi se identificirali i blokirali potencijalni napadi na servis, te kako bi se odredila razina ograničenja u slučaju da korisnik servisu ne pristupa iz Hrvatske
 
