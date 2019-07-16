@@ -110,11 +110,13 @@ export class SubjOverviewPage implements OnInit {
       console.log("subjOverview/getSubjectInfo(): Failed to fetch data from server (" + error.error + ")")
       if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
         this.toastError(this.translate.instant("generic.alert.database"), null, 2500);
+        this.goBack();
       } else if (error.error.error === "E_TOKEN_NONEXISTENT") {
         this.toastError(this.translate.instant("generic.alert.expiry"), null, 2500);
         this.authServ.logout();
       } else if (!error.error.error) {
-        this.toastError(this.translate.instant("generic.alert.network"), [{text: 'Reload', handler: () => {this.getSubjectInfo()}}], null)
+        this.toastError(this.translate.instant("generic.alert.network"), null, 2500);
+        this.goBack();
         throw new Error('Network error: ' + error);
       }
     });
