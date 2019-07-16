@@ -385,6 +385,7 @@ def getClasses(token):
 	for i in o['classes']:
 		try:
 			del i['subjects']
+			del i['tests']
 		except:
 			pass
 	return make_response(jsonify(o), 200)
@@ -408,6 +409,12 @@ def getSubjects(token, class_id):
 		abort(401)
 	log.info("%s => Class %s" % (token, class_id))
 	o = getData(token)['data']['classes'][class_id]
+	for x in o['subjects']:
+		try:
+			del x['notes']
+			del x['grades']
+		except:
+			pass
 	return make_response(jsonify({'subjects': o['subjects'], 'class_avg':o['complete_avg']}), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/tests', methods=["GET"])
