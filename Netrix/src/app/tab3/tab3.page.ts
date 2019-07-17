@@ -20,6 +20,7 @@ export class Tab3Page {
   dataPreference = null;
   notifPreference = null;
   errorPreference = null;
+  adPreference = null;
 
   constructor(
     private authServ: AuthenticationService,
