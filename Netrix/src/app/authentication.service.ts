@@ -101,6 +101,11 @@ export class AuthenticationService {
 
 	logout() {
 		return this.storage.remove("auth-token").then(() => {
+			this.http.get<any>(this.settings.apiServer + "/api/user/" + this.token + "/logout").subscribe((res) => {
+				console.log("AuthenticationService/logout(): Server-side data successfully deleted");
+			}, (err) => {
+				console.log("AuthenticationService/logout(): Failed to delete server-side data");
+			})
 			this.authenticationState.next(false);
 		})
 	}
