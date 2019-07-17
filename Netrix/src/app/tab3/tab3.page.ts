@@ -28,6 +28,7 @@ export class Tab3Page {
     this.dataPreference = this.settings.dataPreference;
     this.errorPreference = this.settings.errorPreference;
     this.notifPreference = this.settings.notifPreference;
+    this.adPreference = this.settings.adPreference;
   }
 
   logout() {
@@ -36,6 +37,11 @@ export class Tab3Page {
 
   updDeviceInfoPreference() {
     this.settings.setDataCollection(this.dataPreference);
+  }
+
+  updAdPreference() {
+    this.settings.changePreference("ad-preference", this.adPreference);
+    this.settings.adPreference = this.adPreference;
   }
 
   updMainNotificationPreference() {

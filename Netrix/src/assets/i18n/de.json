@@ -39,10 +39,7 @@
   "tab3": {
     "title": "Einstellungen",
     "text": {
-      "logout": "Abmelden",
-      "settings": {
-        "api": "API-Einstellungen"
-      }
+      "logout": "Abmelden"
     }
   },
   "tab4": {
@@ -106,10 +103,11 @@
       "sysdefault": "Systemstandard"
     },
     "api": {
-      "analytics": "Analytics",
+      "analytics": "Analytics und Werbungen",
       "devinfo": "Geräteinformationen senden",
       "notifs": "Benachrichtigungen",
-      "notifs_master": "Alle Benachrichtigungen"
+      "notifs_master": "Alle Benachrichtigungen",
+      "ads": "Werbungen anzeigen"
     }
   },
   "absences": {

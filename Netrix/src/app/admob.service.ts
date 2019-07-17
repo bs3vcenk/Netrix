@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { AdMobPro } from '@ionic-native/admob-pro/ngx';
-import { Platform } from '@ionic/angular';
+import { SettingsService } from './settings.service';
 
 @Injectable()
 export class AdmobService {
@@ -10,16 +10,20 @@ export class AdmobService {
   };
   constructor(
     private admob: AdMobPro,
-    public platform: Platform
+    private settings: SettingsService
   ) { }
 
   showBanner() {
-    this.admob.createBanner({
-      adId: this.admobid.banner,
-      isTesting: false,
-      autoShow: true,
-      adSize: 'BANNER',
-      position: this.admob.AD_POSITION.BOTTOM_CENTER,
-    });
+    if (this.settings.adPreference) {
+      this.admob.createBanner({
+        adId: this.admobid.banner,
+        isTesting: false,
+        autoShow: true,
+        adSize: 'BANNER',
+        position: this.admob.AD_POSITION.BOTTOM_CENTER,
+      });
+    } else {
+      console.log("AdmobService/showBanner(): Not showing ad because of preference");
+    }
   }
 }

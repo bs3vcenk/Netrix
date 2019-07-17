@@ -39,10 +39,7 @@
   "tab3": {
     "title": "Settings",
     "text": {
-      "logout": "Log out",
-      "settings": {
-        "api": "API Settings"
-      }
+      "logout": "Log out"
     }
   },
   "tab4": {
@@ -106,10 +103,11 @@
       "sysdefault": "System default"
     },
     "api": {
-      "analytics": "Analytics",
+      "analytics": "Analytics and ads",
       "devinfo": "Send device info",
       "notifs": "Notifications",
-      "notifs_master": "All notifications"
+      "notifs_master": "All notifications",
+      "ads": "Show advertisements"
     }
   },
   "absences": {

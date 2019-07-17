@@ -39,10 +39,7 @@
   "tab3": {
     "title": "Postavke",
     "text": {
-      "logout": "Odjava",
-      "settings": {
-        "api": "Postavke API-a"
-      }
+      "logout": "Odjava"
     }
   },
   "tab4": {
@@ -106,10 +103,11 @@
       "sysdefault": "Jezik operativnog sustava"
     },
     "api": {
-      "analytics": "Analitika",
+      "analytics": "Analitika i reklame",
       "devinfo": "Šalji informacije o uređaju",
       "notifs": "Obavijesti",
-      "notifs_master": "Sve obavijesti"
+      "notifs_master": "Sve obavijesti",
+      "ads": "Prikazuj reklame"
     }
   },
   "absences": {

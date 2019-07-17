@@ -11,6 +11,7 @@ export class SettingsService {
   dataPrefUnset = true;
   errorPreference = null;
   notifPreference = null;
+  adPreference = null;
   language = null;
   apiServer = "https://api.netrix.io";
   httpLimit = 5000;
@@ -48,6 +49,13 @@ export class SettingsService {
           this.notifPreference = res;
         } else {
           this.notifPreference = true;
+        }
+      });
+      this.storage.get("ad-preference").then(res => {
+        if (res != null) {
+          this.adPreference = res;
+        } else {
+          this.adPreference = true;
         }
       });
     });
