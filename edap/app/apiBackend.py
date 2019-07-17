@@ -26,6 +26,14 @@ r = None
 
 threads = {}
 
+def purgeToken(token):
+	"""
+		Remove a token from the DB and terminate its sync thread.
+	"""
+	log.info("LOGOUT => %s" % token)
+	stopSync(token)
+	r.delete('token:' + token)
+
 def formatAndSendNotification(token, notifData):
 	"""
 		Format a notification for the user based on data gotten from
@@ -90,7 +98,7 @@ def stopSync(token):
 		terminated.
 	"""
 	if "sync:" + token in threads.keys():
-		threads["sync:" + token].stop()
+		threads["sync:" + token]["run"] = False
 
 def getSyncThreads():
 	"""
@@ -103,7 +111,7 @@ def isThreadAlive(token):
 		Return the isAlive() of the sync thread belonging to a
 		given token.
 	"""
-	return threads["sync:" + token].isAlive()
+	return threads["sync:" + token]["obj"].isAlive()
 
 def startSync(token):
 	"""
@@ -113,7 +121,8 @@ def startSync(token):
 	if "sync:" + token not in threads:
 		to = Thread(target=_sync, args=(token,))
 		to.start()
-		threads["sync:" + token] = to
+		threads["sync:" + token]["obj"] = to
+		threads["sync:" + token]["run"] = True
 
 def restoreSyncs():
 	"""
@@ -265,9 +274,12 @@ def _sync(token):
 		Wrapper around sync, for bg execution (random timeout).
 	"""
 	while True:
-		val = randint(500,5000)
+		val = randint(3600,5000)
 		log.info("Waiting %i s for %s" % (val, token))
 		sleep(val)
+		if threads["sync:" + token]["run"] != True:
+			del ["sync:" + token]
+			break
 		sync(token)
 
 def getVar(varname, _bool=False, default=None):

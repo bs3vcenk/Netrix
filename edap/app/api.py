@@ -7,7 +7,7 @@ from random import randint
 from functools import wraps
 from time import time as _time
 
-api_version = "2.2-dev"
+api_version = "2.3-dev"
 
 log = logging.getLogger('EDAP-API')
 
@@ -255,7 +255,7 @@ def devRemoveToken(token):
 		DEV: Remove the data for a token for a DB.
 	"""
 	try:
-		r.delete('token:' + token)
+		purgeToken(token)
 		return 'Success!'
 	except Exception as e:
 		return make_response("Error! %s" % e, 500)
@@ -371,6 +371,16 @@ def getNewGrades(token):
 	log.info(token)
 	o = getData(token)['new']
 	return make_response(jsonify({'new':o}), 200)
+
+@app.route('/api/user/<string:token>/logout', methods=["GET"])
+def logOut(token):
+	"""
+		Log the user out.
+	"""
+	if not verifyRequest(token):
+		abort(401)
+	purgeToken(token)
+	return make_response(jsonify({"status":"ok"}), 200)
 
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
 def getClasses(token):
