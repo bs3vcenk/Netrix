@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { AdMobPro } from '@ionic-native/admob-pro/ngx';
-import { SettingsService } from './settings.service';
+import { Storage } from '@ionic/storage';
 
 @Injectable()
 export class AdmobService {
@@ -8,13 +8,25 @@ export class AdmobService {
   admobid = {
     banner: 'ca-app-pub-3536042070948443/8284474155'
   };
+
+  adPreference = null;
+
   constructor(
     private admob: AdMobPro,
-    private settings: SettingsService
-  ) { }
+    private storage: Storage
+  ) {
+    this.storage.get("ad-preference").then(res => {
+      if (res != null) {
+        this.adPreference = res;
+      } else {
+        this.adPreference = true;
+      }
+    })
+  }
 
   showBanner() {
-    if (this.settings.adPreference) {
+    if (this.adPreference) {
+      console.log("AdmobService/showBanner(): Showing ad banner");
       this.admob.createBanner({
         adId: this.admobid.banner,
         isTesting: false,

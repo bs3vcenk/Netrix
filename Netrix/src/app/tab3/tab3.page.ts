@@ -46,12 +46,11 @@ export class Tab3Page {
   }
 
   updMainNotificationPreference() {
-    this.settings.changePreference("notif-preference", this.notifPreference);
-    this.settings.notifPreference = this.notifPreference;
+    this.settings.setAdShow(this.adPreference);
   }
 
   updErrorReportPreference() {
-    this.settings.setErrorReporting(this.errorPreference);
+    //this.settings.setErrorReporting(this.errorPreference);
   }
 
 }

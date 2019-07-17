@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { FirebaseService } from './firebase.service';
+import { AdmobService } from './admob.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,8 @@ export class SettingsService {
 
   constructor(
     private storage: Storage,
-    private firebase: FirebaseService
+    private firebase: FirebaseService,
+    private admobSvc: AdmobService
   ) {}
 
   readPrefs() {
@@ -51,13 +53,7 @@ export class SettingsService {
           this.notifPreference = true;
         }
       });
-      this.storage.get("ad-preference").then(res => {
-        if (res != null) {
-          this.adPreference = res;
-        } else {
-          this.adPreference = true;
-        }
-      });
+      this.adPreference = this.admobSvc.adPreference;
     });
   }
 
@@ -68,13 +64,19 @@ export class SettingsService {
     this.dataPrefUnset = false;
   }
 
-  setErrorReporting(val) {
-    /*Sentry.setShouldSendCallback((event) => {
+  setAdShow(val) {
+    this.changePreference("ad-preference", val);
+    this.admobSvc.adPreference = val;
+    this.adPreference = val;
+  }
+
+  /*setErrorReporting(val) {
+    Sentry.setShouldSendCallback((event) => {
       return val;
     });
     this.changePreference("error-preference", val);
-    this.errorPreference = val;*/
-  }
+    this.errorPreference = val;
+  }*/
 
   changePreference(pref, prefValue) {
     this.storage.set(pref, prefValue).then(() => {

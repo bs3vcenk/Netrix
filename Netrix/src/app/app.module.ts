@@ -28,7 +28,7 @@ import { SentryErrorHandler } from './sentryerrorhandler.service';
 import { AdMobPro } from '@ionic-native/admob-pro/ngx';
 import { AdmobService } from './admob.service';
 
-Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.6.1' })
+Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.6.2' })
 
 var firebaseConfig = {
     apiKey: "AIzaSyDL7WpxGbkahzg6KJqqyxgQO0h-bez0MyY",
