@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { timeout } from 'rxjs/operators';
 import { SettingsService } from '../settings.service';
 import { trigger, state, style, animate, transition } from "@angular/animations";
+import { AdmobService } from '../admob.service';
 
 @Component({
   selector: 'app-tab1',
@@ -35,12 +36,14 @@ export class Tab1Page {
     private authServ: AuthenticationService,
     private alertControl: AlertController,
     private platform: Platform,
-    private settings: SettingsService
+    private settings: SettingsService,
+    private admobSvc: AdmobService
   ) {
     this.getSubjects();
   }
 
   ngOnInit() {
+    this.admobSvc.showBanner();
     this.platform.backButton.subscribe(() => {});
   }
 

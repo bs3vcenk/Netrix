@@ -23,7 +23,10 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { Firebase } from '@ionic-native/firebase/ngx';
 
 import * as Sentry from 'sentry-cordova';
-import { SentryErrorHandler } from './sentryerrorhandler.service'
+import { SentryErrorHandler } from './sentryerrorhandler.service';
+
+import { AdMobPro } from '@ionic-native/admob-pro/ngx';
+import { AdmobService } from './admob.service';
 
 Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.6.1' })
 
@@ -46,12 +49,12 @@ export function createTranslateLoader(http: HttpClient) {
   declarations: [AppComponent],
   entryComponents: [],
   imports: [
-  	BrowserModule,
-  	IonicModule.forRoot({mode:'ios'}),
-  	AppRoutingModule,
-  	HttpClientModule,
+    BrowserModule,
+    IonicModule.forRoot({mode:'ios'}),
+    AppRoutingModule,
+    HttpClientModule,
     IonicStorageModule.forRoot(),
-		BrowserAnimationsModule,
+    BrowserAnimationsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -59,16 +62,18 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-		AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule
   ],
   providers: [
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-		Device,
-		{ provide: ErrorHandler, useClass: SentryErrorHandler },
-		Firebase
+    Device,
+    { provide: ErrorHandler, useClass: SentryErrorHandler },
+    Firebase,
+    AdMobPro,
+    AdmobService
   ],
   bootstrap: [AppComponent]
 })
