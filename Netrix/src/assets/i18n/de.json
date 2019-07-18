@@ -28,7 +28,8 @@
   "tab1": {
     "title": "Schulfächer",
     "text": {
-      "other": "und NUM_PROFS mehr"
+      "other": "und NUM_PROFS mehr",
+      "average": "Dein Durchschnitt ist:"
     }
   },
   "tab2": {

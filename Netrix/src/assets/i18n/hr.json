@@ -28,7 +28,8 @@
   "tab1": {
     "title": "Predmeti",
     "text": {
-      "other": "i još NUM_PROFS"
+      "other": "i još NUM_PROFS",
+      "average": "Tvoj prosjek je:"
     }
   },
   "tab2": {

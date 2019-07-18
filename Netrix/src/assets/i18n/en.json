@@ -28,7 +28,8 @@
   "tab1": {
     "title": "Subjects",
     "text": {
-      "other": "and NUM_PROFS more"
+      "other": "and NUM_PROFS more",
+      "average": "Your average is:"
     }
   },
   "tab2": {
