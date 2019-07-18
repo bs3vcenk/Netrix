@@ -133,8 +133,7 @@ export class Tab4Page {
       } else {
         // No network on client
         //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
-        this.toastError(this.translate.instant("generic.alert.network"), [{text: 'Reload', handler: () => {this.collectStudentData()}}], null)
-        throw new Error('Network error');
+        this.toastError(this.translate.instant("generic.alert.network"), null, 2500);
       }
     })
   }

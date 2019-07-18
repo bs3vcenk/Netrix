@@ -30,7 +30,7 @@ export class PrivacyPage implements OnInit {
       var converter = new showdown.Converter();
       this.html = converter.makeHtml(response);
     }, (error) => {
-      console.log(error);
+      this.html = "<h1>Network error</h1>";
     });
   }
 

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { SettingsService } from '../settings.service';
 import { AuthenticationService } from '../authentication.service';
 import { timeout } from 'rxjs/operators';
+import { NavController } from '@ionic/angular';
 import { trigger, state, style, animate, transition } from "@angular/animations";
 
 @Component({
@@ -24,7 +25,8 @@ export class AbsencesPage implements OnInit {
   constructor(
     private http: HttpClient,
     private settings: SettingsService,
-    private authServ: AuthenticationService
+    private authServ: AuthenticationService,
+    private navCtrl: NavController
   ) { }
 
   ngOnInit() {
@@ -39,7 +41,7 @@ export class AbsencesPage implements OnInit {
       this.absences = response;
       console.log(this.absences);
     }, (error) => {
-      console.log(error);
+      this.navCtrl.navigateBack('/tabs/tabs/tab4');
     });
   }
 
