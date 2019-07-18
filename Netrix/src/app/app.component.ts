@@ -65,9 +65,9 @@ export class AppComponent {
         if (state) {
           let token = this.authenticationService.token;
           this.notificationSetup(token);
-          this.router.navigate(["tabs", "tabs", "tab1"])
+          this.router.navigate(["tabs", "tabs", "tab1"], {replaceUrl: true})
         } else {
-          this.router.navigate(["login"])
+          this.router.navigate(["login"], {replaceUrl: true})
         }
       })
     });
