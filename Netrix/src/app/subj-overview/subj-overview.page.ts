@@ -117,7 +117,6 @@ export class SubjOverviewPage implements OnInit {
       } else if (!error.error.error) {
         this.toastError(this.translate.instant("generic.alert.network"), null, 2500);
         this.goBack();
-        throw new Error('Network error: ' + error);
       }
     });
   }

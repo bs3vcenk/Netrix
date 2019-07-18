@@ -98,10 +98,6 @@ export class Tab1Page {
         } else if (error.status === 0) {
           // Server did not respond
           throw new Error('Server down');
-        } else {
-          // No network on client
-          //this.networkError(this.translate.instant("generic.alert.network.header"), this.translate.instant("generic.alert.network.content"));
-          throw new Error('Network error: ' + error);
         }
       } else {
         throw new Error("Network error: " + error);
