@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { ToastController, NavController, AlertController, Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
@@ -24,6 +24,7 @@ export class Tab1Page {
 
   subjects: any;
   zone: any;
+  fullAvg = null;
   subjsLoaded = false;
   noItemsLoaded = false;
   dbError = false;
@@ -78,6 +79,7 @@ export class Tab1Page {
       })
       // Set for display
       this.subjects = allsubs;
+      this.fullAvg = response.class_avg;
       this.noItemsLoaded = false;
       this.dbError = false;
     },

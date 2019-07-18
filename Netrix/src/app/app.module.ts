@@ -28,6 +28,8 @@ import { SentryErrorHandler } from './sentryerrorhandler.service';
 import { AdMobPro } from '@ionic-native/admob-pro/ngx';
 import { AdmobService } from './admob.service';
 
+import { CountUpModule } from 'countup.js-angular2';
+
 Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.6.2' })
 
 var firebaseConfig = {
@@ -63,7 +65,8 @@ export function createTranslateLoader(http: HttpClient) {
       }
     }),
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    CountUpModule
   ],
   providers: [
     StatusBar,
