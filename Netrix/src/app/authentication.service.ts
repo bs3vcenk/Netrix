@@ -27,18 +27,18 @@ export class AuthenticationService {
 	private settings: SettingsService
 	) {
 		this.plt.ready().then(() => {
-		console.log("AuthenticationService: API server is " + this.settings.apiServer);
-			this.checkToken();
-		})
+		console.log('AuthenticationService: API server is ' + this.settings.apiServer);
+		this.checkToken();
+		});
 	}
 
 	checkToken() {
 		// Check if user has already logged in (meaning has a token already)
-		this.storage.get("auth-token").then(res => {
+		this.storage.get('auth-token').then(res => {
 			if (res) {
 				this.token = res;
-				console.log("AuthenticationService/checkToken(): Found saved token (" + this.token + ")");
-				console.log("AuthenticationService/checkToken(): Found analytics preference (" + this.settings.dataPreference + ")");
+				console.log('AuthenticationService/checkToken(): Found saved token (' + this.token + ')');
+				console.log('AuthenticationService/checkToken(): Found analytics preference (' + this.settings.dataPreference + ')');
 				if (this.settings.dataPreference === true) {
 					this.sendDeviceInfo();
 				}
@@ -48,10 +48,10 @@ export class AuthenticationService {
 	}
 
 	private sendDeviceInfo() {
-		this.http.post(this.settings.apiServer + "/api/stats", {"token":this.token, "platform":this.getPlatform(), "device":this.getDevice(), "language":this.getLanguage(), "resolution":this.getResolution()}).subscribe((res) => {
-			console.log("AuthenticationService/sendDeviceInfo(): Successfully sent device info");
+		this.http.post(this.settings.apiServer + '/api/stats', {token: this.token, platform: this.getPlatform(), device: this.getDevice(), language: this.getLanguage(), resolution: this.getResolution()}).subscribe((res) => {
+			console.log('AuthenticationService/sendDeviceInfo(): Successfully sent device info');
 		}, (err) => {
-			console.log("AuthenticationService/sendDeviceInfo(): Failed to send device info:");
+			console.log('AuthenticationService/sendDeviceInfo(): Failed to send device info:');
 			throw new Error('Stats send fail: ' + err);
 		});
 	}
@@ -65,7 +65,7 @@ export class AuthenticationService {
 	}
 
 	private getResolution() {
-		return this.plt.width() + "x" + this.plt.height();
+		return this.plt.width() + 'x' + this.plt.height();
 	}
 
 	private getLanguage() {
@@ -73,11 +73,11 @@ export class AuthenticationService {
 	}
 
 	login(username, password) {
-		let response:Observable<Response> = this.http.post<Response>(this.settings.apiServer + "/api/login", {"username":username, "password":password});
+		const response: Observable<Response> = this.http.post<Response>(this.settings.apiServer + '/api/login', {username, password});
 
-		let jsonResponse = response.pipe(catchError(err => this.handleError(err)));
+		const jsonResponse = response.pipe(catchError(err => this.handleError(err)));
 
-		let userResponse = jsonResponse.pipe(map(
+		const userResponse = jsonResponse.pipe(map(
 			data => this.handleLogin(data)
 		));
 
@@ -85,14 +85,14 @@ export class AuthenticationService {
 	}
 
 	private handleLogin(data) {
-		this.storage.set("auth-token", data.token).then(() => {
+		this.storage.set('auth-token', data.token).then(() => {
 			this.token = data.token;
-			console.log("AuthenticationService/handleLogin(): Login successful, got token (" + data.token + ")");
+			console.log('AuthenticationService/handleLogin(): Login successful, got token (' + data.token + ')');
 			if (this.settings.dataPreference === true) {
 				this.sendDeviceInfo();
 			}
 			this.authenticationState.next(true);
-		})
+		});
 	}
 
 	private handleError(error) {
@@ -100,14 +100,14 @@ export class AuthenticationService {
 	}
 
 	logout() {
-		return this.storage.remove("auth-token").then(() => {
-			this.http.get<any>(this.settings.apiServer + "/api/user/" + this.token + "/logout").subscribe((res) => {
-				console.log("AuthenticationService/logout(): Server-side data successfully deleted");
+		return this.storage.remove('auth-token').then(() => {
+			this.http.get<any>(this.settings.apiServer + '/api/user/' + this.token + '/logout').subscribe((res) => {
+				console.log('AuthenticationService/logout(): Server-side data successfully deleted');
 			}, (err) => {
-				console.log("AuthenticationService/logout(): Failed to delete server-side data");
-			})
+				console.log('AuthenticationService/logout(): Failed to delete server-side data');
+			});
 			this.authenticationState.next(false);
-		})
+		});
 	}
 
 	isAuthenticated() {
