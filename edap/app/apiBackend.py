@@ -53,7 +53,7 @@ def formatAndSendNotification(token, notifData):
 		elif x['type'] == 'grade':
 			gradeNotif.append("%s: %s (%s)" % (getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['grade'], x['data']['note']))
 		elif x['type'] == 'note':
-			noteNotif.append("%s: %s" % (getNameForSubjId(token, x['classId']), x['data']['note']))
+			noteNotif.append("%s: %s" % (getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['note']))
 		elif x['type'] == 'absence':
 			absenceNotif = "ABS"
 	if len(classNotif) > 0:
@@ -256,11 +256,8 @@ def sendNotification(token, title, content):
 	try:
 		doc = documentReference.get()
 		firebaseToken = doc.to_dict()["token"]
-	except google.cloud.exceptions.NotFound as e:
-		log.error('No such document!')
-		raise e
 	except Exception as e:
-		log.error('Unknown error (Firestore) => %s' % str(e))
+		log.error('Error in Firestore => %s' % str(e))
 		raise e
 
 	try:
@@ -278,7 +275,7 @@ def _sync(token):
 		log.info("Waiting %i s for %s" % (val, token))
 		sleep(val)
 		if threads["sync:" + token]["run"] != True:
-			del ["sync:" + token]
+			del threads["sync:" + token]
 			break
 		sync(token)
 
@@ -337,9 +334,7 @@ def readConfig():
 	return {
 		"DATA_FOLDER": DATA_FOLDER,
 		"GOOGLE_TOKEN_FILE": GOOGLE_TOKEN_FILE,
-		"ALLOW_DEV_ACCESS": ALLOW_DEV_ACCESS,
 		"USE_CLOUDFLARE": USE_CLOUDFLARE,
-		"USE_FIREBASE": USE_FIREBASE,
 		"ALLOW_DEV_ACCESS": ALLOW_DEV_ACCESS,
 		"privUsername": privUsername,
 		"privPassword": privPassword,
@@ -445,7 +440,7 @@ def populateData(obj=None, username=None, password=None):
 		output = obj.getClasses()
 	except Exception as e:
 		log.error("Error getting classes: %s" % e)
-		abort(500)
+		raise e
 
 	try:
 		tests_nowonly = obj.getTests(0, alltests=False)
@@ -487,7 +482,7 @@ def populateData(obj=None, username=None, password=None):
 			else:
 				lgrades = []
 				for i in output[0]['subjects'][z]['grades']:
-					lgrades.append(x['grade'])
+					lgrades.append(i['grade'])
 				output[0]['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
 				allSubjAverageGrades.append(round(sum(lgrades)/len(lgrades), 0))
 		except Exception as e:
@@ -507,7 +502,7 @@ def populateData(obj=None, username=None, password=None):
 	try:
 		dataDict['info'] = obj.getInfoForUser(0)
 	except Exception as e:
-		log.error("Error getting info for %s: %s" % (token, str(e)))
+		log.error("Error getting info: %s" % (str(e)))
 	return dataDict
 
 def updateData(token):

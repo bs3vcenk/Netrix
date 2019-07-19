@@ -41,7 +41,6 @@ class edap:
 		self.log_func_name = log_func_name
 		self.hideConfidential = hideConfidential
 		if redirect_log_to_file != False:
-			save_std = sys.stdout
 			sys.stdout = open(redirect_log_to_file, "w")
 		print("=> EDAP (eDnevnikAndroidProject) %s" % edap_version)
 		self.__edlog(1, "Init variables: anon_err_report=%s, parser=%s, edurl=%s, user=[{%s}], useragent=%s, debug=%s, loglevel=%s, hidepriv=%s, log_func_name=%s" %
@@ -154,7 +153,7 @@ class edap:
 			try:
 				h = i.find("div", class_="course").get_text("\n").split("\n")
 			except Exception as e:
-				self.__edlog(3, "HTML parsing error! [%s] Probably new grade notification, attempting workaround..." % (e,i))
+				self.__edlog(3, "HTML parsing error! [%s] Probably new grade notification, attempting workaround..." % (e))
 				h = i.find_all("div", class_="course")[1].get_text("\n").split("\n")
 			prof = ''.join(h[1:]).split(", ")
 			try:
@@ -274,7 +273,7 @@ class edap:
 			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,soup))
 		if len(xtab) > 0:
 			self.__edlog(0, "Got unformatted string: [{%s}]" % xtab)
-			result = re.search('\((.*)\)', xtab).group(1)
+			result = re.search(r'\((.*)\)', xtab).group(1)
 			self.__edlog(0, "Formatted string: [{%s}]" % result)
 			self.__edlog(0, "Found concluded grade for this subject")
 			return True, int(result)
