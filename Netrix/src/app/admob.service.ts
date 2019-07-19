@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AdMobPro } from '@ionic-native/admob-pro/ngx';
 import { Storage } from '@ionic/storage';
+import { Platform } from '@ionic/angular';
 
 @Injectable()
 export class AdmobService {
@@ -13,7 +14,8 @@ export class AdmobService {
 
   constructor(
     private admob: AdMobPro,
-    private storage: Storage
+    private storage: Storage,
+    private platform: Platform
   ) {
     this.storage.get('ad-preference').then(res => {
       if (res != null) {
@@ -25,6 +27,7 @@ export class AdmobService {
   }
 
   showBanner() {
+    if (!this.platform.is('cordova')) { return; }
     if (this.adPreference) {
       console.log('AdmobService/showBanner(): Showing ad banner');
       this.admob.createBanner({
