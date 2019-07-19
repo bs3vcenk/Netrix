@@ -44,10 +44,14 @@ export class AppComponent {
 
   private notificationSetup(token) {
     this.fcm.getToken(token);
-    this.fcm.onNotifications().subscribe(
-      (msg) => {
-        this.presentToast('Header', msg.body);
-      });
+    try {
+      this.fcm.onNotifications().subscribe(
+        (msg) => {
+          this.presentToast('Header', msg.body);
+        });
+    } catch (e) {
+      console.log('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running cordova.');
+    }
   }
 
   initializeApp() {
