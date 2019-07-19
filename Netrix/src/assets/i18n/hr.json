@@ -3,21 +3,14 @@
     "alert": {
       "network": "Greška kod povezivanja",
       "expiry": "Tvoja prijava je istekla",
-      "database": "Neuspjelo povezivanje sa bazom podataka",
-      "quit": {
-        "header": "Izlaz iz aplikacije",
-        "content": "Želite li zatvoriti aplikaciju?",
-        "choices": {
-          "cancel": "Poništi",
-          "quit": "Izađi"
-        }
-      }
+      "database": "Neuspjelo povezivanje sa bazom podataka (automatski prijavljeno)",
+      "server": "Serverska greška (automatski prijavljena)"
     },
     "back": "Natrag",
     "text": {
       "nonetwork": {
         "header": "Nema mreže",
-        "content": "Provjeri svoju vezu s Internetom pa pokušaj ponovo."
+        "content": "Provjeri svoju vezu, pa pokušaj ponovo."
       },
       "nodb": {
         "header": "Serverska greška",

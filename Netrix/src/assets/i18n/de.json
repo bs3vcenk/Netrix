@@ -3,15 +3,8 @@
     "alert": {
       "network": "Netzwerkfehler",
       "expiry": "Deine Einmeldung ist abgelaufen",
-      "database": "Datenbankverbindung fehlgeschlagen",
-      "quit": {
-        "header": "App beenden",
-        "content": "Mochtest du die App beenden?",
-        "choices": {
-          "cancel": "Abbrechen",
-          "quit": "Beenden"
-        }
-      }
+      "database": "Datenbankverbindung fehlgeschlagen (automatisch gemeldet)",
+      "server": "Serverfehler (automatisch gemeldet)"
     },
     "back": "Zurück",
     "text": {

@@ -3,15 +3,8 @@
     "alert": {
       "network": "Network error",
       "expiry": "Your login has expired",
-      "database": "Database connection failed",
-      "quit": {
-        "header": "Quit app",
-        "content": "Do you want to exit the app?",
-        "choices": {
-          "cancel": "Cancel",
-          "quit": "Quit"
-        }
-      }
+      "database": "Database connection failed (automatically reported)",
+      "server": "Server error (automatically reported)"
     },
     "back": "Back",
     "text": {

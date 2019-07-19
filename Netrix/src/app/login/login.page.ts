@@ -115,18 +115,16 @@ export class LoginPage implements OnInit {
       this.stopLoad(); // Stop the "Logging in..." alert
     }, (err) => {
       this.stopLoad(); // Stop alert
-      console.log(err); // Log error
       if (err.error.error === 'E_INVALID_CREDENTIALS') {
         // Bad creds
-        console.log('login/login(): Failed - Invalid credentials');
         this.networkError(
           this.translate.instant('login.alert.credentials.header'),
           this.translate.instant('login.alert.credentials.content')
         );
-      } else {
+      } else if (err.error) {
         // Server/network error
-        // TODO: Handle server and network errors separately
-        console.log('login/login(): Failed - Network error');
+        this.toastError(this.translate.instant('generic.alert.server'), null, 2500);
+      } else {
         this.toastError(this.translate.instant('generic.alert.network'), null, 2500);
       }
     });
