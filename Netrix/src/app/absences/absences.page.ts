@@ -4,7 +4,7 @@ import { SettingsService } from '../settings.service';
 import { AuthenticationService } from '../authentication.service';
 import { timeout } from 'rxjs/operators';
 import { NavController } from '@ionic/angular';
-import { trigger, state, style, animate, transition } from "@angular/animations";
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-absences',
@@ -20,7 +20,7 @@ import { trigger, state, style, animate, transition } from "@angular/animations"
 })
 export class AbsencesPage implements OnInit {
 
-  absences = {"full":[{"date":null,"absences":[{"subject":null}]}]};
+  absences = {full: [{date: null, absences: [{subject: null}]}]};
 
   constructor(
     private http: HttpClient,
@@ -37,7 +37,9 @@ export class AbsencesPage implements OnInit {
   }
 
   getAllAbsences() {
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences').pipe(timeout(this.settings.httpLimit)).subscribe((response) => {
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences')
+    .pipe(timeout(this.settings.httpLimit))
+    .subscribe((response) => {
       this.absences = response;
       console.log(this.absences);
     }, (error) => {

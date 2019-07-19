@@ -14,7 +14,7 @@ export class SettingsService {
   notifPreference = null;
   adPreference = null;
   language = null;
-  apiServer = "https://api.netrix.io";
+  apiServer = 'https://api.netrix.io';
   httpLimit = 5000;
 
   constructor(
@@ -24,31 +24,30 @@ export class SettingsService {
   ) {}
 
   readPrefs() {
-    this.storage.get("data-preference").then(res => {
+    this.storage.get('data-preference').then(res => {
       // Check if it is stored at all
       if (res != null) {
         this.firebase.setAnalytics(res);
         this.dataPreference = res;
         this.dataPrefUnset = false;
       } else { // If it isn't stored, store it and set default (false)
-        this.storage.set("data-preference", false).then(() => {
+        this.storage.set('data-preference', false).then(() => {
           this.dataPreference = false;
           this.dataPrefUnset = true;
           this.firebase.setAnalytics(false);
-          console.log("SettingsService/readPrefs(): API analytics preference defaulted to false");
+          console.log('SettingsService/readPrefs(): API analytics preference defaulted to false');
         });
       }
-      this.storage.get("error-preference").then(res => {
-        if (res != null) {
-          this.errorPreference = res;
+      this.storage.get('error-preference').then(resx => {
+        if (resx != null) {
+          this.errorPreference = resx;
         } else {
           this.errorPreference = true;
-          console.log()
         }
       });
-      this.storage.get("notif-preference").then(res => {
-        if (res != null) {
-          this.notifPreference = res;
+      this.storage.get('notif-preference').then(resx => {
+        if (resx != null) {
+          this.notifPreference = resx;
         } else {
           this.notifPreference = true;
         }
@@ -58,14 +57,14 @@ export class SettingsService {
   }
 
   setDataCollection(val) {
-    this.changePreference("data-preference", val);
+    this.changePreference('data-preference', val);
     this.firebase.setAnalytics(val);
     this.dataPreference = val;
     this.dataPrefUnset = false;
   }
 
   setAdShow(val) {
-    this.changePreference("ad-preference", val);
+    this.changePreference('ad-preference', val);
     this.admobSvc.adPreference = val;
     this.adPreference = val;
   }
@@ -80,7 +79,7 @@ export class SettingsService {
 
   changePreference(pref, prefValue) {
     this.storage.set(pref, prefValue).then(() => {
-      console.log("SettingsService/changePreference(): Set " + pref + " to " + prefValue);
+      console.log('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
     });
   }
 }

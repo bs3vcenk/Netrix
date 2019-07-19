@@ -2,7 +2,7 @@ import { Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
-import { SettingsService } from './settings.service'
+import { SettingsService } from './settings.service';
 
 const LNG_KEY = 'SELECTED_LANGUAGE';
 
@@ -20,7 +20,7 @@ export class LanguageService {
   ) { }
 
   setInitialLang() {
-    let language = this.translate.getBrowserLang();
+    const language = this.translate.getBrowserLang();
     this.translate.setDefaultLang(language);
 
     this.storage.get(LNG_KEY).then(val => {

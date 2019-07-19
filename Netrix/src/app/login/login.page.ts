@@ -32,9 +32,9 @@ export class LoginPage implements OnInit {
   networkError(header, msg) {
     // Simple present error function
     this.alertControl.create({
-      header: header,
+      header,
       message: msg,
-      buttons: ["OK"]
+      buttons: ['OK']
     }).then(alert => {
       alert.present();
     });
@@ -54,11 +54,11 @@ export class LoginPage implements OnInit {
   dataAlert() {
     // Data collection alert
     this.alertControl.create({
-      header: this.translate.instant("login.alert.data.header"),
-      message: this.translate.instant("login.alert.data.content"),
+      header: this.translate.instant('login.alert.data.header'),
+      message: this.translate.instant('login.alert.data.content'),
       buttons: [
         {
-          text: this.translate.instant("login.alert.data.choice.no"),
+          text: this.translate.instant('login.alert.data.choice.no'),
           handler: () => {
             // Proceed to login when accepted
             this.settings.setDataCollection(false);
@@ -66,7 +66,7 @@ export class LoginPage implements OnInit {
           }
         },
         {
-          text: this.translate.instant("login.alert.data.choice.yes"),
+          text: this.translate.instant('login.alert.data.choice.yes'),
           handler: () => {
             // Proceed to login when accepted
             this.settings.setDataCollection(true);
@@ -77,13 +77,13 @@ export class LoginPage implements OnInit {
     }).then(alert => {
       // Show the alert
       alert.present();
-    })
+    });
   }
 
   async loadDisplay(msg) {
     this.ldController = await this.loadControl.create({
       message: msg
-    })
+    });
     await this.ldController.present();
   }
 
@@ -95,39 +95,41 @@ export class LoginPage implements OnInit {
     if (this.settings.dataPrefUnset === true) {
       // User hasn't seen alert, so we show it and set dataAlertShown to true,
       // so we don't show it again
-      console.log("login/_login(): Data alert wasn't shown, showing it now")
+      console.log('login/_login(): Data alert wasn\'t shown, showing it now');
       this.dataAlert();
     } else {
       // User has seen alert, so no need to show it
-      console.log("login/_login(): Data alert already shown, skipping")
-      this.login()
+      console.log('login/_login(): Data alert already shown, skipping');
+      this.login();
     }
   }
 
   login() {
     // Show "Logging in..."
-    this.loadDisplay(this.translate.instant("login.alert.loggingin"));
+    this.loadDisplay(this.translate.instant('login.alert.loggingin'));
 
     // Send the request
-  	this.authServ.login(this.loUsername, this.loPassword).subscribe((stat) => {
+    this.authServ.login(this.loUsername, this.loPassword).subscribe((stat) => {
       // Everything fine
-      console.log("login/login(): Successful login")
+      console.log('login/login(): Successful login');
       this.stopLoad(); // Stop the "Logging in..." alert
-    },(err) => {
+    }, (err) => {
       this.stopLoad(); // Stop alert
-      console.log(err) // Log error
-      if (err.error.error === "E_INVALID_CREDENTIALS") {
+      console.log(err); // Log error
+      if (err.error.error === 'E_INVALID_CREDENTIALS') {
         // Bad creds
-        console.log("login/login(): Failed - Invalid credentials");
-        this.networkError(this.translate.instant("login.alert.credentials.header"), this.translate.instant("login.alert.credentials.content"))
+        console.log('login/login(): Failed - Invalid credentials');
+        this.networkError(
+          this.translate.instant('login.alert.credentials.header'),
+          this.translate.instant('login.alert.credentials.content')
+        );
       } else {
         // Server/network error
         // TODO: Handle server and network errors separately
-        console.log("login/login(): Failed - Network error");
-        this.toastError(this.translate.instant("generic.alert.network"), null, 2500);
-        throw new Error('Network error');
+        console.log('login/login(): Failed - Network error');
+        this.toastError(this.translate.instant('generic.alert.network'), null, 2500);
       }
-    })
+    });
   }
 
 }

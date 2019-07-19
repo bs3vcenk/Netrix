@@ -11,12 +11,12 @@ export class FirebaseService {
               private afs: AngularFirestore) { }
 
   async getToken(userid) {
-    let token = await this.firebase.getToken();
+    const token = await this.firebase.getToken();
     this.saveToken(token, userid);
   }
 
   private saveToken(token, userid) {
-    if (!token) return;
+    if (!token) { return; }
 
     const devicesRef = this.afs.collection('devices');
 

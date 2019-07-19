@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
 import { AlertController, NavController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { trigger, state, style, animate, transition } from "@angular/animations";
+import { trigger, state, style, animate, transition } from '@angular/animations';
 import { timeout } from 'rxjs/operators';
 import { SettingsService } from '../settings.service';
 
@@ -32,7 +32,7 @@ export class SubjOverviewPage implements OnInit {
   notesAvailable = false;
   gradesAvailable = false;
 
-  gradeState = "transparent";
+  gradeState = 'transparent';
 
   constructor(
     private toastCtrl: ToastController,
@@ -50,13 +50,13 @@ export class SubjOverviewPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.subjId = this.activatedRoute.snapshot.paramMap.get("subjid");
-  	this.getSubjectInfo();
+    this.subjId = this.activatedRoute.snapshot.paramMap.get('subjid');
+    this.getSubjectInfo();
   }
 
   async networkError(header, msg) {
     const alert = await this.alertControl.create({
-      header: header,
+      header,
       message: msg,
       buttons: [
         {
@@ -88,10 +88,12 @@ export class SubjOverviewPage implements OnInit {
   }
 
   async getSubjectInfo() {
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId).pipe(timeout(this.settings.httpLimit)).subscribe((response) => {
-    	this.subjName = response.subject;
-      console.log("subjOverview/getSubjectInfo(): Subject name: " + this.subjName)
-    	this.subjProfs = response.professors.join(", ");
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + this.subjId)
+    .pipe(timeout(this.settings.httpLimit))
+    .subscribe((response) => {
+      this.subjName = response.subject;
+      console.log('subjOverview/getSubjectInfo(): Subject name: ' + this.subjName);
+      this.subjProfs = response.professors.join(', ');
       if (response.grades) {
         this.subjAvg = response.average;
         this.gradeList = response.grades;
@@ -101,21 +103,24 @@ export class SubjOverviewPage implements OnInit {
         this.noteList = response.notes;
         this.notesAvailable = true;
       }
-      if (this.gradesAvailable == false && this.notesAvailable == false) {
-        this.networkError(this.translate.instant("overview.alert.nogrades.header"), this.translate.instant("overview.alert.nogrades.content"));
+      if (this.gradesAvailable === false && this.notesAvailable === false) {
+        this.networkError(
+          this.translate.instant('overview.alert.nogrades.header'),
+          this.translate.instant('overview.alert.nogrades.content')
+        );
       } else {
-        this.gradeState = "opaque";
+        this.gradeState = 'opaque';
       }
     }, (error) => {
-      console.log("subjOverview/getSubjectInfo(): Failed to fetch data from server (" + error.error + ")")
-      if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
-        this.toastError(this.translate.instant("generic.alert.database"), null, 2500);
+      console.log('subjOverview/getSubjectInfo(): Failed to fetch data from server (' + error.error + ')');
+      if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
+        this.toastError(this.translate.instant('generic.alert.database'), null, 2500);
         this.goBack();
-      } else if (error.error.error === "E_TOKEN_NONEXISTENT") {
-        this.toastError(this.translate.instant("generic.alert.expiry"), null, 2500);
+      } else if (error.error.error === 'E_TOKEN_NONEXISTENT') {
+        this.toastError(this.translate.instant('generic.alert.expiry'), null, 2500);
         this.authServ.logout();
       } else if (!error.error.error) {
-        this.toastError(this.translate.instant("generic.alert.network"), null, 2500);
+        this.toastError(this.translate.instant('generic.alert.network'), null, 2500);
         this.goBack();
       }
     });

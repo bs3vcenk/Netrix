@@ -19,15 +19,15 @@ export class AuthenticationService {
 	dataPreference = null;
 
 	constructor(
-	  private translate: LanguageService,
-	  private storage: Storage,
-	  private plt: Platform,
-	  private http: HttpClient,
-	  private device: Device,
-	  private settings: SettingsService
+	private translate: LanguageService,
+	private storage: Storage,
+	private plt: Platform,
+	private http: HttpClient,
+	private device: Device,
+	private settings: SettingsService
 	) {
 		this.plt.ready().then(() => {
-			console.log("AuthenticationService: API server is " + this.settings.apiServer);
+		console.log("AuthenticationService: API server is " + this.settings.apiServer);
 			this.checkToken();
 		})
 	}

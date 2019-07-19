@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Platform, ToastController, Config } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { AuthenticationService } from './authentication.service'
+import { AuthenticationService } from './authentication.service';
 import { LanguageService } from './language.service';
 import { FirebaseService } from './firebase.service';
 import { SettingsService } from './settings.service';
@@ -33,8 +33,8 @@ export class AppComponent {
 
   private async presentToast(header, message) {
     const toast = await this.toastController.create({
-      header: header,
-      message: message,
+      header,
+      message,
       duration: 3000,
       color: 'dark',
       position: 'top'
@@ -46,7 +46,7 @@ export class AppComponent {
     this.fcm.getToken(token);
     this.fcm.onNotifications().subscribe(
       (msg) => {
-        this.presentToast("Header", msg.body);
+        this.presentToast('Header', msg.body);
       });
   }
 
@@ -63,13 +63,13 @@ export class AppComponent {
       });
       this.authenticationService.authenticationState.subscribe(state => {
         if (state) {
-          let token = this.authenticationService.token;
+          const token = this.authenticationService.token;
           this.notificationSetup(token);
-          this.router.navigate(["tabs", "tabs", "tab1"], {replaceUrl: true})
+          this.router.navigate(['tabs', 'tabs', 'tab1'], {replaceUrl: true});
         } else {
-          this.router.navigate(["login"], {replaceUrl: true})
+          this.router.navigate(['login'], {replaceUrl: true});
         }
-      })
+      });
     });
   }
 }

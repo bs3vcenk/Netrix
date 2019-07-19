@@ -10,7 +10,7 @@ export class SentryErrorHandler extends ErrorHandler {
     super.handleError(error);
     try {
       Sentry.captureException(error.originalError || error);
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
   }

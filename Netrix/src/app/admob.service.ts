@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import { AdMobPro } from '@ionic-native/admob-pro/ngx';
 import { Storage } from '@ionic/storage';
 
@@ -15,18 +15,18 @@ export class AdmobService {
     private admob: AdMobPro,
     private storage: Storage
   ) {
-    this.storage.get("ad-preference").then(res => {
+    this.storage.get('ad-preference').then(res => {
       if (res != null) {
         this.adPreference = res;
       } else {
         this.adPreference = true;
       }
-    })
+    });
   }
 
   showBanner() {
     if (this.adPreference) {
-      console.log("AdmobService/showBanner(): Showing ad banner");
+      console.log('AdmobService/showBanner(): Showing ad banner');
       this.admob.createBanner({
         adId: this.admobid.banner,
         isTesting: false,
@@ -35,7 +35,7 @@ export class AdmobService {
         position: this.admob.AD_POSITION.BOTTOM_CENTER,
       });
     } else {
-      console.log("AdmobService/showBanner(): Not showing ad because of preference");
+      console.log('AdmobService/showBanner(): Not showing ad because of preference');
     }
   }
 }

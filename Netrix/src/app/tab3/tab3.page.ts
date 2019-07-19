@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthenticationService } from '../authentication.service';
 import { SettingsService } from '../settings.service';
-import { trigger, state, style, animate, transition } from "@angular/animations";
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-tab3',
@@ -33,7 +33,7 @@ export class Tab3Page {
   }
 
   logout() {
-  	this.authServ.logout()
+    this.authServ.logout();
   }
 
   updDeviceInfoPreference() {
@@ -41,7 +41,7 @@ export class Tab3Page {
   }
 
   updAdPreference() {
-    this.settings.changePreference("ad-preference", this.adPreference);
+    this.settings.changePreference('ad-preference', this.adPreference);
     this.settings.adPreference = this.adPreference;
   }
 
@@ -50,7 +50,7 @@ export class Tab3Page {
   }
 
   updErrorReportPreference() {
-    //this.settings.setErrorReporting(this.errorPreference);
+    // this.settings.setErrorReporting(this.errorPreference);
   }
 
 }

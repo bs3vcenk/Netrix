@@ -5,7 +5,7 @@ import { AuthenticationService } from '../authentication.service';
 import { TranslateService } from '@ngx-translate/core';
 import { timeout } from 'rxjs/operators';
 import { SettingsService } from '../settings.service';
-import { trigger, state, style, animate, transition } from "@angular/animations";
+import { trigger, state, style, animate, transition } from '@angular/animations';
 import { AdmobService } from '../admob.service';
 
 @Component({
@@ -61,22 +61,24 @@ export class Tab1Page {
 
   async getSubjects() {
     // GET the subject list endpoint on the API server
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects').pipe(timeout(this.settings.httpLimit)).subscribe((response) => {
-      let allsubs = response.subjects;
+    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects')
+    .pipe(timeout(this.settings.httpLimit))
+    .subscribe((response) => {
+      const allsubs = response.subjects;
       this.subjsLoaded = true;
       // Iterate over professors list and join it into a comma-separated string
       allsubs.forEach((subj) => {
-        let profs = subj.professors;
+        const profs = subj.professors;
         let profsC = null;
         if (profs.length > 3) {
-          console.log("tab1/getSubjects(): Hit professor limit");
+          console.log('tab1/getSubjects(): Hit professor limit');
           profsC = profs.slice(0, 3);
-          profsC.push(this.translate.instant('tab1.text.other').replace("NUM_PROFS", profs.slice(3,profs.length).length));
+          profsC.push(this.translate.instant('tab1.text.other').replace('NUM_PROFS', profs.slice(3, profs.length).length));
         } else {
           profsC = profs;
         }
-        subj.professors = profsC.join(", ");
-      })
+        subj.professors = profsC.join(', ');
+      });
       // Set for display
       this.subjects = allsubs;
       this.fullAvg = response.class_avg;
@@ -86,12 +88,12 @@ export class Tab1Page {
     (error) => {
       this.noItemsLoaded = true;
       if (error.error) {
-        console.log(error)
-        if (error.error.error === "E_TOKEN_NONEXISTENT") {
+        console.log(error);
+        if (error.error.error === 'E_TOKEN_NONEXISTENT') {
           // User is not authenticated (possibly token purged from server DB)
-          this.toastError(this.translate.instant("generic.alert.expiry"), null, 2500);
+          this.toastError(this.translate.instant('generic.alert.expiry'), null, 2500);
           this.authServ.logout();
-        } else if (error.error.error === "E_DATABASE_CONNECTION_FAILED") {
+        } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
           // Server-side issue
           this.dbError = true;
           throw new Error('Database connection failed');
@@ -100,7 +102,7 @@ export class Tab1Page {
           throw new Error('Server down');
         }
       } else {
-        throw new Error("Network error: " + error);
+        throw new Error('Network error: ' + error);
       }
     });
   }

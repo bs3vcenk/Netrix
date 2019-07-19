@@ -30,21 +30,21 @@ import { AdmobService } from './admob.service';
 
 import { CountUpModule } from 'countup.js-angular2';
 
-Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.6.3' })
+Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.6.3' });
 
-var firebaseConfig = {
-    apiKey: "AIzaSyDL7WpxGbkahzg6KJqqyxgQO0h-bez0MyY",
-    authDomain: "netrix-2e6bf.firebaseapp.com",
-    databaseURL: "https://netrix-2e6bf.firebaseio.com",
-    projectId: "netrix-2e6bf",
-    storageBucket: "netrix-2e6bf.appspot.com",
-    messagingSenderId: "431714020563",
-    appId: "1:431714020563:web:46d51f3a4163d676"
+const firebaseConfig = {
+    apiKey: 'AIzaSyDL7WpxGbkahzg6KJqqyxgQO0h-bez0MyY',
+    authDomain: 'netrix-2e6bf.firebaseapp.com',
+    databaseURL: 'https://netrix-2e6bf.firebaseio.com',
+    projectId: 'netrix-2e6bf',
+    storageBucket: 'netrix-2e6bf.appspot.com',
+    messagingSenderId: '431714020563',
+    appId: '1:431714020563:web:46d51f3a4163d676'
   };
 
 
 export function createTranslateLoader(http: HttpClient) {
-	return new TranslateHttpLoader(http, 'assets/i18n/', '.json')
+  return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
 }
 
 @NgModule({
@@ -52,7 +52,7 @@ export function createTranslateLoader(http: HttpClient) {
   entryComponents: [],
   imports: [
     BrowserModule,
-    IonicModule.forRoot({mode:'ios'}),
+    IonicModule.forRoot({mode: 'ios'}),
     AppRoutingModule,
     HttpClientModule,
     IonicStorageModule.forRoot(),
