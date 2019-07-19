@@ -93,15 +93,17 @@
   },
   "settings": {
     "lang": {
-      "title": "Language settings",
-      "sysdefault": "System default"
+      "title": "Language settings"
     },
     "api": {
       "analytics": "Analytics and ads",
       "devinfo": "Send device info",
       "notifs": "Notifications",
       "notifs_master": "All notifications",
-      "ads": "Show advertisements"
+      "ads": "Show advertisements",
+      "time_singular": "day",
+      "time_plural": "days",
+      "notifs_test_time": "Notify before test"
     }
   },
   "absences": {

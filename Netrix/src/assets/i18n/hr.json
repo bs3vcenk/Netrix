@@ -101,7 +101,10 @@
       "devinfo": "Šalji informacije o uređaju",
       "notifs": "Obavijesti",
       "notifs_master": "Sve obavijesti",
-      "ads": "Prikazuj reklame"
+      "ads": "Prikazuj reklame",
+      "time_singular": "dan",
+      "time_plural": "dana",
+      "notifs_test_time": "Obavjesti prije ispita"
     }
   },
   "absences": {

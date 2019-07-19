@@ -14,6 +14,7 @@ export class SettingsService {
   notifPreference = null;
   adPreference = null;
   language = null;
+  notifTime = null;
   apiServer = 'https://api.netrix.io';
   httpLimit = 5000;
 
@@ -50,6 +51,13 @@ export class SettingsService {
           this.notifPreference = resx;
         } else {
           this.notifPreference = true;
+        }
+      });
+      this.storage.get('notif-time').then(resx => {
+        if (resx != null) {
+          this.notifTime = resx;
+        } else {
+          this.notifTime = 3; // three days
         }
       });
       this.adPreference = this.admobSvc.adPreference;

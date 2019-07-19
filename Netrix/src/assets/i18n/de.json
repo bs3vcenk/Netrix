@@ -93,15 +93,17 @@
   },
   "settings": {
     "lang": {
-      "title": "Spracheinstellungen",
-      "sysdefault": "Systemstandard"
+      "title": "Spracheinstellungen"
     },
     "api": {
       "analytics": "Analytics und Werbungen",
       "devinfo": "Geräteinformationen senden",
       "notifs": "Benachrichtigungen",
       "notifs_master": "Alle Benachrichtigungen",
-      "ads": "Werbungen anzeigen"
+      "ads": "Werbungen anzeigen",
+      "time_singular": "Tag",
+      "time_plural": "Tagen",
+      "notifs_test_time": "Vor Prüfung benachrichtigen"
     }
   },
   "absences": {
