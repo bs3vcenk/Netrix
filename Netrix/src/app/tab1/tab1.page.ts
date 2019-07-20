@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { AdmobService } from '../admob.service';
 import { ApiService } from '../api.service';
+import { Firebase } from '@ionic-native/firebase/ngx';
 
 @Component({
   selector: 'app-tab1',
@@ -24,8 +25,11 @@ export class Tab1Page {
 
   constructor(
     private admobSvc: AdmobService,
-    private apiSvc: ApiService
-  ) { }
+    private apiSvc: ApiService,
+    private firebase: Firebase
+  ) {
+    try { this.firebase.setScreenName('Subjects'); } catch (e) {}
+  }
 
   ngOnInit() {
     this.admobSvc.showBanner();

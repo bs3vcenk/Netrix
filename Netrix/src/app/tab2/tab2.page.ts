@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../api.service';
+import { Firebase } from '@ionic-native/firebase/ngx';
 
 @Component({
   selector: 'app-tab2',
@@ -24,8 +25,10 @@ export class Tab2Page {
   noItemsLoaded = false;
 
   constructor(
-    private apiSvc: ApiService
+    private apiSvc: ApiService,
+    private firebase: Firebase
   ) {
+    try { this.firebase.setScreenName('Tests'); } catch (e) {}
     this.initInBg();
   }
 

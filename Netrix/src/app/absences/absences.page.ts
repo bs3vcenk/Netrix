@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../api.service';
+import { Firebase } from '@ionic-native/firebase/ngx';
 
 @Component({
   selector: 'app-absences',
@@ -19,8 +20,10 @@ export class AbsencesPage implements OnInit {
   absences = {full: [{date: null, absences: [{subject: null}]}]};
 
   constructor(
-    private apiSvc: ApiService
+    private apiSvc: ApiService,
+    private firebase: Firebase
   ) {
+    try { this.firebase.setScreenName('AbsencesDetailed'); } catch (e) {}
     this.absences = this.apiSvc.absences;
   }
 
