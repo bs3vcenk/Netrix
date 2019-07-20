@@ -4,6 +4,7 @@ import { timeout } from 'rxjs/operators';
 import { SettingsService } from './settings.service';
 import { AuthenticationService } from './authentication.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Firebase } from '@ionic-native/firebase/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -28,13 +29,16 @@ export class ApiService {
     private http: HttpClient,
     private settings: SettingsService,
     private authServ: AuthenticationService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private firebase: Firebase
   ) { }
 
   async preCacheData() {
+    this.firebase.startTrace('dataFetch');
     this.getSubjects();
     this.getTests();
     this.getAbsences();
+    this.firebase.stopTrace('dataFetch');
   }
 
   getSubjects() {
