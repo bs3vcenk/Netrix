@@ -9,6 +9,7 @@ import { LanguageService } from './language.service';
 import { FirebaseService } from './firebase.service';
 import { SettingsService } from './settings.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ApiService } from './api.service';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +27,8 @@ export class AppComponent {
     private fcm: FirebaseService,
     private settings: SettingsService,
     private translate: TranslateService,
-    private config: Config
+    private config: Config,
+    private apiSvc: ApiService
   ) {
     this.initializeApp();
   }
@@ -67,6 +69,7 @@ export class AppComponent {
       });
       this.authenticationService.authenticationState.subscribe(state => {
         if (state) {
+          this.apiSvc.preCacheData();
           const token = this.authenticationService.token;
           this.notificationSetup(token);
           this.router.navigate(['tabs', 'tabs', 'tab1'], {replaceUrl: true});

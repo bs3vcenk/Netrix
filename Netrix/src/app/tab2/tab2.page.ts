@@ -1,11 +1,6 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { AuthenticationService } from '../authentication.service';
-import { timeout } from 'rxjs/operators';
-import { SettingsService } from '../settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { ToastController } from '@ionic/angular';
-import { TranslateService } from '@ngx-translate/core';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-tab2',
@@ -29,63 +24,13 @@ export class Tab2Page {
   noItemsLoaded = false;
 
   constructor(
-    private authServ: AuthenticationService,
-    private http: HttpClient,
-    private settings: SettingsService,
-    private toastCtrl: ToastController,
-    private translate: TranslateService
+    private apiSvc: ApiService
   ) {
-    this.getTests();
-  }
-
-  async getTests() {
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/tests')
-    .pipe(timeout(this.settings.httpLimit))
-    .subscribe((response) => {
-      this.tests = response.tests;
-      this.results = response.tests;
-      this.countTests();
-      this.noItemsLoaded = false;
-      this.dbError = false;
-    }, (error) => {
-      this.noItemsLoaded = true;
-      if (error.error) {
-        console.log(error);
-        if (error.error.error === 'E_TOKEN_NONEXISTENT') {
-          // User is not authenticated (possibly token purged from server DB)
-          this.toastError(this.translate.instant('generic.alert.expiry'), null, 2500);
-          this.authServ.logout();
-        } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
-          // Server-side issue
-          this.dbError = true;
-          throw new Error('Database connection failed');
-        } else if (error.status === 0) {
-          // Server did not respond
-          throw new Error('Server down');
-        }
-      } else {
-        throw new Error('Network error: ' + error);
-      }
-    });
-  }
-
-  toastError(msg, btns, dur) {
-    this.toastCtrl.create({
-      message: msg,
-      buttons: btns,
-      color: 'dark',
-      duration: dur
-    }).then((toast) => {
-      toast.present();
-    });
-  }
-
-  async countTests() {
-    this.tests.forEach((test) => {
-      if (test.current === true) {
-        this.currentTests += 1;
-      }
-    });
+    this.tests = this.apiSvc.tests;
+    this.reInit();
+    this.noItemsLoaded = this.apiSvc.tests_noItemsLoaded;
+    this.dbError = this.apiSvc.dbError;
+    this.currentTests = this.apiSvc.currentTests;
   }
 
   private reInit() {

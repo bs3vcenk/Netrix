@@ -1,4 +1,3 @@
-import { Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
@@ -15,7 +14,6 @@ export class LanguageService {
   constructor(
     private translate: TranslateService,
     private storage: Storage,
-    private plt: Platform,
     private settings: SettingsService
   ) { }
 

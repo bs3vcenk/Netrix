@@ -1,10 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { SettingsService } from '../settings.service';
-import { AuthenticationService } from '../authentication.service';
-import { timeout } from 'rxjs/operators';
-import { NavController } from '@ionic/angular';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-absences',
@@ -23,28 +19,12 @@ export class AbsencesPage implements OnInit {
   absences = {full: [{date: null, absences: [{subject: null}]}]};
 
   constructor(
-    private http: HttpClient,
-    private settings: SettingsService,
-    private authServ: AuthenticationService,
-    private navCtrl: NavController
-  ) { }
+    private apiSvc: ApiService
+  ) {
+    this.absences = this.apiSvc.absences;
+  }
 
   ngOnInit() {
-  }
-
-  ionViewDidEnter() {
-    this.getAllAbsences();
-  }
-
-  getAllAbsences() {
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences')
-    .pipe(timeout(this.settings.httpLimit))
-    .subscribe((response) => {
-      this.absences = response;
-      console.log(this.absences);
-    }, (error) => {
-      this.navCtrl.navigateBack('/tabs/tabs/tab4');
-    });
   }
 
 }

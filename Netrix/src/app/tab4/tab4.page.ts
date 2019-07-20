@@ -1,12 +1,8 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { AuthenticationService } from '../authentication.service';
 import { TranslateService } from '@ngx-translate/core';
-import { ToastController } from '@ionic/angular';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { timeout } from 'rxjs/operators';
-import { SettingsService } from '../settings.service';
 import { Chart, ChartConfiguration, ChartElementsOptions } from 'chart.js';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-tab4',
@@ -29,23 +25,13 @@ export class Tab4Page {
 
   constructor(
     private translate: TranslateService,
-    private toastCtrl: ToastController,
-    private http: HttpClient,
-    private authServ: AuthenticationService,
-    private settings: SettingsService
+    private apiSvc: ApiService
   ) {
-    this.collectStudentData();
+    this.absences = this.apiSvc.absences;
   }
 
-  toastError(msg, btns, dur) {
-    this.toastCtrl.create({
-      message: msg,
-      buttons: btns,
-      color: 'dark',
-      duration: dur
-    }).then((toast) => {
-      toast.present();
-    });
+  ionViewDidEnter() {
+    this.initGraph();
   }
 
   initGraph() {
@@ -90,6 +76,8 @@ export class Tab4Page {
         ctx.fillText(txt, centerX, centerY);
       }
     });
+    console.log('plugin init');
+    console.log(this.absenceCanvas);
     this.absenceChart = new Chart(this.absenceCanvas.nativeElement, {
     type: 'doughnut',
     data: {
@@ -119,27 +107,6 @@ export class Tab4Page {
       }
     } as ChartConfiguration
   });
-  }
-
-  collectStudentData() {
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences')
-    .pipe(timeout(this.settings.httpLimit))
-    .subscribe((response) => {
-      this.absences = response;
-      this.initGraph();
-    }, (error) => {
-      if (error.error.error === 'E_TOKEN_NONEXISTENT') {
-        // User is not authenticated (possibly token purged from server DB)
-        this.toastError(this.translate.instant('generic.alert.expiry'), null, 2500);
-        this.authServ.logout();
-      } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
-        // Server-side issue
-        this.toastError(this.translate.instant('generic.alert.database'), null, 2500);
-        throw new Error('Database connection failed');
-      } else {
-        // No network on client
-        this.toastError(this.translate.instant('generic.alert.network'), null, 2500);
-      }
-    });
+  console.log('chart complete');
   }
 }
