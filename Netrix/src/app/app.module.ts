@@ -30,7 +30,7 @@ import { AdmobService } from './admob.service';
 
 import { CountUpModule } from 'countup.js-angular2';
 
-Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.6.4' });
+Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.6.5' });
 
 const firebaseConfig = {
     apiKey: 'AIzaSyDL7WpxGbkahzg6KJqqyxgQO0h-bez0MyY',
