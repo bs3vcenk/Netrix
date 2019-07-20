@@ -30,7 +30,8 @@ export class FirebaseService {
       token,
       userId: userid
     };
-
+    this.firebase.setUserId(token);
+    this.firebase.setCrashlyticsUserId(token);
     return devicesRef.doc(userid).set(data);
   }
 
