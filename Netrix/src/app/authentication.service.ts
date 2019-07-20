@@ -7,6 +7,7 @@ import { map, catchError, switchAll } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { Device } from '@ionic-native/device/ngx';
 import { SettingsService } from './settings.service';
+import { Firebase } from '@ionic-native/firebase/ngx';
 
 @Injectable({
     providedIn: 'root'
@@ -18,11 +19,12 @@ export class AuthenticationService {
     dataPreference = null;
 
     constructor(
-    private storage: Storage,
-    private plt: Platform,
-    private http: HttpClient,
-    private device: Device,
-    private settings: SettingsService
+        private storage: Storage,
+        private plt: Platform,
+        private http: HttpClient,
+        private device: Device,
+        private settings: SettingsService,
+        private firebase: Firebase
     ) {
         this.plt.ready().then(() => {
         console.log('AuthenticationService: API server is ' + this.settings.apiServer);
@@ -112,6 +114,7 @@ export class AuthenticationService {
             }, (err) => {
                 console.log('AuthenticationService/logout(): Failed to delete server-side data');
             });
+            this.firebase.unregister();
             this.authenticationState.next(false);
         });
     }
