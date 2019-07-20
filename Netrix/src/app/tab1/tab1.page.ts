@@ -19,7 +19,6 @@ export class Tab1Page {
 
   subjects = null;
   fullAvg = null;
-  subjsLoaded = false;
   noItemsLoaded = false;
   dbError = false;
 
@@ -36,20 +35,15 @@ export class Tab1Page {
     this.initInBg();
   }
 
-  private initInBg() {
-    let atts = 0;
-    while (atts !== 3000) {
-      atts += 1;
-      if (!this.apiSvc.subj_attemptedLoad || (this.subjects === null && (this.noItemsLoaded === false && this.dbError === false))) {
-        console.log('Syncing');
-        this.fullAvg = this.apiSvc.fullAvg;
-        this.noItemsLoaded = this.apiSvc.subj_noItemsLoaded;
-        this.dbError = this.apiSvc.dbError;
-        this.subjects = this.apiSvc.subjects;
-      } else {
-        console.log('Breaking loop');
-        break;
-      }
+  initInBg() {
+    console.log('Syncing');
+    if (this.apiSvc.subjects === null) {
+      console.log('tab1/initInBg(): Sync failed, redoing manually');
+      this.apiSvc.getSubjects();
     }
+    this.fullAvg = this.apiSvc.fullAvg;
+    this.noItemsLoaded = this.apiSvc.subj_noItemsLoaded;
+    this.dbError = this.apiSvc.dbError;
+    this.subjects = this.apiSvc.subjects;
   }
 }

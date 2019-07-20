@@ -27,6 +27,9 @@ export class Tab4Page {
     private translate: TranslateService,
     private apiSvc: ApiService
   ) {
+    if (this.apiSvc.absences === null) {
+      this.apiSvc.getAbsences();
+    }
     this.absences = this.apiSvc.absences;
   }
 

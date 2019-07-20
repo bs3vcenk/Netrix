@@ -33,7 +33,7 @@
       <object width="150" type="image/svg+xml" data="./assets/emoji/pensive.svg"></object>
       <h1 id="netHeader" text-wrap>{{ 'generic.text.nonetwork.header' | translate }}</h1>
       <h2 id="netContent" text-wrap>{{ 'generic.text.nonetwork.content' | translate }}</h2>
-      <ion-button (click)="getTests()" fill="clear">
+      <ion-button (click)="initInBg()" fill="clear">
         <ion-icon slot="icon-only" name="refresh"></ion-icon>
       </ion-button>
     </ion-label>
@@ -43,7 +43,7 @@
       <object width="150" type="image/svg+xml" data="./assets/emoji/wrench.svg"></object>
       <h1 id="netHeader" text-wrap>{{ 'generic.text.nodb.header' | translate }}</h1>
       <h2 id="netContent" text-wrap>{{ 'generic.text.nodb.content' | translate }}</h2>
-      <ion-button (click)="getTests()" fill="clear">
+      <ion-button (click)="initInBg()" fill="clear">
         <ion-icon slot="icon-only" name="refresh"></ion-icon>
       </ion-button>
     </ion-label>

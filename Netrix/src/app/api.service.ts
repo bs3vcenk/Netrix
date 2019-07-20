@@ -37,7 +37,7 @@ export class ApiService {
     this.getAbsences();
   }
 
-  private getSubjects() {
+  getSubjects() {
     this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects')
     .pipe(timeout(this.settings.httpLimit))
     .subscribe((response) => {
@@ -78,13 +78,11 @@ export class ApiService {
           // Server did not respond
           throw new Error('Server down');
         }
-      } else {
-        throw new Error('Network error: ' + error);
       }
     });
   }
 
-  private getTests() {
+  getTests() {
     this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/tests')
     .pipe(timeout(this.settings.httpLimit))
     .subscribe((response) => {
@@ -119,23 +117,25 @@ export class ApiService {
     });
   }
 
-  private getAbsences() {
+  getAbsences() {
     this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences')
     .pipe(timeout(this.settings.httpLimit))
     .subscribe((response) => {
       this.absences = response;
     }, (error) => {
       this.abs_noItemsLoaded = true;
-      if (error.error.error === 'E_TOKEN_NONEXISTENT') {
-        // User is not authenticated (possibly token purged from server DB)
-        this.authServ.logout();
-      } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
-        // Server-side issue
-        this.dbError = true;
-        throw new Error('Database connection failed');
-      } else if (error.status === 0) {
-        // Server did not respond
-        throw new Error('Server down');
+      if (error.error) {
+        if (error.error.error === 'E_TOKEN_NONEXISTENT') {
+          // User is not authenticated (possibly token purged from server DB)
+          this.authServ.logout();
+        } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
+          // Server-side issue
+          this.dbError = true;
+          throw new Error('Database connection failed');
+        } else if (error.status === 0) {
+          // Server did not respond
+          throw new Error('Server down');
+        }
       }
     });
   }

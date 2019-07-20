@@ -22,7 +22,7 @@
     <!--<ion-item>
       <ion-label>{{ 'settings.api.errreport' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="errorPreference" (ionChange)="updErrorReportPreference()"></ion-toggle>
-    </ion-item>-->
+    </ion-item>
     <ion-list-header>
       <ion-label>{{ 'settings.api.notifs' | translate }}</ion-label>
     </ion-list-header>
@@ -33,7 +33,7 @@
     <ion-item [@fadeInOut] detail-none button (click)="openNotifTimePicker()" *ngIf="notifPreference">
       <ion-label>{{ 'settings.api.notifs_test_time' | translate}}</ion-label>
       <ion-label item-right text-right>{{ testNotifTime }} {{ dayString }}</ion-label>
-    </ion-item>
+    </ion-item>-->
   </ion-list>
 	<ion-list>
     <ion-item button (click)="logout()" lines="full">

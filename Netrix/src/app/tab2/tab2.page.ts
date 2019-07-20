@@ -26,6 +26,13 @@ export class Tab2Page {
   constructor(
     private apiSvc: ApiService
   ) {
+    this.initInBg();
+  }
+
+  initInBg() {
+    if (this.apiSvc.tests === null) {
+      this.apiSvc.getTests();
+    }
     this.tests = this.apiSvc.tests;
     this.reInit();
     this.noItemsLoaded = this.apiSvc.tests_noItemsLoaded;
