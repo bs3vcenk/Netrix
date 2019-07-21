@@ -26,6 +26,45 @@ r = None
 
 threads = {}
 
+class NonExistentSetting(Exception):
+	pass
+
+def getSetting(token, action):
+	"""
+		Get action data/value for token.
+	"""
+	o = getData(token)
+	if 'settings' not in o.keys():
+		o['settings'] = {'notif':{'disable': False, 'ignore':[]}}
+	if action == 'notif.disable':
+		return o['settings']['notif']['disable']
+	elif action == 'notif.ignore':
+		return o['settings']['notif']['ignore']
+	else:
+		raise NonExistentSetting
+
+def processSetting(token, action, val):
+	"""
+		Do an action, with val as the data/arguments on a token-bound
+		profile.
+	"""
+	o = getData(token)
+	if 'settings' not in o.keys():
+		o['settings'] = {'notif':{'disable': False, 'ignore':[]}}
+	if action == 'notif.disable':
+		o['settings']['notif']['disable'] = val
+	elif action == 'notif.ignore.add':
+		if val not in o['settings']['notif']['ignore']:
+			o['settings']['notif']['ignore'].append(val)
+	elif action == 'notif.ignore.del':
+		if val in o['settings']['notif']['ignore']:
+			del o['settings']['notif']['ignore'][val]
+		else:
+			raise NonExistentSetting
+	else:
+		raise NonExistentSetting
+	saveData(token, o)
+
 def purgeToken(token):
 	"""
 		Remove a token from the DB and terminate its sync thread.

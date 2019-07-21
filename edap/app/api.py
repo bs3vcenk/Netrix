@@ -7,7 +7,7 @@ from random import randint
 from functools import wraps
 from time import time as _time
 
-api_version = "2.3-dev"
+api_version = "2.4-dev"
 
 log = logging.getLogger('EDAP-API')
 
@@ -339,7 +339,13 @@ def login():
 		'lang': None,
 		'resolution': None,
 		'new': None,
-		'generated_with': api_version
+		'generated_with': api_version,
+		'settings': {
+			'notif': {
+				'disable': False,
+				'ignore': []
+			}
+		}
 	}
 	if config["USE_CLOUDFLARE"]:
 		dataObj["cloudflare"] = {}
@@ -360,6 +366,30 @@ def getInfoUser(token):
 		abort(401)
 	log.info(token)
 	return make_response(jsonify(getData(token)['data']['info']), 200)
+
+@app.route('/api/user/<string:token>/settings/<string:action>', methods=["POST", "GET"])
+def setting(token, action):
+	"""
+		Set a user's setting.
+	"""
+	if not verifyRequest(token):
+		abort(401)
+	if request.method == "POST":
+		if not request.json or not "parameter" in request.json:
+			abort(400)
+		log.info("SET => %s => %s => %s" % (token, request.json["action"], request.json["parameter"]))
+		try:
+			processSetting(token, request.json["action"], request.json["parameter"])
+		except NonExistentSetting:
+			return make_response(jsonify({'error':'E_SETTING_NONEXISTENT'}), 400)
+		return make_response(jsonify({'status':'ok'}), 200)
+	elif request.method == "GET":
+		log.info("GET => %s => %s" % (token, action))
+		try:
+			val = getSetting(token, request.json["action"])
+		except NonExistentSetting:
+			return make_response(jsonify({'error':'E_SETTING_NONEXISTENT'}), 400)
+		return make_response(jsonify({'value':val}), 200)
 
 @app.route('/api/user/<string:token>/new', methods=["GET"])
 def getNewGrades(token):
