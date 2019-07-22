@@ -51,11 +51,11 @@ export class ApiService {
     this.getAbsences();
     this.getNotifConfig();
     forkJoin(this.loadingFinishedAbsences, this.loadingFinishedNotif, this.loadingFinishedSubj, this.loadingFinishedTests)
-    .pipe(map(([abs, notif, subj, test]) => {
+    .subscribe(([abs, notif, subj, test]) => {
       if (abs && notif && subj && test) {
         this.loadingFinishedAll.next(true);
       }
-    }));
+    });
   }
 
   receiveNotifType(nType: string) {
@@ -66,9 +66,7 @@ export class ApiService {
       .subscribe((response) => {
         this.firebase.stopTrace('receiveNotifType');
         delete this.ignoredNotifTypes[this.ignoredNotifTypes.indexOf(nType)];
-        this.loadingFinishedNotif.next(true);
       }, (err) => {
-        this.loadingFinishedNotif.next(true);
         this.firebase.stopTrace('receiveNotifType');
         throw err;
       });
@@ -97,7 +95,11 @@ export class ApiService {
     .subscribe((response) => {
       this.firebase.stopTrace('getNotifConfig');
       this.ignoredNotifTypes = response.value.ignore;
+      this.loadingFinishedNotif.next(true);
+      this.loadingFinishedNotif.complete();
     }, (err) => {
+      this.loadingFinishedNotif.next(true);
+      this.loadingFinishedNotif.complete();
       this.firebase.stopTrace('getNotifConfig');
       throw err;
     });
@@ -129,6 +131,7 @@ export class ApiService {
       this.dbError = false;
       this.firebase.stopTrace('getSubjects');
       this.loadingFinishedSubj.next(true);
+      this.loadingFinishedSubj.complete();
     },
     (error) => {
       this.subj_noItemsLoaded = true;
@@ -148,6 +151,7 @@ export class ApiService {
         }
       }
       this.loadingFinishedSubj.next(true);
+      this.loadingFinishedSubj.complete();
     });
   }
 
@@ -162,6 +166,7 @@ export class ApiService {
       this.dbError = false;
       this.firebase.stopTrace('getTests');
       this.loadingFinishedTests.next(true);
+      this.loadingFinishedTests.complete();
     }, (error) => {
       this.tests_noItemsLoaded = true;
       this.firebase.stopTrace('getTests');
@@ -180,6 +185,7 @@ export class ApiService {
         }
       }
       this.loadingFinishedTests.next(true);
+      this.loadingFinishedTests.complete();
     });
   }
 
@@ -199,6 +205,7 @@ export class ApiService {
       this.absences = response;
       this.firebase.stopTrace('getAbsences');
       this.loadingFinishedAbsences.next(true);
+      this.loadingFinishedAbsences.complete();
     }, (error) => {
       this.firebase.stopTrace('getAbsences');
       this.abs_noItemsLoaded = true;
@@ -216,6 +223,7 @@ export class ApiService {
         }
       }
       this.loadingFinishedAbsences.next(true);
+      this.loadingFinishedAbsences.complete();
     });
   }
 }
