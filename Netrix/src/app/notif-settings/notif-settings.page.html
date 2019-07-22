@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab3"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'notifSettings.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let fType of fullTypes">
+      <ion-label>{{ fType.name }}</ion-label>
+      <ion-checkbox slot="start" [(ngModel)]="fType.checked" (click)="handleChk(fType)"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+</ion-content>
