@@ -49,6 +49,7 @@ export class AppComponent {
     try {
       this.fcm.onNotifications().subscribe(
         (msg) => {
+          console.log(msg);
           this.presentToast('Header', msg.body);
         });
     } catch (e) {

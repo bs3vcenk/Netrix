@@ -7,7 +7,7 @@ import { map, catchError, switchAll } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { Device } from '@ionic-native/device/ngx';
 import { SettingsService } from './settings.service';
-import { Firebase } from '@ionic-native/firebase/ngx';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Injectable({
     providedIn: 'root'
@@ -24,7 +24,7 @@ export class AuthenticationService {
         private http: HttpClient,
         private device: Device,
         private settings: SettingsService,
-        private firebase: Firebase
+        private firebase: FirebaseX
     ) {
         this.plt.ready().then(() => {
         console.log('AuthenticationService: API server is ' + this.settings.apiServer);

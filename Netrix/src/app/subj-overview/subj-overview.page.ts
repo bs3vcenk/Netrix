@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { timeout } from 'rxjs/operators';
 import { SettingsService } from '../settings.service';
-import { Firebase } from '@ionic-native/firebase/ngx';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
   selector: 'app-subj-overview',
@@ -44,7 +44,7 @@ export class SubjOverviewPage implements OnInit {
     private alertControl: AlertController,
     private navCtrl: NavController,
     private settings: SettingsService,
-    private firebase: Firebase
+    private firebase: FirebaseX
   ) {
     try { this.firebase.setScreenName('SubjOverview'); } catch (e) {}
   }

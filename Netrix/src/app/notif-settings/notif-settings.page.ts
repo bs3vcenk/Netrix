@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Firebase } from '@ionic-native/firebase/ngx';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ApiService } from '../api.service';
 
 @Component({
@@ -19,7 +19,7 @@ export class NotifSettingsPage implements OnInit {
   ];
 
   constructor(
-    private firebase: Firebase,
+    private firebase: FirebaseX,
     private apiSvc: ApiService
   ) {
     try { this.firebase.setScreenName('NotificationSettings'); } catch (e) {}

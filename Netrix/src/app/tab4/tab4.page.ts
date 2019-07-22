@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { Chart, ChartConfiguration, ChartElementsOptions } from 'chart.js';
 import { ApiService } from '../api.service';
-import { Firebase } from '@ionic-native/firebase/ngx';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
   selector: 'app-tab4',
@@ -27,7 +27,7 @@ export class Tab4Page {
   constructor(
     private translate: TranslateService,
     private apiSvc: ApiService,
-    private firebase: Firebase
+    private firebase: FirebaseX
   ) {
     try { this.firebase.setScreenName('Absences'); } catch (e) {}
     if (this.apiSvc.absences === null) {

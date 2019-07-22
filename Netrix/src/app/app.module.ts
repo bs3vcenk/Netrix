@@ -20,7 +20,7 @@ import { Device } from '@ionic-native/device/ngx';
 
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { Firebase } from '@ionic-native/firebase/ngx';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 import { AdMobPro } from '@ionic-native/admob-pro/ngx';
 import { AdmobService } from './admob.service';
@@ -69,7 +69,7 @@ export function createTranslateLoader(http: HttpClient) {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     Device,
     { provide: ErrorHandler, useClass: ErrorHandler },
-    Firebase,
+    FirebaseX,
     AdMobPro,
     AdmobService
   ],

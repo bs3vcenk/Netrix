@@ -5,7 +5,7 @@ import { SettingsService } from '../settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { PickerOptions, PickerButton } from '@ionic/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Firebase } from '@ionic-native/firebase/ngx';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
   selector: 'app-tab3',
@@ -33,7 +33,7 @@ export class Tab3Page {
     private settings: SettingsService,
     private pickerCtrl: PickerController,
     private translate: TranslateService,
-    private firebase: Firebase
+    private firebase: FirebaseX
   ) {
     try { this.firebase.setScreenName('Settings'); } catch (e) {}
     this.dataPreference = this.settings.dataPreference;
