@@ -33,9 +33,8 @@ export class AppComponent {
     this.initializeApp();
   }
 
-  private async presentToast(header, message) {
+  private async presentToast(message) {
     const toast = await this.toastController.create({
-      header,
       message,
       duration: 3000,
       color: 'dark',
@@ -48,9 +47,8 @@ export class AppComponent {
     this.fcm.getToken(token);
     try {
       this.fcm.onNotifications().subscribe(
-        (msg) => {
-          console.log(msg);
-          this.presentToast('Header', msg.body);
+        (notifObject) => {
+          console.log(notifObject);
         });
     } catch (e) {
       console.log('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running cordova.');
