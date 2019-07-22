@@ -44,7 +44,6 @@
     "countup.js-angular2": "^7.3.0",
     "firebase": "^6.2.4",
     "rxjs": "~6.5.1",
-    "sentry-cordova": "^0.15.0",
     "showdown": "^1.9.0",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.29"

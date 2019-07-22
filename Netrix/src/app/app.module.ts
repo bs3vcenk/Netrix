@@ -22,15 +22,10 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { Firebase } from '@ionic-native/firebase/ngx';
 
-import * as Sentry from 'sentry-cordova';
-import { SentryErrorHandler } from './sentryerrorhandler.service';
-
 import { AdMobPro } from '@ionic-native/admob-pro/ngx';
 import { AdmobService } from './admob.service';
 
 import { CountUpModule } from 'countup.js-angular2';
-
-Sentry.init({ dsn: 'https://a90cfc8a6dc749fb831a5050996bb8c7@sentry.io/1494605', release: 'netrix@1.6.5' });
 
 const firebaseConfig = {
     apiKey: 'AIzaSyDL7WpxGbkahzg6KJqqyxgQO0h-bez0MyY',
@@ -73,7 +68,7 @@ export function createTranslateLoader(http: HttpClient) {
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     Device,
-    { provide: ErrorHandler, useClass: SentryErrorHandler },
+    { provide: ErrorHandler, useClass: ErrorHandler },
     Firebase,
     AdMobPro,
     AdmobService
