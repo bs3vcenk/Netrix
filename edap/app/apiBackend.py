@@ -40,6 +40,8 @@ def getSetting(token, action):
 		return o['settings']['notif']['disable']
 	elif action == 'notif.ignore':
 		return o['settings']['notif']['ignore']
+	elif action == 'notif.all':
+		return o['settings']['notif']
 	else:
 		raise NonExistentSetting
 
