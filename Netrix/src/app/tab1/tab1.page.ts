@@ -41,10 +41,13 @@ export class Tab1Page {
 
   initInBg() {
     this.apiSvc.loadingFinishedAll.subscribe((isLoaded) => {
-      this.fullAvg = this.apiSvc.fullAvg;
-      this.noItemsLoaded = this.apiSvc.subj_noItemsLoaded;
-      this.dbError = this.apiSvc.dbError;
-      this.subjects = this.apiSvc.subjects;
+      if (isLoaded) {
+        console.log('tab1/initInBg(): Loading complete');
+        this.fullAvg = this.apiSvc.fullAvg;
+        this.noItemsLoaded = this.apiSvc.subj_noItemsLoaded;
+        this.dbError = this.apiSvc.dbError;
+        this.subjects = this.apiSvc.subjects;
+      }
     });
   }
 }
