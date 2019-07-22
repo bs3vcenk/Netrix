@@ -4,16 +4,16 @@ Netrix je frontend za EDAP library, pisan u [Ionic](https://ionicframework.com/)
 
 ## Upotreba
 
-### Linux (Ubuntu)
+### Linux/macOS
 
-1. Klonirati repository na disk i `cd` u njega:
+1. Klonirajte repository na disk i `cd` u njega:
 
 ```bash
 git clone git@github.com:btx3/Netrix # ili "git clone https://github.com/btx3/Netrix" ako nemate SSH podešen
 cd Netrix/Netrix
 ```
 
-2. Instalirati potrebne programe:
+2. Instalirajte potrebne programe:
 
 ```bash
 sudo apt install npm nodejs -y # NodeJS i package manager NPM
@@ -86,17 +86,28 @@ Version 29.0.1-5644136
 Installed as /home/btx3/Android/Sdk/platform-tools/adb
 ```
 
-3. Instalirati NodeJS module:
+3. Instalirajte NodeJS module:
+
+Za dostupnost nekih NPM moduleova potrebno ih je instalirati globalno (`-g` argument). Ako se ne želite zamarati problemima pristupa, preporučeno je da slijedite [ove upute](https://github.com/sindresorhus/guides/blob/master/npm-global-without-sudo.md) prije instalacije.
+
+Kada ste gotovi, pokrenite ovo:
 
 ```bash
 npm i
-sudo npm i --unsafe-perm -g cordova cordova-res ionic native-run
+npm i -g cordova cordova-res ionic native-run
 ```
 
-4. Pokretanje:
+Nakon ove komande, potrebno je i omogućiti korištenje FirebaseX plugina, koji trenutno nema službenu podršku u ionic-native skupini paketa:
 
-Možete Netrix pokrenuti kao testnu web aplikaciju s komandom `ionic s`, ili možete buildati APK za Android s komandom `ionic cordova build android --prod --release -- -- --minSdkVersion=23` (dugo traje).
+```bash
+./firebaseFix.sh
+```
 
-### Windows
+4. Pokrenite:
 
-Još nije gotovo, ali postupak je otprilike isti.
+* Testno okruženje (bez Cordove):
+    `ionic s`
+* Debug build (otvara remote DevTools, Cordova podrška):
+    `ionic cordova build android`
+* Release build (bez debug mogućnosti, za Play Store):
+    `rm -rf www && ionic cordova build android --prod --release`
