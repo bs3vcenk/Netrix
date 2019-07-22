@@ -104,10 +104,19 @@
       "ads": "Prikazuj reklame",
       "time_singular": "dan",
       "time_plural": "dana",
-      "notifs_test_time": "Obavjesti prije ispita"
+      "notifs_test_time": "Obavjesti prije ispita",
+      "notifs_exclude": "Upravljanje obavijestima"
     }
   },
   "absences": {
     "title": "Detaljni pregled"
+  },
+  "notifSettings": {
+    "title": "Upravljanje obavijestima",
+    "tests": "Ispiti",
+    "grades": "Ocjene",
+    "classes": "Razredi",
+    "notes": "Bilješke",
+    "absences": "Izostanci"
   }
 }

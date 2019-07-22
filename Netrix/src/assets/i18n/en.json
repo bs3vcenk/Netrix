@@ -103,10 +103,19 @@
       "ads": "Show advertisements",
       "time_singular": "day",
       "time_plural": "days",
-      "notifs_test_time": "Notify before test"
+      "notifs_test_time": "Notify before test",
+      "notifs_exclude": "Notification management"
     }
   },
   "absences": {
     "title": "Detailed overview"
+  },
+  "notifSettings": {
+    "title": "Notification management",
+    "tests": "Tests",
+    "grades": "Grades",
+    "classes": "Classes",
+    "notes": "Notes",
+    "absences": "Absences"
   }
 }
