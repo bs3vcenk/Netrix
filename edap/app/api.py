@@ -377,16 +377,16 @@ def setting(token, action):
 	if request.method == "POST":
 		if not request.json or not "parameter" in request.json:
 			abort(400)
-		log.info("SET => %s => %s => %s" % (token, request.json["action"], request.json["parameter"]))
+		log.info("SET => %s => %s => %s" % (token, action, request.json["parameter"]))
 		try:
-			processSetting(token, request.json["action"], request.json["parameter"])
+			processSetting(token, action, request.json["parameter"])
 		except NonExistentSetting:
 			return make_response(jsonify({'error':'E_SETTING_NONEXISTENT'}), 400)
 		return make_response(jsonify({'status':'ok'}), 200)
 	elif request.method == "GET":
 		log.info("GET => %s => %s" % (token, action))
 		try:
-			val = getSetting(token, request.json["action"])
+			val = getSetting(token, action)
 		except NonExistentSetting:
 			return make_response(jsonify({'error':'E_SETTING_NONEXISTENT'}), 400)
 		return make_response(jsonify({'value':val}), 200)
