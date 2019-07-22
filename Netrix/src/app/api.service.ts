@@ -1,3 +1,4 @@
+// tslint:disable: variable-name
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { timeout } from 'rxjs/operators';
@@ -5,11 +6,20 @@ import { SettingsService } from './settings.service';
 import { AuthenticationService } from './authentication.service';
 import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { BehaviorSubject, forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
+
+  loadingFinishedAll = new BehaviorSubject(false);
+
+  loadingFinishedSubj = new BehaviorSubject(false);
+  loadingFinishedTests = new BehaviorSubject(false);
+  loadingFinishedAbsences = new BehaviorSubject(false);
+  loadingFinishedNotif = new BehaviorSubject(false);
 
   ignoredNotifTypes = [];
 
@@ -40,6 +50,12 @@ export class ApiService {
     this.getTests();
     this.getAbsences();
     this.getNotifConfig();
+    forkJoin(this.loadingFinishedAbsences, this.loadingFinishedNotif, this.loadingFinishedSubj, this.loadingFinishedTests)
+    .pipe(map(([abs, notif, subj, test]) => {
+      if (abs && notif && subj && test) {
+        this.loadingFinishedAll.next(true);
+      }
+    }));
   }
 
   receiveNotifType(nType: string) {
@@ -50,7 +66,9 @@ export class ApiService {
       .subscribe((response) => {
         this.firebase.stopTrace('receiveNotifType');
         delete this.ignoredNotifTypes[this.ignoredNotifTypes.indexOf(nType)];
+        this.loadingFinishedNotif.next(true);
       }, (err) => {
+        this.loadingFinishedNotif.next(true);
         this.firebase.stopTrace('receiveNotifType');
         throw err;
       });
@@ -110,6 +128,7 @@ export class ApiService {
       this.subj_noItemsLoaded = false;
       this.dbError = false;
       this.firebase.stopTrace('getSubjects');
+      this.loadingFinishedSubj.next(true);
     },
     (error) => {
       this.subj_noItemsLoaded = true;
@@ -128,6 +147,7 @@ export class ApiService {
           throw new Error('Server down');
         }
       }
+      this.loadingFinishedSubj.next(true);
     });
   }
 
@@ -141,6 +161,7 @@ export class ApiService {
       this.tests_noItemsLoaded = false;
       this.dbError = false;
       this.firebase.stopTrace('getTests');
+      this.loadingFinishedTests.next(true);
     }, (error) => {
       this.tests_noItemsLoaded = true;
       this.firebase.stopTrace('getTests');
@@ -158,6 +179,7 @@ export class ApiService {
           throw new Error('Server down');
         }
       }
+      this.loadingFinishedTests.next(true);
     });
   }
 
@@ -176,6 +198,7 @@ export class ApiService {
     .subscribe((response) => {
       this.absences = response;
       this.firebase.stopTrace('getAbsences');
+      this.loadingFinishedAbsences.next(true);
     }, (error) => {
       this.firebase.stopTrace('getAbsences');
       this.abs_noItemsLoaded = true;
@@ -192,6 +215,7 @@ export class ApiService {
           throw new Error('Server down');
         }
       }
+      this.loadingFinishedAbsences.next(true);
     });
   }
 }

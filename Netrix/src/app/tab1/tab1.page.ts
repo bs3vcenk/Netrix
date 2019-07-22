@@ -29,6 +29,7 @@ export class Tab1Page {
     private firebase: FirebaseX
   ) {
     try { this.firebase.setScreenName('Subjects'); } catch (e) {}
+    this.initInBg();
   }
 
   ngOnInit() {
@@ -36,18 +37,14 @@ export class Tab1Page {
   }
 
   ionViewDidEnter() {
-    this.initInBg();
   }
 
   initInBg() {
-    console.log('Syncing');
-    if (this.apiSvc.subjects === null) {
-      console.log('tab1/initInBg(): Sync failed, redoing manually');
-      this.apiSvc.getSubjects();
-    }
-    this.fullAvg = this.apiSvc.fullAvg;
-    this.noItemsLoaded = this.apiSvc.subj_noItemsLoaded;
-    this.dbError = this.apiSvc.dbError;
-    this.subjects = this.apiSvc.subjects;
+    this.apiSvc.loadingFinishedAll.subscribe((isLoaded) => {
+      this.fullAvg = this.apiSvc.fullAvg;
+      this.noItemsLoaded = this.apiSvc.subj_noItemsLoaded;
+      this.dbError = this.apiSvc.dbError;
+      this.subjects = this.apiSvc.subjects;
+    });
   }
 }
