@@ -27,8 +27,8 @@ export class AuthenticationService {
         private firebase: FirebaseX
     ) {
         this.plt.ready().then(() => {
-        console.log('AuthenticationService: API server is ' + this.settings.apiServer);
-        this.checkToken();
+            console.log('AuthenticationService: API server is ' + this.settings.apiServer);
+            this.checkToken();
         });
     }
 
@@ -39,9 +39,7 @@ export class AuthenticationService {
                 this.token = res;
                 console.log('AuthenticationService/checkToken(): Found saved token (' + this.token + ')');
                 console.log('AuthenticationService/checkToken(): Found analytics preference (' + this.settings.dataPreference + ')');
-                if (this.settings.dataPreference === true) {
-                    this.sendDeviceInfo();
-                }
+                this.sendDeviceInfo();
                 this.authenticationState.next(true);
             }
         });
@@ -65,15 +63,15 @@ export class AuthenticationService {
     }
 
     private getPlatform() {
-        return this.device.platform;
+        return this.device.platform ? this.settings.dataPreference : null;
     }
 
     private getDevice() {
-        return this.device.model;
+        return this.device.model ? this.settings.dataPreference : null;
     }
 
     private getResolution() {
-        return this.plt.width() + 'x' + this.plt.height();
+        return this.plt.width() + 'x' + this.plt.height() ? this.settings.dataPreference : null;
     }
 
     private getLanguage() {
@@ -96,9 +94,7 @@ export class AuthenticationService {
         this.storage.set('auth-token', data.token).then(() => {
             this.token = data.token;
             console.log('AuthenticationService/handleLogin(): Login successful, got token (' + data.token + ')');
-            if (this.settings.dataPreference === true) {
-                this.sendDeviceInfo();
-            }
+            this.sendDeviceInfo();
             this.authenticationState.next(true);
         });
     }
