@@ -1,10 +1,12 @@
 # Pravila o privatnosti
 
-Zadnje ažuriranje: 16. srpnja, 2019.
+Zadnje ažuriranje: 22. srpnja, 2019.
+
+Prijašnje inačice ovog dokumenta možete zatražiti upitom na e-mail bs3vcenk@gmail.com
 
 ## Što je Netrix?
 
-Netrix je naziv frontend aplikacije za CARNetov servis "e-Dnevnik". Netrix kontaktira API server pod imenom eDnevnikAndroidProject (skraćeno eDAP).
+Netrix je naziv neslužbene frontend aplikacije za CARNetov servis "e-Dnevnik". Netrix kontaktira API server pod imenom eDnevnikAndroidProject (skraćeno eDAP).
 
 Netrix omogućuje brz pregled ocjena, izostanaka, ispita i korisničkih informacija te obavijesti o promjeni istih.
 
@@ -42,14 +44,22 @@ Javni eDAP servis na adresi https://api.netrix.io koristi Cloudflare. Njihova pr
 
 ### Netrix (frontend)
 
-Netrix koristi Googleov Firebase servis za analitike u aplikaciji, te Firebase Cloud Messaging za primanje obavijesti o promjenama stanja. Za više informacija o podacima koji se šalju, provjerite [Googleova pravila o privatnosti](https://policies.google.com/privacy).
+Netrix koristi Googleov Firebase servis za analitike u aplikaciji, Firebase Crashlytics za prijavljivanje grešaka u radu, Firebase Cloud Messaging za primanje obavijesti, te AdMob za prikazivanje reklama. Za više informacija o podacima koji se šalju, provjerite [Googleova pravila o privatnosti](https://policies.google.com/privacy).
 
 Od verzije 1.6.1, pri prijavi postavljen je upit za uključenje opcije "Šalji informacije o uređaju", te se obavijesti i analitika mogu isključiti u postavkama aplikacije.
 
 Aplikacija je napravljena u Ionic Frameworku, čija pravila o privatnosti možete pročitati [ovdje](https://ionicframework.com/privacy).
 
-Za automatsko prijavljivanje grešaka Netrix koristi Sentry, čija pravila privatnosti možete pročitati [ovdje](https://sentry.io/privacy/).
+## Sigurnost prijenosa podataka
 
-## Sigurnost u prijenosu podataka
+Netrix koristi HTTPS protokol za komunikaciju sa svojim API-em i Firebaseom. Aplikacija neće poslati podatke na navedene servere ako HTTPS provjera ne uspije.
 
-Netrix koristi HTTPS protokol za komunikaciju s API-em, Firebaseom i Sentryem. Aplikacija neće poslati podatke na navedene servere ako HTTPS provjera ne uspije.
+## Sigurnost spremljenih podataka
+
+eDAP implementira tzv. "rate limiting" koji ograničava broj zahtjeva koji se mogu napraviti na server u određenom vremenskom prostoru. Zahtjevi koji ne dolaze iz Hrvatske se posebno zabilježuju i ograničavaju, te će potrebne mjere biti poduzete u slučaju uočavanja neovlaštenog pristupa.
+
+U slučaju da uočite neovlašteni pristup računu putem naših servisa, možete nam poslati e-mail na bs3vcenk@gmail.com, te ćemo mi nakon utvrđivanja identiteta i vrijednosti zahtjeva blokirati pristup prekršiteljevog uređaja.
+
+Od verzije 1.6.2, pri odjavi se brišu korisnički podaci sa servera.
+
+Poslužitelje održavamo ažuriranima te provjeravamo aplikaciju i njezine dependencye za bilo kakve sigurnosne propuste.
