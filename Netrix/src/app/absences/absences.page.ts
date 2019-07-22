@@ -24,10 +24,10 @@ export class AbsencesPage implements OnInit {
     private firebase: Firebase
   ) {
     try { this.firebase.setScreenName('AbsencesDetailed'); } catch (e) {}
-    this.absences = this.apiSvc.absences;
   }
 
   ngOnInit() {
+    this.absences = this.apiSvc.absences;
   }
 
 }
