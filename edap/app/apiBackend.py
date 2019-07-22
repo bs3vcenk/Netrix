@@ -60,7 +60,7 @@ def processSetting(token, action, val):
 			o['settings']['notif']['ignore'].append(val)
 	elif action == 'notif.ignore.del':
 		if val in o['settings']['notif']['ignore']:
-			del o['settings']['notif']['ignore'][val]
+			del o['settings']['notif']['ignore'][o['settings']['notif']['ignore'].index(val)]
 		else:
 			raise NonExistentSetting
 	else:
