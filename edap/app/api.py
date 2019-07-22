@@ -272,8 +272,12 @@ def devSendNotification(token):
 		abort(400)
 	if not verifyRequest(token):
 		abort(401)
+	if 'data' in request.json:
+		data = request.json['data']
+	else:
+		data = None
 	try:
-		sendNotification(token, request.json['title'], request.json['content'])
+		sendNotification(token, request.json['title'], request.json['content'], data=data)
 	except Exception as e:
 		return make_response(jsonify({'error':str(e)}), 500)
 	return make_response(jsonify({'status':'SENT'}), 200)

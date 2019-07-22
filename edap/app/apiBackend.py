@@ -286,7 +286,7 @@ def timeGenerated(startTime):
 	"""
 	return "<small>Page generated in %0.3f ms</small>" % ((_time() - startTime)*1000.0)
 
-def sendNotification(token, title, content):
+def sendNotification(token, title, content, data=None):
 	"""
 		Send a notification to a user's device through Firebase.
 	"""
@@ -303,7 +303,7 @@ def sendNotification(token, title, content):
 		raise e
 
 	try:
-		fbPushService.notify_single_device(registration_id=firebaseToken, message_title=title, message_body=content)
+		fbPushService.notify_single_device(registration_id=firebaseToken, message_title=title, message_body=content, data_message=data)
 	except Exception as e:
 		log.error('Unknown error (Firebase Cloud Messaging) => %s' % str(e))
 		raise e
