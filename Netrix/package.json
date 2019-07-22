@@ -37,8 +37,11 @@
     "chart.js": "^2.8.0",
     "cordova-android": "^8.0.0",
     "cordova-plugin-admobpro": "^2.37.2",
+    "cordova-plugin-androidx": "^1.0.2",
+    "cordova-plugin-androidx-adapter": "^1.1.0",
     "cordova-plugin-extension": "^1.5.4",
     "cordova-plugin-firebase": "^2.0.5",
+    "cordova-plugin-firebasex": "^6.0.0",
     "cordova-plugin-statusbar": "^2.4.2",
     "core-js": "^2.5.4",
     "countup.js-angular2": "^7.3.0",
@@ -91,11 +94,10 @@
       },
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-statusbar": {},
-      "sentry-cordova": {},
-      "cordova-plugin-firebase": {},
       "cordova-plugin-admobpro": {
         "PLAY_SERVICES_VERSION": "16.0.0"
-      }
+      },
+      "cordova-plugin-firebasex": {}
     },
     "platforms": [
       "android"

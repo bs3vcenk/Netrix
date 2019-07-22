@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firebase } from '@ionic-native/firebase/ngx';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Platform } from '@ionic/angular';
 
@@ -9,7 +9,7 @@ import { Platform } from '@ionic/angular';
 export class FirebaseService {
 
   constructor(
-    private firebase: Firebase,
+    private firebase: FirebaseX,
     private afs: AngularFirestore,
     private platform: Platform
   ) { }
@@ -42,6 +42,6 @@ export class FirebaseService {
 
   onNotifications() {
     if (!this.platform.is('cordova')) { return; }
-    return this.firebase.onNotificationOpen();
+    return this.firebase.onMessageReceived();
   }
 }
