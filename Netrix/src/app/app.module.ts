@@ -21,6 +21,7 @@ import { Device } from '@ionic-native/device/ngx';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { CrashlyticsErrorHandler } from './firebase.service';
 
 import { AdMobPro } from '@ionic-native/admob-pro/ngx';
 import { AdmobService } from './admob.service';
@@ -68,7 +69,7 @@ export function createTranslateLoader(http: HttpClient) {
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     Device,
-    { provide: ErrorHandler, useClass: ErrorHandler },
+    { provide: ErrorHandler, useClass: CrashlyticsErrorHandler },
     FirebaseX,
     AdMobPro,
     AdmobService

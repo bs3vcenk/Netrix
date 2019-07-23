@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ErrorHandler } from '@angular/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Platform } from '@ionic/angular';
@@ -43,5 +43,23 @@ export class FirebaseService {
   onNotifications() {
     if (!this.platform.is('cordova')) { return; }
     return this.firebase.onMessageReceived();
+  }
+}
+
+export class CrashlyticsErrorHandler extends ErrorHandler {
+
+  constructor(
+    private firebase: FirebaseX
+  ) {
+    super();
+  }
+
+  handleError(error) {
+    super.handleError(error);
+    try {
+      this.firebase.logError(error);
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
