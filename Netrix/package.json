@@ -1,6 +1,6 @@
 {
   "name": "Netrix",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "author": "btx3",
   "homepage": "https://netrix.io/",
   "scripts": {
@@ -35,6 +35,7 @@
     "@ngx-translate/http-loader": "^4.0.0",
     "@types/chart.js": "^2.7.55",
     "chart.js": "^2.8.0",
+    "cordova-admobsdk": "^7.37.0",
     "cordova-android": "^8.0.0",
     "cordova-plugin-admobpro": "^2.37.2",
     "cordova-plugin-androidx": "^1.0.2",
