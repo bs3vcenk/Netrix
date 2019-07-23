@@ -30,6 +30,10 @@ jobs:
             cd Netrix && ionic cordova platform add android --noresources
             ionic config set -g telemetry true
       - run:
+          name: "Enable FirebaseX"
+          command: |
+            cd Netrix && bash firebaseFix.sh
+      - run:
           name: "Generate apk"
           command: |
             cd Netrix && ionic cordova build android --verbose --prod --release
