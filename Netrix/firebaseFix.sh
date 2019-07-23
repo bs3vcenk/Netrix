@@ -16,6 +16,6 @@ npm i
 npm audit fix
 printf "\n==> Building all packages\n\n"
 npm run build
-printf "\n==> Copying dist/@ionic-native/plugins/firebase-x -> $PWD/node_modules/@ionic-native/firebase-x"
-cp -R "dist/@ionic-native/plugins/firebase-x" "$PWD/node_modules/@ionic-native/firebase-x"
+printf "\n==> Copying dist/@ionic-native/plugins/firebase-x -> $CURRDIR/node_modules/@ionic-native/firebase-x\n"
+cp -R "dist/@ionic-native/plugins/firebase-x" "$CURRDIR/node_modules/@ionic-native/firebase-x"
 printf "\n\n==> Support for FirebaseX added!\n\n"
