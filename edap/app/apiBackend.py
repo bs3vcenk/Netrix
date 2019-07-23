@@ -29,6 +29,37 @@ threads = {}
 class NonExistentSetting(Exception):
 	pass
 
+def localize(token, locId):
+	"""
+		Localize a string according to the language reported by
+		the phone through /api/stats.
+	"""
+	locs = {
+		"en": {
+			"note": "New note",
+			"grade": "New grade",
+			"absence": "New absence",
+			"test": "New test",
+			"class": "New class"
+		},
+		"hr": {
+			"note": "Nova bilješka",
+			"grade": "Nova ocjena",
+			"absence": "Novi izostanak",
+			"test": "Novi ispit",
+			"class": "Novi razred"
+		},
+		"de": {
+			"note": "New note",
+			"grade": "New grade",
+			"absence": "New absence",
+			"test": "New test",
+			"class": "New class"
+		}
+	}
+	lang = getData(token)['lang']
+	return locs[lang][locId]
+
 def getSetting(token, action):
 	"""
 		Get action data/value for token.
@@ -100,27 +131,27 @@ def formatAndSendNotification(token, notifData):
 			absenceNotif = "ABS"
 	if len(classNotif) > 0:
 		toSendQueue.append({
-			'head': "NEW_CLASS",
+			'head': localize(token, 'class'),
 			'content': ", ".join(classNotif)
 		})
 	if len(gradeNotif) > 0:
 		toSendQueue.append({
-			'head': "NEW_GRADE",
+			'head': localize(token, 'grade'),
 			'content': ", ".join(gradeNotif)
 		})
 	if len(testNotif) > 0:
 		toSendQueue.append({
-			'head': "NEW_TEST",
+			'head': localize(token, 'test'),
 			'content': ", ".join(testNotif)
 		})
 	if len(noteNotif) > 0:
 		toSendQueue.append({
-			'head': "NEW_NOTE",
+			'head': localize(token, 'note'),
 			'content': ", ".join(noteNotif)
 		})
 	if len(absenceNotif) > 0:
 		toSendQueue.append({
-			'head': "NEW_ABSENCE",
+			'head': localize(token, 'absence'),
 			'content': absenceNotif
 		})
 	for i in toSendQueue:
@@ -178,11 +209,11 @@ def syncDev(data2, token):
 	"""
 		DEV: Simulate sync with two objects.
 	"""
-	log.info("Simulating sync")
+	log.debug("Simulating sync")
 	o = getData(token)
 	diff = profileDifference(o["data"], data2)
 	if len(diff) > 0:
-		log.info("Difference detected")
+		log.debug("Difference detected")
 		o["new"] = diff
 		saveData(token, o)
 		formatAndSendNotification(token, diff)
@@ -191,7 +222,7 @@ def sync(token):
 	"""
 		Pull remote data, compare with current and replace if needed.
 	"""
-	log.info("Syncing %s" % token)
+	log.debug("Syncing %s" % token)
 	fData = getData(token)
 	data = fData["data"] # Old data
 	nData = populateData(edap.edap(fData["user"], fData["pasw"])) # New data
@@ -215,7 +246,7 @@ def profileDifference(dObj1, dObj2):
 		del y[0]['subjects']
 	difflist = [x for x in t2 if x not in t1]
 	if len(difflist) > 0:
-		log.info("Found difference in classes")
+		log.debug("Found difference in classes")
 		for i in difflist:
 			_finalReturn.append({'type':'class', 'data':{'year':i["year"], 'class':i["class"]}})
 		# At this point, we can't compare anything else, as only the
@@ -227,7 +258,7 @@ def profileDifference(dObj1, dObj2):
 	t2 = deepcopy(dObj2['classes'][0]['tests'])
 	difflist = [x for x in t2 if x not in t1]
 	if len(difflist) > 0:
-		log.info("Found difference in tests")
+		log.debug("Found difference in tests")
 		for i in difflist:
 			_finalReturn.append({'type':'test', 'classId':0, 'data':i})
 	## ABSENCE DIFFERENCE (FIRST CLASS ONLY) ##
@@ -249,7 +280,7 @@ def profileDifference(dObj1, dObj2):
 			t2 = deepcopy(j['grades'])
 			difflist = [x for x in t2 if x not in t1]
 			if len(difflist) > 0:
-				log.info("Found difference in grades")
+				log.debug("Found difference in grades")
 				for x in difflist:
 					_finalReturn.append({'type':'grade', 'classId':0, 'subjectId': sId, 'data':x})
 		elif "notes" in j.keys():
@@ -259,7 +290,7 @@ def profileDifference(dObj1, dObj2):
 			t2 = deepcopy(j['notes'])
 			difflist = [x for x in t2 if x not in t1]
 			if len(difflist) > 0:
-				log.info("Found difference in notes")
+				log.debug("Found difference in notes")
 				for x in difflist:
 					_finalReturn.append({'type':'note', 'classId':0, 'subjectId': sId, 'data':x})
 		else:
@@ -292,7 +323,7 @@ def sendNotification(token, title, content, data=None):
 	"""
 	if not verifyRequest(token):
 		raise Exception("Bad token")
-	log.info("Sending notification to %s" % token)
+	log.debug("Sending notification to %s" % token)
 	documentReference = fbFirestoreDB.collection('devices').document(token)
 
 	try:
@@ -314,7 +345,7 @@ def _sync(token):
 	"""
 	while True:
 		val = randint(3600,5000)
-		log.info("Waiting %i s for %s" % (val, token))
+		log.debug("Waiting %i s for %s" % (val, token))
 		sleep(val)
 		if threads["sync:" + token]["run"] != True:
 			del threads["sync:" + token]
@@ -494,7 +525,7 @@ def populateData(obj=None, username=None, password=None):
 				x['current'] = True
 		output[0]['tests'] = tests_all
 	except Exception as e:
-		log.error("Error getting tests for class: %s" % e)
+		log.debug("Error getting tests for class: %s" % e)
 		output[0]['tests'] = None
 
 	try:
@@ -502,13 +533,13 @@ def populateData(obj=None, username=None, password=None):
 		absences_full = obj.getAbsentFullListForClass(0)
 		output[0]['absences'] = {'overview':absences_overview, 'full':absences_full}
 	except Exception as e:
-		log.error("Error getting absences for class: %s" % e)
+		log.debug("Error getting absences for class: %s" % e)
 		output[0]['absences'] = None
 
 	try:
 		output[0]['subjects'] = obj.getSubjects(0)
 	except Exception as e:
-		log.error("Error getting subjects for class: %s" % e)
+		log.debug("Error getting subjects for class: %s" % e)
 		output[0]['subjects'] = None
 	allSubjAverageGrades = []
 	for z in range(len(output[0]['subjects'])):
@@ -528,7 +559,7 @@ def populateData(obj=None, username=None, password=None):
 				output[0]['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
 				allSubjAverageGrades.append(round(sum(lgrades)/len(lgrades), 0))
 		except Exception as e:
-			log.error("Error getting grades for subject %s: %s" % (z, e))
+			log.debug("Error getting grades for subject %s: %s" % (z, e))
 			output[0]['subjects'][z]['grades'] = None
 			continue
 		try:
@@ -536,7 +567,7 @@ def populateData(obj=None, username=None, password=None):
 			if len(output[0]['subjects'][z]['notes']) == 0:
 				output[0]['subjects'][z]['notes'] = None
 		except Exception as e:
-			log.error("Error getting notes for subject %s: %s" % (z, e))
+			log.debug("Error getting notes for subject %s: %s" % (z, e))
 			output[0]['subjects'][z]['notes'] = None
 			continue
 	output[0]['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
@@ -544,7 +575,7 @@ def populateData(obj=None, username=None, password=None):
 	try:
 		dataDict['info'] = obj.getInfoForUser(0)
 	except Exception as e:
-		log.error("Error getting info: %s" % (str(e)))
+		log.debug("Error getting info: %s" % (str(e)))
 	return dataDict
 
 def updateData(token):
@@ -552,11 +583,10 @@ def updateData(token):
 		Update the stored data for a token.
 	"""
 	if not verifyRequest(token):
-		log.error("Bad token %s" % token)
 		raise Exception('Bad token')
 	o = getData(token)
 	username = o["user"]
-	log.info(username)
+	log.debug(username)
 	o['data'] = populateData()
 
 def verifyRequest(token, class_id=None, subject_id=None):

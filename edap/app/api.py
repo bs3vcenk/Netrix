@@ -356,7 +356,7 @@ def login():
 		dataObj["cloudflare"]["last_ip"] = None
 		dataObj["cloudflare"]["country"] = None
 	saveData(token, dataObj)
-	log.info("SLOW => Starting sync for %s" % username)
+	log.debug("SLOW => Starting sync for %s" % username)
 	startSync(token)
 	updateCounter("logins:success:slow")
 	return make_response(jsonify({'token':token}), 200)
