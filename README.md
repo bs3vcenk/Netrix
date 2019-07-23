@@ -1,4 +1,6 @@
 # Netrix (eDnevnik for Android)
+![CircleCI](https://img.shields.io/circleci/build/github/btx3/Netrix.svg?label=build%3ANetrix&token=3f60d33e9cd7618f9b9af8b7c5e731baefb7934f)
+
 * Backend - [eDAP](https://github.com/btx3/eDnevnik/blob/master/README_edap.md) (eDnevnikAndroidProject) [Python]
 * Frontend - [Netrix](https://github.com/btx3/eDnevnik/blob/master/README_Netrix.md) [JS/Ionic]
 
