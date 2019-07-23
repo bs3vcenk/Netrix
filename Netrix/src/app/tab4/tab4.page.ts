@@ -82,8 +82,6 @@ export class Tab4Page {
         ctx.fillText(txt, centerX, centerY);
       }
     });
-    console.log('plugin init');
-    console.log(this.absenceCanvas);
     this.absenceChart = new Chart(this.absenceCanvas.nativeElement, {
     type: 'doughnut',
     data: {
@@ -113,6 +111,5 @@ export class Tab4Page {
       }
     } as ChartConfiguration
   });
-  console.log('chart complete');
   }
 }

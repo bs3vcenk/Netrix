@@ -2,11 +2,14 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { FirebaseService } from './firebase.service';
 import { AdmobService } from './admob.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SettingsService {
+
+  hasLoadedDataPref = new BehaviorSubject(false);
 
   dataPreference = null;
   dataPrefUnset = true;
@@ -39,6 +42,7 @@ export class SettingsService {
           console.log('SettingsService/readPrefs(): API analytics preference defaulted to false');
         });
       }
+      this.hasLoadedDataPref.next(true);
       this.storage.get('error-preference').then(resx => {
         if (resx != null) {
           this.errorPreference = resx;

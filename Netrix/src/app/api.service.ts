@@ -101,7 +101,7 @@ export class ApiService {
       this.loadingFinishedNotif.next(true);
       this.loadingFinishedNotif.complete();
       this.firebase.stopTrace('getNotifConfig');
-      throw err;
+      console.log(err);
     });
   }
 
@@ -137,17 +137,14 @@ export class ApiService {
       this.subj_noItemsLoaded = true;
       this.firebase.stopTrace('getSubjects');
       if (error.error) {
-        console.log(error);
         if (error.error.error === 'E_TOKEN_NONEXISTENT') {
           // User is not authenticated (possibly token purged from server DB)
           this.authServ.logout();
-        } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
+        } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521) {
           // Server-side issue
           this.dbError = true;
-          throw new Error('Database connection failed');
-        } else if (error.status === 0) {
-          // Server did not respond
-          throw new Error('Server down');
+        } else {
+          console.log(error);
         }
       }
       this.loadingFinishedSubj.next(true);
@@ -178,10 +175,8 @@ export class ApiService {
         } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
           // Server-side issue
           this.dbError = true;
-          throw new Error('Database connection failed');
-        } else if (error.status === 0) {
-          // Server did not respond
-          throw new Error('Server down');
+        } else {
+          console.log(error);
         }
       }
       this.loadingFinishedTests.next(true);
@@ -216,10 +211,8 @@ export class ApiService {
         } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
           // Server-side issue
           this.dbError = true;
-          throw new Error('Database connection failed');
-        } else if (error.status === 0) {
-          // Server did not respond
-          throw new Error('Server down');
+        } else {
+          console.log(error);
         }
       }
       this.loadingFinishedAbsences.next(true);

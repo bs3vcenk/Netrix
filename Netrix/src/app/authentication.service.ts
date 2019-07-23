@@ -38,8 +38,13 @@ export class AuthenticationService {
             if (res) {
                 this.token = res;
                 console.log('AuthenticationService/checkToken(): Found saved token (' + this.token + ')');
-                console.log('AuthenticationService/checkToken(): Found analytics preference (' + this.settings.dataPreference + ')');
-                this.sendDeviceInfo();
+                this.settings.hasLoadedDataPref.subscribe((dPrefLoaded) => {
+                    if (dPrefLoaded) {
+                        // tslint:disable-next-line: max-line-length
+                        console.log('AuthenticationService/checkToken(): Found analytics preference (' + this.settings.dataPreference + ')');
+                        this.sendDeviceInfo();
+                    }
+                });
                 this.authenticationState.next(true);
             }
         });
@@ -63,15 +68,16 @@ export class AuthenticationService {
     }
 
     private getPlatform() {
-        return this.device.platform ? this.settings.dataPreference : null;
+        console.log(this.settings.dataPreference);
+        return this.settings.dataPreference ? this.device.platform : null;
     }
 
     private getDevice() {
-        return this.device.model ? this.settings.dataPreference : null;
+        return this.settings.dataPreference ? this.device.model : null;
     }
 
     private getResolution() {
-        return this.plt.width() + 'x' + this.plt.height() ? this.settings.dataPreference : null;
+        return this.settings.dataPreference ? this.plt.width() + 'x' + this.plt.height() : null;
     }
 
     private getLanguage() {
