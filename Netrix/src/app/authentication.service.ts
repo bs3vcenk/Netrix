@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
 import { Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
-import { map, catchError, switchAll } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { Device } from '@ionic-native/device/ngx';
 import { SettingsService } from './settings.service';
