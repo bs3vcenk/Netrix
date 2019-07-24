@@ -29,15 +29,18 @@ export class Tab4Page {
     private apiSvc: ApiService,
     private firebase: FirebaseX
   ) {
-    try { this.firebase.setScreenName('Absences'); } catch (e) {}
     if (this.apiSvc.absences === null) {
       this.apiSvc.getAbsences();
     }
     this.absences = this.apiSvc.absences;
   }
 
-  ionViewDidEnter() {
+  ngOnInit() {
     this.initGraph();
+  }
+
+  ionViewDidEnter() {
+    try { this.firebase.setScreenName('Absences'); } catch (e) {}
   }
 
   initGraph() {
