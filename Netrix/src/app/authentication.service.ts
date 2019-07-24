@@ -68,7 +68,6 @@ export class AuthenticationService {
     }
 
     private getPlatform() {
-        console.log(this.settings.dataPreference);
         return this.settings.dataPreference ? this.device.platform : null;
     }
 
