@@ -40,7 +40,7 @@ export class Tab2Page {
       this.apiSvc.getTests();
     }
     this.tests = this.apiSvc.tests;
-    this.reInit();
+    this.redoList();
     this.noItemsLoaded = this.apiSvc.tests_noItemsLoaded;
     this.dbError = this.apiSvc.dbError;
     this.currentTests = this.apiSvc.currentTests;
@@ -48,6 +48,15 @@ export class Tab2Page {
 
   private reInit() {
     this.results = this.tests;
+  }
+
+  async redoList() {
+    this.reInit();
+    console.log(this.showAllPreference);
+    this.results = this.results.filter((item) => {
+      console.log(item.current !== this.showAllPreference);
+      return item.current !== this.showAllPreference;
+    });
   }
 
   searchHandler(event) {

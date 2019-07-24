@@ -10,15 +10,18 @@
 </ion-header>
 
 <ion-content>
-  <ion-list lines="full">
+  <!-- Show all switch -->
+  <!--<ion-list lines="full">
     <ion-item *ngIf="!noItemsLoaded && !dbError">
       <ion-label>{{ 'tab2.showall' | translate }}</ion-label>
-      <ion-toggle slot="end" [(ngModel)]="showAllPreference"></ion-toggle>
+      <ion-toggle slot="end" [(ngModel)]="showAllPreference" (click)="redoList()"></ion-toggle>
     </ion-item>
-  </ion-list>
-  <ion-list lines="full">
-    <ng-container *ngFor="let testObj of results">
-      <ion-item [@fadeInOut] *ngIf="testObj.current || showAllPreference">
+  </ion-list>-->
+
+  <!-- List of exams -->
+  <ion-virtual-scroll lines="full" [items]="results" approxItemHeight="82px" *ngIf="results.length > 0 && dbError == false && noItemsLoaded == false">
+    <!--<ng-container *virtualItem="let testObj;">-->
+      <ion-item [@fadeInOut] *virtualItem="let testObj">
         <ion-label>
           <h2 id="testName" text-wrap>{{ testObj.test }}</h2>
           <h3 id="testDate">{{ testObj.date }}</h3>
@@ -26,8 +29,10 @@
         </ion-label>
         <ion-icon item-right name="checkmark" *ngIf="!testObj.current"></ion-icon>
       </ion-item>
-    </ng-container>
-  </ion-list>
+    <!--</ng-container>-->
+  </ion-virtual-scroll>
+
+  <!-- Error/Info pages -->
   <ion-item text-center [@fadeInOut] *ngIf="noItemsLoaded && !dbError" lines="none" id="cntr">
     <ion-label>
       <object width="150" type="image/svg+xml" data="./assets/emoji/pensive.svg"></object>
