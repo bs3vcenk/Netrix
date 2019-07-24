@@ -28,8 +28,11 @@ export class Tab2Page {
     private apiSvc: ApiService,
     private firebase: FirebaseX
   ) {
-    try { this.firebase.setScreenName('Tests'); } catch (e) {}
     this.initInBg();
+  }
+
+  ionViewDidEnter() {
+    try { this.firebase.setScreenName('Tests'); } catch (e) {}
   }
 
   initInBg() {

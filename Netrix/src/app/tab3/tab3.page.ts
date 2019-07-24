@@ -35,7 +35,6 @@ export class Tab3Page {
     private translate: TranslateService,
     private firebase: FirebaseX
   ) {
-    try { this.firebase.setScreenName('Settings'); } catch (e) {}
     this.dataPreference = this.settings.dataPreference;
     this.errorPreference = this.settings.errorPreference;
     this.notifPreference = this.settings.notifPreference;
@@ -44,6 +43,10 @@ export class Tab3Page {
     if (this.testNotifTime === 1) {
       this.dayString = this.translate.instant('settings.api.time_singular');
     }
+  }
+
+  ionViewDidEnter() {
+    try { this.firebase.setScreenName('Settings'); } catch (e) {}
   }
 
   logout() {

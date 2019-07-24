@@ -23,9 +23,7 @@ export class NotifSettingsPage implements OnInit {
     private firebase: FirebaseX,
     private apiSvc: ApiService,
     private translate: TranslateService
-  ) {
-    try { this.firebase.setScreenName('NotificationSettings'); } catch (e) {}
-  }
+  ) {}
 
   ngOnInit() {
     this.fullTypes.forEach((fType) => {
@@ -33,6 +31,10 @@ export class NotifSettingsPage implements OnInit {
         fType.checked = false;
       }
     });
+  }
+
+  ionViewDidEnter() {
+    try { this.firebase.setScreenName('NotificationSettings'); } catch (e) {}
   }
 
   addToIgnoreList(ignId: string) {

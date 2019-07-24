@@ -28,7 +28,6 @@ export class Tab1Page {
     private apiSvc: ApiService,
     private firebase: FirebaseX
   ) {
-    try { this.firebase.setScreenName('Subjects'); } catch (e) {}
     this.initInBg();
   }
 
@@ -37,6 +36,7 @@ export class Tab1Page {
   }
 
   ionViewDidEnter() {
+    try { this.firebase.setScreenName('Subjects'); } catch (e) {}
   }
 
   initInBg() {

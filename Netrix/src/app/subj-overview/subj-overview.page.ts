@@ -37,11 +37,10 @@ export class SubjOverviewPage implements OnInit {
     private navCtrl: NavController,
     private firebase: FirebaseX,
     private apiSvc: ApiService
-  ) {
-    try { this.firebase.setScreenName('SubjOverview'); } catch (e) {}
-  }
+  ) {}
 
   ngOnInit() {
+    try { this.firebase.setScreenName('SubjOverview'); } catch (e) {}
     const subjId = this.activatedRoute.snapshot.paramMap.get('subjid');
     this.getSubjectInfo(subjId);
   }

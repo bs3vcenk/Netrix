@@ -22,12 +22,14 @@ export class AbsencesPage implements OnInit {
   constructor(
     private apiSvc: ApiService,
     private firebase: FirebaseX
-  ) {
-    try { this.firebase.setScreenName('AbsencesDetailed'); } catch (e) {}
-  }
+  ) {}
 
   ngOnInit() {
     this.absences = this.apiSvc.absences;
+  }
+
+  ionViewDidEnter() {
+    try { this.firebase.setScreenName('AbsencesDetailed'); } catch (e) {}
   }
 
 }
