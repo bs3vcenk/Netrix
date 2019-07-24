@@ -19,9 +19,6 @@ export class PrivacyPage implements OnInit {
   ) { }
 
   ngOnInit() {
-  }
-
-  ionViewDidEnter() {
     this.render();
   }
 
