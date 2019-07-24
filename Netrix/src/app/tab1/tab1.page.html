@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header translucent>
   <ion-toolbar>
     <ion-title>
       {{ 'tab1.title' | translate }}
@@ -6,7 +6,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content fullscreen>
   <ion-item text-center [@fadeInOut] *ngIf="noItemsLoaded && !dbError" lines="none" id="cntr">
     <ion-label>
       <object width="150" type="image/svg+xml" data="./assets/emoji/pensive.svg"></object>
