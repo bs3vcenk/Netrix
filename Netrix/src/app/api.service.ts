@@ -59,7 +59,7 @@ export class ApiService {
     this.getTests();
     this.getAbsences();
     this.getNotifConfig();
-    forkJoin(this.loadingFinishedAbsences, this.loadingFinishedNotif, this.loadingFinishedSubj, this.loadingFinishedTests)
+    forkJoin([this.loadingFinishedAbsences, this.loadingFinishedNotif, this.loadingFinishedSubj, this.loadingFinishedTests])
     .subscribe(([abs, notif, subj, test]) => {
       if (abs && notif && subj && test) {
         this.loadingFinishedAll.next(true);
@@ -251,8 +251,7 @@ export class ApiService {
           if (response.notes) {
             subjNotes = response.notes;
           }
-          // tslint:disable-next-line: prefer-const
-          let subject: SubjectData = {
+          const subject: SubjectData = {
             name: subjName,
             grades: subjGrades,
             notes: subjNotes,
