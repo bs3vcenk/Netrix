@@ -27,7 +27,6 @@ export class AuthenticationService {
         private firebase: FirebaseX
     ) {
         this.plt.ready().then(() => {
-            console.log('AuthenticationService: API server is ' + this.settings.apiServer);
             this.checkToken();
         });
     }
@@ -37,11 +36,8 @@ export class AuthenticationService {
         this.storage.get('auth-token').then(res => {
             if (res) {
                 this.token = res;
-                console.log('AuthenticationService/checkToken(): Found saved token (' + this.token + ')');
                 this.settings.hasLoadedDataPref.subscribe((dPrefLoaded) => {
                     if (dPrefLoaded) {
-                        // tslint:disable-next-line: max-line-length
-                        console.log('AuthenticationService/checkToken(): Found analytics preference (' + this.settings.dataPreference + ')');
                         this.sendDeviceInfo();
                     }
                 });
@@ -62,8 +58,8 @@ export class AuthenticationService {
         .subscribe((res) => {
             console.log('AuthenticationService/sendDeviceInfo(): Successfully sent device info');
         }, (err) => {
-            console.log('AuthenticationService/sendDeviceInfo(): Failed to send device info:');
-            throw new Error('Stats send fail: ' + err);
+            console.log('AuthenticationService/sendDeviceInfo(): Failed to send device info');
+            throw err;
         });
     }
 
@@ -98,7 +94,6 @@ export class AuthenticationService {
     private handleLogin(data) {
         this.storage.set('auth-token', data.token).then(() => {
             this.token = data.token;
-            console.log('AuthenticationService/handleLogin(): Login successful, got token (' + data.token + ')');
             this.sendDeviceInfo();
             this.authenticationState.next(true);
         });
