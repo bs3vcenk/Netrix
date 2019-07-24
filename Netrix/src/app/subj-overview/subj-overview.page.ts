@@ -45,7 +45,7 @@ export class SubjOverviewPage implements OnInit {
     this.getSubjectInfo(subjId);
   }
 
-  async networkError(header, msg) {
+  async alertError(header, msg) {
     const alert = await this.alertControl.create({
       header,
       message: msg,
@@ -85,6 +85,12 @@ export class SubjOverviewPage implements OnInit {
       this.noteList = thing.notes;
       this.gradeList = thing.grades;
       this.subjProfs = thing.professors;
+      if (thing.notes.length === 0 && thing.grades.length === 0) {
+        this.alertError(
+          this.translate.instant('overview.alert.nogrades.header'),
+          this.translate.instant('overview.alert.nogrades.content')
+        );
+      }
     }, (error) => {
       if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
         this.toastError(this.translate.instant('generic.alert.database'), null, 2500);
