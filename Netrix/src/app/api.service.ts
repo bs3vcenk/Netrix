@@ -8,10 +8,20 @@ import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 
+interface SubjectData {
+  name: string;
+  grades: any[];
+  notes: any[];
+  average: 0.00;
+  professors: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
+
+  subjCacheMap = {};
 
   loadingFinishedAll = new BehaviorSubject(false);
 
@@ -216,6 +226,45 @@ export class ApiService {
       }
       this.loadingFinishedAbsences.next(true);
       this.loadingFinishedAbsences.complete();
+    });
+  }
+
+  getSubject(subjId: string) {
+    return new Promise<SubjectData>((resolve, reject) => {
+      if (this.subjCacheMap[subjId]) {
+        console.log('ApiService/getSubject(): Have subject ID ' + subjId + ' cached, returning that');
+        resolve(this.subjCacheMap[subjId]);
+      } else {
+        console.log('ApiService/getSubject(): Subject ID ' + subjId + ' not cached, fetching remote');
+        this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + subjId)
+        .pipe(timeout(this.settings.httpLimit))
+        .subscribe((response) => {
+          let subjGrades = [];
+          let subjAvg;
+          let subjNotes = [];
+          const subjName = response.subject;
+          const subjProfs = response.professors.join(', ');
+          if (response.grades) {
+            subjAvg = response.average;
+            subjGrades = response.grades;
+          }
+          if (response.notes) {
+            subjNotes = response.notes;
+          }
+          // tslint:disable-next-line: prefer-const
+          let subject: SubjectData = {
+            name: subjName,
+            grades: subjGrades,
+            notes: subjNotes,
+            average: subjAvg,
+            professors: subjProfs
+          };
+          this.subjCacheMap[subjId] = subject;
+          resolve(subject);
+        }, (err) => {
+          reject(err);
+        });
+      }
     });
   }
 }
