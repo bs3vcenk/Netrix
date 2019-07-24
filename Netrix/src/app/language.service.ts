@@ -18,14 +18,6 @@ export class LanguageService {
     this.setLanguage(language);
   }
 
-  getLanguages() {
-    return [
-      { text: 'English', value: 'en' },
-      { text: 'Deutsch', value: 'de' },
-      { text: 'Hrvatski', value: 'hr' },
-    ];
-  }
-
   setLanguage(lng) {
     this.translate.use(lng);
     this.settings.language = lng;
