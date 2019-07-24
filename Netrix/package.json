@@ -1,6 +1,6 @@
 {
   "name": "Netrix",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "author": "btx3",
   "homepage": "https://netrix.io/",
   "scripts": {
@@ -41,7 +41,6 @@
     "cordova-plugin-androidx": "^1.0.2",
     "cordova-plugin-androidx-adapter": "^1.1.0",
     "cordova-plugin-extension": "^1.5.4",
-    "cordova-plugin-firebase": "^2.0.5",
     "cordova-plugin-firebasex": "^6.0.0",
     "cordova-plugin-statusbar": "^2.4.2",
     "core-js": "^2.5.4",
