@@ -46,6 +46,9 @@ export class FirebaseService {
   }
 }
 
+@Injectable({
+  providedIn: 'root'
+})
 export class CrashlyticsErrorHandler extends ErrorHandler {
 
   constructor(
