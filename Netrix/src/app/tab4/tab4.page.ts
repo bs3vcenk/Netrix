@@ -45,6 +45,7 @@ export class Tab4Page {
 
   initGraph() {
     Chart.pluginService.register({
+      // tslint:disable-next-line: variable-name
       beforeDraw: (_chart) => {
         const chart: any = _chart;
         // Get ctx from string
