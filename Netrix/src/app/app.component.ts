@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Platform, ToastController, Config } from '@ionic/angular';
+import { Platform, Config } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './authentication.service';
@@ -23,7 +23,7 @@ export class AppComponent {
     private authenticationService: AuthenticationService,
     private router: Router,
     private languageService: LanguageService,
-    private toastController: ToastController,
+    // private toastController: ToastController,
     private fcm: FirebaseService,
     private settings: SettingsService,
     private translate: TranslateService,
@@ -33,7 +33,7 @@ export class AppComponent {
     this.initializeApp();
   }
 
-  private async presentToast(message) {
+  /*private async presentToast(message) {
     const toast = await this.toastController.create({
       message,
       duration: 3000,
@@ -41,7 +41,7 @@ export class AppComponent {
       position: 'top'
     });
     toast.present();
-  }
+  }*/
 
   private notificationSetup(token) {
     this.fcm.getToken(token);
