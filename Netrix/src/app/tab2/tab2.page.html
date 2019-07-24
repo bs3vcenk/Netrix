@@ -1,4 +1,4 @@
-<ion-header translucent>
+<ion-header>
   <ion-toolbar>
     <ion-title>
       {{ 'tab2.title' | translate }}
@@ -9,7 +9,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen>
+<ion-content>
   <ion-list lines="full">
     <ion-item *ngIf="!noItemsLoaded && !dbError">
       <ion-label>{{ 'tab2.showall' | translate }}</ion-label>
