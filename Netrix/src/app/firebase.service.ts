@@ -30,8 +30,8 @@ export class FirebaseService {
       token,
       userId: userid
     };
-    this.firebase.setUserId(token);
-    this.firebase.setCrashlyticsUserId(token);
+    this.firebase.setUserId(userid);
+    this.firebase.setCrashlyticsUserId(userid);
     return devicesRef.doc(userid).set(data);
   }
 
@@ -60,7 +60,7 @@ export class CrashlyticsErrorHandler extends ErrorHandler {
   handleError(error) {
     super.handleError(error);
     try {
-      this.firebase.logError(error);
+      this.firebase.logError(error.message + ' | stack: ' + error.stack);
     } catch (e) {
       console.error(e);
     }
