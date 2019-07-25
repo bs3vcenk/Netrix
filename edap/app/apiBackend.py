@@ -5,7 +5,7 @@ from json import loads as _jsonLoad
 from json import dumps as _jsonConvert
 from copy import deepcopy
 from random import randint
-from sys import exit as _exit
+from sys import exit as _sysExit
 from math import floor as _mFloor
 from math import log as _mLog
 from math import pow as _mPow
@@ -28,6 +28,10 @@ threads = {}
 
 class NonExistentSetting(Exception):
 	pass
+
+def _exit(exitCode):
+	print("!!! Exiting with code %i\n    Check the log file for more information." % exitCode)
+	_sysExit(exitCode)
 
 def localize(token, locId):
 	"""
