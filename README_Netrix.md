@@ -74,8 +74,12 @@ Ovo preuzimanje i instalacija će možda potrajati (pošto ima ~1GB za preuzeti)
 
 Nakon toga, potrebno je konfigurirati SDK instalaciju (ovo u prvotno otvorenom terminalu):
 ```bash
+# Linux
 echo -e "ANDROID_HOME=$HOME/Android/Sdk\nPATH=\${PATH}:\$ANDROID_HOME/tools:\$ANDROID_HOME/platform-tools" >> ~/.bashrc
 source ~/.bashrc
+# macOS
+echo -e "ANDROID_HOME=$HOME/Library/Android/sdk\nPATH=\${PATH}:\$ANDROID_HOME/tools:\$ANDROID_HOME/platform-tools" >> ~/.bash_profile
+source ~/.bash_profile
 ```
 
 I, na kraju, provjerite je li SDK dobro konfiguriran:
@@ -106,8 +110,16 @@ Nakon ove komande, potrebno je i omogućiti korištenje FirebaseX plugina, koji 
 4. Pokrenite:
 
 * Testno okruženje (bez Cordove):
-    `ionic s`
-* Debug build (otvara remote DevTools, Cordova podrška):
+    `ionic s` (UPOZORENJE: Netrix se prebacio na [Native HTTP](https://ionicframework.com/docs/native/http), što znači da ova komanda više ne radi.)
+
+
+* Android: Debug build (omogućava remote DevTools):
     `ionic cordova build android`
-* Release build (bez debug mogućnosti, za Play Store):
+* Android: Release build (bez debug mogućnosti, za Play Store):
     `rm -rf www && ionic cordova build android --prod --release`
+* iOS: Debug build
+    `ionic cordova run ios`
+* iOS: Debug build za uređaj
+    `ionic cordova run ios --device`
+* iOS: Release build:
+    Upute stižu kasnije
