@@ -3,7 +3,7 @@ import { PickerController } from '@ionic/angular';
 import { AuthenticationService } from '../authentication.service';
 import { SettingsService } from '../settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { PickerOptions, PickerButton } from '@ionic/core';
+import { PickerOptions } from '@ionic/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 

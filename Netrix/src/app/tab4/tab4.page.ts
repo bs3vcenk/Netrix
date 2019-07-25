@@ -1,7 +1,7 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { Chart, ChartConfiguration, ChartElementsOptions } from 'chart.js';
+import { Chart, ChartConfiguration } from 'chart.js';
 import { ApiService } from '../api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
@@ -17,7 +17,7 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
     ])
   ]
 })
-export class Tab4Page {
+export class Tab4Page implements OnInit {
   @ViewChild('absenceCanvas') absenceCanvas: ElementRef;
 
   absences = {overview: {justified: 0, unjustified: 0, waiting: 0, sum: 1}};

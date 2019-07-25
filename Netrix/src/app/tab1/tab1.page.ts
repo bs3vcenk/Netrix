@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { AdmobService } from '../admob.service';
 import { ApiService } from '../api.service';
@@ -16,7 +16,7 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
     ])
   ]
 })
-export class Tab1Page {
+export class Tab1Page implements OnInit {
 
   subjects = null;
   fullAvg = null;
