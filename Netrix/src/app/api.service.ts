@@ -1,12 +1,11 @@
 // tslint:disable: variable-name
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { timeout } from 'rxjs/operators';
 import { SettingsService } from './settings.service';
 import { AuthenticationService } from './authentication.service';
 import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { BehaviorSubject, forkJoin } from 'rxjs';
+import { HTTP } from '@ionic-native/http/ngx';
 
 interface SubjectData {
   name: string;
@@ -20,6 +19,11 @@ interface SubjectData {
   providedIn: 'root'
 })
 export class ApiService {
+
+  httpHeader = {
+    'Content-Type': 'application/json',
+    'User-Agent': 'Netrix'
+  };
 
   subjCacheMap = {};
 
@@ -47,12 +51,14 @@ export class ApiService {
   abs_noItemsLoaded = null;
 
   constructor(
-    private http: HttpClient,
+    private http: HTTP,
     private settings: SettingsService,
     private authServ: AuthenticationService,
     private translate: TranslateService,
     private firebase: FirebaseX
-  ) { }
+  ) {
+    this.http.setDataSerializer('json');
+  }
 
   async preCacheData() {
     this.getSubjects();
@@ -70,9 +76,11 @@ export class ApiService {
   receiveNotifType(nType: string) {
     if (this.ignoredNotifTypes.includes(nType)) {
       this.firebase.startTrace('receiveNotifType');
-      this.http.post<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.del', {parameter: nType})
-      .pipe(timeout(this.settings.httpLimit))
-      .subscribe((response) => {
+      this.http.post(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.del',
+        {parameter: nType},
+        this.httpHeader
+      ).then((response) => {
         this.firebase.stopTrace('receiveNotifType');
         delete this.ignoredNotifTypes[this.ignoredNotifTypes.indexOf(nType)];
       }, (err) => {
@@ -85,9 +93,11 @@ export class ApiService {
   ignoreNotifType(nType: string) {
     if (!this.ignoredNotifTypes.includes(nType)) {
       this.firebase.startTrace('ignoreNotifType');
-      this.http.post<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.add', {parameter: nType})
-      .pipe(timeout(this.settings.httpLimit))
-      .subscribe((response) => {
+      this.http.post(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.add',
+        {parameter: nType},
+        this.httpHeader
+      ).then((response) => {
         this.firebase.stopTrace('ignoreNotifType');
         this.ignoredNotifTypes.push(nType);
       }, (err) => {
@@ -99,11 +109,13 @@ export class ApiService {
 
   getNotifConfig() {
     this.firebase.startTrace('getNotifConfig');
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.all')
-    .pipe(timeout(this.settings.httpLimit))
-    .subscribe((response) => {
+    this.http.get(
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.all',
+      {},
+      this.httpHeader
+    ).then((response) => {
+      this.ignoredNotifTypes = JSON.parse(response.data).value.ignore;
       this.firebase.stopTrace('getNotifConfig');
-      this.ignoredNotifTypes = response.value.ignore;
       this.loadingFinishedNotif.next(true);
       this.loadingFinishedNotif.complete();
     }, (err) => {
@@ -116,9 +128,12 @@ export class ApiService {
 
   getSubjects() {
     this.firebase.startTrace('getSubjects');
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects')
-    .pipe(timeout(this.settings.httpLimit))
-    .subscribe((response) => {
+    this.http.get(
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects',
+      {},
+      this.httpHeader
+    ).then((rx) => {
+      const response = JSON.parse(rx.data);
       const allsubs = response.subjects;
       // Iterate over professors list and join it into a comma-separated string
       allsubs.forEach((subj) => {
@@ -163,9 +178,12 @@ export class ApiService {
 
   getTests() {
     this.firebase.startTrace('getTests');
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/tests')
-    .pipe(timeout(this.settings.httpLimit))
-    .subscribe((response) => {
+    this.http.get(
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/tests',
+      {},
+      this.httpHeader
+    ).then((rx) => {
+      const response = JSON.parse(rx.data);
       this.tests = response.tests;
       this.countTests();
       this.tests_noItemsLoaded = false;
@@ -203,10 +221,12 @@ export class ApiService {
 
   getAbsences() {
     this.firebase.startTrace('getAbsences');
-    this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences')
-    .pipe(timeout(this.settings.httpLimit))
-    .subscribe((response) => {
-      this.absences = response;
+    this.http.get(
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences',
+      {},
+      this.httpHeader
+    ).then((response) => {
+      this.absences = JSON.parse(response.data);
       this.firebase.stopTrace('getAbsences');
       this.loadingFinishedAbsences.next(true);
       this.loadingFinishedAbsences.complete();
@@ -232,13 +252,16 @@ export class ApiService {
   getSubject(subjId: string) {
     return new Promise<SubjectData>((resolve, reject) => {
       if (this.subjCacheMap[subjId]) {
-        console.log('ApiService/getSubject(): Have subject ID ' + subjId + ' cached, returning that');
+        console.log('ApiService/getSubjectNativeHTTP(): Have subject ID ' + subjId + ' cached, returning that');
         resolve(this.subjCacheMap[subjId]);
       } else {
-        console.log('ApiService/getSubject(): Subject ID ' + subjId + ' not cached, fetching remote');
-        this.http.get<any>(this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + subjId)
-        .pipe(timeout(this.settings.httpLimit))
-        .subscribe((response) => {
+        console.log('ApiService/getSubjectNativeHTTP(): Subject ID ' + subjId + ' not cached, fetching remote');
+        this.http.get(
+          this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + subjId,
+          {},
+          this.httpHeader
+        ).then((rx) => {
+          const response = JSON.parse(rx.data);
           let subjGrades = [];
           let subjAvg;
           let subjNotes = [];

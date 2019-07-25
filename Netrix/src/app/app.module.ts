@@ -1,32 +1,25 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-
 import { IonicStorageModule } from '@ionic/storage';
-
-import { TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Device } from '@ionic-native/device/ngx';
-
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { CrashlyticsErrorHandler } from './firebase.service';
-
 import { AdMobPro } from '@ionic-native/admob-pro/ngx';
 import { AdmobService } from './admob.service';
-
 import { CountUpModule } from 'countup.js-angular2';
+import { HTTP } from '@ionic-native/http/ngx';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyDL7WpxGbkahzg6KJqqyxgQO0h-bez0MyY',
@@ -50,7 +43,6 @@ export function createTranslateLoader(http: HttpClient) {
     BrowserModule,
     IonicModule.forRoot({mode: 'ios'}),
     AppRoutingModule,
-    HttpClientModule,
     IonicStorageModule.forRoot(),
     BrowserAnimationsModule,
     TranslateModule.forRoot({
@@ -62,7 +54,8 @@ export function createTranslateLoader(http: HttpClient) {
     }),
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule,
-    CountUpModule
+    CountUpModule,
+    HttpClientModule
   ],
   providers: [
     StatusBar,
@@ -72,7 +65,8 @@ export function createTranslateLoader(http: HttpClient) {
     { provide: ErrorHandler, useClass: CrashlyticsErrorHandler },
     FirebaseX,
     AdMobPro,
-    AdmobService
+    AdmobService,
+    HTTP
   ],
   bootstrap: [AppComponent]
 })

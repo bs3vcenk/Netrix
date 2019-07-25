@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
 import { Platform } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
+import { HTTP, HTTPResponse } from '@ionic-native/http/ngx';
 import { map, catchError } from 'rxjs/operators';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, from } from 'rxjs';
 import { Device } from '@ionic-native/device/ngx';
 import { SettingsService } from './settings.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
@@ -14,6 +14,11 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 })
 export class AuthenticationService {
 
+    httpHeader = {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Netrix'
+    };
+
     authenticationState = new BehaviorSubject(false);
     token = null;
     dataPreference = null;
@@ -21,12 +26,13 @@ export class AuthenticationService {
     constructor(
         private storage: Storage,
         private plt: Platform,
-        private http: HttpClient,
+        private http: HTTP,
         private device: Device,
         private settings: SettingsService,
         private firebase: FirebaseX
     ) {
         this.plt.ready().then(() => {
+            this.http.setDataSerializer('json');
             this.checkToken();
         });
     }
@@ -54,8 +60,9 @@ export class AuthenticationService {
             device: this.getDevice(),
             language: this.getLanguage(),
             resolution: this.getResolution()
-        })
-        .subscribe((res) => {
+        },
+        this.httpHeader)
+        .then((res) => {
             console.log('AuthenticationService/sendDeviceInfo(): Successfully sent device info');
         }, (err) => {
             console.log('AuthenticationService/sendDeviceInfo(): Failed to send device info');
@@ -80,7 +87,12 @@ export class AuthenticationService {
     }
 
     login(username, password) {
-        const response: Observable<Response> = this.http.post<Response>(this.settings.apiServer + '/api/login', {username, password});
+        this.firebase.startTrace('login');
+        const response: Observable<HTTPResponse> = from(this.http.post(
+            this.settings.apiServer + '/api/login',
+            {username, password},
+            this.httpHeader
+        ));
 
         const jsonResponse = response.pipe(catchError(err => this.handleError(err)));
 
@@ -92,20 +104,27 @@ export class AuthenticationService {
     }
 
     private handleLogin(data) {
-        this.storage.set('auth-token', data.token).then(() => {
-            this.token = data.token;
+        const token = JSON.parse(data.data).token;
+        this.storage.set('auth-token', token).then(() => {
+            this.token = token;
             this.sendDeviceInfo();
+            this.firebase.stopTrace('login');
             this.authenticationState.next(true);
         });
     }
 
     private handleError(error) {
+        console.log(error);
         return throwError(error);
     }
 
     logout() {
         return this.storage.remove('auth-token').then(() => {
-            this.http.get<any>(this.settings.apiServer + '/api/user/' + this.token + '/logout').subscribe((res) => {
+            this.http.get(
+                this.settings.apiServer + '/api/user/' + this.token + '/logout',
+                {},
+                this.httpHeader
+            ).then((res) => {
                 console.log('AuthenticationService/logout(): Server-side data successfully deleted');
             }, (err) => {
                 console.log('AuthenticationService/logout(): Failed to delete server-side data');
