@@ -432,6 +432,7 @@ def getClasses(token):
 			del i['tests']
 		except:
 			pass
+	del o['info']
 	return make_response(jsonify(o), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/absences', methods=["GET"])
