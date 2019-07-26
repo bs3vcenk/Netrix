@@ -6,6 +6,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 import { PickerOptions } from '@ionic/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-tab3',
@@ -33,7 +34,8 @@ export class Tab3Page {
     private settings: SettingsService,
     private pickerCtrl: PickerController,
     private translate: TranslateService,
-    private firebase: FirebaseX
+    private firebase: FirebaseX,
+    private apiSvc: ApiService
   ) {
     this.dataPreference = this.settings.dataPreference;
     this.errorPreference = this.settings.errorPreference;
@@ -65,6 +67,7 @@ export class Tab3Page {
   updMainNotificationPreference() {
     this.settings.changePreference('notif-preference', this.notifPreference);
     this.settings.notifPreference = this.notifPreference;
+    this.apiSvc.setNotifDisabled(!this.notifPreference);
   }
 
   async openNotifTimePicker() {
