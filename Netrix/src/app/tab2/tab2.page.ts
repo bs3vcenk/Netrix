@@ -41,8 +41,6 @@ export class Tab2Page {
     }
     this.tests = this.apiSvc.tests;
     this.redoList();
-    this.noItemsLoaded = this.apiSvc.tests_noItemsLoaded;
-    this.dbError = this.apiSvc.dbError;
     this.currentTests = this.apiSvc.currentTests;
   }
 

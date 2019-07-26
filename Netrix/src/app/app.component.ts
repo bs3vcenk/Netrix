@@ -75,6 +75,16 @@ export class AppComponent {
           this.router.navigate(['login'], {replaceUrl: true});
         }
       });
+      this.apiSvc.networkError.subscribe(val => {
+        if (val) {
+          this.router.navigate(['error'], {replaceUrl: true});
+        }
+      });
+      this.apiSvc.dbError.subscribe(val => {
+        if (val) {
+          this.router.navigate(['error'], {replaceUrl: true});
+        }
+      });
     });
   }
 }

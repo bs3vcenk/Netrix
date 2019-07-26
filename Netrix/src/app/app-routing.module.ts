@@ -7,7 +7,8 @@ const routes: Routes = [
   { path: 'login', loadChildren: './login/login.module#LoginPageModule' },
   { path: 'absences', loadChildren: './absences/absences.module#AbsencesPageModule' },
   { path: 'privacy', loadChildren: './privacy/privacy.module#PrivacyPageModule' },
-  { path: 'notif-settings', loadChildren: './notif-settings/notif-settings.module#NotifSettingsPageModule' }
+  { path: 'notif-settings', loadChildren: './notif-settings/notif-settings.module#NotifSettingsPageModule' },
+  { path: 'error', loadChildren: './error/error.module#ErrorPageModule' }
 ];
 @NgModule({
   imports: [

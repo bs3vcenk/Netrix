@@ -42,13 +42,10 @@ export class ApiService {
   absences = null;
 
   subjects = null;
-  dbError = null;
   fullAvg = null;
 
-  subj_noItemsLoaded = null;
-  subj_attemptedLoad = null;
-  tests_noItemsLoaded = null;
-  abs_noItemsLoaded = null;
+  dbError = new BehaviorSubject(false);
+  networkError = new BehaviorSubject(false);
 
   constructor(
     private http: HTTP,
@@ -83,11 +80,36 @@ export class ApiService {
       ).then((response) => {
         this.firebase.stopTrace('receiveNotifType');
         delete this.ignoredNotifTypes[this.ignoredNotifTypes.indexOf(nType)];
-      }, (err) => {
+      }, (error) => {
         this.firebase.stopTrace('receiveNotifType');
-        throw err;
+        let e;
+        try { e = JSON.parse(error.error); } catch (ex) { e = {error: null}; }
+        if (e.error === 'E_TOKEN_NONEXISTENT') {
+          // User is not authenticated (possibly token purged from server DB)
+          this.authServ.logout();
+        } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521 || error.status === 500) {
+          // Server-side issue
+          this.dbError.next(true);
+        } else {
+          this.networkError.next(true);
+          throw error;
+        }
       });
     }
+  }
+
+  setNotifDisabled(nState: boolean) {
+    this.firebase.startTrace('setNotifState');
+    this.http.post(
+      this.settings.apiServer + '/api/user' + this.authServ.token + '/settings/notif.disable',
+      {parameter: nState},
+      this.httpHeader
+    ).then((response) => {
+      this.firebase.stopTrace('setNotifState');
+    }, (err) => {
+      this.firebase.stopTrace('setNotifState');
+      throw err;
+    });
   }
 
   ignoreNotifType(nType: string) {
@@ -100,9 +122,9 @@ export class ApiService {
       ).then((response) => {
         this.firebase.stopTrace('ignoreNotifType');
         this.ignoredNotifTypes.push(nType);
-      }, (err) => {
+      }, (error) => {
         this.firebase.stopTrace('ignoreNotifType');
-        throw err;
+        throw error;
       });
     }
   }
@@ -118,11 +140,22 @@ export class ApiService {
       this.firebase.stopTrace('getNotifConfig');
       this.loadingFinishedNotif.next(true);
       this.loadingFinishedNotif.complete();
-    }, (err) => {
+    }, (error) => {
+      this.firebase.stopTrace('getNotifConfig');
+      let e;
+      try { e = JSON.parse(error.error); } catch (ex) { e = {error: null}; }
+      if (e.error === 'E_TOKEN_NONEXISTENT') {
+        // User is not authenticated (possibly token purged from server DB)
+        this.authServ.logout();
+      } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521 || error.status === 500) {
+        // Server-side issue
+        this.dbError.next(true);
+      } else {
+        this.networkError.next(true);
+        throw error;
+      }
       this.loadingFinishedNotif.next(true);
       this.loadingFinishedNotif.complete();
-      this.firebase.stopTrace('getNotifConfig');
-      console.log(err);
     });
   }
 
@@ -151,25 +184,23 @@ export class ApiService {
       // Set for display
       this.subjects = allsubs;
       this.fullAvg = response.class_avg;
-      this.subj_noItemsLoaded = false;
-      this.dbError = false;
       this.firebase.stopTrace('getSubjects');
       this.loadingFinishedSubj.next(true);
       this.loadingFinishedSubj.complete();
     },
     (error) => {
-      this.subj_noItemsLoaded = true;
       this.firebase.stopTrace('getSubjects');
-      if (error.error) {
-        if (error.error.error === 'E_TOKEN_NONEXISTENT') {
-          // User is not authenticated (possibly token purged from server DB)
-          this.authServ.logout();
-        } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521) {
-          // Server-side issue
-          this.dbError = true;
-        } else {
-          console.log(error);
-        }
+      let e;
+      try { e = JSON.parse(error.error); } catch (ex) { e = {error: null}; }
+      if (e.error === 'E_TOKEN_NONEXISTENT') {
+        // User is not authenticated (possibly token purged from server DB)
+        this.authServ.logout();
+      } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521 || error.status === 500) {
+        // Server-side issue
+        this.dbError.next(true);
+      } else {
+        this.networkError.next(true);
+        throw error;
       }
       this.loadingFinishedSubj.next(true);
       this.loadingFinishedSubj.complete();
@@ -186,25 +217,22 @@ export class ApiService {
       const response = JSON.parse(rx.data);
       this.tests = response.tests;
       this.countTests();
-      this.tests_noItemsLoaded = false;
-      this.dbError = false;
       this.firebase.stopTrace('getTests');
       this.loadingFinishedTests.next(true);
       this.loadingFinishedTests.complete();
     }, (error) => {
-      this.tests_noItemsLoaded = true;
       this.firebase.stopTrace('getTests');
-      if (error.error) {
-        console.log(error);
-        if (error.error.error === 'E_TOKEN_NONEXISTENT') {
-          // User is not authenticated (possibly token purged from server DB)
-          this.authServ.logout();
-        } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
-          // Server-side issue
-          this.dbError = true;
-        } else {
-          console.log(error);
-        }
+      let e;
+      try { e = JSON.parse(error.error); } catch (ex) { e = {error: null}; }
+      if (e.error === 'E_TOKEN_NONEXISTENT') {
+        // User is not authenticated (possibly token purged from server DB)
+        this.authServ.logout();
+      } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521 || error.status === 500) {
+        // Server-side issue
+        this.dbError.next(true);
+      } else {
+        this.networkError.next(true);
+        throw error;
       }
       this.loadingFinishedTests.next(true);
       this.loadingFinishedTests.complete();
@@ -232,17 +260,17 @@ export class ApiService {
       this.loadingFinishedAbsences.complete();
     }, (error) => {
       this.firebase.stopTrace('getAbsences');
-      this.abs_noItemsLoaded = true;
-      if (error.error) {
-        if (error.error.error === 'E_TOKEN_NONEXISTENT') {
-          // User is not authenticated (possibly token purged from server DB)
-          this.authServ.logout();
-        } else if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
-          // Server-side issue
-          this.dbError = true;
-        } else {
-          console.log(error);
-        }
+      let e;
+      try { e = JSON.parse(error.error); } catch (ex) { e = {error: null}; }
+      if (e.error === 'E_TOKEN_NONEXISTENT') {
+        // User is not authenticated (possibly token purged from server DB)
+        this.authServ.logout();
+      } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521 || error.status === 500) {
+        // Server-side issue
+        this.dbError.next(true);
+      } else {
+        this.networkError.next(true);
+        throw error;
       }
       this.loadingFinishedAbsences.next(true);
       this.loadingFinishedAbsences.complete();
