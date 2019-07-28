@@ -40,21 +40,12 @@ export class Tab2Page {
       this.apiSvc.getTests();
     }
     this.tests = this.apiSvc.tests;
-    this.redoList();
+    this.reInit();
     this.currentTests = this.apiSvc.currentTests;
   }
 
   private reInit() {
     this.results = this.tests;
-  }
-
-  async redoList() {
-    this.reInit();
-    console.log(this.showAllPreference);
-    this.results = this.results.filter((item) => {
-      console.log(item.current !== this.showAllPreference);
-      return item.current !== this.showAllPreference;
-    });
   }
 
   searchHandler(event) {
