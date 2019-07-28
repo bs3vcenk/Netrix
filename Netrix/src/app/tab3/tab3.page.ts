@@ -27,6 +27,7 @@ export class Tab3Page {
   errorPreference = null;
   adPreference = null;
   testNotifTime = null;
+  darkModePreference = null;
   dayString = this.translate.instant('settings.api.time_plural');
 
   constructor(
@@ -42,6 +43,7 @@ export class Tab3Page {
     this.notifPreference = this.settings.notifPreference;
     this.testNotifTime = this.settings.notifTime;
     this.adPreference = this.settings.adPreference;
+    this.darkModePreference = this.settings.globalTheme === 'dark';
     if (this.testNotifTime === 1) {
       this.dayString = this.translate.instant('settings.api.time_singular');
     }
@@ -68,6 +70,12 @@ export class Tab3Page {
     this.settings.changePreference('notif-preference', this.notifPreference);
     this.settings.notifPreference = this.notifPreference;
     this.apiSvc.setNotifDisabled(!this.notifPreference);
+  }
+
+  updDarkModePreference() {
+    this.settings.changePreference('global-theme', this.darkModePreference ? 'dark' : 'light');
+    this.settings.globalTheme = this.darkModePreference ? 'dark' : 'light';
+    this.settings.setGlobalTheme(this.settings.globalTheme);
   }
 
   async openNotifTimePicker() {
