@@ -22,7 +22,7 @@ import { ApiService } from '../api.service';
 })
 export class Tab3Page {
 
-  dataPreference = null;
+  // dataPreference = null;
   notifPreference = null;
   errorPreference = null;
   adPreference = null;
@@ -38,10 +38,10 @@ export class Tab3Page {
     private firebase: FirebaseX,
     private apiSvc: ApiService
   ) {
-    this.dataPreference = this.settings.dataPreference;
-    this.errorPreference = this.settings.errorPreference;
+    // this.dataPreference = this.settings.dataPreference;
+    // this.errorPreference = this.settings.errorPreference;
     this.notifPreference = this.settings.notifPreference;
-    this.testNotifTime = this.settings.notifTime;
+    // this.testNotifTime = this.settings.notifTime;
     this.adPreference = this.settings.adPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
     if (this.testNotifTime === 1) {
@@ -57,9 +57,9 @@ export class Tab3Page {
     this.authServ.logout();
   }
 
-  updDeviceInfoPreference() {
+  /*updDeviceInfoPreference() {
     this.settings.setDataCollection(this.dataPreference);
-  }
+  }*/
 
   updAdPreference() {
     this.settings.changePreference('ad-preference', this.adPreference);
@@ -78,7 +78,7 @@ export class Tab3Page {
     this.settings.setGlobalTheme(this.settings.globalTheme);
   }
 
-  async openNotifTimePicker() {
+  /*async openNotifTimePicker() {
     const opts: PickerOptions = {
       buttons: [
         {
@@ -117,6 +117,6 @@ export class Tab3Page {
         this.dayString = this.translate.instant('settings.api.time_plural');
       }
     });
-  }
+  }*/
 
 }
