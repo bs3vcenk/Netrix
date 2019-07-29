@@ -1,12 +1,12 @@
 # Pravila o privatnosti
 
-Zadnje ažuriranje: 24. srpnja, 2019.
+Zadnje ažuriranje: 29. srpnja, 2019.
 
 Prijašnje inačice ovog dokumenta možete zatražiti upitom na e-mail bs3vcenk@gmail.com.
 
 ## Što je Netrix?
 
-**Netrix** je naziv neslužbene frontend aplikacije za CARNetov servis "*e-Dnevnik*". Netrix kontaktira API server pod imenom eDnevnikAndroidProject (skraćeno eDAP).
+**Netrix** je naziv neslužbene frontend aplikacije za CARNetov servis "e-Dnevnik". Netrix kontaktira API server pod imenom *eDnevnikAndroidProject* (skraćeno eDAP).
 
 Netrix omogućuje brz pregled ocjena, izostanaka, ispita i korisničkih informacija te obavijesti o promjeni istih.
 
@@ -33,16 +33,17 @@ Netrix omogućuje brz pregled ocjena, izostanaka, ispita i korisničkih informac
     * **Informacije o korisniku** (samo aktualni razred, trenutno se ne koristi nigdje u aplikaciji) - adresa stanovanja, datum rođenja, rodno mjesto, puno ime, redni broj i školski program
 * **IP adresa s koje je zahtjev prijave stigao** - u slučaju javnog servisa https://api.netrix.io, to je adresa Cloudflare servera koji je primio zahtjev
 * **IP adresa i država korisnika iza Cloudflare servera** - Cloudflare javlja stvarnu IP adresu koja šalje zahtjev, te se ona zapisuje u korisnikov profil kako bi se identificirali i blokirali potencijalni napadi na servis, te kako bi se odredila razina ograničenja u slučaju da korisnik servisu ne pristupa iz Hrvatske
-
-eDAP sprema sljedeće podatke, ako je opcija "Šalji informacije o uređaju" uključena na klijentu:
-
 * **Platforma uređaja** - npr. *Android/iOS/drugo*, služi za bolje kategoriziranje mogućih problema u radu aplikacije (npr. događa li se greška samo na toj platformi)
 * **Model uređaja** - npr. *SM-G965F*, služi za bolje kategoriziranje mogućih problema u radu aplikacije (npr. događa li se greška samo kod tog proizvođača ili tog modela uređaja)
 * **Rezolucija ekrana** - služi za bolje kategoriziranje mogućih problema u radu aplikacije (npr. je li tekst čitljiv samo na ovoj rezoluciji i sl.)
 
 Javni eDAP servis na adresi https://api.netrix.io koristi Cloudflare. Njihova pravila o privatnosti možete pročitati [ovdje](https://www.cloudflare.com/privacypolicy/).
 
-U slučaju da korisnik ne stisne gumb "Prijava", aplikacije se **neće** javiti na server.
+eDAP se spaja na CARNetov servis e-Dnevnik, čija pravila o privatnosti možete pročitati [ovdje](https://www.carnet.hr/obavijest-o-privatnosti/).
+
+U slučaju da korisnik ne stisne gumb "Prijava", aplikacija se **neće** javiti na server.
+
+Radimo na tome da omogućimo potpuno procesiranje podataka na uređaju, što bi učinilo eDAP nepotrebnim i cijeli proces sigurnijim za korisnika.
 
 ### Netrix (frontend)
 
@@ -51,6 +52,12 @@ Netrix koristi Googleov *Firebase* servis za analitike u aplikaciji, *Firebase C
 Od verzije 1.6.1, pri prijavi postavljen je upit za uključenje opcije "*Šalji informacije o uređaju*", te se obavijesti i analitika (i *eDAP* i *Firebase*) mogu isključiti u postavkama aplikacije.
 
 Aplikacija je napravljena u *Ionic Frameworku*, čija pravila o privatnosti možete pročitati [ovdje](https://ionicframework.com/privacy).
+
+## Netrix (web-stranica)
+
+Web stranica [netrix.io](https://netrix.io) koristi Cloudflare Workers, koji nam daje samo statističke podatke o korištenju (broj korisnika).
+
+Netrix.io koristi i Google Analytics za detaljniju statistiku. Za više informacije, provjerite [Googleova pravila o privatnosti](https://policies.google.com/privacy).
 
 ## Sigurnost prijenosa podataka
 
