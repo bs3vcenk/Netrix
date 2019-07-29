@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { Chart, ChartConfiguration } from 'chart.js';
+import { Chart, ChartConfiguration } from 'chart.js/dist/Chart.js';
 import { ApiService } from '../api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
@@ -36,14 +36,15 @@ export class Tab4Page implements OnInit {
   }
 
   ngOnInit() {
-    this.initGraph();
+    this.initPlugins();
   }
 
   ionViewDidEnter() {
     try { this.firebase.setScreenName('Absences'); } catch (e) {}
+    this.initGraph();
   }
 
-  initGraph() {
+  initPlugins() {
     Chart.pluginService.register({
       // tslint:disable-next-line: variable-name
       beforeDraw: (_chart) => {
@@ -86,6 +87,9 @@ export class Tab4Page implements OnInit {
         ctx.fillText(txt, centerX, centerY);
       }
     });
+  }
+
+  initGraph() {
     this.absenceChart = new Chart(this.absenceCanvas.nativeElement, {
     type: 'doughnut',
     data: {
