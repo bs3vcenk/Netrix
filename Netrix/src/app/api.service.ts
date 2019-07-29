@@ -70,6 +70,21 @@ export class ApiService {
     });
   }
 
+  private handleErr(errorObj) {
+    let e;
+    try { e = JSON.parse(errorObj.error); } catch (ex) { e = {error: null}; }
+    if (e.error === 'E_TOKEN_NONEXISTENT') {
+      // User is not authenticated (possibly token purged from server DB)
+      this.authServ.logout();
+    } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || errorObj.status === 521 || errorObj.status === 500) {
+      // Server-side issue
+      this.dbError.next(true);
+    } else {
+      this.networkError.next(true);
+      throw errorObj;
+    }
+  }
+
   receiveNotifType(nType: string) {
     if (this.ignoredNotifTypes.includes(nType)) {
       this.firebase.startTrace('receiveNotifType');
@@ -82,18 +97,7 @@ export class ApiService {
         delete this.ignoredNotifTypes[this.ignoredNotifTypes.indexOf(nType)];
       }, (error) => {
         this.firebase.stopTrace('receiveNotifType');
-        let e;
-        try { e = JSON.parse(error.error); } catch (ex) { e = {error: null}; }
-        if (e.error === 'E_TOKEN_NONEXISTENT') {
-          // User is not authenticated (possibly token purged from server DB)
-          this.authServ.logout();
-        } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521 || error.status === 500) {
-          // Server-side issue
-          this.dbError.next(true);
-        } else {
-          this.networkError.next(true);
-          throw error;
-        }
+        this.handleErr(error);
       });
     }
   }
@@ -106,9 +110,9 @@ export class ApiService {
       this.httpHeader
     ).then((response) => {
       this.firebase.stopTrace('setNotifState');
-    }, (err) => {
+    }, (error) => {
       this.firebase.stopTrace('setNotifState');
-      throw err;
+      this.handleErr(error);
     });
   }
 
@@ -124,7 +128,7 @@ export class ApiService {
         this.ignoredNotifTypes.push(nType);
       }, (error) => {
         this.firebase.stopTrace('ignoreNotifType');
-        throw error;
+        this.handleErr(error);
       });
     }
   }
@@ -142,18 +146,7 @@ export class ApiService {
       this.loadingFinishedNotif.complete();
     }, (error) => {
       this.firebase.stopTrace('getNotifConfig');
-      let e;
-      try { e = JSON.parse(error.error); } catch (ex) { e = {error: null}; }
-      if (e.error === 'E_TOKEN_NONEXISTENT') {
-        // User is not authenticated (possibly token purged from server DB)
-        this.authServ.logout();
-      } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521 || error.status === 500) {
-        // Server-side issue
-        this.dbError.next(true);
-      } else {
-        this.networkError.next(true);
-        throw error;
-      }
+      this.handleErr(error);
       this.loadingFinishedNotif.next(true);
       this.loadingFinishedNotif.complete();
     });
@@ -190,18 +183,7 @@ export class ApiService {
     },
     (error) => {
       this.firebase.stopTrace('getSubjects');
-      let e;
-      try { e = JSON.parse(error.error); } catch (ex) { e = {error: null}; }
-      if (e.error === 'E_TOKEN_NONEXISTENT') {
-        // User is not authenticated (possibly token purged from server DB)
-        this.authServ.logout();
-      } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521 || error.status === 500) {
-        // Server-side issue
-        this.dbError.next(true);
-      } else {
-        this.networkError.next(true);
-        throw error;
-      }
+      this.handleErr(error);
       this.loadingFinishedSubj.next(true);
       this.loadingFinishedSubj.complete();
     });
@@ -222,18 +204,7 @@ export class ApiService {
       this.loadingFinishedTests.complete();
     }, (error) => {
       this.firebase.stopTrace('getTests');
-      let e;
-      try { e = JSON.parse(error.error); } catch (ex) { e = {error: null}; }
-      if (e.error === 'E_TOKEN_NONEXISTENT') {
-        // User is not authenticated (possibly token purged from server DB)
-        this.authServ.logout();
-      } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521 || error.status === 500) {
-        // Server-side issue
-        this.dbError.next(true);
-      } else {
-        this.networkError.next(true);
-        throw error;
-      }
+      this.handleErr(error);
       this.loadingFinishedTests.next(true);
       this.loadingFinishedTests.complete();
     });
@@ -260,18 +231,7 @@ export class ApiService {
       this.loadingFinishedAbsences.complete();
     }, (error) => {
       this.firebase.stopTrace('getAbsences');
-      let e;
-      try { e = JSON.parse(error.error); } catch (ex) { e = {error: null}; }
-      if (e.error === 'E_TOKEN_NONEXISTENT') {
-        // User is not authenticated (possibly token purged from server DB)
-        this.authServ.logout();
-      } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || error.status === 521 || error.status === 500) {
-        // Server-side issue
-        this.dbError.next(true);
-      } else {
-        this.networkError.next(true);
-        throw error;
-      }
+      this.handleErr(error);
       this.loadingFinishedAbsences.next(true);
       this.loadingFinishedAbsences.complete();
     });
