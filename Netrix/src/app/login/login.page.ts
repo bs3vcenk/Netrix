@@ -3,6 +3,7 @@ import { AuthenticationService } from '../authentication.service';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../settings.service';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,8 @@ export class LoginPage implements OnInit {
     private authServ: AuthenticationService,
     private alertControl: AlertController,
     private loadControl: LoadingController,
-    private settings: SettingsService
+    private settings: SettingsService,
+    private firebase: FirebaseX
   ) { }
 
   ngOnInit() {
@@ -58,21 +60,12 @@ export class LoginPage implements OnInit {
       message: this.translate.instant('login.alert.data.content'),
       buttons: [
         {
-          text: this.translate.instant('login.alert.data.choice.no'),
+          text: 'OK',
           handler: () => {
             // Proceed to login when accepted
-            this.settings.setDataCollection(false);
             this.login();
           }
-        },
-        {
-          text: this.translate.instant('login.alert.data.choice.yes'),
-          handler: () => {
-            // Proceed to login when accepted
-            this.settings.setDataCollection(true);
-            this.login();
-          }
-        },
+        }
       ]
     }).then(alert => {
       // Show the alert
@@ -109,21 +102,23 @@ export class LoginPage implements OnInit {
     this.loadDisplay(this.translate.instant('login.alert.loggingin'));
 
     // Send the request
-    this.authServ.login(this.loUsername, this.loPassword).subscribe((stat) => {
+    this.authServ.login(this.loUsername, this.loPassword).subscribe(() => {
       // Everything fine
       console.log('login/login(): Successful login');
       this.stopLoad(); // Stop the "Logging in..." alert
     }, (err) => {
       this.stopLoad(); // Stop alert
-      if (err.error.error === 'E_INVALID_CREDENTIALS') {
+      const e = JSON.parse(err.error);
+      if (e.error === 'E_INVALID_CREDENTIALS') {
         // Bad creds
         this.networkError(
           this.translate.instant('login.alert.credentials.header'),
           this.translate.instant('login.alert.credentials.content')
         );
-      } else if (err.error) {
+      } else if (err.status === 500 || err.status === 521) {
         // Server/network error
         this.toastError(this.translate.instant('generic.alert.server'), null, 2500);
+        this.firebase.logError('Server error, status ' + err.status);
       } else {
         this.toastError(this.translate.instant('generic.alert.network'), null, 2500);
       }
