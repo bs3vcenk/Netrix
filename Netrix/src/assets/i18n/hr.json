@@ -68,8 +68,8 @@
         "content": "Provjeri svoje korisničko ime i lozinu, pa pokušaj ponovo."
       },
       "data": {
-        "header": "Želiš li omogućiti prikupljanje podataka?",
-        "content": "Neki podaci o tvojem uređaju se šalju API serveru kako bi se greške lakše razvrstale i uklonile. Možeš to kasnije promijeniti u postavkama.",
+        "header": "Prijavljivanje grešaka u radu",
+        "content": "Model i verzija operativnog sustava tvog uređaja se šalje na API server kako bi se moglo točno odrediti što uzrokuje greške.<br><br>Ne prikupljamo <b>nikakve</b> osobne podatke izvan informacija navedenih u Pravilima o privatnosti.",
         "choice": {
           "yes": "Da",
           "no": "Ne"

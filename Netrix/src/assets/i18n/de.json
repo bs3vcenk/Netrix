@@ -68,8 +68,8 @@
         "content": "Überprüfen Sie Ihren Benutzernamen und Ihr Passwort, und versuchen Sie es erneut."
       },
       "data": {
-        "header": "Möchtest du die Datenerfassung aktivieren?",
-        "content": "Einige Informationen über Ihr Gerät werden an den API-Server gesendet, um Fehler zu kategorisieren und zu beheben. Du kannst dies später unter Einstellungen ändern.",
+        "header": "Fehlerberichterstattung",
+        "content": "Der Modellname und die Betriebssystem-Version deines Geräts werden an den API-Server gesendet, um Fehler zu kategorisieren und zu debuggen.<br><br>Wir erheben <b>keine</b> personenbezogenen Daten außerhalb der in unserer Datenschutzerklärung genannten Informationen.",
         "choice": {
           "yes": "Ja",
           "no": "Nein"

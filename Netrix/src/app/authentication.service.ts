@@ -21,7 +21,7 @@ export class AuthenticationService {
 
     authenticationState = new BehaviorSubject(false);
     token = null;
-    dataPreference = null;
+    dataPreference = true;
 
     constructor(
         private storage: Storage,
@@ -42,11 +42,7 @@ export class AuthenticationService {
         this.storage.get('auth-token').then(res => {
             if (res) {
                 this.token = res;
-                this.settings.hasLoadedDataPref.subscribe((dPrefLoaded) => {
-                    if (dPrefLoaded) {
-                        this.sendDeviceInfo();
-                    }
-                });
+                this.sendDeviceInfo();
                 this.authenticationState.next(true);
             }
         });

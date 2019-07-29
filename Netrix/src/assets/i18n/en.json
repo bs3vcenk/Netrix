@@ -68,8 +68,8 @@
         "content": "Check your username and password, and try again."
       },
       "data": {
-        "header": "Do you want to enable data collection?",
-        "content": "Some information about your device is sent to the API server to help categorize and debug errors. You can change this later in settings.",
+        "header": "Error reporting",
+        "content": "Your device's model name and OS version is sent to the API server to help categorize and debug errors.<br><br>We <b>do not</b> collect <b>any</b> personal data outside the information outlined in our privacy policy.",
         "choice": {
           "yes": "Yes",
           "no": "No"

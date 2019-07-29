@@ -10,7 +10,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 })
 export class SettingsService {
 
-  hasLoadedDataPref = new BehaviorSubject(false);
+  //hasLoadedDataPref = new BehaviorSubject(false);
 
   dataPreference = null;
   dataPrefUnset = true;
@@ -32,8 +32,11 @@ export class SettingsService {
 
   readPrefs() {
     this.storage.get('data-preference').then(res => {
-      // Check if it is stored at all
-      if (res != null) {
+      // Force on for now
+      this.dataPreference = true;
+      this.firebase.setAnalytics(true);
+      this.dataPrefUnset = false;
+      /*if (res != null) {
         this.firebase.setAnalytics(res);
         this.dataPreference = res;
         this.dataPrefUnset = false;
@@ -44,8 +47,8 @@ export class SettingsService {
           this.firebase.setAnalytics(false);
           console.log('SettingsService/readPrefs(): API analytics preference defaulted to false');
         });
-      }
-      this.hasLoadedDataPref.next(true);
+      }*/
+      // this.hasLoadedDataPref.next(true);
       this.storage.get('error-preference').then(resx => {
         if (resx != null) {
           this.errorPreference = resx;
