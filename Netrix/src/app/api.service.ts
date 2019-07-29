@@ -101,7 +101,7 @@ export class ApiService {
   setNotifDisabled(nState: boolean) {
     this.firebase.startTrace('setNotifState');
     this.http.post(
-      this.settings.apiServer + '/api/user' + this.authServ.token + '/settings/notif.disable',
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.disable',
       {parameter: nState},
       this.httpHeader
     ).then((response) => {
