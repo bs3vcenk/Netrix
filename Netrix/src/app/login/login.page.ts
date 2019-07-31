@@ -85,10 +85,11 @@ export class LoginPage implements OnInit {
   }
 
   _login() {
-    if (this.settings.dataPrefUnset === true) {
+    if (this.dataAlertShown === false) {
       // User hasn't seen alert, so we show it and set dataAlertShown to true,
       // so we don't show it again
       console.log('login/_login(): Data alert wasn\'t shown, showing it now');
+      this.dataAlertShown = true;
       this.dataAlert();
     } else {
       // User has seen alert, so no need to show it
