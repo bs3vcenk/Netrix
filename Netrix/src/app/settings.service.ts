@@ -13,7 +13,6 @@ export class SettingsService {
   // hasLoadedDataPref = new BehaviorSubject(false);
 
   dataPreference = null;
-  dataPrefUnset = true;
   notifPreference = null;
   adPreference = null;
   language = null;
@@ -34,7 +33,6 @@ export class SettingsService {
       // Force on for now
       this.dataPreference = true;
       this.firebase.setAnalytics(true);
-      this.dataPrefUnset = false;
       /*if (res != null) {
         this.firebase.setAnalytics(res);
         this.dataPreference = res;
