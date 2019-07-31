@@ -3,6 +3,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 import { AdmobService } from '../admob.service';
 import { ApiService } from '../api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { LogService } from '../log.service';
 
 @Component({
   selector: 'app-tab1',
@@ -26,7 +27,8 @@ export class Tab1Page implements OnInit {
   constructor(
     private admobSvc: AdmobService,
     private apiSvc: ApiService,
-    private firebase: FirebaseX
+    private firebase: FirebaseX,
+    private log: LogService
   ) {
     this.initInBg();
   }
@@ -42,7 +44,7 @@ export class Tab1Page implements OnInit {
   initInBg() {
     this.apiSvc.loadingFinishedAll.subscribe((isLoaded) => {
       if (isLoaded) {
-        console.log('tab1/initInBg(): Loading complete');
+        this.log.log('tab1/initInBg(): Loading complete');
         this.fullAvg = this.apiSvc.fullAvg;
         this.subjects = this.apiSvc.subjects;
       }

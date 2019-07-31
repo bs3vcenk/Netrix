@@ -8,6 +8,7 @@ import { Observable, throwError, from } from 'rxjs';
 import { Device } from '@ionic-native/device/ngx';
 import { SettingsService } from './settings.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { LogService } from './log.service';
 
 @Injectable({
     providedIn: 'root'
@@ -29,7 +30,8 @@ export class AuthenticationService {
         private http: HTTP,
         private device: Device,
         private settings: SettingsService,
-        private firebase: FirebaseX
+        private firebase: FirebaseX,
+        private log: LogService
     ) {
         this.plt.ready().then(() => {
             this.http.setDataSerializer('json');
@@ -59,9 +61,9 @@ export class AuthenticationService {
         },
         this.httpHeader)
         .then((res) => {
-            console.log('AuthenticationService/sendDeviceInfo(): Successfully sent device info');
+            this.log.log('AuthenticationService/sendDeviceInfo(): Successfully sent device info');
         }, (err) => {
-            console.log('AuthenticationService/sendDeviceInfo(): Failed to send device info');
+            this.log.log('AuthenticationService/sendDeviceInfo(): Failed to send device info');
             throw err;
         });
     }
@@ -110,7 +112,6 @@ export class AuthenticationService {
     }
 
     private handleError(error) {
-        console.log(error);
         return throwError(error);
     }
 
@@ -121,9 +122,9 @@ export class AuthenticationService {
                 {},
                 this.httpHeader
             ).then((res) => {
-                console.log('AuthenticationService/logout(): Server-side data successfully deleted');
+                this.log.log('AuthenticationService/logout(): Server-side data successfully deleted');
             }, (err) => {
-                console.log('AuthenticationService/logout(): Failed to delete server-side data');
+                this.log.log('AuthenticationService/logout(): Failed to delete server-side data');
             });
             this.firebase.unregister();
             this.authenticationState.next(false);

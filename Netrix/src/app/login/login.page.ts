@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../authentication.service';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { SettingsService } from '../settings.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { LogService } from '../log.service';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +24,7 @@ export class LoginPage implements OnInit {
     private authServ: AuthenticationService,
     private alertControl: AlertController,
     private loadControl: LoadingController,
-    private settings: SettingsService,
+    private log: LogService,
     private firebase: FirebaseX
   ) { }
 
@@ -81,19 +81,19 @@ export class LoginPage implements OnInit {
   }
 
   async stopLoad() {
-    return await this.ldController.dismiss().then(() => console.log('login/stopLoad(): Dismissed loading screen'));
+    return await this.ldController.dismiss().then(() => this.log.log('login/stopLoad(): Dismissed loading screen'));
   }
 
   _login() {
     if (this.dataAlertShown === false) {
       // User hasn't seen alert, so we show it and set dataAlertShown to true,
       // so we don't show it again
-      console.log('login/_login(): Data alert wasn\'t shown, showing it now');
+      this.log.log('login/_login(): Data alert wasn\'t shown, showing it now');
       this.dataAlertShown = true;
       this.dataAlert();
     } else {
       // User has seen alert, so no need to show it
-      console.log('login/_login(): Data alert already shown, skipping');
+      this.log.log('login/_login(): Data alert already shown, skipping');
       this.login();
     }
   }
@@ -105,7 +105,7 @@ export class LoginPage implements OnInit {
     // Send the request
     this.authServ.login(this.loUsername, this.loPassword).subscribe(() => {
       // Everything fine
-      console.log('login/login(): Successful login');
+      this.log.log('login/login(): Successful login');
       this.stopLoad(); // Stop the "Logging in..." alert
     }, (err) => {
       this.stopLoad(); // Stop alert

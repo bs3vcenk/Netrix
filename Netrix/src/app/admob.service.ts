@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AdMobPro } from '@ionic-native/admob-pro/ngx';
 import { Storage } from '@ionic/storage';
 import { Platform } from '@ionic/angular';
+import { LogService } from './log.service';
 
 @Injectable()
 export class AdmobService {
@@ -15,7 +16,8 @@ export class AdmobService {
   constructor(
     private admob: AdMobPro,
     private storage: Storage,
-    private platform: Platform
+    private platform: Platform,
+    private log: LogService
   ) {
     this.storage.get('ad-preference').then(res => {
       if (res != null) {
@@ -29,7 +31,7 @@ export class AdmobService {
   showBanner() {
     if (!this.platform.is('cordova')) { return; }
     if (this.adPreference) {
-      console.log('AdmobService/showBanner(): Showing ad banner');
+      this.log.log('AdmobService/showBanner(): Showing ad banner');
       this.admob.createBanner({
         adId: this.admobid.banner,
         isTesting: false,
@@ -38,7 +40,7 @@ export class AdmobService {
         position: this.admob.AD_POSITION.BOTTOM_CENTER,
       });
     } else {
-      console.log('AdmobService/showBanner(): Not showing ad because of preference');
+      this.log.log('AdmobService/showBanner(): Not showing ad because of preference');
     }
   }
 }

@@ -4,6 +4,7 @@ import { FirebaseService } from './firebase.service';
 import { AdmobService } from './admob.service';
 // import { BehaviorSubject } from 'rxjs';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,8 @@ export class SettingsService {
     private storage: Storage,
     private firebase: FirebaseService,
     private admobSvc: AdmobService,
-    private statusBar: StatusBar
+    private statusBar: StatusBar,
+    private log: LogService
   ) {}
 
   readPrefs() {
@@ -115,7 +117,7 @@ export class SettingsService {
     };
     const root = document.documentElement;
     if (nThemeName === 'light') {
-      console.log('SettingsService/setGlobalTheme(): Setting light theme');
+      this.log.log('SettingsService/setGlobalTheme(): Setting light theme');
       // tslint:disable-next-line: forin
       for (const varName in themeVars.light) {
         root.style.setProperty(varName, themeVars.light[varName]);
@@ -123,7 +125,7 @@ export class SettingsService {
       this.statusBar.backgroundColorByHexString('#ffffff');
       this.statusBar.styleDefault();
     } else if (nThemeName === 'dark') {
-      console.log('SettingsService/setGlobalTheme(): Setting dark theme');
+      this.log.log('SettingsService/setGlobalTheme(): Setting dark theme');
       // tslint:disable-next-line: forin
       for (const varName in themeVars.dark) {
         root.style.setProperty(varName, themeVars.dark[varName]);
@@ -156,7 +158,7 @@ export class SettingsService {
 
   changePreference(pref, prefValue) {
     this.storage.set(pref, prefValue).then(() => {
-      console.log('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
+      this.log.log('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
     });
   }
 }
