@@ -110,6 +110,7 @@ export class AuthenticationService {
     }
 
     private handleError(error) {
+        console.log(error);
         return throwError(error);
     }
 

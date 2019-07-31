@@ -7,7 +7,7 @@ from random import randint
 from functools import wraps
 from time import time as _time
 
-api_version = "2.5-dev"
+api_version = "2.4-dev"
 
 log = logging.getLogger('EDAP-API')
 
@@ -221,17 +221,8 @@ def devTokenDebug(token):
 	html += "<h2>Management</h2>"
 	html += "<p><a href=\"/dev/info/tokendebug/%s/revoke\">Remove from DB</a></p>" % token
 	html += "<p><a href=\"/dev/info/tokendebug/%s/diff\">Update local data</a></p>" % token
-	html += "<p><a href=\"/dev/info/tokendebug/%s/log\">View log</a><p>" % token
 	html += timeGenerated(start)
 	return makeHTML(title="eDAP dev token manage", content=html)
-
-@app.route('/dev/info/tokendebug/<string:token>/log', methods=["GET"])
-@dev_area
-def devGetUserLog(token):
-	"""
-		DEV: Get the client-side log for an user.
-	"""
-	return make_response(makeHTML(bare=True, content="<pre>" + str(getUserLog(token)) + "</pre>"), 200)
 
 @app.route('/dev/info/tokendebug/<string:token>/diff', methods=["GET"])
 @dev_area
@@ -414,18 +405,6 @@ def getNewGrades(token):
 	log.info(token)
 	o = getData(token)['new']
 	return make_response(jsonify({'new':o}), 200)
-
-@app.route('/api/user/<string:token>/log', methods=["POST"])
-def addLogData(token):
-	"""
-		Add data to the log.
-	"""
-	if not request.json or not "message" in request.json or not "level" in request.json:
-		abort(401)
-	o = getUserLog(token)
-	o.append(request.json)
-	setUserLog(token, o)
-	return make_response(jsonify({'status':'ok'}), 200)
 
 @app.route('/api/user/<string:token>/logout', methods=["GET"])
 def logOut(token):

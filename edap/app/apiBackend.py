@@ -622,20 +622,6 @@ def hashPassword(inp):
 	"""
 	return _SHA256HASH(inp.encode()).hexdigest()
 
-def getUserLog(token):
-	"""
-		Get a user's
-	"""
-	val = r.get('token:' + token + ':log')
-	if val == None:
-		r.set('token:' + token + ':log', _jsonConvert({'log':[]}))
-		return []
-	else:
-		return _jsonLoad(val)['log']
-
-def setUserLog(token, logd):
-	r.set('token:' + token + ':log', _jsonConvert({'log':logd}))
-
 def getCounter(counter_id):
 	val = r.get("counter:"+counter_id)
 	if val == None:

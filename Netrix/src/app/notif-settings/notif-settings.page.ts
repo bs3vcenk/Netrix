@@ -46,10 +46,13 @@ export class NotifSettingsPage implements OnInit {
   }
 
   handleChk(fType) {
+    console.log(fType);
     const currentStatus = !fType.checked;
     if (currentStatus) { // Now checked
+      console.log('notif-settings/handleChk(): Checked property ' + fType.id);
       this.removeFromIgnoreList(fType.id);
     } else { // Now unchecked
+      console.log('notif-settings/handleChk(): Unchecked property ' + fType.id);
       this.addToIgnoreList(fType.id);
     }
   }

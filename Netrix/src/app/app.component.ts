@@ -10,7 +10,6 @@ import { FirebaseService } from './firebase.service';
 import { SettingsService } from './settings.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from './api.service';
-import { LogService } from './log.service';
 
 @Component({
   selector: 'app-root',
@@ -29,8 +28,7 @@ export class AppComponent {
     private settings: SettingsService,
     private translate: TranslateService,
     private config: Config,
-    private apiSvc: ApiService,
-    private log: LogService
+    private apiSvc: ApiService
   ) {
     this.initializeApp();
   }
@@ -50,10 +48,10 @@ export class AppComponent {
     try {
       this.fcm.onNotifications().subscribe(
         (notifObject) => {
-          // this.log.log(notifObject);
+          console.log(notifObject);
         });
     } catch (e) {
-      this.log.log('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running cordova.');
+      console.log('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running cordova.');
     }
   }
 

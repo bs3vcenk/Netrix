@@ -6,7 +6,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { HTTP } from '@ionic-native/http/ngx';
-import { LogService } from './log.service';
 
 interface SubjectData {
   name: string;
@@ -53,8 +52,7 @@ export class ApiService {
     private settings: SettingsService,
     private authServ: AuthenticationService,
     private translate: TranslateService,
-    private firebase: FirebaseX,
-    private log: LogService
+    private firebase: FirebaseX
   ) {
     this.http.setDataSerializer('json');
   }
@@ -168,6 +166,7 @@ export class ApiService {
         const profs = subj.professors;
         let profsC = null;
         if (profs.length > 3) {
+          console.log('tab1/getSubjects(): Hit professor limit');
           profsC = profs.slice(0, 3);
           profsC.push(this.translate.instant('tab1.text.other').replace('NUM_PROFS', profs.slice(3, profs.length).length));
         } else {
@@ -241,10 +240,10 @@ export class ApiService {
   getSubject(subjId: string) {
     return new Promise<SubjectData>((resolve, reject) => {
       if (this.subjCacheMap[subjId]) {
-        this.log.log('ApiService/getSubjectNativeHTTP(): Have subject ID ' + subjId + ' cached, returning that');
+        console.log('ApiService/getSubjectNativeHTTP(): Have subject ID ' + subjId + ' cached, returning that');
         resolve(this.subjCacheMap[subjId]);
       } else {
-        this.log.log('ApiService/getSubjectNativeHTTP(): Subject ID ' + subjId + ' not cached, fetching remote');
+        console.log('ApiService/getSubjectNativeHTTP(): Subject ID ' + subjId + ' not cached, fetching remote');
         this.http.get(
           this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + subjId,
           {},

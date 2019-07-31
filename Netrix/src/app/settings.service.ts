@@ -13,6 +13,7 @@ export class SettingsService {
   // hasLoadedDataPref = new BehaviorSubject(false);
 
   dataPreference = null;
+  dataPrefUnset = true;
   notifPreference = null;
   adPreference = null;
   language = null;
@@ -33,6 +34,19 @@ export class SettingsService {
       // Force on for now
       this.dataPreference = true;
       this.firebase.setAnalytics(true);
+      this.dataPrefUnset = false;
+      /*if (res != null) {
+        this.firebase.setAnalytics(res);
+        this.dataPreference = res;
+        this.dataPrefUnset = false;
+      } else { // If it isn't stored, store it and set default (false)
+        this.storage.set('data-preference', false).then(() => {
+          this.dataPreference = false;
+          this.dataPrefUnset = true;
+          this.firebase.setAnalytics(false);
+          console.log('SettingsService/readPrefs(): API analytics preference defaulted to false');
+        });
+      }*/
       // this.hasLoadedDataPref.next(true);
       this.storage.get('notif-preference').then(resx => {
         if (resx != null) {
