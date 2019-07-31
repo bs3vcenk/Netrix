@@ -8,7 +8,6 @@ import { Observable, throwError, from } from 'rxjs';
 import { Device } from '@ionic-native/device/ngx';
 import { SettingsService } from './settings.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { LogService } from './log.service';
 
 @Injectable({
     providedIn: 'root'
@@ -30,8 +29,7 @@ export class AuthenticationService {
         private http: HTTP,
         private device: Device,
         private settings: SettingsService,
-        private firebase: FirebaseX,
-        private log: LogService
+        private firebase: FirebaseX
     ) {
         this.plt.ready().then(() => {
             this.http.setDataSerializer('json');
@@ -61,9 +59,9 @@ export class AuthenticationService {
         },
         this.httpHeader)
         .then((res) => {
-            this.log.log('AuthenticationService/sendDeviceInfo(): Successfully sent device info');
+            console.log('AuthenticationService/sendDeviceInfo(): Successfully sent device info');
         }, (err) => {
-            this.log.log('AuthenticationService/sendDeviceInfo(): Failed to send device info');
+            console.log('AuthenticationService/sendDeviceInfo(): Failed to send device info');
             throw err;
         });
     }
@@ -122,9 +120,9 @@ export class AuthenticationService {
                 {},
                 this.httpHeader
             ).then((res) => {
-                this.log.log('AuthenticationService/logout(): Server-side data successfully deleted');
+                console.log('AuthenticationService/logout(): Server-side data successfully deleted');
             }, (err) => {
-                this.log.log('AuthenticationService/logout(): Failed to delete server-side data');
+                console.log('AuthenticationService/logout(): Failed to delete server-side data');
             });
             this.firebase.unregister();
             this.authenticationState.next(false);
