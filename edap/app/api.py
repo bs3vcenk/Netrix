@@ -231,7 +231,7 @@ def devGetUserLog(token):
 	"""
 		DEV: Get the client-side log for an user.
 	"""
-	return getUserLog(token)
+	return make_response(makeHTML(bare=True, content="<pre>" + str(getUserLog(token)) + "</pre>"), 200)
 
 @app.route('/dev/info/tokendebug/<string:token>/diff', methods=["GET"])
 @dev_area
