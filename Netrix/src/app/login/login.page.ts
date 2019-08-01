@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../authentication.service';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { SettingsService } from '../settings.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
@@ -24,7 +23,6 @@ export class LoginPage implements OnInit {
     private authServ: AuthenticationService,
     private alertControl: AlertController,
     private loadControl: LoadingController,
-    private settings: SettingsService,
     private firebase: FirebaseX
   ) { }
 
