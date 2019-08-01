@@ -4,6 +4,7 @@ import { FirebaseService } from './firebase.service';
 import { AdmobService } from './admob.service';
 // import { BehaviorSubject } from 'rxjs';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +12,13 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 export class SettingsService {
 
   // hasLoadedDataPref = new BehaviorSubject(false);
+  hasLoadedPref = new BehaviorSubject(false);
 
   dataPreference = null;
   notifPreference = null;
   adPreference = null;
   language = null;
+  devPreloadPreference = null;
   // notifTime = null;
   apiServer = 'https://api.netrix.io';
   // httpLimit = 5000;
@@ -67,6 +70,14 @@ export class SettingsService {
         } else {
           this.globalTheme = 'light';
         }
+      });
+      this.storage.get('dev-preload-preference').then(resx => {
+        if (resx != null) {
+          this.devPreloadPreference = resx;
+        } else {
+          this.devPreloadPreference = false;
+        }
+        this.hasLoadedPref.next(true);
       });
       this.adPreference = this.admobSvc.adPreference;
     });

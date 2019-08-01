@@ -62,6 +62,13 @@ export class ApiService {
     this.getTests();
     this.getAbsences();
     this.getNotifConfig();
+    this.settings.hasLoadedPref.subscribe(val => {
+      console.log('ApiService/preCacheData(): hasLoadedPref is now ' + val);
+      console.log('ApiService/preCacheData(): devPreloadPreference is now ' + this.settings.devPreloadPreference);
+      if (val) {
+        this.preloadSubjects();
+      }
+    });
     forkJoin([this.loadingFinishedAbsences, this.loadingFinishedNotif, this.loadingFinishedSubj, this.loadingFinishedTests])
     .subscribe(([abs, notif, subj, test]) => {
       if (abs && notif && subj && test) {
@@ -82,6 +89,22 @@ export class ApiService {
     } else {
       this.networkError.next(true);
       throw errorObj;
+    }
+  }
+
+  preloadSubjects() {
+    if (this.settings.devPreloadPreference) {
+      console.log('ApiService/preloadSubjects(): devPreloadPreference active, preloading all subjects...');
+      this.loadingFinishedSubj.subscribe(val => {
+        if (val) {
+          console.log('ApiService/preloadSubjects(): Subject init subscription reported completion');
+          this.subjects.forEach(subj => {
+            this.getSubject(subj.id);
+          });
+        }
+      });
+    } else {
+      console.log('ApiService/preloadSubjects(): devPreloadPreference [' + this.settings.devPreloadPreference + '] inactive, not preloading');
     }
   }
 
