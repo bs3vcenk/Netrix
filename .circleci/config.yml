@@ -36,9 +36,9 @@ jobs:
       - run:
           name: "Generate apk"
           command: |
-            cd Netrix && ionic cordova build android --verbose --prod --release
+            cd Netrix && ionic cordova build android --verbose
             mkdir -p /tmp/apk
-            cp -r platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk /tmp/apk
+            cp -r platforms/android/app/build/outputs/apk/debug/app-debug.apk /tmp/apk
       - store_artifacts:
           path: /tmp/apk
           destination: apks
