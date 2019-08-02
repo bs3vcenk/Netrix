@@ -13,6 +13,7 @@ interface SubjectData {
   notes: any[];
   average: 0.00;
   professors: string;
+  id: 0;
 }
 
 @Injectable({
@@ -94,14 +95,21 @@ export class ApiService {
 
   preloadSubjects() {
     if (this.settings.devPreloadPreference) {
+      this.firebase.startTrace('subjPreload');
       console.log('ApiService/preloadSubjects(): devPreloadPreference active, preloading all subjects...');
-      this.loadingFinishedSubj.subscribe(val => {
-        if (val) {
-          console.log('ApiService/preloadSubjects(): Subject init subscription reported completion');
-          this.subjects.forEach(subj => {
-            this.getSubject(subj.id);
-          });
-        }
+      this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects?alldata=1',
+        {},
+        this.httpHeader
+      ).then((rx) => {
+        JSON.parse(rx.data).forEach(subj => {
+          const processed = this.processSubjectData(subj);
+          this.subjCacheMap[processed.id] = processed;
+        });
+        this.firebase.stopTrace('subjPreload');
+      }, error => {
+        this.firebase.stopTrace('subjPreload');
+        this.handleErr(error);
       });
     } else {
       // tslint:disable-next-line: max-line-length
@@ -267,6 +275,7 @@ export class ApiService {
     let subjNotes = [];
     const subjName = subjObject.subject;
     const subjProfs = subjObject.professors.join(', ');
+    const subjId = subjObject.id;
     if (subjObject.grades) {
       subjAvg = subjObject.average;
       subjGrades = subjObject.grades;
@@ -279,7 +288,8 @@ export class ApiService {
       grades: subjGrades,
       notes: subjNotes,
       average: subjAvg,
-      professors: subjProfs
+      professors: subjProfs,
+      id: subjId
     };
     return subject;
   }
