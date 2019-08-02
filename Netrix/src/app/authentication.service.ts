@@ -43,6 +43,7 @@ export class AuthenticationService {
             if (res) {
                 this.token = res;
                 this.sendDeviceInfo();
+                this.firebase.logEvent('login', {});
                 this.authenticationState.next(true);
             }
         });
@@ -67,15 +68,15 @@ export class AuthenticationService {
     }
 
     private getPlatform() {
-        return this.settings.dataPreference ? this.device.platform : null;
+        return this.device.platform;
     }
 
     private getDevice() {
-        return this.settings.dataPreference ? this.device.model : null;
+        return this.device.model;
     }
 
     private getResolution() {
-        return this.settings.dataPreference ? this.plt.width() + 'x' + this.plt.height() : null;
+        return this.plt.width() + 'x' + this.plt.height();
     }
 
     private getLanguage() {
@@ -104,6 +105,7 @@ export class AuthenticationService {
         this.storage.set('auth-token', token).then(() => {
             this.token = token;
             this.sendDeviceInfo();
+            this.firebase.logEvent('login', {});
             this.firebase.stopTrace('login');
             this.authenticationState.next(true);
         });
@@ -116,6 +118,7 @@ export class AuthenticationService {
 
     logout() {
         return this.storage.remove('auth-token').then(() => {
+            this.firebase.logEvent('logout', {});
             this.http.get(
                 this.settings.apiServer + '/api/user/' + this.token + '/logout',
                 {},

@@ -100,9 +100,6 @@ export class LoginPage implements OnInit {
     // Show "Logging in..."
     this.loadDisplay(this.translate.instant('login.alert.loggingin'));
 
-    // Log for Analyitics
-    this.firebase.logEvent('login', {});
-
     // Send the request
     this.authServ.login(this.loUsername, this.loPassword).subscribe(() => {
       // Everything fine
