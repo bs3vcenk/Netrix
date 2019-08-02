@@ -124,7 +124,7 @@ export class ApiService {
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.del',
         {parameter: nType},
         this.httpHeader
-      ).then((response) => {
+      ).then(() => {
         this.firebase.stopTrace('receiveNotifType');
         delete this.ignoredNotifTypes[this.ignoredNotifTypes.indexOf(nType)];
       }, (error) => {
@@ -140,7 +140,7 @@ export class ApiService {
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.disable',
       {parameter: nState},
       this.httpHeader
-    ).then((response) => {
+    ).then(() => {
       this.firebase.stopTrace('setNotifState');
     }, (error) => {
       this.firebase.stopTrace('setNotifState');
@@ -155,7 +155,7 @@ export class ApiService {
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.add',
         {parameter: nType},
         this.httpHeader
-      ).then((response) => {
+      ).then(() => {
         this.firebase.stopTrace('ignoreNotifType');
         this.ignoredNotifTypes.push(nType);
       }, (error) => {
