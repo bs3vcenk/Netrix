@@ -452,14 +452,16 @@ def getSubjects(token, class_id):
 	"""
 	if not verifyRequest(token, class_id):
 		abort(401)
-	log.info("%s => Class %s" % (token, class_id))
+	ad = request.args.get('alldata', default=0, type=int)
+	log.info("%s => %s => Class %s" % ("STRIPPED" if ad == 0 else "FULL", token, class_id))
 	o = getData(token)['data']['classes'][class_id]
-	for x in o['subjects']:
-		try:
-			del x['notes']
-			del x['grades']
-		except:
-			pass
+	if ad == 0:
+		for x in o['subjects']:
+			try:
+				del x['notes']
+				del x['grades']
+			except:
+				pass
 	return make_response(jsonify({'subjects': o['subjects'], 'class_avg':o['complete_avg']}), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/tests', methods=["GET"])
