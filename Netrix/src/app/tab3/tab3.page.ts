@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PickerController, AlertController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { AuthenticationService } from '../authentication.service';
 import { SettingsService } from '../settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
