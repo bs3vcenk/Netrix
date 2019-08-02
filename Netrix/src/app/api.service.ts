@@ -261,6 +261,29 @@ export class ApiService {
     });
   }
 
+  private processSubjectData(subjObject): SubjectData {
+    let subjGrades = [];
+    let subjAvg;
+    let subjNotes = [];
+    const subjName = subjObject.subject;
+    const subjProfs = subjObject.professors.join(', ');
+    if (subjObject.grades) {
+      subjAvg = subjObject.average;
+      subjGrades = subjObject.grades;
+    }
+    if (subjObject.notes) {
+      subjNotes = subjObject.notes;
+    }
+    const subject: SubjectData = {
+      name: subjName,
+      grades: subjGrades,
+      notes: subjNotes,
+      average: subjAvg,
+      professors: subjProfs
+    };
+    return subject;
+  }
+
   getSubject(subjId: string) {
     return new Promise<SubjectData>((resolve, reject) => {
       if (this.subjCacheMap[subjId]) {
@@ -274,25 +297,7 @@ export class ApiService {
           this.httpHeader
         ).then((rx) => {
           const response = JSON.parse(rx.data);
-          let subjGrades = [];
-          let subjAvg;
-          let subjNotes = [];
-          const subjName = response.subject;
-          const subjProfs = response.professors.join(', ');
-          if (response.grades) {
-            subjAvg = response.average;
-            subjGrades = response.grades;
-          }
-          if (response.notes) {
-            subjNotes = response.notes;
-          }
-          const subject: SubjectData = {
-            name: subjName,
-            grades: subjGrades,
-            notes: subjNotes,
-            average: subjAvg,
-            professors: subjProfs
-          };
+          const subject = this.processSubjectData(response);
           this.subjCacheMap[subjId] = subject;
           resolve(subject);
         }, (err) => {
