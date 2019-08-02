@@ -16,6 +16,10 @@
         "header": "Serverfehler",
         "content": "Auf der Serverseite ist etwas schief gelaufen. Wir arbeiten schnell daran, es zu reparieren!"
       }
+    },
+    "choice": {
+      "yes": "Ja",
+      "no": "Nein"
     }
   },
   "tab1": {
@@ -34,6 +38,12 @@
     "title": "Einstellungen",
     "text": {
       "logout": "Abmelden"
+    },
+    "alert": {
+      "logout": {
+        "header": "Abmelden?",
+        "content": "Dadurch werden Ihre Daten von den Servern von Netrix gelöscht und alle Benachrichtigungen deaktiviert."
+      }
     }
   },
   "tab4": {
@@ -69,11 +79,7 @@
       },
       "data": {
         "header": "Fehlerberichterstattung",
-        "content": "Der Modellname und die Betriebssystem-Version deines Geräts werden an den API-Server gesendet, um Fehler zu kategorisieren und zu debuggen.<br><br>Wir erheben <b>keine</b> personenbezogenen Daten außerhalb der in unserer Datenschutzerklärung genannten Informationen.",
-        "choice": {
-          "yes": "Ja",
-          "no": "Nein"
-        }
+        "content": "Der Modellname und die Betriebssystem-Version deines Geräts werden an den API-Server gesendet, um Fehler zu kategorisieren und zu debuggen.<br><br>Wir erheben <b>keine</b> personenbezogenen Daten außerhalb der in unserer Datenschutzerklärung genannten Informationen."
       },
       "loggingin": "Anmelden..."
     },

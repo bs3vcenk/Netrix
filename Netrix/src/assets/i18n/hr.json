@@ -16,6 +16,10 @@
         "header": "Serverska greška",
         "content": "Dogodila se greška kod servera. Radimo da ju što prije riješimo!"
       }
+    },
+    "choice": {
+      "yes": "Da",
+      "no": "Ne"
     }
   },
   "tab1": {
@@ -34,6 +38,12 @@
     "title": "Postavke",
     "text": {
       "logout": "Odjava"
+    },
+    "alert": {
+      "logout": {
+        "header": "Odjaviti?",
+        "content": "To će pobrisati tvoje podatke s Netrixovih servera i isključiti sve obavijesti."
+      }
     }
   },
   "tab4": {
@@ -69,11 +79,7 @@
       },
       "data": {
         "header": "Prijavljivanje grešaka u radu",
-        "content": "Model i verzija operativnog sustava tvog uređaja se šalje na API server kako bi se moglo točno odrediti što uzrokuje greške.<br><br>Ne prikupljamo <b>nikakve</b> osobne podatke izvan informacija navedenih u Pravilima o privatnosti.",
-        "choice": {
-          "yes": "Da",
-          "no": "Ne"
-        }
+        "content": "Model i verzija operativnog sustava tvog uređaja se šalje na API server kako bi se moglo točno odrediti što uzrokuje greške.<br><br>Ne prikupljamo <b>nikakve</b> osobne podatke izvan informacija navedenih u Pravilima o privatnosti."
       },
       "loggingin": "Prijavljivanje..."
     },

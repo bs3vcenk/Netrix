@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PickerController } from '@ionic/angular';
+import { PickerController, AlertController } from '@ionic/angular';
 import { AuthenticationService } from '../authentication.service';
 import { SettingsService } from '../settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
@@ -37,7 +37,8 @@ export class Tab3Page {
     // private pickerCtrl: PickerController,
     private translate: TranslateService,
     private firebase: FirebaseX,
-    private apiSvc: ApiService
+    private apiSvc: ApiService,
+    private alertControl: AlertController
   ) {
     // this.dataPreference = this.settings.dataPreference;
     // this.errorPreference = this.settings.errorPreference;
@@ -55,8 +56,32 @@ export class Tab3Page {
     try { this.firebase.setScreenName('Settings'); } catch (e) {}
   }
 
-  logout() {
+  _logout() {
     this.authServ.logout();
+  }
+
+  logout() {
+    // Data collection alert
+    this.alertControl.create({
+      header: this.translate.instant('tab3.alert.logout.header'),
+      message: this.translate.instant('tab3.alert.logout.content'),
+      buttons: [
+        {
+          text: this.translate.instant('generic.choice.no'),
+          role: 'cancel'
+        },
+        {
+          text: this.translate.instant('generic.choice.yes'),
+          handler: () => {
+            // Proceed to logout if accepted
+            this._logout();
+          }
+        }
+      ]
+    }).then(alert => {
+      // Show the alert
+      alert.present();
+    });
   }
 
   /*updDeviceInfoPreference() {

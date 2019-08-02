@@ -16,6 +16,10 @@
         "header": "Server error",
         "content": "Something went wrong at the server side. We're working quickly to fix it!"
       }
+    },
+    "choice": {
+      "yes": "Yes",
+      "no": "No"
     }
   },
   "tab1": {
@@ -34,6 +38,12 @@
     "title": "Settings",
     "text": {
       "logout": "Log out"
+    },
+    "alert": {
+      "logout": {
+        "header": "Log out?",
+        "content": "This will delete your data from Netrix's servers, and will disable all notifications."
+      }
     }
   },
   "tab4": {
@@ -69,11 +79,7 @@
       },
       "data": {
         "header": "Error reporting",
-        "content": "Your device's model name and OS version is sent to the API server to help categorize and debug errors.<br><br>We <b>do not</b> collect <b>any</b> personal data outside the information outlined in our privacy policy.",
-        "choice": {
-          "yes": "Yes",
-          "no": "No"
-        }
+        "content": "Your device's model name and OS version is sent to the API server to help categorize and debug errors.<br><br>We <b>do not</b> collect <b>any</b> personal data outside the information outlined in our privacy policy."
       },
       "loggingin": "Logging in..."
     },
