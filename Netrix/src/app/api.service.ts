@@ -55,6 +55,7 @@ export class ApiService {
     private translate: TranslateService,
     private firebase: FirebaseX
   ) {
+    /* Default to JSON as we'll be receiving only JSON from the API */
     this.http.setDataSerializer('json');
   }
 
