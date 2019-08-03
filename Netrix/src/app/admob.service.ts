@@ -17,6 +17,7 @@ export class AdmobService {
     private storage: Storage,
     private platform: Platform
   ) {
+    /* Check if the user wants to see ads */
     this.storage.get('ad-preference').then(res => {
       if (res != null) {
         this.adPreference = res;
@@ -27,8 +28,8 @@ export class AdmobService {
   }
 
   showBanner() {
-    if (!this.platform.is('cordova')) { return; }
     if (this.adPreference) {
+      /* Show the ad banner */
       console.log('AdmobService/showBanner(): Showing ad banner');
       this.admob.createBanner({
         adId: this.admobid.banner,

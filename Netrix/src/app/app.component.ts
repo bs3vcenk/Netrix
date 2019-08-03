@@ -57,24 +57,40 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(() => {
+      /* Set status bar color, style for white bg, black icons, and hide
+       * the splash screen once loaded */
       this.statusBar.backgroundColorByHexString('#ffffff');
       this.statusBar.styleDefault();
       this.splashScreen.hide();
 
+      /* Set the language */
       this.languageService.setInitialLang();
+      /* Initialize preferences */
       this.settings.readPrefs();
+      /* Localize back button text */
       this.translate.get('generic.back').subscribe((res: string) => {
         this.config.set('backButtonText', res);
       });
+      /* Subscribe to the authenticationState object, and check if the user is
+       * logged in or not. */
       this.authenticationService.authenticationState.subscribe(state => {
         if (state) {
+          /* If the user is logged in, preload some data such as subjects, absences, tests
+           * and settings (also all subjects' info if chosen) */
           this.apiSvc.preCacheData();
+          /* Set up Firebase Cloud Messaging for notifications */
           this.notificationSetup(this.authenticationService.token);
+          /* Navigate to the subject list and prevent returning to the login screen with
+           * the back button/gesture */
           this.router.navigate(['tabs', 'tabs', 'tab1'], {replaceUrl: true});
         } else {
+          /* If the user is not logged in, direct to the login page */
           this.router.navigate(['login'], {replaceUrl: true});
         }
       });
+
+      /* Handle network and server errors, switching to the appropriate page if
+       * there is an error */
       this.apiSvc.networkError.subscribe(val => {
         if (val) {
           this.router.navigate(['error'], {replaceUrl: true});

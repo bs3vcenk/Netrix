@@ -59,10 +59,12 @@ export class ApiService {
   }
 
   async preCacheData() {
+    /* Execute all get functions */
     this.getSubjects();
     this.getTests();
     this.getAbsences();
     this.getNotifConfig();
+    /* Wait until we've gottetn devPreloadPreference */
     this.settings.hasLoadedPref.subscribe(val => {
       console.log('ApiService/preCacheData(): hasLoadedPref is now ' + val);
       console.log('ApiService/preCacheData(): devPreloadPreference is now ' + this.settings.devPreloadPreference);
@@ -79,24 +81,34 @@ export class ApiService {
   }
 
   private handleErr(errorObj) {
+    /* Error handler function, decides what type of error message to display to the user */
     let e;
     try { e = JSON.parse(errorObj.error); } catch (ex) { e = {error: null}; }
     if (e.error === 'E_TOKEN_NONEXISTENT') {
-      // User is not authenticated (possibly token purged from server DB)
+      /* User is not authenticated (possibly token purged from server DB, or logged out
+       * from another device) */
       this.authServ.logout();
     } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || errorObj.status === 521 || errorObj.status === 500) {
-      // Server-side issue
+      /* Server-side issue, such as a failed DB connection (first statement), unreachable
+       * origin server (second statement), or a generic server error (third statement) */
       this.dbError.next(true);
     } else {
+      /* Unknown error, probably a network error (e.g. no Internet access)
+       *
+       * Also could be something unhandled, so we throw the object so that Crashlytics
+       * picks it up */
       this.networkError.next(true);
       throw errorObj;
     }
   }
 
   preloadSubjects() {
+    /* If the user chose to use preloading, enable it */
     if (this.settings.devPreloadPreference) {
       this.firebase.startTrace('subjPreload');
       console.log('ApiService/preloadSubjects(): devPreloadPreference active, preloading all subjects...');
+      /* Fetch a complete list of all subjects (using alldata=1), instead of the stripped list
+       * collected by default */
       this.http.get(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects?alldata=1',
         {},
@@ -118,6 +130,7 @@ export class ApiService {
   }
 
   receiveNotifType(nType: string) {
+    /* Delete a notification type from the ignore list, if it exists */
     if (this.ignoredNotifTypes.includes(nType)) {
       this.firebase.startTrace('receiveNotifType');
       this.http.post(
@@ -135,6 +148,7 @@ export class ApiService {
   }
 
   setNotifDisabled(nState: boolean) {
+    /* Toggle master notification switch */
     this.firebase.startTrace('setNotifState');
     this.http.post(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.disable',
@@ -149,6 +163,7 @@ export class ApiService {
   }
 
   ignoreNotifType(nType: string) {
+    /* Add a notification type to the ignore list, if it does not already exist */
     if (!this.ignoredNotifTypes.includes(nType)) {
       this.firebase.startTrace('ignoreNotifType');
       this.http.post(
@@ -166,6 +181,7 @@ export class ApiService {
   }
 
   getNotifConfig() {
+    /* Get list of disabled notification types, for display in the Notification management view */
     this.firebase.startTrace('getNotifConfig');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.all',
@@ -174,17 +190,20 @@ export class ApiService {
     ).then((response) => {
       this.ignoredNotifTypes = JSON.parse(response.data).value.ignore;
       this.firebase.stopTrace('getNotifConfig');
+      /* Let preCacheData() know we're done */
       this.loadingFinishedNotif.next(true);
       this.loadingFinishedNotif.complete();
     }, (error) => {
       this.firebase.stopTrace('getNotifConfig');
       this.handleErr(error);
+      /* Let preCacheData() know we're done */
       this.loadingFinishedNotif.next(true);
       this.loadingFinishedNotif.complete();
     });
   }
 
   getSubjects() {
+    /* Get a stripped list of all subjects (alldata=0), containing no grades or notes */
     this.firebase.startTrace('getSubjects');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects',
@@ -210,12 +229,14 @@ export class ApiService {
       this.subjects = allsubs;
       this.fullAvg = response.class_avg;
       this.firebase.stopTrace('getSubjects');
+      /* Let preCacheData() know we're done */
       this.loadingFinishedSubj.next(true);
       this.loadingFinishedSubj.complete();
     },
     (error) => {
       this.firebase.stopTrace('getSubjects');
       this.handleErr(error);
+      /* Let preCacheData() know we're done */
       this.loadingFinishedSubj.next(true);
       this.loadingFinishedSubj.complete();
     });
@@ -230,13 +251,17 @@ export class ApiService {
     ).then((rx) => {
       const response = JSON.parse(rx.data);
       this.tests = response.tests;
+      /* Count the number of "current" tests, so that we know if we need to show the
+       * "No tests" message or not */
       this.countTests();
       this.firebase.stopTrace('getTests');
+      /* Let preCacheData() know we're done */
       this.loadingFinishedTests.next(true);
       this.loadingFinishedTests.complete();
     }, (error) => {
       this.firebase.stopTrace('getTests');
       this.handleErr(error);
+      /* Let preCacheData() know we're done */
       this.loadingFinishedTests.next(true);
       this.loadingFinishedTests.complete();
     });
@@ -251,6 +276,7 @@ export class ApiService {
   }
 
   getAbsences() {
+    /* Get a list of absences, both an overview and a detailed list */
     this.firebase.startTrace('getAbsences');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences',
@@ -259,17 +285,21 @@ export class ApiService {
     ).then((response) => {
       this.absences = JSON.parse(response.data);
       this.firebase.stopTrace('getAbsences');
+      /* Let preCacheData() know we're done */
       this.loadingFinishedAbsences.next(true);
       this.loadingFinishedAbsences.complete();
     }, (error) => {
       this.firebase.stopTrace('getAbsences');
       this.handleErr(error);
+      /* Let preCacheData() know we're done */
       this.loadingFinishedAbsences.next(true);
       this.loadingFinishedAbsences.complete();
     });
   }
 
   private processSubjectData(subjObject): SubjectData {
+    /* Turns a subjObject (dict/JSON containing information about a subject) into
+     * a SubjectData object */
     let subjGrades = [];
     let subjAvg;
     let subjNotes = [];
@@ -296,10 +326,14 @@ export class ApiService {
 
   getSubject(subjId: string) {
     return new Promise<SubjectData>((resolve, reject) => {
+      /* Check if we have the subject ID cached already */
       if (this.subjCacheMap[subjId]) {
+        /* If we do, return the cached object */
         console.log('ApiService/getSubjectNativeHTTP(): Have subject ID ' + subjId + ' cached, returning that');
         resolve(this.subjCacheMap[subjId]);
       } else {
+        /* If we don't, fetch the data from the server, process it, and store it
+         * into the cache */
         console.log('ApiService/getSubjectNativeHTTP(): Subject ID ' + subjId + ' not cached, fetching remote');
         this.http.get(
           this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + subjId,
