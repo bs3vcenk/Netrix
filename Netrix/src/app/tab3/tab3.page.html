@@ -38,14 +38,14 @@
       <ion-label item-right text-right>{{ testNotifTime }} {{ dayString }}</ion-label>
     </ion-item>-->
     <ion-list-header>
-      <ion-label>Experimental</ion-label>
+      <ion-label>{{ 'settings.client.experimental' | translate }}</ion-label>
     </ion-list-header>
     <ion-item>
-      <ion-label>Enable dark mode</ion-label>
+      <ion-label>{{ 'settings.client.darkmode' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="darkModePreference" (ionChange)="updDarkModePreference()"></ion-toggle>
     </ion-item>
     <ion-item>
-      <ion-label>Preload subjects on app open</ion-label>
+      <ion-label>{{ 'settings.client.preload' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="devPreloadPreference" (ionChange)="updDevPreloadPreference()"></ion-toggle>
     </ion-item>
   </ion-list>

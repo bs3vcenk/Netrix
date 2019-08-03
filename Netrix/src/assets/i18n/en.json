@@ -111,6 +111,11 @@
       "time_plural": "days",
       "notifs_test_time": "Notify before test",
       "notifs_exclude": "Notification management"
+    },
+    "client": {
+      "experimental": "Experimental",
+      "darkmode": "Dark mode",
+      "preload": "Preload subjects"
     }
   },
   "absences": {

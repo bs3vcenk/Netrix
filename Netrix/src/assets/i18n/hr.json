@@ -112,6 +112,11 @@
       "time_plural": "dana",
       "notifs_test_time": "Obavjesti prije ispita",
       "notifs_exclude": "Upravljanje obavijestima"
+    },
+    "client": {
+      "experimental": "Eksperimentalno",
+      "darkmode": "Tamni način",
+      "preload": "Preloadaj predmete"
     }
   },
   "absences": {

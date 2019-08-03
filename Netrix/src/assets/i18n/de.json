@@ -111,6 +111,11 @@
       "time_plural": "Tagen",
       "notifs_test_time": "Vor Prüfung benachrichtigen",
       "notifs_exclude": "Benachrichtigungsverwaltung"
+    },
+    "client": {
+      "experimental": "Experimentell",
+      "darkmode": "Dunkler Modus",
+      "preload": "Schulfächer vorladen"
     }
   },
   "absences": {
