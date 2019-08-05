@@ -5,6 +5,7 @@ import { AdmobService } from './admob.service';
 // import { BehaviorSubject } from 'rxjs';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { BehaviorSubject } from 'rxjs';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -26,25 +27,26 @@ export class SettingsService {
 
   constructor(
     private storage: Storage,
-    private firebase: FirebaseService,
+    private firebaseSvc: FirebaseService,
     private admobSvc: AdmobService,
-    private statusBar: StatusBar
+    private statusBar: StatusBar,
+    private firebase: FirebaseX
   ) {}
 
   readPrefs() {
     this.storage.get('data-preference').then(res => {
       // Force on for now
       this.dataPreference = true;
-      this.firebase.setAnalytics(true);
+      this.firebaseSvc.setAnalytics(true);
       /*if (res != null) {
-        this.firebase.setAnalytics(res);
+        this.firebaseSvc.setAnalytics(res);
         this.dataPreference = res;
         this.dataPrefUnset = false;
       } else { // If it isn't stored, store it and set default (false)
         this.storage.set('data-preference', false).then(() => {
           this.dataPreference = false;
           this.dataPrefUnset = true;
-          this.firebase.setAnalytics(false);
+          this.firebaseSvc.setAnalytics(false);
           console.log('SettingsService/readPrefs(): API analytics preference defaulted to false');
         });
       }*/
@@ -178,6 +180,10 @@ export class SettingsService {
   }*/
 
   changePreference(pref, prefValue) {
+    this.firebase.logEvent('changed_preference', {
+      preference: pref,
+      value: prefValue
+    });
     this.storage.set(pref, prefValue).then(() => {
       console.log('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
     });

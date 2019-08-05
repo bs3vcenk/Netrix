@@ -26,7 +26,7 @@ export class Tab3Page {
   notifPreference = null;
   errorPreference = null;
   adPreference = null;
-  testNotifTime = null;
+  // testNotifTime = null;
   darkModePreference = null;
   devPreloadPreference = null;
   dayString = this.translate.instant('settings.api.time_plural');
@@ -47,9 +47,9 @@ export class Tab3Page {
     this.adPreference = this.settings.adPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
     this.devPreloadPreference = this.settings.devPreloadPreference;
-    if (this.testNotifTime === 1) {
+    /*if (this.testNotifTime === 1) {
       this.dayString = this.translate.instant('settings.api.time_singular');
-    }
+    }*/
   }
 
   ionViewDidEnter() {
@@ -68,7 +68,10 @@ export class Tab3Page {
       buttons: [
         {
           text: this.translate.instant('generic.choice.no'),
-          role: 'cancel'
+          role: 'cancel',
+          handler: () => {
+            this.firebase.logEvent('logout_returned', {});
+          }
         },
         {
           text: this.translate.instant('generic.choice.yes'),
