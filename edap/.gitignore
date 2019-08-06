@@ -3,3 +3,5 @@ report.txt
 dist
 build
 *.spec
+*.pem
+*.crt

@@ -45,4 +45,8 @@ FIREBASE=[N] # Firebase integracija (obavijesti)
 DEV_ACCESS=[N] # /dev/ interface
   DEV_USER=[] # Username za /dev/ interface
   DEV_PASW=[] # SHA256 lozinke za /dev/ interface
+SERVER_NAME=[api.netrix.io] # Hostname servera
+SSL=[N] # SSL konfiguracija za NGINX
+  SSL_CERT=[] # Putanja do PEM certifikata
+  SSL_KEY=[] # Putanja do PEM ključa/private key
 ```

@@ -52,13 +52,34 @@ else
 
     content_server='server {\n'
     content_server=$content_server"    listen ${USE_LISTEN_PORT};\n"
-    content_server=$content_server'    location / {\n'
-    content_server=$content_server'        include uwsgi_params;\n'
-    content_server=$content_server'        uwsgi_pass unix:///tmp/uwsgi.sock;\n'
-    content_server=$content_server'    }\n'
+    content_server=$content_server"    server_name ${SERVER_NAME};\n"
+    # If SSL is disabled, don't redirect anything
+    if [[ "${SSL}" == "N" ]]; then
+        content_server=$content_server'    location / {\n'
+        content_server=$content_server'        include uwsgi_params;\n'
+        content_server=$content_server'        uwsgi_pass unix:///tmp/uwsgi.sock;\n'
+        content_server=$content_server'    }\n'
+    else
+        content_server=$content_server'    return 302 https://\$server_name\$request_uri;\n'
+    fi
     content_server=$content_server'}\n'
     # Save generated server /etc/nginx/conf.d/nginx.conf
     printf "$content_server" > /etc/nginx/conf.d/nginx.conf
+
+    # If SSL is enabled, set up NGINX to use SSL
+    if [[ "${SSL}" == "Y" ]]; then
+        content_ssl='server {\n'
+        content_ssl=$content_ssl'    listen 443 ssl http2;\n'
+        content_ssl=$content_ssl"    server_name ${SERVER_NAME};\n"
+        content_ssl=$content_ssl'    ssl on;\n'
+        content_ssl=$content_ssl"    ssl_certificate ${SSL_CERT};\n"
+        content_ssl=$content_ssl"    ssl_certificate_key ${SSL_KEY};\n"
+        content_ssl=$content_ssl'    location / {\n'
+        content_ssl=$content_ssl'        include uwsgi_params;\n'
+        content_ssl=$content_ssl'        uwsgi_pass unix:///tmp/uwsgi.sock;\n'
+        content_ssl=$content_ssl'    }\n'
+        content_ssl=$content_ssl'}\n'
+    fi
 
     # Generate Nginx config for maximum upload file size
     printf "client_max_body_size $USE_NGINX_MAX_UPLOAD;\n" > /etc/nginx/conf.d/upload.conf

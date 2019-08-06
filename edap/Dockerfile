@@ -202,6 +202,9 @@ ENV DEV_ACCESS N
 ENV CLOUDFLARE N
 ENV FIREBASE N
 
+ENV SSL N
+ENV SERVER_NAME api.netrix.io
+
 # Copy start.sh script that will check for a /app/prestart.sh script and run it before starting the app
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
