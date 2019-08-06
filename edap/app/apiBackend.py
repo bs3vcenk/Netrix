@@ -328,7 +328,7 @@ def sendNotification(token, title, content, data=None):
 	"""
 	if not verifyRequest(token):
 		raise Exception("Bad token")
-	log.debug("Sending notification to %s" % token)
+	log.info("Sending notification to %s" % token)
 	documentReference = fbFirestoreDB.collection('devices').document(token)
 
 	try:
