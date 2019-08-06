@@ -60,7 +60,7 @@ else
         content_server=$content_server'        uwsgi_pass unix:///tmp/uwsgi.sock;\n'
         content_server=$content_server'    }\n'
     else
-        content_server=$content_server'    return 302 https://\$server_name\$request_uri;\n'
+        content_server=$content_server'    return 302 https://$server_name$request_uri;\n'
     fi
     content_server=$content_server'}\n'
     # Save generated server /etc/nginx/conf.d/nginx.conf
