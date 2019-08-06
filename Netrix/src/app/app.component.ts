@@ -10,6 +10,7 @@ import { FirebaseService } from './services/firebase.service';
 import { SettingsService } from './services/settings.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from './services/api.service';
+import { NotificationService } from './services/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +29,8 @@ export class AppComponent {
     private settings: SettingsService,
     private translate: TranslateService,
     private config: Config,
-    private apiSvc: ApiService
+    private apiSvc: ApiService,
+    private notifSvc: NotificationService
   ) {
     this.initializeApp();
   }
@@ -101,6 +103,7 @@ export class AppComponent {
           this.router.navigate(['error'], {replaceUrl: true});
         }
       });
+      this.notifSvc.testNotif();
     });
   }
 }
