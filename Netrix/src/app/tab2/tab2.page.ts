@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { ApiService } from '../api.service';
+import { ApiService } from '../services/api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({

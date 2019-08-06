@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { AdmobService } from '../admob.service';
-import { ApiService } from '../api.service';
+import { AdmobService } from '../services/admob.service';
+import { ApiService } from '../services/api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { AlertController } from '@ionic/angular';
-import { AuthenticationService } from '../authentication.service';
-import { SettingsService } from '../settings.service';
+import { AuthenticationService } from '../services/authentication.service';
+import { SettingsService } from '../services/settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 // import { PickerOptions } from '@ionic/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { ApiService } from '../api.service';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-tab3',

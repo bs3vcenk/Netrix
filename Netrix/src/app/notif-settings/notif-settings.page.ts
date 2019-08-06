@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { ApiService } from '../api.service';
+import { ApiService } from '../services/api.service';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({

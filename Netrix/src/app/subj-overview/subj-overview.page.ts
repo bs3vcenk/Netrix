@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuthenticationService } from '../authentication.service';
+import { AuthenticationService } from '../services/authentication.service';
 import { AlertController, NavController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { ApiService } from '../api.service';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-subj-overview',

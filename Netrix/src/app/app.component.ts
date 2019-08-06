@@ -4,12 +4,12 @@ import { Router } from '@angular/router';
 import { Platform, Config } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { AuthenticationService } from './authentication.service';
-import { LanguageService } from './language.service';
-import { FirebaseService } from './firebase.service';
-import { SettingsService } from './settings.service';
+import { AuthenticationService } from './services/authentication.service';
+import { LanguageService } from './services/language.service';
+import { FirebaseService } from './services/firebase.service';
+import { SettingsService } from './services/settings.service';
 import { TranslateService } from '@ngx-translate/core';
-import { ApiService } from './api.service';
+import { ApiService } from './services/api.service';
 
 @Component({
   selector: 'app-root',
