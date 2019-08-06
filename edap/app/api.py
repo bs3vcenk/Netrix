@@ -334,7 +334,7 @@ def login():
 	dataObj = {
 		'user': username,
 		'pasw': password,
-		'data': populateData(obj),
+		'data': populateData(obj, time=True),
 		'last_ip': devIP,
 		'device': {
 			'platform': None,

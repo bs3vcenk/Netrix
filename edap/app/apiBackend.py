@@ -586,7 +586,7 @@ def populateData(obj=None, username=None, password=None, time=False):
 	except Exception as e:
 		log.debug("Error getting info: %s" % (str(e)))
 	request_time = _clock() - start
-	if populate == False:
+	if time == False:
 		log.debug("==> TIMER => {0:.0f}ms".format(request_time))
 	else:
 		log.info("==> TIMER => {0:.0f}ms".format(request_time))
