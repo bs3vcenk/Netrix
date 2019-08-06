@@ -303,7 +303,7 @@ def profileDifference(dObj1, dObj2):
 			continue
 		sId += 1
 	request_time = _clock() - start
-	log.info("==> TIMER => {0:.0f}ms".format(request_time))
+	log.debug("==> TIMER => {0:.0f}ms".format(request_time))
 	return _finalReturn
 
 def saveData(token, dataObj):
@@ -496,7 +496,7 @@ def subjectIDExists(token, cid, sid):
 	"""
 	return sid in range(len(getData(token)['data']['classes'][cid]['subjects']))
 
-def populateData(obj=None, username=None, password=None):
+def populateData(obj=None, username=None, password=None, time=False):
 	"""
 		Fill in the 'data' part of the user dict. This will contain subjects, grades, etc.
 
@@ -586,7 +586,10 @@ def populateData(obj=None, username=None, password=None):
 	except Exception as e:
 		log.debug("Error getting info: %s" % (str(e)))
 	request_time = _clock() - start
-	log.info("==> TIMER => {0:.0f}ms".format(request_time))
+	if populate == False:
+		log.debug("==> TIMER => {0:.0f}ms".format(request_time))
+	else:
+		log.info("==> TIMER => {0:.0f}ms".format(request_time))
 	return dataDict
 
 def updateData(token):
