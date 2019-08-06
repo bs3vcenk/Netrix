@@ -242,6 +242,7 @@ def profileDifference(dObj1, dObj2):
 	"""
 		Return the difference between two student data dicts.
 	"""
+	start = _clock()
 	_finalReturn = []
 	## CLASS DIFFERENCE ##
 	t1 = deepcopy(dObj1['classes'])
@@ -301,6 +302,8 @@ def profileDifference(dObj1, dObj2):
 		else:
 			continue
 		sId += 1
+	request_time = _clock() - start
+	log.info("==> TIMER => {0:.0f}ms".format(request_time))
 	return _finalReturn
 
 def saveData(token, dataObj):
