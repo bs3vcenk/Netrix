@@ -18,6 +18,7 @@ from pyfcm import FCMNotification
 from threading import Thread
 from time import time as _time
 from time import sleep
+from time import clock as _clock
 
 log = logging.getLogger(__name__)
 fbPushService = None
@@ -512,6 +513,7 @@ def populateData(obj=None, username=None, password=None):
 
 		Finally, return all the collected data.
 	"""
+	start = _clock()
 	dataDict = {'classes':None, 'info':None}
 	try:
 		output = obj.getClasses()
@@ -580,6 +582,8 @@ def populateData(obj=None, username=None, password=None):
 		dataDict['info'] = obj.getInfoForUser(0)
 	except Exception as e:
 		log.debug("Error getting info: %s" % (str(e)))
+	request_time = _clock() - start
+	log.info("==> TIMER => {0:.0f}ms".format(request_time))
 	return dataDict
 
 def updateData(token):
