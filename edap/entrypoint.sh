@@ -79,6 +79,7 @@ else
         content_ssl=$content_ssl'        uwsgi_pass unix:///tmp/uwsgi.sock;\n'
         content_ssl=$content_ssl'    }\n'
         content_ssl=$content_ssl'}\n'
+        printf "$content_ssl" > /etc/nginx/conf.d/ssl.conf
     fi
 
     # Generate Nginx config for maximum upload file size
