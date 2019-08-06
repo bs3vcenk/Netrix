@@ -430,6 +430,7 @@ def getClasses(token):
 		try:
 			del i['subjects']
 			del i['tests']
+			del i['absences']
 		except:
 			pass
 	del o['info']
