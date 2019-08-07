@@ -89,6 +89,12 @@ export class AppComponent {
         } else {
           /* If the user is not logged in, direct to the login page */
           this.router.navigate(['login'], {replaceUrl: true});
+          /* Reset BehaviorSubjects in case of a logout */
+          this.apiSvc.loadingFinishedAll.next(false);
+          this.apiSvc.loadingFinishedTests.next(false);
+          this.apiSvc.loadingFinishedSubj.next(false);
+          this.apiSvc.loadingFinishedNotif.next(false);
+          this.apiSvc.loadingFinishedAbsences.next(false);
         }
       });
 

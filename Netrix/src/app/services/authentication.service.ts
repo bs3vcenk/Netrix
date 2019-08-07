@@ -144,12 +144,6 @@ export class AuthenticationService {
             }, (err) => {
                 console.log('AuthenticationService/logout(): Failed to delete server-side data');
             });
-            /* Reset loading state */
-            this.apiSvc.loadingFinishedAll.next(false);
-            this.apiSvc.loadingFinishedTests.next(false);
-            this.apiSvc.loadingFinishedSubj.next(false);
-            this.apiSvc.loadingFinishedNotif.next(false);
-            this.apiSvc.loadingFinishedAbsences.next(false);
             /* Unregister from FCM */
             this.firebase.unregister();
             /* Let app.component know we're logged out */
