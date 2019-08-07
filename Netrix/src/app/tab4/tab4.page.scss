@@ -36,3 +36,16 @@
   flex: 1;
   text-align: center;
 }
+
+#cntr {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#netHeader {
+  font-weight: 700 !important;
+  font-size: 40px;
+}

@@ -45,7 +45,7 @@
       <h1 id="netHeader" text-wrap>{{ 'tab4.text.noabsences' | translate }}</h1>
     </ion-label>
   </ion-item>
-  <ion-list lines="full" *ngIf="absences.full[0].date">
+  <ion-list lines="full" *ngIf="absences.overview.sum > 0">
     <ng-container *ngFor="let absObj of absences.full">
       <ion-list-header [@fadeInOut]>
         <ion-label>{{ absObj.date }}</ion-label>
