@@ -11,7 +11,7 @@ export class NotificationService {
 
   notifInitFinished = new BehaviorSubject(false);
   scheduledNotifs = [];
-  scheduledNotifIDs = []
+  scheduledNotifIDs = [];
   oneDayInMiliseconds = 86400000;
 
   constructor(
