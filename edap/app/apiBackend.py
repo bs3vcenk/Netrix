@@ -280,7 +280,7 @@ def restoreSyncs():
 	"""
 	global threads
 	for token in getTokens():
-		if not getData(token)['ignore_updating']:
+		if 'ignore_updating' in getData(token).keys():
 			startSync(token)
 
 def syncDev(data2, token):
