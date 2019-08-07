@@ -407,7 +407,7 @@ class edap:
 				abslist.append({
 					'span': spanning,
 					'loc': lastSearched,
-					'date': y[0].getText("\n").split()[1]
+					'date': formatToDate(y[0].getText("\n").split()[1])
 				})
 			lastSearched += 1
 		abslist2 = []
