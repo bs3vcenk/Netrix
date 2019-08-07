@@ -11,10 +11,26 @@
       <h1 id="netHeader" text-wrap>{{ 'tab4.text.noabsences' | translate }}</h1>
     </ion-label>
   </ion-item>
-  <canvas #absenceCanvas></canvas>
-  <ion-list lines="full" style="margin-top:8px;">
-    <ion-item button routerLink="/absences" routerDirection="forward">
-      <ion-label>{{ 'tab4.text.viewall' | translate }}</ion-label>
-    </ion-item>
+  <ion-list lines="full" *ngIf="absences.full[0].date">
+    <ng-container *ngFor="let absObj of absences.full">
+      <ion-list-header [@fadeInOut]>
+        <ion-label>{{ absObj.date }}</ion-label>
+      </ion-list-header>
+      <ion-item [@fadeInOut] *ngFor="let mcl of absObj.absences">
+        <ion-label>
+          <div class="number">
+            {{mcl.period}}
+          </div>
+          <div class="subject" text-wrap>
+            {{mcl.subject}}
+          </div>
+          <div class="reason" text-wrap>
+            {{mcl.reason}}
+          </div>
+        </ion-label>
+        <ion-icon item-right name="checkmark" *ngIf="mcl.justified"></ion-icon>
+        <ion-icon item-right name="close" *ngIf="!mcl.justified"></ion-icon>
+      </ion-item>
+    </ng-container>
   </ion-list>
 </ion-content>
