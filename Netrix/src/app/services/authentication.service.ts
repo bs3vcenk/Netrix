@@ -8,7 +8,6 @@ import { Observable, throwError, from } from 'rxjs';
 import { Device } from '@ionic-native/device/ngx';
 import { SettingsService } from './settings.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { ApiService } from './api.service';
 
 @Injectable({
     providedIn: 'root'
@@ -30,8 +29,7 @@ export class AuthenticationService {
         private http: HTTP,
         private device: Device,
         private settings: SettingsService,
-        private firebase: FirebaseX,
-        private apiSvc: ApiService
+        private firebase: FirebaseX
     ) {
         this.plt.ready().then(() => {
             /* Default to JSON as we'll be receiving only JSON from the API */
