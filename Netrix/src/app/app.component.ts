@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Platform, Config } from '@ionic/angular';
+import { Platform, Config, ToastController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './services/authentication.service';
@@ -11,6 +11,7 @@ import { SettingsService } from './services/settings.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from './services/api.service';
 import { NotificationService } from './services/notification.service';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,7 @@ export class AppComponent {
     private authenticationService: AuthenticationService,
     private router: Router,
     private languageService: LanguageService,
-    // private toastController: ToastController,
+    private toastController: ToastController,
     private fcm: FirebaseService,
     private settings: SettingsService,
     private translate: TranslateService,
@@ -103,7 +104,15 @@ export class AppComponent {
           this.router.navigate(['error'], {replaceUrl: true});
         }
       });
-      this.notifSvc.testNotif();
+
+      if (!environment.production) {
+        this.toastController.create({
+          message: 'Using a developer build',
+          duration: 2000,
+        }).then(alert => {
+          alert.present();
+        });
+      }
     });
   }
 }
