@@ -82,8 +82,7 @@ def getSetting(token, action):
 
 def processSetting(token, action, val):
 	"""
-		Do an action, with val as the data/arguments on a token-bound
-		profile.
+		Do an action, with val as the data/arguments on a profile.
 	"""
 	o = getData(token)
 	if 'settings' not in o.keys():
