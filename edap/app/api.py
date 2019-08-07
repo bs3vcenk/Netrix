@@ -175,6 +175,7 @@ def devInfo():
 	html += "<p>Generic (bad JSON, library exception etc.): %i</p>" % getCounter("logins:fail:generic")
 	html += "<h3>Options</h3>"
 	html += "<p><a href=\"/dev/info/recreate\">Recreate data for all tokens</a> [WARNING: Clicking will proceed with operation!]</p>"
+	html += "<p><a href=\"/dev/info/testuser\">Add test user</a></p>"
 	html += timeGenerated(start)
 	return makeHTML(title="eDAP dev info", content=html)
 
