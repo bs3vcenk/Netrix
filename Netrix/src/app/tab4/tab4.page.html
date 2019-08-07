@@ -5,6 +5,40 @@
 </ion-header>
 
 <ion-content>
+  <ion-item [@fadeInOut] *ngIf="absences.overview.sum > 0" id="wrapper">
+    <div id="flexItem">
+      <ion-text id="descText">
+        {{ 'tab4.text.justified' | translate }}
+      </ion-text><br/>
+      <ion-label id="infoText">
+        {{ absences.overview.justified }}
+      </ion-label>
+    </div>
+    <div id="flexItem">
+      <ion-text id="descText">
+        {{ 'tab4.text.unjustified' | translate }}
+      </ion-text><br/>
+      <ion-label id="infoText">
+        {{ absences.overview.unjustified }}
+      </ion-label>
+    </div>
+    <div id="flexItem" *ngIf="absences.overview.waiting > 0">
+      <ion-text id="descText">
+        {{ 'tab4.text.waiting' | translate }}
+      </ion-text><br/>
+      <ion-label id="infoText">
+        {{ absences.overview.waiting }}
+      </ion-label>
+    </div>
+    <div id="flexItem">
+      <ion-text id="descText">
+        {{ 'tab4.text.sum' | translate }}
+      </ion-text><br/>
+      <ion-label id="infoText">
+        {{ absences.overview.sum }}
+      </ion-label>
+    </div>
+  </ion-item>
   <ion-item text-center [@fadeInOut] *ngIf="absences.overview.sum == 0" lines="none" id="cntr">
     <ion-label>
       <object width="150" type="image/svg+xml" data="./assets/emoji/thumbsup.svg"></object>

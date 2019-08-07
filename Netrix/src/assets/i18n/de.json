@@ -52,7 +52,8 @@
       "noabsences": "Keine Abwesenheiten",
       "justified": "Rechtfertigte",
       "unjustified": "Ungerechtfertigte",
-      "waiting": "Warten"
+      "waiting": "Warten",
+      "sum": "Alle"
     }
   },
   "overview": {
@@ -97,9 +98,6 @@
     "absences": "Abwesenheiten"
   },
   "settings": {
-    "lang": {
-      "title": "Spracheinstellungen"
-    },
     "api": {
       "analytics": "Analytics und Werbungen",
       "devinfo": "Geräteinformationen senden",
