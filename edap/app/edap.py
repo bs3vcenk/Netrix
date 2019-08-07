@@ -22,13 +22,13 @@ class WrongCredentials(Exception):
 
 edap_version = "B4"
 
-def formatToDate(preFStr: str, dateFormat="%d.%m.%Y."):
+def formatToDate(preFStr: str, dateFormat="%d.%m.%Y.") -> int:
 	"""
 		Formats a string into a UNIX timestamp.
 
 		ARGS: preFStr [str/required], dateFormat []
 	"""
-	return datetime.strptime(preFStr, dateFormat).timestamp()
+	return int(datetime.strptime(preFStr, dateFormat).timestamp())
 
 class edap:
 	def __init__(self,
