@@ -1,5 +1,6 @@
 # eDnevnikAndroidProject - main library
 import sys, inspect, re, requests
+from datetime import datetime
 try:
 	from bs4 import BeautifulSoup
 except ModuleNotFoundError:
@@ -7,7 +8,10 @@ except ModuleNotFoundError:
 	sys.exit(1)
 
 if sys.version[0] == "2":
-	print("ERROR: eDAP does not support Python 2! Upgrade to Python 3 to use eDAP.")
+	print("ERROR: eDAP does not support Python 2. Upgrade to Python 3.5 or newer to use eDAP.")
+	sys.exit(1)
+elif sys.version[2] <= "5":
+	print("ERROR: Your version of Python does not support PEP 484 typing. Upgrade to Python 3.5 or newer.")
 	sys.exit(1)
 
 class FatalLogExit(Exception):
@@ -16,21 +20,47 @@ class FatalLogExit(Exception):
 class WrongCredentials(Exception):
 	pass
 
-edap_version = "B2"
+edap_version = "B4"
+
+def formatToDate(preFStr: str, dateFormat="%d.%m.%Y."):
+	"""
+		Formats a string into a UNIX timestamp.
+
+		ARGS: preFStr [str/required], dateFormat []
+	"""
+	return datetime.strptime(preFStr, dateFormat).timestamp()
 
 class edap:
-	def __init__(self, user, pasw, parser="html.parser", edurl="https://ocjene.skole.hr", useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0", debug=False, loglevel=1, anon_err_report=True, hidepriv=True, log_func_name=True, redirect_log_to_file=False, hideConfidential=True):
+	def __init__(self,
+		user: str,
+		pasw: str,
+		parser="html.parser",
+		edurl="https://ocjene.skole.hr",
+		useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0",
+		debug=False,
+		loglevel=1,
+		hidepriv=True,
+		log_func_name=True,
+		redirect_log_to_file=False,
+		hideConfidential=True):
 		"""
-			Initialization function
+			Authenticates the user to eDnevnik.
 
-			Authenticates user for further actions.
+			:param str user: Username for eDnevnik
+			:param str pasw: Password for eDnevnik
+			:param str parser: The parser that will be used for BeautifulSoup
+			:param str edurl: HTTP(S) address to the eDnevnik service
+			:param str useragent: The User-Agent header which will be sent to the service
+			:param bool debug: Enables/disables logging
+			:param int loglevel: Level of logging, can be 0-4, although 4 (fatal) is always shown
+			:param bool hidepriv: Enables/disables hiding identifiable information
+			:param bool log_func_name: Enables/disables logging function names, may increase performance
+			:param redirect_log_to_file: Enables logging to file, if False it is disabled
+			:type redirect_log_to_file: str or False
+			:param bool hideConfidential: Enables/disables returning confidential information, such as OIB/SSN
 
-			ARGS: user [str/required], pasw [str/required], parser [str/optional],
-			      edurl [str/optional], useragent [str/optional], debug [bool/optional],
-			      loglevel [int/optional], hidepriv [bool/optional], log_func_name [bool/optional],
-			      redirect_log_to_file [str|bool/optional], hideConfidential [bool/optional]
+			:raises WrongCredentials: If the provided credentials are invalid
 		"""
-		self.anon_err_report = anon_err_report
 		self.parser = parser
 		self.edurl = edurl
 		self.user = user
@@ -43,8 +73,8 @@ class edap:
 		if redirect_log_to_file != False:
 			sys.stdout = open(redirect_log_to_file, "w")
 		print("=> EDAP (eDnevnikAndroidProject) %s" % edap_version)
-		self.__edlog(1, "Init variables: anon_err_report=%s, parser=%s, edurl=%s, user=[{%s}], useragent=%s, debug=%s, loglevel=%s, hidepriv=%s, log_func_name=%s" %
-			(self.anon_err_report, self.parser, self.edurl, self.user, self.useragent, self.debug, self.loglevel, self.hidepriv, self.log_func_name))
+		self.__edlog(1, "Init variables: parser=%s, edurl=%s, user=[{%s}], useragent=%s, debug=%s, loglevel=%s, hidepriv=%s, log_func_name=%s" %
+			(self.parser, self.edurl, self.user, self.useragent, self.debug, self.loglevel, self.hidepriv, self.log_func_name))
 		self.__edlog(1, "Initializing requests.Session() object")
 		try:
 			self.session = requests.Session()
@@ -69,14 +99,17 @@ class edap:
 			self.__edlog(4, "Failed to connect to eDnevnik (%s)" % e)
 		self.__edlog(1, "Authentication successful!")
 
-	def __edlog(self, loglevel, logs):
+	def __edlog(self, loglevel: int, logs: str):
 		"""
-			Logging function
+			Logging function, logs to stdout.
 
 			Log levels: 0/Verbose, 1/Info, 2/Warning, 3/Error, 4/FATAL.
-			Level 4 exits the script.
+			Level 4 exits the module.
 
-			ARGS: loglevel [int/required], logs [str/required]
+			:param int loglevel: Level which is logged, can be 0/Verbose, 1/Info, 2/Warning, 3/Error or 4/FATAL (exits)
+			:param str logs: Log message
+
+			:raises FatalLogExit: If something is logged with level 4/FATAL
 		"""
 		if self.debug and loglevel >= self.loglevel or loglevel == 4:
 			if loglevel > 4:
@@ -93,15 +126,14 @@ class edap:
 		o.raise_for_status()
 		return o.text
 
-	def getClasses(self):
+	def getClasses(self) -> list:
 		"""
 			Returns all classes offered by the post-login screen
 
-			self.class_ids is populated and the IDs correspond exactly to the indexes in the returned class list
+			self.class_ids is populated and the IDs correspond to the indexes in the returned class list
 
-			output: [{"subject":name, "professors":[name, name, name...]}]
-
-			ARGS: none
+			:return: List of classes with their information
+			:rtype: list
 		"""
 		self.__edlog(1, "Listing classes for [{%s}]" % self.user)
 		self.__edlog(0, "Getting class selection HTML")
@@ -130,11 +162,13 @@ class edap:
 		self.__edlog(1, "Completed with %s classes found" % len(classlist))
 		return classlist
 
-	def getSubjects(self, class_id):
+	def getSubjects(self, class_id: int) -> list:
 		"""
 			Return list of subjects and professors for class ID "class_id"
 
-			ARGS: class_id [int/required]
+			:param int class_id: Class ID to get subjects for
+			:return: List of subjects with their information
+			:rtype: list
 		"""
 		self.__edlog(1, "Getting subject list for class id %s (remote ID [{%s}])" % (class_id, self.class_ids[class_id]))
 		try:
@@ -144,7 +178,6 @@ class edap:
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		subjectlist_preformat = soup.find_all("div", id="courses")
-		#print(subjectlist_preformat)
 		sl2 = subjectlist_preformat[0].find_all("a")
 		self.__edlog(0, "Populating subject list")
 		self.subject_ids = []
@@ -167,13 +200,14 @@ class edap:
 		self.__edlog(1, "Completed with %s subjects found" % len(subjinfo))
 		return subjinfo
 
-	def getTests(self, class_id, alltests=False):
+	def getTests(self, class_id: int, alltests=False):
 		"""
 			Return list of tests
 
-			format: [subject, test name, date (DD.MM.YYYY)]
-
-			ARGS: class_id [int/required], alltests [bool/optional]
+			:param int class_id: Class ID to get tests for
+			:param bool alltests: Enable/disable getting all tests
+			:returns: List of tests, formatted as {subject, test name, date (Unix timestamp)}
+			:rtype: list
 		"""
 		self.__edlog(1, "Getting test list for class id %s (corresponding to actual ID [{%s}])" % (class_id, self.class_ids[class_id]))
 		if alltests:
@@ -200,15 +234,18 @@ class edap:
 		for i in range(len(xtab)):
 			xtab[i] = xtab[i].getText()
 		af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
-		afx = [{"subject": x, "test":y, "date":z} for x, y, z in af]
+		afx = [{"subject": x, "test": y, "date": formatToDate(z)} for x, y, z in af]
 		self.__edlog(1, "Completed with %s tests processed" % len(afx))
 		return afx
 
-	def getGradesForSubject(self, class_id, subject_id):
+	def getGradesForSubject(self, class_id: int, subject_id: int) -> list:
 		"""
 			Return grade list (dict, values "date", "note" and "grade") for a subject_id
 
-			ARGS: class_id [int/required], subject_id [int/required]
+			:param int class_id: Class ID to narrow down subject selection
+			:param int subject_id: Subject ID to get grades for
+			:returns: List of grades, formatted {date, note, grade}
+			:rtype: list
 		"""
 		self.__edlog(0, "Getting grade list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
@@ -226,14 +263,17 @@ class edap:
 			self.__edlog(1, "No grades found for this subject")
 			return []
 		for y in af:
-			fg_list.append({"date":y[0], "note":y[1], "grade":int(y[2])})
+			fg_list.append({"date": formatToDate(y[0]), "note":y[1], "grade":int(y[2])})
 		return fg_list
 
-	def getNotesForSubject(self, class_id, subject_id):
+	def getNotesForSubject(self, class_id: int, subject_id: int):
 		"""
-			Return list of notes for subject
+			Return note list (dict, values "date", "note") for a subject_id
 
-			ARGS: class_id [int/required], subject_id [int/required]
+			:param int class_id: Class ID to narrow down subject selection
+			:param int subject_id: Subject ID to get notess for
+			:returns: List of grades, formatted {date, note}
+			:rtype: list
 		"""
 		self.__edlog(0, "Getting note list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
@@ -251,14 +291,17 @@ class edap:
 			self.__edlog(1, "No notes found for this subject")
 			return []
 		for y in af:
-			fn_list.append({"date":y[0], "note":y[1]})
+			fn_list.append({"date": formatToDate(y[0]), "note":y[1]})
 		return fn_list
 
-	def getConcludedGradeForSubject(self, class_id, subject_id):
+	def getConcludedGradeForSubject(self, class_id: int, subject_id: int):
 		"""
 			Return true/false if there is a concluded grade or not, and if there is return the grade.
 
-			ARGS: class_id [int/required], subject_id [int/required]
+			:param int class_id: Class ID to narrow down subject selection
+			:param int subject_id: Subject ID to get concluded grade for
+			:returns: Boolean indicating if there is a concluded grade for this subject, and concluded grade if exists
+			:rtype: bool, int
 		"""
 		self.__edlog(0, "Getting concluded grade for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
@@ -281,7 +324,7 @@ class edap:
 			self.__edlog(0, "No concluded grade found for this subject")
 			return False, None
 
-	def getInfoForUser(self, class_id):
+	def getInfoForUser(self, class_id: int):
 		"""
 			Return the info on a eDnevnik user.
 
@@ -304,7 +347,7 @@ class edap:
 			del oData['matbroj']
 		return oData
 
-	def getAbsentOverviewForClass(self, class_id):
+	def getAbsentOverviewForClass(self, class_id: int):
 		"""
 			Return an overview of classes marked absent for a given class
 			ID.
@@ -334,7 +377,7 @@ class edap:
 			'sum_leftover': int(xtab_fix[4].replace("Ukupno ostalo: ", ""))
 		}
 
-	def getAbsentFullListForClass(self, class_id):
+	def getAbsentFullListForClass(self, class_id: int):
 		"""
 			Return a full list of all marked absences for a given class ID.
 
