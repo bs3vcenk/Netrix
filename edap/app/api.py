@@ -173,6 +173,8 @@ def devInfo():
 	html += "<h3>Failed</h3>"
 	html += "<p>Wrong password: %i</p>" % getCounter("logins:fail:credentials")
 	html += "<p>Generic (bad JSON, library exception etc.): %i</p>" % getCounter("logins:fail:generic")
+	html += "<h3>Options</h3>"
+	html += "<p><a href=\"/dev/info/recreate\">Recreate data for all tokens</a> [WARNING: Clicking will proceed with operation!]</p>"
 	html += timeGenerated(start)
 	return makeHTML(title="eDAP dev info", content=html)
 
@@ -193,6 +195,34 @@ def devThreadInfo(token):
 	if not verifyRequest(token):
 		return make_response('Token does not exist', 404)
 	return makeHTML(title="eDAP dev thread info", content='<pre>isAlive: %s</pre>' % isThreadAlive(token))
+
+@app.route('/dev/info/recreate', methods=["GET"])
+@dev_area
+def devReloadInfo():
+	"""
+		DEV: Re-fetches the 'data' key for all tokens in the database.
+	"""
+	tokens = getTokens()
+	failed = []
+	log.info("DEV OPERATION => RECREATING DATA OBJECTS FOR %i TOKENS" % len(tokens))
+	for token in tokens:
+		try:
+			o = getData(token)
+			userObj = edap.edap(o['user'], o['pasw'])
+			o['data'] = populateData(userObj)
+			o['generated_with'] = api_version
+			saveData(token, o)
+		except Exception as e:
+			failed.append({'token':token, 'reason':e})
+			log.error('DEV OPERATION => Update FAILED for token %s, reason %s' % (token, e))
+			continue
+	html = "<p>Success for %i/%i tokens<p>" % (len(tokens) - len(failed), len(tokens))
+	if len(failed) > 0:
+		html += "<h2>Fails</h2>"
+		for fail in failed:
+			html += "<h3>%s<h3>" % fail['token']
+			html += str(fail['reason'])
+	return makeHTML(title="Token resync", content=html)
 
 @app.route('/dev/info/tokendebug/<string:token>', methods=["GET"])
 @dev_area
