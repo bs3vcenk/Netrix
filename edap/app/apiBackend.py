@@ -5,6 +5,7 @@ from json import loads as _jsonLoad
 from json import dumps as _jsonConvert
 from copy import deepcopy
 from random import randint
+from random import choice as _randomChoice
 from sys import exit as _sysExit
 from math import floor as _mFloor
 from math import log as _mLog
@@ -18,6 +19,7 @@ from pyfcm import FCMNotification
 from threading import Thread
 from time import sleep
 from time import clock as _clock
+from string import ascii_letters
 
 log = logging.getLogger(__name__)
 fbPushService = None
@@ -63,6 +65,78 @@ def localize(token, locId):
 	}
 	lang = getData(token)['lang']
 	return locs[lang][locId]
+
+def random_string(length: int) -> str:
+    return ''.join(_randomChoice(ascii_letters) for m in range(length))
+
+def generateTestUser() -> (str, str, str):
+	"""
+		Generate a user for testing purposes.
+	"""
+	user = random_string(6)
+	pasw = random_string(10)
+	token = hashString(user + ":" + pasw)
+	data = {
+		'user': user,
+		'pasw': pasw,
+		'ignore_updating': True,
+		'data': {
+			'info': {
+				"address": "Street, Place",
+				"birthdate": "1. 1. 2000.",
+				"birthplace": "City, Country",
+				"name": "Name Surname",
+				"number": 1,
+				"program": "Program"
+			},
+			'classes': [
+				{
+					"class": "1.a",
+					"classmaster": "Classmaster",
+					"complete_avg": 4.20,
+					"school_city": "City",
+					"school_name": "School Name",
+					"year": "6969./6969.",
+					"subjects": [
+						{
+							"average": 4.20,
+							"id": 0,
+							"professors": ["Professor", "Professor", "Professor", "Professor", "Professor", "Professor"],
+							"subject": "Subject Name"
+						}
+					],
+					"tests": [
+						{
+							"current": True,
+							"date": 1565208831,
+							"id": 0,
+							"subject": "School subject",
+							"test": "Test subject"
+						}
+					],
+					"absences": {"overview":{"awaiting":0,"justified":0,"sum":0,"sum_leftover":0,"unjustified":0}}
+				}
+			]
+		},
+		'last_ip': '0.0.0.0',
+		'device': {
+			'platform': None,
+			'model': None
+		},
+		'lang': None,
+		'resolution': None,
+		'new': None,
+		'generated_with': 'testUser',
+		'settings': {
+			'notif': {
+				'disable': False,
+				'ignore': []
+			}
+		},
+		'messages': []
+	}
+	saveData(token, data)
+	return user, pasw, token
 
 def getSetting(token, action):
 	"""
@@ -206,7 +280,8 @@ def restoreSyncs():
 	"""
 	global threads
 	for token in getTokens():
-		startSync(token)
+		if not getData(token)['ignore_updating']:
+			startSync(token)
 
 def syncDev(data2, token):
 	"""

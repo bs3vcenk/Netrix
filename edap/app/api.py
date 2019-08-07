@@ -196,6 +196,18 @@ def devThreadInfo(token):
 		return make_response('Token does not exist', 404)
 	return makeHTML(title="eDAP dev thread info", content='<pre>isAlive: %s</pre>' % isThreadAlive(token))
 
+@app.route('/dev/info/testuser', methods=["GET"])
+@dev_area
+def devAddTestUser():
+	"""
+		DEV: Add a test user
+	"""
+	testUser, testPasw, testToken = generateTestUser()
+	html = "<p>Username: <code>%s</code></p>" % testUser
+	html += "<p>Password: <code>%s</code></p>" % testPasw
+	html += "<p>Token: <code>%s</code></p>" % testToken
+	return makeHTML(title="Test user creation", content=html)
+
 @app.route('/dev/info/recreate', methods=["GET"])
 @dev_area
 def devReloadInfo():
@@ -379,7 +391,8 @@ def login():
 				'disable': False,
 				'ignore': []
 			}
-		}
+		},
+		'messages': []
 	}
 	if config["USE_CLOUDFLARE"]:
 		dataObj["cloudflare"] = {}
@@ -424,6 +437,24 @@ def setting(token, action):
 		except NonExistentSetting:
 			return make_response(jsonify({'error':'E_SETTING_NONEXISTENT'}), 400)
 		return make_response(jsonify({'value':val}), 200)
+
+@app.route('/api/user/<string:token>/msg', methods=["GET"])
+def generateMessage(token):
+	"""
+		Fetch a message for a user, if available. If not, generate
+		a message if needed (e.g. country != HR, device, etc.).
+	"""
+	if not verifyRequest(token):
+		abort(401)
+	log.info(token)
+	rsp = {'messages':[]}
+	o = getData(token)
+	# TEMP CODE
+	if not 'messages' in o.keys():
+		o['messages'] = []
+	if len(o['messages']) > 0:
+		rsp['messages'].append(o['messages'])
+	return rsp
 
 @app.route('/api/user/<string:token>/new', methods=["GET"])
 def getNewGrades(token):
