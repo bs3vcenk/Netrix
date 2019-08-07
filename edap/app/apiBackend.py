@@ -114,7 +114,7 @@ def generateTestUser() -> (str, str, str):
 							"test": "Test subject"
 						}
 					],
-					"absences": {"overview":{"awaiting":0,"justified":0,"sum":0,"sum_leftover":0,"unjustified":0}}
+					"absences": {"overview":{"awaiting":0,"justified":0,"sum":0,"sum_leftover":0,"unjustified":0}, "full":[]}
 				}
 			]
 		},
