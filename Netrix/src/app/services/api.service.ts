@@ -275,6 +275,8 @@ export class ApiService {
     this.tests.forEach((test) => {
       if (test.current === true) {
         this.currentTests.push(test);
+      } else {
+        this.tests[test.id].scheduled = false;
       }
     });
   }
