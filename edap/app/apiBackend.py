@@ -16,7 +16,6 @@ from os.path import getsize as _getFileSize
 from google.cloud import firestore
 from pyfcm import FCMNotification
 from threading import Thread
-from time import time as _time
 from time import sleep
 from time import clock as _clock
 
@@ -323,7 +322,7 @@ def timeGenerated(startTime):
 		Return a templated "Page generated in <time>" footer for dynamic
 		/dev/ pages.
 	"""
-	return "<small>Page generated in %0.3f ms</small>" % ((_time() - startTime)*1000.0)
+	return "<small>Page generated in %0.3f ms</small>" % ((_clock() - startTime)*1000.0)
 
 def sendNotification(token, title, content, data=None):
 	"""
