@@ -52,8 +52,7 @@
       "noabsences": "No absences",
       "justified": "Justified",
       "unjustified": "Unjustified",
-      "waiting": "Waiting",
-      "viewall": "Detailed overview"
+      "waiting": "Waiting"
     }
   },
   "overview": {
@@ -117,9 +116,6 @@
       "darkmode": "Dark mode",
       "preload": "Preload subjects"
     }
-  },
-  "absences": {
-    "title": "Detailed overview"
   },
   "notifSettings": {
     "title": "Notification management",

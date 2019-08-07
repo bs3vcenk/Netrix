@@ -52,8 +52,7 @@
       "noabsences": "Keine Abwesenheiten",
       "justified": "Rechtfertigte",
       "unjustified": "Ungerechtfertigte",
-      "waiting": "Warten",
-      "viewall": "Detaillierte Übersicht"
+      "waiting": "Warten"
     }
   },
   "overview": {
@@ -117,9 +116,6 @@
       "darkmode": "Dunkler Modus",
       "preload": "Schulfächer vorladen"
     }
-  },
-  "absences": {
-    "title": "Detaillierte Übersicht"
   },
   "notifSettings": {
     "title": "Benachrichtigungsverwaltung",

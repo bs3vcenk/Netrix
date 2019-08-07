@@ -52,8 +52,7 @@
       "noabsences": "Nema izostanaka",
       "justified": "Opravdani",
       "unjustified": "Neopravdani",
-      "waiting": "Na čekanju",
-      "viewall": "Detaljni pregled"
+      "waiting": "Na čekanju"
     }
   },
   "overview": {
@@ -118,9 +117,6 @@
       "darkmode": "Tamni način",
       "preload": "Preloadaj predmete"
     }
-  },
-  "absences": {
-    "title": "Detaljni pregled"
   },
   "notifSettings": {
     "title": "Upravljanje obavijestima",

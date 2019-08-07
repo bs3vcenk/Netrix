@@ -5,7 +5,6 @@ const routes: Routes = [
   { path: 'tabs', loadChildren: './tabs/tabs.module#TabsPageModule' },
   { path: 'subj-overview/:subjid', loadChildren: './subj-overview/subj-overview.module#SubjOverviewPageModule' },
   { path: 'login', loadChildren: './login/login.module#LoginPageModule' },
-  { path: 'absences', loadChildren: './absences/absences.module#AbsencesPageModule' },
   { path: 'privacy', loadChildren: './privacy/privacy.module#PrivacyPageModule' },
   { path: 'notif-settings', loadChildren: './notif-settings/notif-settings.module#NotifSettingsPageModule' },
   { path: 'error', loadChildren: './error/error.module#ErrorPageModule' }
