@@ -527,11 +527,14 @@ def populateData(obj=None, username=None, password=None, time=False):
 	try:
 		tests_nowonly = obj.getTests(0, alltests=False)
 		tests_all = obj.getTests(0, alltests=True)
+		testId = 0
 		for x in tests_all:
 			if x not in tests_nowonly:
 				x['current'] = False
 			else:
 				x['current'] = True
+			x['id'] = testId
+			testId += 1
 		output[0]['tests'] = tests_all
 	except Exception as e:
 		log.debug("Error getting tests for class: %s" % e)
