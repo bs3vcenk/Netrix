@@ -38,7 +38,7 @@ export class ApiService {
   ignoredNotifTypes = [];
 
   tests = null;
-  currentTests = 0;
+  currentTests = [];
 
   absences = null;
 
@@ -274,7 +274,7 @@ export class ApiService {
   private async countTests() {
     this.tests.forEach((test) => {
       if (test.current === true) {
-        this.currentTests += 1;
+        this.currentTests.push(test);
       }
     });
   }

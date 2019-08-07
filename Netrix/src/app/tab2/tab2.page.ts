@@ -19,7 +19,7 @@ export class Tab2Page {
 
   tests = null;
   showAllPreference = false;
-  currentTests = 0;
+  currentTests = [];
   results = null;
   dbError = false;
   noItemsLoaded = false;
@@ -51,7 +51,6 @@ export class Tab2Page {
   searchHandler(event) {
     this.reInit();
     const val = event.target.value;
-    // console.log(val);
     if (val && val.trim() !== '') {
       this.results = this.results.filter((item) => {
         return ((item.test.toLowerCase().indexOf(val.toLowerCase()) > -1) || (item.subject.toLowerCase().indexOf(val.toLowerCase()) > -1));
