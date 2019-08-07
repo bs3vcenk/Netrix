@@ -28,7 +28,6 @@ export class Tab3Page {
   adPreference = null;
   // testNotifTime = null;
   darkModePreference = null;
-  devPreloadPreference = null;
   dayString = this.translate.instant('settings.api.time_plural');
 
   constructor(
@@ -46,7 +45,6 @@ export class Tab3Page {
     // this.testNotifTime = this.settings.notifTime;
     this.adPreference = this.settings.adPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
-    this.devPreloadPreference = this.settings.devPreloadPreference;
     /*if (this.testNotifTime === 1) {
       this.dayString = this.translate.instant('settings.api.time_singular');
     }*/
@@ -106,11 +104,6 @@ export class Tab3Page {
     this.settings.changePreference('global-theme', this.darkModePreference ? 'dark' : 'light');
     this.settings.globalTheme = this.darkModePreference ? 'dark' : 'light';
     this.settings.setGlobalTheme(this.settings.globalTheme);
-  }
-
-  updDevPreloadPreference() {
-    this.settings.changePreference('dev-preload-preference', this.devPreloadPreference);
-    this.settings.devPreloadPreference = this.devPreloadPreference;
   }
 
   /*async openNotifTimePicker() {

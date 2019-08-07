@@ -65,14 +65,7 @@ export class ApiService {
     this.getTests();
     this.getAbsences();
     this.getNotifConfig();
-    /* Wait until we've gotten devPreloadPreference */
-    this.settings.hasLoadedPref.subscribe(val => {
-      console.log('ApiService/preCacheData(): hasLoadedPref is now ' + val);
-      console.log('ApiService/preCacheData(): devPreloadPreference is now ' + this.settings.devPreloadPreference);
-      if (val) {
-        this.preloadSubjects();
-      }
-    });
+    this.preloadSubjects();
     forkJoin([this.loadingFinishedAbsences, this.loadingFinishedNotif, this.loadingFinishedSubj, this.loadingFinishedTests])
     .subscribe(([abs, notif, subj, test]) => {
       if (abs && notif && subj && test) {
@@ -105,32 +98,24 @@ export class ApiService {
 
   preloadSubjects() {
     /* If the user chose to use preloading, enable it */
-    if (this.settings.devPreloadPreference) {
-      this.firebase.startTrace('subjPreload');
-      const start = performance.now();
-      console.log('ApiService/preloadSubjects(): devPreloadPreference active, preloading all subjects...');
-      /* Fetch a complete list of all subjects (using alldata=1), instead of the stripped list
-       * collected by default */
-      this.http.get(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects?alldata=1',
-        {},
-        this.httpHeader
-      ).then((rx) => {
-        JSON.parse(rx.data).subjects.forEach(subj => {
-          const processed = this.processSubjectData(subj);
-          this.subjCacheMap[processed.id] = processed;
-        });
-        this.firebase.stopTrace('subjPreload');
-        const end = performance.now();
-        console.log('ApiService/preloadSubjects(): Preloading took ' + (end - start) + 'ms');
-      }, error => {
-        this.firebase.stopTrace('subjPreload');
-        this.handleErr(error);
+    this.firebase.startTrace('subjPreload');
+    console.log('ApiService/preloadSubjects(): devPreloadPreference active, preloading all subjects...');
+    /* Fetch a complete list of all subjects (using alldata=1), instead of the stripped list
+     * collected by default */
+    this.http.get(
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects?alldata=1',
+      {},
+      this.httpHeader
+    ).then((rx) => {
+      JSON.parse(rx.data).subjects.forEach(subj => {
+        const processed = this.processSubjectData(subj);
+        this.subjCacheMap[processed.id] = processed;
       });
-    } else {
-      // tslint:disable-next-line: max-line-length
-      console.log('ApiService/preloadSubjects(): devPreloadPreference [' + this.settings.devPreloadPreference + '] inactive, not preloading');
-    }
+      this.firebase.stopTrace('subjPreload');
+    }, error => {
+      this.firebase.stopTrace('subjPreload');
+      this.handleErr(error);
+    });
   }
 
   receiveNotifType(nType: string) {

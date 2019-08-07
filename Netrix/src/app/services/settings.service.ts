@@ -14,13 +14,11 @@ import { environment } from '../../environments/environment';
 export class SettingsService {
 
   // hasLoadedDataPref = new BehaviorSubject(false);
-  hasLoadedPref = new BehaviorSubject(false);
 
   dataPreference = null;
   notifPreference = null;
   adPreference = null;
   language = null;
-  devPreloadPreference = null;
   // notifTime = null;
   apiServer = environment.production ? 'https://api.netrix.io' : 'https://dev-api.netrix.io';
   // httpLimit = 5000;
@@ -73,14 +71,6 @@ export class SettingsService {
         } else {
           this.globalTheme = 'light';
         }
-      });
-      this.storage.get('dev-preload-preference').then(resx => {
-        if (resx != null) {
-          this.devPreloadPreference = resx;
-        } else {
-          this.devPreloadPreference = false;
-        }
-        this.hasLoadedPref.next(true);
       });
       this.adPreference = this.admobSvc.adPreference;
     });
