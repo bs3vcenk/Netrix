@@ -465,8 +465,11 @@ def getNewGrades(token):
 	if not verifyRequest(token):
 		abort(401)
 	log.info(token)
-	o = getData(token)['new']
-	return make_response(jsonify({'new':o}), 200)
+	o = getData(token)
+	new = o['new']
+	o['new'] = []
+	saveData(token, o)
+	return make_response(jsonify({'new':new}), 200)
 
 @app.route('/api/user/<string:token>/logout', methods=["GET"])
 def logOut(token):
