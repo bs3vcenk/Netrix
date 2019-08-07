@@ -42,7 +42,10 @@ export function createTranslateLoader(http: HttpClient) {
   entryComponents: [],
   imports: [
     BrowserModule,
-    IonicModule.forRoot({mode: 'ios'}),
+    IonicModule.forRoot({
+      mode: 'ios',
+      experimentalTransitionShadow: true,
+    }),
     AppRoutingModule,
     IonicStorageModule.forRoot(),
     BrowserAnimationsModule,
