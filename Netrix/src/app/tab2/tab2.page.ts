@@ -48,6 +48,11 @@ export class Tab2Page {
     this.results = this.tests;
   }
 
+  convertToReadableDate(unixTimestamp: number): string {
+    const date = new Date(unixTimestamp * 1000);
+    return date.toLocaleDateString();
+  }
+
   searchHandler(event) {
     this.reInit();
     const val = event.target.value;
