@@ -522,6 +522,7 @@ def getSubjects(token, class_id):
 	log.info("%s => %s => Class %s" % ("STRIPPED" if ad == 0 else "FULL", token, class_id))
 	o = getData(token)['data']['classes'][class_id]
 	if ad == 0:
+		log.warning('DEPRECATED METHOD (accessing in stripped-data mode)')
 		for x in o['subjects']:
 			try:
 				del x['notes']
