@@ -30,7 +30,7 @@
         {{ absences.overview.waiting }}
       </ion-label>
     </div>
-    <div id="flexItem">
+    <div id="flexItem" *ngIf="absences.overview.sum !== absences.overview.justified">
       <ion-text id="descText">
         {{ 'tab4.text.sum' | translate }}
       </ion-text><br/>
@@ -48,7 +48,7 @@
   <ion-list lines="full" *ngIf="absences.overview.sum > 0">
     <ng-container *ngFor="let absObj of absences.full">
       <ion-list-header [@fadeInOut]>
-        <ion-label>{{ absObj.date }}</ion-label>
+        <ion-label>{{ convertToReadableDate(absObj.date) }}</ion-label>
       </ion-list-header>
       <ion-item [@fadeInOut] *ngFor="let mcl of absObj.absences">
         <ion-label>
@@ -62,8 +62,8 @@
             {{mcl.reason}}
           </div>
         </ion-label>
-        <ion-icon item-right name="checkmark" *ngIf="mcl.justified"></ion-icon>
-        <ion-icon item-right name="close" *ngIf="!mcl.justified"></ion-icon>
+        <ion-icon item-right name="checkmark" color="success" *ngIf="mcl.justified"></ion-icon>
+        <ion-icon item-right name="close" color="danger" *ngIf="!mcl.justified"></ion-icon>
       </ion-item>
     </ng-container>
   </ion-list>

@@ -31,6 +31,11 @@ export class Tab4Page implements OnInit {
     this.absences = this.apiSvc.absences;
   }
 
+  convertToReadableDate(unixTimestamp: number): string {
+    const date = new Date(unixTimestamp * 1000);
+    return date.toLocaleDateString();
+  }
+
   ngOnInit() {
   }
 
