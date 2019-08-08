@@ -7,7 +7,7 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { HTTP } from '@ionic-native/http/ngx';
 
-interface SubjectData {
+export interface SubjectData {
   name: string;
   grades: any[];
   notes: any[];

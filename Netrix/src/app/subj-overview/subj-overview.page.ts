@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { AlertController, NavController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { ApiService } from '../services/api.service';
+import { ApiService, SubjectData } from '../services/api.service';
 
 @Component({
   selector: 'app-subj-overview',
@@ -12,12 +12,7 @@ import { ApiService } from '../services/api.service';
 })
 export class SubjOverviewPage implements OnInit {
 
-  subjName = null;
-  subjProfs = null;
-  subjAvg = null;
-
-  gradeList = [];
-  noteList = [];
+  subject: SubjectData;
 
   constructor(
     private translate: TranslateService,
@@ -57,18 +52,14 @@ export class SubjOverviewPage implements OnInit {
   }
 
   async getSubjectInfo(subjId: string) {
-    this.apiSvc.getSubject(subjId).then((thing) => {
-      this.subjAvg = thing.average;
-      this.subjName = thing.name;
-      this.noteList = thing.notes;
-      this.gradeList = thing.grades;
-      this.subjProfs = thing.professors;
-      if (thing.notes.length === 0 && thing.grades.length === 0) {
+    this.apiSvc.getSubject(subjId).then((subject) => {
+      if (subject.notes.length === 0 && subject.grades.length === 0) {
         this.alertError(
           this.translate.instant('overview.alert.nogrades.header'),
           this.translate.instant('overview.alert.nogrades.content')
         );
       }
+      this.subject = subject;
     }, (err) => {
       this.apiSvc.handleErr(err);
     });
