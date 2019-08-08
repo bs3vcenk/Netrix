@@ -12,7 +12,14 @@ import { ApiService, SubjectData } from '../services/api.service';
 })
 export class SubjOverviewPage implements OnInit {
 
-  subject: SubjectData;
+  subject: SubjectData = {
+    name: null,
+    grades: [],
+    notes: [],
+    average: 0.00,
+    professors: null,
+    id: 0
+  };
 
   constructor(
     private translate: TranslateService,
