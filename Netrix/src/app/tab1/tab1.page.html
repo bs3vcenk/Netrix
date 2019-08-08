@@ -7,7 +7,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-item [@fadeInOut] *ngIf="!dbError && !noItemsLoaded">
+  <ion-item [@fadeInOut] *ngIf="!dbError && !noItemsLoaded && fullAvg">
     <ion-text id="preWholeAvgText" position="stacked">
       {{ 'tab1.text.average' | translate }}
     </ion-text>
