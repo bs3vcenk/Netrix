@@ -537,7 +537,7 @@ def initDB(host="localhost", port=6379, db=0):
 	"""
 	try:
 		r = redis.Redis(host=host, port=port, db=db)
-		_redis.get('token:*')
+		r.get('token:*')
 		log.info("Database connection successful")
 		return r
 	except redis.exceptions.ConnectionError:
