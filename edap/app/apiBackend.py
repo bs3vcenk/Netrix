@@ -18,6 +18,7 @@ from google.cloud import firestore
 from pyfcm import FCMNotification
 from threading import Thread
 from time import sleep
+from time import time as _time
 from time import clock as _clock
 from string import ascii_letters
 
@@ -107,11 +108,18 @@ def generateTestUser() -> (str, str, str):
 					],
 					"tests": [
 						{
-							"current": True,
-							"date": 1565208831,
+							"current": False,
+							"date": _time() - 120,
 							"id": 0,
 							"subject": "School subject",
-							"test": "Test subject"
+							"test": "Non-current test subject"
+						},
+						{
+							"current": True,
+							"date": _time() + 120,
+							"id": 1,
+							"subject": "School subject",
+							"test": "Current test subject"
 						}
 					],
 					"absences": {"overview":{"awaiting":0,"justified":0,"sum":0,"sum_leftover":0,"unjustified":0}, "full":[]}
