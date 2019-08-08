@@ -91,17 +91,8 @@ export class SubjOverviewPage implements OnInit {
           this.translate.instant('overview.alert.nogrades.content')
         );
       }
-    }, (error) => {
-      if (error.error.error === 'E_DATABASE_CONNECTION_FAILED') {
-        this.toastError(this.translate.instant('generic.alert.database'), null, 2500);
-        this.goBack();
-      } else if (error.error.error === 'E_TOKEN_NONEXISTENT') {
-        this.toastError(this.translate.instant('generic.alert.expiry'), null, 2500);
-        this.authServ.logout();
-      } else if (!error.error.error) {
-        this.toastError(this.translate.instant('generic.alert.network'), null, 2500);
-        this.goBack();
-      }
+    }, (err) => {
+      this.apiSvc.handleErr(err);
     });
   }
 }
