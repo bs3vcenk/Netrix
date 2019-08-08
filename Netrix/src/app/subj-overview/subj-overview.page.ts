@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuthenticationService } from '../services/authentication.service';
-import { AlertController, NavController, ToastController } from '@ionic/angular';
+import { AlertController, NavController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ApiService } from '../services/api.service';
@@ -21,10 +20,8 @@ export class SubjOverviewPage implements OnInit {
   noteList = [];
 
   constructor(
-    private toastCtrl: ToastController,
     private translate: TranslateService,
     private activatedRoute: ActivatedRoute,
-    private authServ: AuthenticationService,
     private alertControl: AlertController,
     private navCtrl: NavController,
     private firebase: FirebaseX,
@@ -53,17 +50,6 @@ export class SubjOverviewPage implements OnInit {
     });
 
     await alert.present();
-  }
-
-  toastError(msg, btns, dur) {
-    this.toastCtrl.create({
-      message: msg,
-      buttons: btns,
-      color: 'dark',
-      duration: dur
-    }).then((toast) => {
-      toast.present();
-    });
   }
 
   goBack() {
