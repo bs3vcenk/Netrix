@@ -74,7 +74,7 @@ export class ApiService {
     });
   }
 
-  private handleErr(errorObj) {
+  handleErr(errorObj) {
     /* Error handler function, decides what type of error message to display to the user */
     let e;
     try { e = JSON.parse(errorObj.error); } catch (ex) { e = {error: null}; }
