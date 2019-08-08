@@ -9,22 +9,22 @@
 
 <ion-content>
 	<ion-text>
-		<h1 [@fadeInOut]>{{subjName}}</h1>
+		<h1>{{subjName}}</h1>
 	</ion-text>
 	<ion-text>
-		<h2 [@fadeInOut]>{{subjProfs}}</h2>
+		<h2>{{subjProfs}}</h2>
 	</ion-text>
 	<ion-list lines="inset">
-		<ion-item [@fadeInOut] lines="full">
+		<ion-item lines="full">
 			<ion-label text-left>{{ 'overview.text.average' | translate }}</ion-label>
 			<ion-label item-right text-right style="font-weight: 600;">{{subjAvg}}</ion-label>
 		</ion-item>
 	</ion-list>
 	<ion-list lines="full" *ngIf="gradeList.length > 0">
-    <ion-list-header [@fadeInOut]>
+    <ion-list-header>
       <ion-label>{{ 'overview.text.grades' | translate }}</ion-label>
     </ion-list-header>
-		<ion-item [@fadeInOut] *ngFor="let grInput of gradeList">
+		<ion-item *ngFor="let grInput of gradeList">
 			<ion-label>
 				<div class="mark">
 					{{grInput.grade}}
@@ -36,10 +36,10 @@
 		</ion-item>
 	</ion-list>
   <ion-list lines="full" *ngIf="noteList.length > 0">
-    <ion-list-header [@fadeInOut]>
+    <ion-list-header>
       <ion-label>{{ 'overview.text.notes' | translate }}</ion-label>
     </ion-list-header>
-		<ion-item [@fadeInOut] *ngFor="let noteObj of noteList">
+		<ion-item *ngFor="let noteObj of noteList">
 			<ion-label>
 				<div text-wrap>
 					{{ noteObj.note }}
