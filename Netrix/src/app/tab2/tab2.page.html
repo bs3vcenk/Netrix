@@ -25,7 +25,7 @@
           <h3 id="testDate">{{ convertToReadableDate(testObj.date) }}</h3>
           <ion-note id="testSubject">{{ testObj.subject }}</ion-note>
         </ion-label>
-        <ion-icon item-right name="checkmark" *ngIf="!testObj.current"></ion-icon>
+        <ion-icon item-right name="checkmark" color="success" *ngIf="!testObj.current"></ion-icon>
       </ion-item>
     </ng-container>
   </ion-list>
