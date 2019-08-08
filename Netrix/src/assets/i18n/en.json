@@ -32,7 +32,8 @@
   "tab2": {
     "title": "Tests",
     "showall": "Show all tests",
-    "notests": "No tests"
+    "notests": "No tests",
+    "search": "Search tests"
   },
   "tab3": {
     "title": "Settings",

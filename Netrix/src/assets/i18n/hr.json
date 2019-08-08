@@ -32,7 +32,8 @@
   "tab2": {
     "title": "Ispiti",
     "showall": "Prikaži sve ispite",
-    "notests": "Nema ispita"
+    "notests": "Nema ispita",
+    "search": "Pretraži ispite"
   },
   "tab3": {
     "title": "Postavke",

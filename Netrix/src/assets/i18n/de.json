@@ -32,7 +32,8 @@
   "tab2": {
     "title": "Prüfungen",
     "showall": "Zeige alle Prüfungen",
-    "notests": "Keine Prüfungen"
+    "notests": "Keine Prüfungen",
+    "search": "Suche Prüfungen"
   },
   "tab3": {
     "title": "Einstellungen",
