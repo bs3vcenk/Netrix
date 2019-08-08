@@ -22,9 +22,9 @@ from time import clock as _clock
 from string import ascii_letters
 
 log = logging.getLogger(__name__)
-fbPushService = None
-fbFirestoreDB = None
-r = None
+_fbPushService = None
+_fbFirestoreDB = None
+_redis = None
 
 threads = {}
 
@@ -67,7 +67,7 @@ def localize(token, locId):
 	return locs[lang][locId]
 
 def random_string(length: int) -> str:
-    return ''.join(_randomChoice(ascii_letters) for m in range(length))
+	return ''.join(_randomChoice(ascii_letters) for m in range(length))
 
 def generateTestUser() -> (str, str, str):
 	"""
@@ -179,9 +179,9 @@ def purgeToken(token):
 	"""
 		Remove a token from the DB and terminate its sync thread.
 	"""
-	log.info("LOGOUT => %s" % token)
+	log.info("LOGOUT => %s", token)
 	stopSync(token)
-	r.delete('token:' + token)
+	_redis.delete('token:' + token)
 
 def formatAndSendNotification(token, notifData):
 	"""
@@ -300,7 +300,7 @@ def sync(token):
 	"""
 		Pull remote data, compare with current and replace if needed.
 	"""
-	log.debug("Syncing %s" % token)
+	log.debug("Syncing %s", token)
 	fData = getData(token)
 	data = fData["data"] # Old data
 	nData = populateData(edap.edap(fData["user"], fData["pasw"])) # New data
@@ -383,7 +383,7 @@ def saveData(token, dataObj):
 	"""
 		Save data for a token.
 	"""
-	r.set('token:' + token, _jsonConvert(dataObj))
+	_redis.set('token:' + token, _jsonConvert(dataObj))
 
 def getDBSize():
 	"""
@@ -404,8 +404,8 @@ def sendNotification(token, title, content, data=None):
 	"""
 	if not verifyRequest(token):
 		raise Exception("Bad token")
-	log.info("Sending notification to %s" % token)
-	documentReference = fbFirestoreDB.collection('devices').document(token)
+	log.info("Sending notification to %s", token)
+	documentReference = _fbFirestoreDB.collection('devices').document(token)
 
 	try:
 		doc = documentReference.get()
@@ -415,7 +415,7 @@ def sendNotification(token, title, content, data=None):
 		raise e
 
 	try:
-		fbPushService.notify_single_device(registration_id=firebaseToken, message_title=title, message_body=content, data_message=data)
+		_fbPushService.notify_single_device(registration_id=firebaseToken, message_title=title, message_body=content, data_message=data)
 	except Exception as e:
 		log.error('Unknown error (Firebase Cloud Messaging) => %s' % str(e))
 		raise e
@@ -425,7 +425,7 @@ def _sync(token):
 		Wrapper around sync, for bg execution (random timeout).
 	"""
 	while True:
-		val = randint(3600,5000)
+		val = randint(3600, 5000)
 		log.debug("Waiting %i s for %s" % (val, token))
 		sleep(val)
 		if threads["sync:" + token]["run"] != True:
@@ -454,8 +454,8 @@ def initGoogleToken(fpath):
 	environ["GOOGLE_APPLICATION_CREDENTIALS"] = fpath
 
 def readConfig():
-	global fbPushService
-	global fbFirestoreDB
+	global _fbPushService
+	global _fbFirestoreDB
 	DATA_FOLDER = getVar("DATA_FOLDER", default="/data")
 	GOOGLE_TOKEN_FILE = getVar("GOOGLE_TOKEN_FILE", default="google_creds.json")
 
@@ -482,9 +482,9 @@ def readConfig():
 			USE_FIREBASE = False
 		else:
 			print("[configuration] Initializing Firebase Cloud Messaging...")
-			fbPushService = FCMNotification(api_key=FIREBASE_TOKEN)
+			_fbPushService = FCMNotification(api_key=FIREBASE_TOKEN)
 			print("[configuration] Initializing Firestore...")
-			fbFirestoreDB = firestore.Client()
+			_fbFirestoreDB = firestore.Client()
 	return {
 		"DATA_FOLDER": DATA_FOLDER,
 		"GOOGLE_TOKEN_FILE": GOOGLE_TOKEN_FILE,
@@ -529,7 +529,7 @@ def initDB(host="localhost", port=6379, db=0):
 	"""
 	try:
 		r = redis.Redis(host=host, port=port, db=db)
-		r.get('token:*')
+		_redis.get('token:*')
 		log.info("Database connection successful")
 		return r
 	except redis.exceptions.ConnectionError:
@@ -541,28 +541,28 @@ def getData(token):
 		Retreive JSON from Redis by token, format it from bytes to string,
 		and return it as a dict.
 	"""
-	return _jsonLoad(r.get("token:" + token).decode("utf-8"))
+	return _jsonLoad(_redis.get("token:" + token).decode("utf-8"))
 
 def getTokens():
 	"""
 		Return a list of all tokens in the DB.
 	"""
-	return [i.decode('utf-8').replace("token:", "") for i in r.keys('token:*')]
+	return [i.decode('utf-8').replace("token:", "") for i in _redis.keys('token:*')]
 
-def userInDatabase(token):
+def _userInDatabase(token):
 	"""
 		Check if a given token exists in the DB.
 	"""
-	return "token:" + token in [i.decode('utf-8') for i in r.keys('token:*')]
+	return "token:" + token in [i.decode('utf-8') for i in _redis.keys('token:*')]
 
-def classIDExists(token, cid):
+def _classIDExists(token, cid):
 	"""
 		Check if a given class ID exists in the DB. Assumes that userInDatabase()
 		was already called and returned True.
 	"""
 	return cid in range(len(getData(token)['data']))
 
-def subjectIDExists(token, cid, sid):
+def _subjectIDExists(token, cid, sid):
 	"""
 		Check if a given subject ID exists in the DB. Assumes that userInDatabase()
 		and classIDExists() were both already called and returned True.
@@ -683,15 +683,15 @@ def verifyRequest(token, class_id=None, subject_id=None):
 	"""
 		Verify if a given token, class_id, and/or subject_id exist in the DB.
 	"""
-	if not userInDatabase(token):
+	if not _userInDatabase(token):
 		log.warning("Token %s not in DB" % token)
 		return False
 	if class_id:
-		if not classIDExists(token, class_id):
+		if not _classIDExists(token, class_id):
 			log.warning("Class ID %s does not exist for token %s" % (class_id, token))
 			return False
 	if subject_id:
-		if not subjectIDExists(token, class_id, subject_id):
+		if not _subjectIDExists(token, class_id, subject_id):
 			log.warning("Subject ID %s does not exist for class ID %s for token %s" % (subject_id, class_id, token))
 			return False
 	return True
@@ -709,19 +709,19 @@ def hashPassword(inp):
 	return _SHA256HASH(inp.encode()).hexdigest()
 
 def getCounter(counter_id):
-	val = r.get("counter:"+counter_id)
+	val = _redis.get("counter:"+counter_id)
 	if val == None:
-		r.set("counter:"+counter_id, 0)
+		_redis.set("counter:"+counter_id, 0)
 		return 0
 	else:
 		try:
 			return int(val)
 		except:
-			r.set("counter:"+counter_id, 0)
+			_redis.set("counter:"+counter_id, 0)
 			return 0
 
 def setCounter(counter_id, value):
-	r.set("counter:"+counter_id, value)
+	_redis.set("counter:"+counter_id, value)
 
 def updateCounter(counter_id):
 	val = getCounter(counter_id)
@@ -733,4 +733,4 @@ logging.basicConfig(
 	level=logging.INFO,
 	format="%(asctime)s || %(funcName)-16s || %(levelname)-8s || %(message)s"
 )
-r = initDB()
+_redis = initDB()
