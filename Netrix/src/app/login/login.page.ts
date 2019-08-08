@@ -107,7 +107,8 @@ export class LoginPage implements OnInit {
       this.stopLoad(); // Stop the "Logging in..." alert
     }, (err) => {
       this.stopLoad(); // Stop alert
-      const e = JSON.parse(err.error);
+      let e;
+      try { e = JSON.parse(err.error); } catch (ex) { e = {error: null}; }
       if (e.error === 'E_INVALID_CREDENTIALS') {
         // Bad creds
         this.networkError(
