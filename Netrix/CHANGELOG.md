@@ -43,7 +43,7 @@
 * Uklonjeno nepotrebno zapisivanje logova
 * Poboljšan handling grešaka
 
-## 1.7.0
+# 1.7.0
 * Imena ekrana i korisnički ID-evi dodani na Firebase
 * Deregistracija s Firebasea pri odjavi
 * Dodana mogućnost blokiranja obavijesti po tipu
