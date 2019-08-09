@@ -39,6 +39,9 @@
 		<!-- <ion-item> for every grade object, containing the date, note and grade -->
 		<ion-item *ngFor="let gradeObject of subject.grades">
 			<ion-label>
+				<div class="date">
+					{{convertToReadableDate(gradeObject.date)}}
+				</div>
 				<!-- Grade, shown to the left -->
 				<div class="mark">
 					{{gradeObject.grade}}
@@ -59,9 +62,14 @@
 		</ion-list-header>
 		<!-- <ion-item> for every note -->
 		<ion-item *ngFor="let noteObj of subject.notes">
-			<ion-label text-wrap>
-				<!-- Note, shown as a simple list item -->
-				{{ noteObj.note }}
+			<!-- Note, shown as a simple list item -->
+			<ion-label>
+				<div class="date">
+					{{convertToReadableDate(noteObj.date)}}
+				</div>
+				<div text-wrap>
+					{{ noteObj.note }}
+				</div>
 			</ion-label>
 		</ion-item>
 	</ion-list>

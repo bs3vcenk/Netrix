@@ -58,6 +58,11 @@ export class SubjOverviewPage implements OnInit {
     this.navCtrl.navigateBack('/tabs/tabs/tab1');
   }
 
+  convertToReadableDate(unixTimestamp: number): string {
+    const date = new Date(unixTimestamp * 1000);
+    return date.toLocaleDateString();
+  }
+
   async getSubjectInfo(subjId: string) {
     this.apiSvc.getSubject(subjId).then((subject) => {
       if (subject.notes.length === 0 && subject.grades.length === 0) {
