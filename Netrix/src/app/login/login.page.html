@@ -5,24 +5,32 @@
 </ion-header>
 
 <ion-content>
+	<!-- HEADER: App name and description -->
 	<ion-item text-center lines="none" id="loginHeader">
 		<ion-label>
 			<h1 id="appName">Netrix</h1>
 			<h2 id="appDescription">{{ 'login.text.appdesc' | translate }}</h2>
 		</ion-label>
 	</ion-item>
+
+	<!-- Login form -->
 	<ion-list lines="full">
+		<!-- Username -->
 		<ion-item>
 			<ion-label position="stacked">{{ 'login.text.holder_user' | translate }}</ion-label>
 			<ion-input required type="text" [(ngModel)]="loUsername"></ion-input>
 		</ion-item>
+		<!-- Password -->
 		<ion-item>
 			<ion-label position="stacked">{{ 'login.text.holder_pass' | translate }}</ion-label>
 			<ion-input required type="password" [(ngModel)]="loPassword"></ion-input>
 		</ion-item>
 	</ion-list>
+	<!-- Login button-->
 	<ion-button id="loginButton" (click)="_login()" expand="block">{{ 'login.text.login' | translate }}</ion-button>
+	<!-- Additional buttons -->
 	<div id="addonButtons">
+		<!-- Privacy policy -->
 		<ion-button fill="clear" id="privacyButton" routerLink="/privacy" routerDirection="forward">
 			{{ 'login.text.privacy' | translate }}
 		</ion-button>

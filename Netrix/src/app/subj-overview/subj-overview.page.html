@@ -1,49 +1,67 @@
 <ion-header>
-  <ion-toolbar>
-  	<ion-buttons slot="start">
-  		<ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
-  	</ion-buttons>
-    <ion-title>{{ 'overview.title' | translate }}</ion-title>
-  </ion-toolbar>
+	<ion-toolbar>
+		<!-- Back button -->
+  		<ion-buttons slot="start">
+  			<ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
+  		</ion-buttons>
+    	<ion-title>{{ 'overview.title' | translate }}</ion-title>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content>
+	<!-- HEADER -->
 	<ion-text>
+		<!-- Subject name -->
 		<h1>{{subject.name}}</h1>
 	</ion-text>
 	<ion-text>
+		<!-- Full list of subject professors -->
 		<h2>{{subject.professors}}</h2>
 	</ion-text>
+
+	<!-- SUB-HEADER -->
+	<!-- List containing 1 item -->
 	<ion-list lines="inset">
 		<ion-item lines="full">
+			<!-- Translated text "Average" -->
 			<ion-label text-left>{{ 'overview.text.average' | translate }}</ion-label>
+			<!-- Subject average -->
 			<ion-label item-right text-right style="font-weight: 600;">{{subject.average}}</ion-label>
 		</ion-item>
 	</ion-list>
+
+	<!-- GRADE LIST (if grades are available) -->
 	<ion-list lines="full" *ngIf="subject.grades.length > 0">
-    <ion-list-header>
-      <ion-label>{{ 'overview.text.grades' | translate }}</ion-label>
-    </ion-list-header>
-		<ion-item *ngFor="let grInput of subject.grades">
+		<!-- HEADER: Grades -->
+		<ion-list-header>
+			<ion-label>{{ 'overview.text.grades' | translate }}</ion-label>
+		</ion-list-header>
+		<!-- <ion-item> for every grade object, containing the date, note and grade -->
+		<ion-item *ngFor="let gradeObject of subject.grades">
 			<ion-label>
+				<!-- Grade, shown to the left -->
 				<div class="mark">
-					{{grInput.grade}}
+					{{gradeObject.grade}}
 				</div>
+				<!-- Note, shown to the right -->
 				<div class="description" text-wrap>
-					{{grInput.note}}
+					{{gradeObject.note}}
 				</div>
 			</ion-label>
 		</ion-item>
 	</ion-list>
-  <ion-list lines="full" *ngIf="subject.notes.length > 0">
-    <ion-list-header>
-      <ion-label>{{ 'overview.text.notes' | translate }}</ion-label>
-    </ion-list-header>
+
+	<!-- NOTE LIST (if notes are available) -->
+	<ion-list lines="full" *ngIf="subject.notes.length > 0">
+		<!-- HEADER: Notes -->
+		<ion-list-header>
+			<ion-label>{{ 'overview.text.notes' | translate }}</ion-label>
+		</ion-list-header>
+		<!-- <ion-item> for every note -->
 		<ion-item *ngFor="let noteObj of subject.notes">
-			<ion-label>
-				<div text-wrap>
-					{{ noteObj.note }}
-				</div>
+			<ion-label text-wrap>
+				<!-- Note, shown as a simple list item -->
+				{{ noteObj.note }}
 			</ion-label>
 		</ion-item>
 	</ion-list>

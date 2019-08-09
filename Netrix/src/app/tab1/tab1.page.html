@@ -7,7 +7,9 @@
 </ion-header>
 
 <ion-content>
-  <ion-item [@fadeInOut] *ngIf="!dbError && !noItemsLoaded && fullAvg">
+  <!-- "Your average is:" text at the top
+       Shows only when we have the complete average  -->
+  <ion-item [@fadeInOut] *ngIf="fullAvg">
     <ion-text id="preWholeAvgText" position="stacked">
       {{ 'tab1.text.average' | translate }}
     </ion-text>
@@ -15,15 +17,22 @@
       0.00
     </ion-label>
   </ion-item>
+
+  <!-- List of subjects -->
   <ion-list lines="full">
+    <!-- <ion-item> for every subject, sets routerLink to subjectOverview for
+         that subject's ID -->
     <ion-item [@fadeInOut] button *ngFor="let subject of subjects" routerLink="/subj-overview/{{subject.id}}" routerDirection="forward">
       <ion-label>
         <div id="title" stacked>
+          <!-- Subject name -->
           <h3>{{subject.subject}}</h3>
+          <!-- Processed list of professors -->
           <ion-note text-wrap>{{subject.professors}}</ion-note>
         </div>
       </ion-label>
       <ion-text item-right text-right>
+        <!-- The average grade for this subject (shown to the right) -->
         <div id="average">{{subject.average}}</div>
       </ion-text>
     </ion-item>

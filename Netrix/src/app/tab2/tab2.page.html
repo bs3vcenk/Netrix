@@ -4,6 +4,7 @@
       {{ 'tab2.title' | translate }}
     </ion-title>
   </ion-toolbar>
+  <!-- Search bar for tests -->
   <ion-toolbar>
       <ion-searchbar (ionInput)="searchHandler($event)" placeholder="{{ 'tab2.search' | translate }}"></ion-searchbar>
   </ion-toolbar>
@@ -11,28 +12,43 @@
 
 <ion-content>
   <ion-list lines="full">
+    <!-- SWITCH: "Show all tests" at the top -->
     <ion-item *ngIf="!noItemsLoaded && !dbError">
       <ion-label>{{ 'tab2.showall' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="showAllPreference"></ion-toggle>
     </ion-item>
   </ion-list>
 
+  <!-- List of tests -->
   <ion-list lines="full">
+    <!-- <ng-container> for every test in available search results
+         Not using <ion-item> only because you can't use both *ngFor and
+         *ngIf on one item -->
     <ng-container *ngFor="let testObj of results">
+      <!-- <ion-item> with *ngIf to check if:
+           1. either the test is current (not yet written), or
+           2. the "Show all" switch is enabled -->
       <ion-item [@fadeInOut] *ngIf="testObj.current || showAllPreference">
         <ion-label>
+          <!-- Test name -->
           <h2 id="testName" text-wrap>{{ testObj.test }}</h2>
+          <!-- Test date -->
           <h3 id="testDate">{{ convertToReadableDate(testObj.date) }}</h3>
+          <!-- School subject for which the test is for -->
           <ion-note id="testSubject">{{ testObj.subject }}</ion-note>
         </ion-label>
+        <!-- Checkmark with *ngIf to show only if not current (already written) -->
         <ion-icon item-right name="checkmark" color="success" *ngIf="!testObj.current"></ion-icon>
       </ion-item>
     </ng-container>
   </ion-list>
 
+  <!-- "No tests" message with *ngIf to show only if no tests and "Show all" is disabled -->
   <ion-item text-center [@fadeInOut] *ngIf="currentTests.length == 0 && showAllPreference == false" lines="none" id="cntr">
     <ion-label>
+      <!-- "Thumbs up" emoji -->
       <object width="150" type="image/svg+xml" data="./assets/emoji/thumbsup.svg"></object>
+      <!-- Styled "no tests" message -->
       <h1 id="netHeader" text-wrap>{{ 'tab2.notests' | translate }}</h1>
     </ion-label>
   </ion-item>

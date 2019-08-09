@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ApiService } from '../services/api.service';
 import { NotificationService } from '../services/notification.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-tab3',
@@ -30,6 +31,7 @@ export class Tab3Page {
   testNotifTime = null;
   darkModePreference = null;
   dayString = this.translate.instant('settings.api.time_plural');
+  developer = !environment.production;
 
   constructor(
     private authServ: AuthenticationService,
@@ -151,6 +153,12 @@ export class Tab3Page {
     };
     const picker = await this.pickerCtrl.create(opts);
     picker.present();
+  }
+
+  fakeCrash() {
+    if (this.developer) {
+      throw new Error('Fake exception by development options');
+    }
   }
 
 }

@@ -21,8 +21,6 @@ export class Tab2Page {
   showAllPreference = false;
   currentTests = [];
   results = null;
-  dbError = false;
-  noItemsLoaded = false;
 
   constructor(
     private apiSvc: ApiService,

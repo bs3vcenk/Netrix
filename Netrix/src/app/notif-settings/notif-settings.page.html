@@ -1,5 +1,6 @@
 <ion-header>
   <ion-toolbar>
+    <!-- Back button -->
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/tabs/tab3"></ion-back-button>
     </ion-buttons>
@@ -9,8 +10,11 @@
 
 <ion-content>
   <ion-list>
+    <!-- <ion-item> for every notification type -->
     <ion-item *ngFor="let fType of fullTypes">
+      <!-- Translated name -->
       <ion-label>{{ fType.name }}</ion-label>
+      <!-- Enable/disable checkbox -->
       <ion-checkbox slot="start" [(ngModel)]="fType.checked" (click)="handleChk(fType)"></ion-checkbox>
     </ion-item>
   </ion-list>

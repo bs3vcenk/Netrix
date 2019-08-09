@@ -20,8 +20,6 @@ export class Tab1Page implements OnInit {
 
   subjects = null;
   fullAvg = null;
-  noItemsLoaded = false;
-  dbError = false;
 
   constructor(
     private admobSvc: AdmobService,

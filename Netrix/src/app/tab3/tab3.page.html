@@ -8,47 +8,73 @@
 
 <ion-content>
   <ion-list lines="full">
+    <!-- SEP: Analytics and ads -->
     <ion-list-header>
       <ion-label>{{ 'settings.api.analytics' | translate }}</ion-label>
     </ion-list-header>
+
+    <!-- SWITCH (disabled): Analytics -->
     <!--<ion-item>
       <ion-label>{{ 'settings.api.devinfo' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="dataPreference" (ionChange)="updDeviceInfoPreference()"></ion-toggle>
     </ion-item>-->
+    <!-- SWITCH: Advertisements -->
     <ion-item>
       <ion-label>{{ 'settings.api.ads' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="adPreference" (ionChange)="updAdPreference()"></ion-toggle>
     </ion-item>
+    <!-- SWITCH (disabled): Error reporting -->
     <!--<ion-item>
       <ion-label>{{ 'settings.api.errreport' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="errorPreference" (ionChange)="updErrorReportPreference()"></ion-toggle>
     </ion-item>-->
+
+    <!-- SEP: Notifications -->
     <ion-list-header>
       <ion-label>{{ 'settings.api.notifs' | translate }}</ion-label>
     </ion-list-header>
+
+    <!-- SWITCH: Master notification switch -->
     <ion-item>
       <ion-label>{{ 'settings.api.notifs_master' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="notifPreference" (ionChange)="updMainNotificationPreference()"></ion-toggle>
     </ion-item>
+
+    <!-- Only if master enabled -->
+    <!-- PAGE: Exclusions -->
     <ion-item [@fadeInOut] routerLink="/notif-settings" routerDirection="forward" *ngIf="notifPreference">
       <ion-label>{{ 'settings.api.notifs_exclude' | translate }}</ion-label>
     </ion-item>
+    <!-- BUTTON: Test notification time -->
     <ion-item [@fadeInOut] detail="false" button (click)="openNotifTimePicker()" *ngIf="notifPreference">
       <ion-label>{{ 'settings.api.notifs_test_time' | translate}}</ion-label>
       <ion-text item-right text-right>{{ testNotifTime }} {{ dayString }}</ion-text>
     </ion-item>
+
+    <!-- SEP: Experimental -->
     <ion-list-header>
       <ion-label>{{ 'settings.client.experimental' | translate }}</ion-label>
     </ion-list-header>
-    <ion-item button (click)="resetNotif()">
+
+    <!-- Developer -->
+    <!-- BUTTON: Reset notifications -->
+    <ion-item button (click)="resetNotif()" *ngIf="developer">
       <ion-label>Reset notifications</ion-label>
     </ion-item>
+    <!-- BUTTON: Fake exception -->
+    <ion-item button (click)="fakeCrash()" *ngIf="developer">
+      <ion-label>Fake unhandled exception</ion-label>
+    </ion-item>
+    <!-- User-facing -->
+    <!-- SWITCH: Dark mode-->
     <ion-item>
       <ion-label>{{ 'settings.client.darkmode' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="darkModePreference" (ionChange)="updDarkModePreference()"></ion-toggle>
     </ion-item>
   </ion-list>
+
 	<ion-list>
+    <!-- BUTTON: Log out -->
     <ion-item button (click)="logout()" lines="full">
       <ion-label>{{ 'tab3.text.logout' | translate }}</ion-label>
     </ion-item>
