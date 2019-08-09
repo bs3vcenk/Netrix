@@ -47,9 +47,9 @@ export class Tab3Page {
     this.testNotifTime = this.settings.notifTime;
     this.adPreference = this.settings.adPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
-    /*if (this.testNotifTime === 1) {
+    if (this.testNotifTime === 1) {
       this.dayString = this.translate.instant('settings.api.time_singular');
-    }*/
+    }
   }
 
   ionViewDidEnter() {
