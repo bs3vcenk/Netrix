@@ -118,7 +118,7 @@ export class LoginPage implements OnInit {
       } else if (err.status === 500 || err.status === 521) {
         // Server/network error
         this.toastError(this.translate.instant('generic.alert.server'), null, 2500);
-        this.firebase.logError('Server error, status ' + err.status);
+        this.firebase.logError('Server error, status ' + err.status, null);
       } else {
         this.toastError(this.translate.instant('generic.alert.network'), null, 2500);
       }

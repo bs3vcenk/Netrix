@@ -2,6 +2,7 @@ import { Injectable, ErrorHandler } from '@angular/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Platform } from '@ionic/angular';
+import * as StackTrace from 'stacktrace-js';
 
 @Injectable({
   providedIn: 'root'
@@ -65,7 +66,9 @@ export class CrashlyticsErrorHandler extends ErrorHandler {
     /* Send exceptions to Crashlytics */
     super.handleError(error);
     try {
-      this.firebase.logError(error.message + ' | stack: ' + error.stack);
+      StackTrace.fromError(error).then(st => {
+        this.firebase.logError(error.message, st);
+      });
     } catch (e) {
       console.error(e);
     }
