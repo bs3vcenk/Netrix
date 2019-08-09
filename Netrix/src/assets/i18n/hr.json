@@ -44,6 +44,12 @@
       "logout": {
         "header": "Odjaviti?",
         "content": "To će pobrisati tvoje podatke s Netrixovih servera i isključiti sve obavijesti."
+      },
+      "time": {
+        "choice": {
+          "done": "OK",
+          "cancel": "Zatvori"
+        }
       }
     }
   },

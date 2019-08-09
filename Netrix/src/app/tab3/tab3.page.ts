@@ -116,11 +116,22 @@ export class Tab3Page {
     const opts: PickerOptions = {
       buttons: [
         {
-          text: 'Cancel',
+          text: this.translate.instant('tab3.alert.time.choice.cancel'),
           role: 'cancel'
         },
         {
-          text: 'Done'
+          text: this.translate.instant('tab3.alert.time.choice.done'),
+          handler: (choice: any) => {
+            this.testNotifTime = choice.time.value;
+            this.settings.changePreference('notif-time', this.testNotifTime);
+            this.settings.notifTime = this.testNotifTime;
+            if (this.testNotifTime === 1) {
+              this.dayString = this.translate.instant('settings.api.time_singular');
+            } else {
+              this.dayString = this.translate.instant('settings.api.time_plural');
+            }
+            this.resetNotif();
+          },
         }
       ],
       columns: [
@@ -140,17 +151,6 @@ export class Tab3Page {
     };
     const picker = await this.pickerCtrl.create(opts);
     picker.present();
-    picker.onDidDismiss().then(async data => {
-      const col = await picker.getColumn('time');
-      this.testNotifTime = col.options[col.selectedIndex].value;
-      this.settings.changePreference('notif-time', this.testNotifTime);
-      this.settings.notifTime = this.testNotifTime;
-      if (this.testNotifTime === 1) {
-        this.dayString = this.translate.instant('settings.api.time_singular');
-      } else {
-        this.dayString = this.translate.instant('settings.api.time_plural');
-      }
-    });
   }
 
 }
