@@ -65,11 +65,10 @@ export class AuthenticationService {
             resolution: this.getResolution()
         },
         this.httpHeader)
-        .then((res) => {
+        .then(() => {
             console.log('AuthenticationService/sendDeviceInfo(): Successfully sent device info');
-        }, (err) => {
+        }, () => {
             console.log('AuthenticationService/sendDeviceInfo(): Failed to send device info');
-            throw err;
         });
     }
 
