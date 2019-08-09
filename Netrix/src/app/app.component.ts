@@ -119,6 +119,13 @@ export class AppComponent {
           alert.present();
         });
       }
+
+      this.apiSvc.loadingFinishedTests.subscribe(val => {
+        if (val) {
+          console.log('AppComponent/initializeApp(): Test loading finished');
+          this.notifSvc.scheduleTestNotifications(this.settings.notifTime);
+        }
+      });
     });
   }
 }

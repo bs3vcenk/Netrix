@@ -33,13 +33,16 @@
     <ion-item [@fadeInOut] routerLink="/notif-settings" routerDirection="forward" *ngIf="notifPreference">
       <ion-label>{{ 'settings.api.notifs_exclude' | translate }}</ion-label>
     </ion-item>
-    <!--<ion-item [@fadeInOut] detail-none button (click)="openNotifTimePicker()" *ngIf="notifPreference">
+    <ion-item [@fadeInOut] detail-none button (click)="openNotifTimePicker()" *ngIf="notifPreference">
       <ion-label>{{ 'settings.api.notifs_test_time' | translate}}</ion-label>
       <ion-label item-right text-right>{{ testNotifTime }} {{ dayString }}</ion-label>
-    </ion-item>-->
+    </ion-item>
     <ion-list-header>
       <ion-label>{{ 'settings.client.experimental' | translate }}</ion-label>
     </ion-list-header>
+    <ion-item button (click)="resetNotif()">
+      <ion-label>Reset notifications</ion-label>
+    </ion-item>
     <ion-item>
       <ion-label>{{ 'settings.client.darkmode' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="darkModePreference" (ionChange)="updDarkModePreference()"></ion-toggle>

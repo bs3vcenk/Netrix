@@ -3,6 +3,7 @@ import { LocalNotifications, ILocalNotification } from '@ionic-native/local-noti
 import { ApiService } from './api.service';
 import { BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { SettingsService } from './settings.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ export class NotificationService {
   constructor(
     private notif: LocalNotifications,
     private apiSvc: ApiService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private settings: SettingsService
   ) {
     /* Get all scheduled notifications and let scheduleTestNotifications
      * know we're done */
@@ -25,12 +27,15 @@ export class NotificationService {
   }
 
   syncLocalLists() {
+    console.log('NotificationService/syncLocalLists(): Called');
     this.notif.getAll().then(notifs => {
+      this.scheduledNotifIDs = [];
       notifs.forEach(notifX => {
         this.scheduledNotifIDs.push(notifX.id);
       });
       this.scheduledNotifs = notifs;
       this.notifInitFinished.next(true);
+      console.log(notifs);
     });
   }
 
@@ -62,13 +67,15 @@ export class NotificationService {
             toBeScheduled.push({
               id: test.id,
               title: this.translate.instant('notif.text.test'),
-              text: test.subject + ':' + test.test,
+              text: test.subject + ': ' + test.test + ' ' + this.translate.instant('notif.text.inXdays').replace('DAYS', this.settings.notifTime),
               foreground: true,
-              trigger: { at: new Date((test.date * 1000) - (days * this.oneDayInMiliseconds)) }
+              trigger: { at: new Date((test.date * 1000) - (this.settings.notifTime * this.oneDayInMiliseconds)) }
             } as ILocalNotification);
             this.apiSvc.tests[test.id].scheduled = true;
           }
         });
+        console.log(toBeScheduled);
+        console.log(this.apiSvc.tests);
         this.scheduleNotifications(toBeScheduled);
       }
     });
@@ -76,6 +83,7 @@ export class NotificationService {
 
   private scheduleNotifications(notifications: ILocalNotification | ILocalNotification[]) {
     /* Schedules a list of notifications. Time is in miliseconds */
+    console.log('NotificationService/scheduleNotifications(): Scheduling ' + notifications);
     this.notif.schedule(notifications);
   }
 }

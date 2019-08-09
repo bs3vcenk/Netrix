@@ -123,5 +123,11 @@
     "classes": "Schulfächer",
     "notes": "Notizen",
     "absences": "Abwesenheiten"
+  },
+  "notif": {
+    "text": {
+      "test": "Get ready!",
+      "inXdays": "in DAYS days"
+    }
   }
 }

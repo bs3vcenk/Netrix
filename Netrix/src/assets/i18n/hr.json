@@ -123,5 +123,11 @@
     "classes": "Razredi",
     "notes": "Bilješke",
     "absences": "Izostanci"
+  },
+  "notif": {
+    "text": {
+      "test": "Get ready!",
+      "inXdays": "in DAYS days"
+    }
   }
 }

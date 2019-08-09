@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, PickerController } from '@ionic/angular';
 import { AuthenticationService } from '../services/authentication.service';
 import { SettingsService } from '../services/settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-// import { PickerOptions } from '@ionic/core';
+import { PickerOptions } from '@ionic/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ApiService } from '../services/api.service';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-tab3',
@@ -26,23 +27,24 @@ export class Tab3Page {
   notifPreference = null;
   errorPreference = null;
   adPreference = null;
-  // testNotifTime = null;
+  testNotifTime = null;
   darkModePreference = null;
   dayString = this.translate.instant('settings.api.time_plural');
 
   constructor(
     private authServ: AuthenticationService,
     private settings: SettingsService,
-    // private pickerCtrl: PickerController,
+    private pickerCtrl: PickerController,
     private translate: TranslateService,
     private firebase: FirebaseX,
     private apiSvc: ApiService,
-    private alertControl: AlertController
+    private alertControl: AlertController,
+    private notifSvc: NotificationService
   ) {
     // this.dataPreference = this.settings.dataPreference;
     // this.errorPreference = this.settings.errorPreference;
     this.notifPreference = this.settings.notifPreference;
-    // this.testNotifTime = this.settings.notifTime;
+    this.testNotifTime = this.settings.notifTime;
     this.adPreference = this.settings.adPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
     /*if (this.testNotifTime === 1) {
@@ -106,7 +108,11 @@ export class Tab3Page {
     this.settings.setGlobalTheme(this.settings.globalTheme);
   }
 
-  /*async openNotifTimePicker() {
+  resetNotif() {
+    this.notifSvc.disableAll();
+  }
+
+  async openNotifTimePicker() {
     const opts: PickerOptions = {
       buttons: [
         {
@@ -145,6 +151,6 @@ export class Tab3Page {
         this.dayString = this.translate.instant('settings.api.time_plural');
       }
     });
-  }*/
+  }
 
 }

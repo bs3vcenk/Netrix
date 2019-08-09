@@ -19,7 +19,7 @@ export class SettingsService {
   notifPreference = null;
   adPreference = null;
   language = null;
-  // notifTime = null;
+  notifTime = null;
   apiServer = environment.production ? 'https://api.netrix.io' : 'https://dev-api.netrix.io';
   // httpLimit = 5000;
   globalTheme: string;
@@ -57,13 +57,13 @@ export class SettingsService {
           this.notifPreference = true;
         }
       });
-      /*this.storage.get('notif-time').then(resx => {
+      this.storage.get('notif-time').then(resx => {
         if (resx != null) {
           this.notifTime = resx;
         } else {
           this.notifTime = 3; // three days
         }
-      });*/
+      });
       this.storage.get('global-theme').then(resx => {
         if (resx != null) {
           this.globalTheme = resx;

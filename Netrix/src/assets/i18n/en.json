@@ -123,5 +123,11 @@
     "classes": "Classes",
     "notes": "Notes",
     "absences": "Absences"
+  },
+  "notif": {
+    "text": {
+      "test": "Get ready!",
+      "inXdays": "in DAYS days"
+    }
   }
 }
