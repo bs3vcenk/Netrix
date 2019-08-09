@@ -126,8 +126,8 @@
   },
   "notif": {
     "text": {
-      "test": "Get ready!",
-      "inXdays": "in DAYS days"
+      "test": "Pripremi se!",
+      "inXdays": "za DAYS dana"
     }
   }
 }
