@@ -5,7 +5,7 @@ from flask_cors import CORS
 from apiBackend import *
 import edap
 
-API_VERSION = "2.4-dev"
+API_VERSION = "2.5"
 
 log = logging.getLogger('EDAP-API')
 
