@@ -65,7 +65,6 @@ export class ApiService {
     this.getTests();
     this.getAbsences();
     this.getNotifConfig();
-    this.preloadSubjects();
     forkJoin([this.loadingFinishedAbsences, this.loadingFinishedNotif, this.loadingFinishedSubj, this.loadingFinishedTests])
     .subscribe(([abs, notif, subj, test]) => {
       if (abs && notif && subj && test) {
@@ -94,28 +93,6 @@ export class ApiService {
       this.networkError.next(true);
       throw errorObj;
     }
-  }
-
-  preloadSubjects() {
-    /* If the user chose to use preloading, enable it */
-    this.firebase.startTrace('subjPreload');
-    console.log('ApiService/preloadSubjects(): devPreloadPreference active, preloading all subjects...');
-    /* Fetch a complete list of all subjects (using alldata=1), instead of the stripped list
-     * collected by default */
-    this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects?alldata=1',
-      {},
-      this.httpHeader
-    ).then((rx) => {
-      JSON.parse(rx.data).subjects.forEach(subj => {
-        const processed = this.processSubjectData(subj);
-        this.subjCacheMap[processed.id] = processed;
-      });
-      this.firebase.stopTrace('subjPreload');
-    }, error => {
-      this.firebase.stopTrace('subjPreload');
-      this.handleErr(error);
-    });
   }
 
   receiveNotifType(nType: string) {
@@ -195,7 +172,7 @@ export class ApiService {
     /* Get a stripped list of all subjects (alldata=0), containing no grades or notes */
     this.firebase.startTrace('getSubjects');
     this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects',
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects?alldata=1',
       {},
       this.httpHeader
     ).then((rx) => {
@@ -203,6 +180,8 @@ export class ApiService {
       const allsubs = response.subjects;
       // Iterate over professors list and join it into a comma-separated string
       allsubs.forEach((subj) => {
+        const processed = this.processSubjectData(subj);
+        this.subjCacheMap[processed.id] = processed;
         const profs = subj.professors;
         let profsC = null;
         if (profs.length > 3) {
