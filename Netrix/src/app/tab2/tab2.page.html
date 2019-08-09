@@ -13,7 +13,7 @@
 <ion-content>
   <ion-list lines="full">
     <!-- SWITCH: "Show all tests" at the top -->
-    <ion-item *ngIf="!noItemsLoaded && !dbError">
+    <ion-item>
       <ion-label>{{ 'tab2.showall' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="showAllPreference"></ion-toggle>
     </ion-item>
