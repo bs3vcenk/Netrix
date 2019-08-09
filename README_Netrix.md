@@ -92,7 +92,7 @@ Installed as /home/btx3/Android/Sdk/platform-tools/adb
 
 3. Instalirajte NodeJS module:
 
-Za dostupnost nekih NPM moduleova potrebno ih je instalirati globalno (`-g` argument). Ako se ne želite zamarati problemima pristupa, preporučeno je da slijedite [ove upute](https://github.com/sindresorhus/guides/blob/master/npm-global-without-sudo.md) prije instalacije.
+Za dostupnost nekih NPM moduleova potrebno ih je instalirati globalno (`-g` argument). Ako se ne želite zamarati problemima pristupa, preporučeno je da slijedite [ove upute](https://github.com/sindresorhus/guides/blob/master/npm-global-without-sudo.md) za omogućivanje *sudo-less global NPM* prije instalacije.
 
 Kada ste gotovi, pokrenite ovo:
 
@@ -101,10 +101,10 @@ npm i
 npm i -g cordova cordova-res ionic native-run
 ```
 
-Nakon ove komande, potrebno je i omogućiti korištenje FirebaseX plugina, koji trenutno nema službenu podršku u ionic-native skupini paketa:
+Nakon ove komande, potrebno je i omogućiti korištenje `logError()` funkcije u `@ionic-native/firebase-x` pomoću ove komande:
 
 ```bash
-./firebaseFix.sh
+./patchFirebase.sh
 ```
 
 4. Pokrenite:

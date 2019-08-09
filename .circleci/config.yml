@@ -30,6 +30,10 @@ jobs:
             cd Netrix && ionic cordova platform add android --noresources
             ionic config set -g telemetry true
       - run:
+          name: "Patch @ionic-native/firebase-x:logError"
+          command: |
+            cd Netrix && ./patchFirebase.sh
+      - run:
           name: "Install token"
           command: |
             cd Netrix && echo -e "${GOOGLE_SERVICES_ANDROID}" > google-services.json
