@@ -116,7 +116,7 @@ def generateTestUser() -> (str, str, str):
 						},
 						{
 							"current": True,
-							"date": _time() + 120,
+							"date": _time() + 259200 + 120,
 							"id": 1,
 							"subject": "School subject",
 							"test": "Current test subject"
