@@ -27,7 +27,7 @@ export class NotificationService {
   }
 
   syncLocalLists() {
-    console.log('NotificationService/syncLocalLists(): Called');
+    console.log('NotificationService/syncLocalLists(): Resetting notification lists');
     this.notif.getAll().then(notifs => {
       this.scheduledNotifIDs = [];
       notifs.forEach(notifX => {
@@ -35,7 +35,8 @@ export class NotificationService {
       });
       this.scheduledNotifs = notifs;
       this.notifInitFinished.next(true);
-      console.log(notifs);
+      /*console.log('NotificationService/syncLocalLists(): notifs:');
+      console.log(notifs);*/
     });
   }
 
@@ -56,7 +57,7 @@ export class NotificationService {
     /* Wait until notif.getAll() is done */
     this.notifInitFinished.subscribe(val => {
       if (val) {
-        console.log('NotificationService/scheduleTestNotifications(): notifInitFinished is true');
+        console.log('NotificationService/scheduleTestNotifications(): notifInitFinished, starting schedule');
         // tslint:disable-next-line: prefer-const
         let toBeScheduled = [];
         /* Format every 'current' test into a notification and append it
@@ -67,23 +68,28 @@ export class NotificationService {
             toBeScheduled.push({
               id: test.id,
               title: this.translate.instant('notif.text.test'),
-              text: test.subject + ': ' + test.test + ' ' + this.translate.instant('notif.text.inXdays').replace('DAYS', this.settings.notifTime),
+              text: test.subject + ': ' + test.test + ' '
+                + this.translate.instant('notif.text.inXdays').replace('DAYS', this.settings.notifTime),
               foreground: true,
               trigger: { at: new Date((test.date * 1000) - (this.settings.notifTime * this.oneDayInMiliseconds)) }
             } as ILocalNotification);
             this.apiSvc.tests[test.id].scheduled = true;
           }
         });
+        /*console.log('NotificationService/scheduleTestNotifications(): toBeScheduled:');
         console.log(toBeScheduled);
-        console.log(this.apiSvc.tests);
+        console.log('NotificationService/scheduleTestNotifications(): this.apiSvc.tests:');
+        console.log(this.apiSvc.tests);*/
         this.scheduleNotifications(toBeScheduled);
       }
     });
   }
 
-  private scheduleNotifications(notifications: ILocalNotification | ILocalNotification[]) {
+  private scheduleNotifications(notifications: ILocalNotification[]) {
     /* Schedules a list of notifications. Time is in miliseconds */
-    console.log('NotificationService/scheduleNotifications(): Scheduling ' + notifications);
+    console.log(
+      'NotificationService/scheduleNotifications(): Scheduling ' + notifications.length + ' notifications'
+    );
     this.notif.schedule(notifications);
   }
 }
