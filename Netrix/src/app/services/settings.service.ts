@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { FirebaseService } from './firebase.service';
 import { AdmobService } from './admob.service';
-// import { BehaviorSubject } from 'rxjs';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { BehaviorSubject } from 'rxjs';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { environment } from '../../environments/environment';
 
@@ -14,6 +12,8 @@ import { environment } from '../../environments/environment';
 export class SettingsService {
 
   // hasLoadedDataPref = new BehaviorSubject(false);
+
+  equivSupportedServerVersion = '2.5';
 
   dataPreference = null;
   notifPreference = null;
