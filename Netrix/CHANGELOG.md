@@ -1,4 +1,31 @@
-# Netrix Changelog
+# 1.8.0 (2019-08-09)
+* Restrukturiranje servisa (pod svoj zasebni folder)
+* Lokalne obavijesti pomoću NotificationService
+    * `currentTests` prevoren u Array nepisanih testova
+    * Ponovno uključena opcija izbora vremenskog razmaka za obavijest
+        * Poboljšan handling odabira vremenskog razmaka (cancel više ne odabire već prekida)
+        * Preveden izbor
+    * Dodano svojstvo `scheduled` na svaki ispit
+    * Dodana ikona zvona na ispite koji imaju `scheduled == true`
+* Vrijeme prebačeno u UNIX timestamp umjesto parsiranog teksta
+* Novi dizajn stranice izostanaka
+    * Uklonjena posebna stranica "Detaljni pregled"
+    * Uklonjen graf sa stranice
+    * Detaljni pregled prebačen na glavnu stranicu
+    * Stanje prikazuju od dvije do četiri brojke na vrhu ekrana
+    * Zelena kvačica sa opravdane izostanke, crveni križ za neopravdane
+    * Popravljen prikaz u slučaju da nema izostanaka
+    * Uklonjen `chart.js` dependency
+* Preloading predmeta pretvoren u zadan način hvatanja podataka
+    * Funkcionalnost `ApiService.preloadSubjects` prebačena u `ApiService.getSubjects()`
+* Omogućena opcija `experimentalTransitionShadow` za izgled sličniji iOSu
+* Preveden tekst u tražilici na stranici ispita
+* `ApiService.handleErr()` funkcija pretvorena u `public`
+    * `ApiService.handleErr()` korišten u `subjOverview`
+* Uklonjene animacije iz `subjOverview`
+* Dodani datumi na ocjene i bilješke u `subjOverview`
+* Iskorišten `ApiService.SubjectData` interface u `SubjOverview` umjesto zasebnih varijabli
+* Omogućeno slanje detaljnih izjava o greškama pomoću librarya `stacktrace.js`
 
 ## 1.7.6 (2019-08-04)
 * Opcija "Preloadaj predmete" sada efikasnije hvata podatke sa servera (planirano je da to postane zadani način)
