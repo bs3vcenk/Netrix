@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
-  styleUrls: ['./login.page.scss']
+  styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
 
@@ -16,13 +16,13 @@ export class LoginPage implements OnInit {
   ldController = null;
   isLoading = false;
   dataAlertShown = false;
-  loggingIn = false;
 
   constructor(
     private toastCtrl: ToastController,
     private translate: TranslateService,
     private authServ: AuthenticationService,
     private alertControl: AlertController,
+    private loadControl: LoadingController,
     private firebase: FirebaseX
   ) { }
 
@@ -71,6 +71,17 @@ export class LoginPage implements OnInit {
     });
   }
 
+  async loadDisplay(msg) {
+    this.ldController = await this.loadControl.create({
+      message: msg
+    });
+    await this.ldController.present();
+  }
+
+  async stopLoad() {
+    return await this.ldController.dismiss().then(() => console.log('login/stopLoad(): Dismissed loading screen'));
+  }
+
   _login() {
     if (this.dataAlertShown === false) {
       // User hasn't seen alert, so we show it and set dataAlertShown to true,
@@ -87,15 +98,15 @@ export class LoginPage implements OnInit {
 
   login() {
     // Show "Logging in..."
-    this.loggingIn = true;
+    this.loadDisplay(this.translate.instant('login.alert.loggingin'));
 
     // Send the request
     this.authServ.login(this.loUsername, this.loPassword).subscribe(() => {
       // Everything fine
       console.log('login/login(): Successful login');
-      this.loggingIn = false;
+      this.stopLoad(); // Stop the "Logging in..." alert
     }, (err) => {
-      this.loggingIn = false;
+      this.stopLoad(); // Stop alert
       let e;
       try { e = JSON.parse(err.error); } catch (ex) { e = {error: null}; }
       if (e.error === 'E_INVALID_CREDENTIALS') {

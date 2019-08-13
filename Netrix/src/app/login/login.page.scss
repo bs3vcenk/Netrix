@@ -3,78 +3,16 @@
   font-size: 58px;
 }
 
-#appName, #appDescription {
-  color: #eee;
-}
-/*#loginHeader {
-  padding-top: 50px;
-  padding-bottom: 8px;
-}*/
-
-#loginForm {
-  margin-bottom: 18px !important;
-}
-
-#headerContainer {
-  --ion-background-color: rgb(0,0,0,0);
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  -webkit-animation: gradientBG 15s ease infinite;
-  animation: gradientBG 15s ease infinite;
-  padding-top: 58px;
-  padding-bottom: 8px;
-  background-size: 400% 400%;
-  -webkit-transform: translateZ(0);
-  -moz-transform: translateZ(0);
-  transform: translateZ(0);
-}
-
-@keyframes gradientBG {
-	0% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
-}
-
-@-webkit-keyframes gradientBG {
-	0% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
+#loginHeader {
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 #loginButton {
   padding-left: 10px;
   padding-right: 10px;
-  float: right;
-  --box-shadow: 3px 3.5px 6px -4px rgba(0, 0, 0, 0.75);
 }
 
-#loginPage {
-  box-shadow: -7px 2px 67px -10px rgba(0,0,0,0.75);
-  flex-grow: 1;
-  height: 100%;
-}
-
-ion-content {
-  display: flex;
-  flex-direction: column;
-  --overflow: hidden;
-}
-
-ion-content > * {
-  flex-shrink: 0;
-}
-
-/*#addonButtons {
+#addonButtons {
   text-align: center;
-}*/
+}

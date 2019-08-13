@@ -62,6 +62,8 @@ export class AppComponent {
     this.platform.ready().then(() => {
       /* Set status bar color, style for white bg, black icons, and hide
        * the splash screen once loaded */
+      this.statusBar.backgroundColorByHexString('#ffffff');
+      this.statusBar.styleDefault();
       this.splashScreen.hide();
 
       /* Set the language */
@@ -84,14 +86,7 @@ export class AppComponent {
           /* Navigate to the subject list and prevent returning to the login screen with
            * the back button/gesture */
           this.router.navigate(['tabs', 'tabs', 'tab1'], {replaceUrl: true});
-          /* Style status bar back to normal */
-          this.statusBar.backgroundColorByHexString('#ffffff');
-          this.statusBar.overlaysWebView(false);
-          this.statusBar.styleDefault();
         } else {
-          /* Style status bar for login screen */
-          this.statusBar.overlaysWebView(true);
-          this.statusBar.styleLightContent();
           /* If the user is not logged in, direct to the login page */
           this.router.navigate(['login'], {replaceUrl: true});
           /* Reset BehaviorSubjects in case of a logout */
