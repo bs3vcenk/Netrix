@@ -65,6 +65,11 @@
     <ion-item button (click)="fakeCrash()" *ngIf="developer">
       <ion-label>Fake unhandled exception</ion-label>
     </ion-item>
+    <!-- SWITCH: Status bar overlaysWebView -->
+    <ion-item *ngIf="developer">
+      <ion-label>overlaysWebView</ion-label>
+      <ion-toggle slot="end" [(ngModel)]="vwoverlay" (ionChange)="updStatusBarPreference(vwoverlay)"></ion-toggle>
+    </ion-item>
     <!-- User-facing -->
     <!-- SWITCH: Dark mode-->
     <ion-item>

@@ -9,6 +9,7 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ApiService } from '../services/api.service';
 import { NotificationService } from '../services/notification.service';
 import { environment } from '../../environments/environment';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 @Component({
   selector: 'app-tab3',
@@ -32,6 +33,7 @@ export class Tab3Page {
   darkModePreference = null;
   dayString = this.translate.instant('settings.api.time_plural');
   developer = !environment.production;
+  vwoverlay = false;
 
   constructor(
     private authServ: AuthenticationService,
@@ -42,7 +44,8 @@ export class Tab3Page {
     private apiSvc: ApiService,
     private alertControl: AlertController,
     private toastControl: ToastController,
-    private notifSvc: NotificationService
+    private notifSvc: NotificationService,
+    private statusBar: StatusBar
   ) {
     // this.dataPreference = this.settings.dataPreference;
     // this.errorPreference = this.settings.errorPreference;
@@ -93,6 +96,10 @@ export class Tab3Page {
   /*updDeviceInfoPreference() {
     this.settings.setDataCollection(this.dataPreference);
   }*/
+
+  updStatusBarPreference(pref: boolean) {
+    this.statusBar.overlaysWebView(pref);
+  }
 
   updAdPreference() {
     this.settings.changePreference('ad-preference', this.adPreference);
