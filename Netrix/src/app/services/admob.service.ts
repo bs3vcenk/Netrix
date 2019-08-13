@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AdMobPro } from '@ionic-native/admob-pro/ngx';
+import { AdMobFree, AdMobFreeBannerConfig } from '@ionic-native/admob-free/ngx';
 import { Storage } from '@ionic/storage';
-import { Platform } from '@ionic/angular';
 
 @Injectable()
 export class AdmobService {
@@ -13,9 +12,8 @@ export class AdmobService {
   adPreference = null;
 
   constructor(
-    private admob: AdMobPro,
-    private storage: Storage,
-    private platform: Platform
+    private admob: AdMobFree,
+    private storage: Storage
   ) {
     /* Check if the user wants to see ads */
     this.storage.get('ad-preference').then(res => {
@@ -31,12 +29,17 @@ export class AdmobService {
     if (this.adPreference) {
       /* Show the ad banner */
       console.log('AdmobService/showBanner(): Showing ad banner');
-      this.admob.createBanner({
-        adId: this.admobid.banner,
-        isTesting: false,
+      const bannerConfig: AdMobFreeBannerConfig = {
+        id: 'ca-app-pub-3536042070948443/8284474155',
         autoShow: true,
-        adSize: 'BANNER',
-        position: this.admob.AD_POSITION.BOTTOM_CENTER,
+        size: 'BANNER'
+      };
+      this.admob.banner.config(bannerConfig);
+      this.admob.banner.prepare().then(() => {
+        console.log('AdmobService/showBanner(): Banner is displayed');
+      }, (err) => {
+        console.log('AdmobService/showBanner(): Failed to show banner, throwing to Crashlytics');
+        throw err;
       });
     } else {
       console.log('AdmobService/showBanner(): Not showing ad because of preference');

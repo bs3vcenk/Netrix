@@ -16,7 +16,7 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { CrashlyticsErrorHandler } from './services/firebase.service';
-import { AdMobPro } from '@ionic-native/admob-pro/ngx';
+import { AdMobFree } from '@ionic-native/admob-free/ngx';
 import { AdmobService } from './services/admob.service';
 import { CountUpModule } from 'countup.js-angular2';
 import { HTTP } from '@ionic-native/http/ngx';
@@ -68,7 +68,7 @@ export function createTranslateLoader(http: HttpClient) {
     Device,
     { provide: ErrorHandler, useClass: CrashlyticsErrorHandler },
     FirebaseX,
-    AdMobPro,
+    AdMobFree,
     AdmobService,
     HTTP,
     LocalNotifications
