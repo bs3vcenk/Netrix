@@ -1,3 +1,10 @@
+## 1.8.1 (2019-08-13)
+* Novi dizajn ekrana za prijavu
+* Zamjena sumnjivog librarya za reklame s open-source libraryem
+* Ažuriranje na Angular 8
+* Slanje ekvivalentne verzije servera za usporedbu
+* Dodana poruka pri promjeni postavke za prikazivanje reklama
+
 # 1.8.0 (2019-08-09)
 * Restrukturiranje servisa (pod svoj zasebni folder)
 * Lokalne obavijesti pomoću NotificationService
