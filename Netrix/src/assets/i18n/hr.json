@@ -50,7 +50,8 @@
           "done": "OK",
           "cancel": "Zatvori"
         }
-      }
+      },
+      "effect_on_restart": "Ova promjena će stupiti na snagu nakon ponovnog pokretanja aplikacije."
     }
   },
   "tab4": {

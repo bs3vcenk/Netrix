@@ -50,7 +50,8 @@
           "done": "OK",
           "cancel": "Cancel"
         }
-      }
+      },
+      "effect_on_restart": "This change will go into effect after you restart the application."
     }
   },
   "tab4": {

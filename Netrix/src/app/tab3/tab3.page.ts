@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, PickerController } from '@ionic/angular';
+import { AlertController, PickerController, ToastController } from '@ionic/angular';
 import { AuthenticationService } from '../services/authentication.service';
 import { SettingsService } from '../services/settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
@@ -41,6 +41,7 @@ export class Tab3Page {
     private firebase: FirebaseX,
     private apiSvc: ApiService,
     private alertControl: AlertController,
+    private toastControl: ToastController,
     private notifSvc: NotificationService
   ) {
     // this.dataPreference = this.settings.dataPreference;
@@ -96,6 +97,13 @@ export class Tab3Page {
   updAdPreference() {
     this.settings.changePreference('ad-preference', this.adPreference);
     this.settings.adPreference = this.adPreference;
+    this.toastControl.create({
+      message: this.translate.instant('tab3.alert.effect_on_restart'),
+      duration: 3000,
+      color: 'dark'
+    }).then((toast) => {
+      toast.present();
+    });
   }
 
   updMainNotificationPreference() {
