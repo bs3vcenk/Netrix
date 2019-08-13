@@ -104,7 +104,7 @@ npm i -g cordova cordova-res ionic native-run
 Nakon ove komande, potrebno je i omogućiti korištenje `logError()` funkcije u `@ionic-native/firebase-x` pomoću ove komande:
 
 ```bash
-./patchFirebase.sh
+./patches/patchFirebase.sh
 ```
 
 4. Pokrenite:
@@ -123,3 +123,23 @@ Nakon ove komande, potrebno je i omogućiti korištenje `logError()` funkcije u 
     `ionic cordova run ios --device`
 * iOS: Release build:
     Upute stižu kasnije
+
+## Build za Android
+
+Build za Android trenutno treba patch nakon stvaranja platforme jer AdMobFree definira prestaru verziju Google Play Services. Potrebno je prvo kreirati platformu:
+
+```shell
+ionic cordova platform add android --no-resources
+```
+
+Pa onda napraviti patch:
+
+```shell
+./patches/patchGPlayVersion.sh
+```
+
+Pa će tek tada biti moguć build:
+
+```shell
+ionic cordova build android # --prod --release
+```
