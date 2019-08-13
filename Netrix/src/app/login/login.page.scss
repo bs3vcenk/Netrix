@@ -3,16 +3,62 @@
   font-size: 58px;
 }
 
-#loginHeader {
+#headerContainer {
   margin-top: 8px;
   margin-bottom: 8px;
+}
+
+#appName {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-animation: flow 10s infinite linear;
+}
+
+#loginButton {
+  transition: width 1s;
+}
+
+@-webkit-keyframes flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 #loginButton {
   padding-left: 10px;
   padding-right: 10px;
+  float: right;
+  --box-shadow: 3px 3.5px 6px -4px rgba(0, 0, 0, 0.75);
+}
+	
+#loginPage {
+  flex-grow: 1;
+  height: 100%;
+}
+	
+ion-content {
+  display: flex;
+  flex-direction: column;
+  --overflow: hidden;
+}
+	
+ion-content > * {
+  flex-shrink: 0;
 }
 
 #addonButtons {
-  text-align: center;
+  float: left;
+}
+
+#loginForm {
+  margin-bottom: 18px !important;
 }
