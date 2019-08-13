@@ -25,7 +25,7 @@ export class PrivacyPage implements OnInit {
       const converter = new showdown.Converter();
       this.html = converter.makeHtml(response.data);
     }, (error) => {
-      this.html = '<h1>Network error</h1>';
+      this.html = '<h1>Greška</h1><h2>Server je odgovorio s ' + error.status + '<h2>';
     });
   }
 
