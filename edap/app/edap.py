@@ -4,6 +4,7 @@ import sys
 import inspect
 import re
 import requests
+from timeit import default_timer as timer
 try:
 	from bs4 import BeautifulSoup
 except ModuleNotFoundError:
@@ -40,13 +41,14 @@ class edap:
 	             pasw: str,
 	             parser="html.parser",
 	             edurl="https://ocjene.skole.hr",
-	             useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0",
+	             ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0",
 	             debug=False,
 	             loglevel=1,
 	             hidepriv=True,
 	             log_func_name=True,
 	             redirect_log_to_file=False,
-	             hide_confidential=True):
+				 hide_confidential=True,
+				 return_processing_time=False):
 		"""
 			Authenticates the user to eDnevnik.
 
@@ -54,7 +56,7 @@ class edap:
 			:param str pasw: Password for eDnevnik
 			:param str parser: The parser that will be used for BeautifulSoup
 			:param str edurl: HTTP(S) address to the eDnevnik service
-			:param str useragent: The User-Agent header which will be sent to the service
+			:param str ua: The User-Agent header which will be sent to the service
 			:param bool debug: Enables/disables logging
 			:param int loglevel: Level of logging, can be 0-4, although 4 (fatal) is always shown
 			:param bool hidepriv: Enables/disables hiding identifiable information
@@ -62,25 +64,24 @@ class edap:
 			:param redirect_log_to_file: Enables logging to file, if False it is disabled
 			:type redirect_log_to_file: str or False
 			:param bool hide_confidential: Enables/disables returning confidential information, such as OIB
+			:param bool return_processing_time: Returns additional variable containing processing time in s
 
 			:raises WrongCredentials: If the provided credentials are invalid
 		"""
 		self.parser = parser
 		self.edurl = edurl
 		self.user = user
-		self.useragent = useragent
+		self.useragent = ua
 		self.debug = debug
 		self.loglevel = loglevel
 		self.hidepriv = hidepriv
 		self.log_func_name = log_func_name
 		self.hide_confidential = hide_confidential
+		self.return_processing_time = return_processing_time
 		self.class_ids = []
 		self.subject_ids = []
 		if redirect_log_to_file:
 			sys.stdout = open(redirect_log_to_file, "w")
-		print("=> EDAP (eDnevnikAndroidProject) %s" % EDAP_VERSION)
-		self.__edlog(1, "Init variables: parser=%s, edurl=%s, user=[{%s}], useragent=%s, debug=%s, loglevel=%s, hidepriv=%s, log_func_name=%s" %
-		             (self.parser, self.edurl, self.user, self.useragent, self.debug, self.loglevel, self.hidepriv, self.log_func_name))
 		self.__edlog(1, "Initializing requests.Session() object")
 		self.session = requests.Session()
 		self.session.headers.update({"User-Agent":self.useragent})
@@ -94,9 +95,13 @@ class edap:
 		self.__edlog(1, "Got CSRF: [{%s}]" % self.csrf)
 		self.__edlog(1, "Trying to authenticate %s" % self.user)
 		try:
-			t = self.session.post("%s/pocetna/posalji/" % self.edurl, data={"csrf_token":self.csrf, "user_login":user, "user_password":pasw})
-			t.raise_for_status()
-			if "Krivo korisničko ime i/ili lozinka." in t.text or "Potrebno je upisati korisničko ime i lozinku." in t.text or "nije pronađen u LDAP imeniku škole" in t.text or "Neispravno korisničko ime." in t.text:
+			r = self.session.post("%s/pocetna/posalji/" % self.edurl,
+			                      data={"csrf_token": self.csrf, "user_login": user, "user_password": pasw})
+			r.raise_for_status()
+			if ("Krivo korisničko ime i/ili lozinka." in r.text or
+			    "Potrebno je upisati korisničko ime i lozinku." in r.text or
+			    "nije pronađen u LDAP imeniku škole" in r.text or
+			    "Neispravno korisničko ime." in r.text):
 				raise WrongCredentials
 		except requests.HTTPError as e:
 			self.__edlog(4, "Failed to connect to eDnevnik (%s)" % e)
@@ -129,7 +134,7 @@ class edap:
 		o.raise_for_status()
 		return o.text
 
-	def getClasses(self) -> list:
+	def getClasses(self):
 		"""
 			Returns all classes offered by the post-login screen
 
@@ -144,6 +149,8 @@ class edap:
 			response = self.__fetch("%s/razredi/odabir" % self.edurl)
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting class selection HTML (%s)" % e)
+		if self.return_processing_time:
+			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		classlist_preformat = soup.find_all("a", class_="class-wrap")
@@ -162,12 +169,20 @@ class edap:
 			y = x[2].split(", ")
 			# y[0] -> institution name
 			# y[1] -> institution city
-			classlist.append({"class":x[0], "year":x[1].replace("Školska godina ", ""), "school_name":y[0], "school_city":y[1], "classmaster":x[3].replace("Razrednik: ", "")})
+			classlist.append({
+				"class":x[0],
+				"year":x[1].replace("Školska godina ", ""),
+				"school_name":y[0],
+				"school_city":y[1],
+				"classmaster":x[3].replace("Razrednik: ", "")
+			})
 			self.class_ids.append(i["href"].replace("/pregled/predmeti/", ""))
 		self.__edlog(1, "Completed with %s classes found" % len(classlist))
+		if self.return_processing_time:
+			return classlist, timer() - start
 		return classlist
 
-	def getSubjects(self, class_id: int) -> list:
+	def getSubjects(self, class_id: int):
 		"""
 			Return list of subjects and professors for class ID "class_id"
 
@@ -180,6 +195,8 @@ class edap:
 			response = self.__fetch("%s/pregled/predmeti/%s" % (self.edurl, self.class_ids[class_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting subject list (%s)" % e)
+		if self.return_processing_time:
+			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		subjectlist_preformat = soup.find("div", id="courses").find_all("a")
@@ -194,15 +211,14 @@ class edap:
 			except AttributeError as e:
 				self.__edlog(3, "HTML parsing error! [%s]" % (e))
 			prof = ''.join(x[1:]).split(", ")
-			try:
-				t = prof.index("/")
+			if "/" in prof:
 				self.__edlog(0, "Found empty professor string, replacing")
-				prof[t] = None
-			except ValueError:
-				self.__edlog(0, "No empty professor string found, continuing normally")
+				prof[prof.index("/")] = None
 			subjinfo.append({'subject':x[0].strip(), 'professors':prof})
 			self.subject_ids.append(i["href"])
 		self.__edlog(1, "Completed with %s subjects found" % len(subjinfo))
+		if self.return_processing_time:
+			return subjinfo, timer() - start
 		return subjinfo
 
 	def getTests(self, class_id: int, alltests=False):
@@ -224,22 +240,28 @@ class edap:
 			response = self.__fetch("%s/pregled/ispiti/%s" % (self.edurl, str(self.class_ids[class_id]) + addon))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting test list (%s)" % e)
+		if self.return_processing_time:
+			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
-			xtab = soup.find('table').find_all('td')
+			x = soup.find('table').find_all('td')
 		except AttributeError:
 			self.__edlog(1, "No tests remaining found")
 			return []
 		self.__edlog(1, "Formatting table into list")
-		for i, item in enumerate(xtab):
-			xtab[i] = item.getText()
-		af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
-		afx = [{"subject": x, "test": y, "date": _format_to_date(z)} for x, y, z in af]
-		self.__edlog(1, "Completed with %s tests processed" % len(afx))
-		return afx
+		for i, item in enumerate(x):
+			x[i] = item.getText()
+		# First for loop (x[i:i+3] in ...) splits list into chunks containing 3 elements,
+		# 	[0] or x in 2nd for loop => subject that the test is for
+		# 	[1] or y in 2nd for loop => the subject of the test
+		# 	[2] or z in 2nd for loop => the date of the test, formatted in dd.mm.yyyy., converted to UNIX timestamp
+		final_returnable = [{"subject": x, "test": y, "date": _format_to_date(z)} for x, y, z in [x[i:i+3] for i in range(0, len(x), 3)]]
+		if self.return_processing_time:
+			return final_returnable, timer() - start
+		return final_returnable
 
-	def getGradesForSubject(self, class_id: int, subject_id: int) -> list:
+	def getGradesForSubject(self, class_id: int, subject_id: int):
 		"""
 			Return grade list (dict, values "date", "note" and "grade") for a subject_id
 
@@ -253,19 +275,21 @@ class edap:
 			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
+		if self.return_processing_time:
+			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		xtab = soup.find("div", class_="grades").find_all("table")[1].find_all("td")
-		for i, item in enumerate(xtab):
-			xtab[i] = item.getText().strip()
-		af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
-		fg_list = []
-		if af[0][0] == "Nema ostalih bilježaka":
+		x = soup.find("div", class_="grades").find_all("table")[1].find_all("td")
+		for i, item in enumerate(x):
+			x[i] = item.getText().strip()
+		grades_unfiltered = [x[i:i+3] for i in range(0, len(x), 3)] # Every three items get grouped into a list
+		if grades_unfiltered[0][0] == "Nema ostalih bilježaka":
 			self.__edlog(1, "No grades found for this subject")
 			return []
-		for y in af:
-			fg_list.append({"date": _format_to_date(y[0]), "note":y[1], "grade":int(y[2])})
-		return fg_list
+		final_returnable = [{"date": _format_to_date(y[0]), "note":y[1], "grade":int(y[2])} for y in grades_unfiltered]
+		if self.return_processing_time:
+			return final_returnable, timer() - start
+		return final_returnable
 
 	def getNotesForSubject(self, class_id: int, subject_id: int):
 		"""
@@ -281,19 +305,23 @@ class edap:
 			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting notes for subject (%s)" % e)
+		if self.return_processing_time:
+			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		xtab = soup.find("div", class_="grades").find_all("table")[2].find_all("td")
-		for i, item in enumerate(xtab):
-			xtab[i] = item.getText().strip()
-		af = [xtab[x:x+2] for x in range(0, len(xtab), 2)] # Every two items get grouped into a list
-		fn_list = []
-		if af[0][0] == "Nema ostalih bilježaka":
+		x = soup.find("div", class_="grades").find_all("table")[2].find_all("td")
+		for i, item in enumerate(x):
+			x[i] = item.getText().strip()
+		notes_unfiltered = [x[i:i+2] for i in range(0, len(x), 2)] # Every two items get grouped into a list
+		if notes_unfiltered[0][0] == "Nema ostalih bilježaka":
 			self.__edlog(1, "No notes found for this subject")
+			if self.return_processing_time:
+				return [], timer() - start
 			return []
-		for y in af:
-			fn_list.append({"date": _format_to_date(y[0]), "note":y[1]})
-		return fn_list
+		final_returnable = [{"date": _format_to_date(y[0]), "note":y[1]} for y in notes_unfiltered]
+		if self.return_processing_time:
+			return final_returnable, timer() - start
+		return final_returnable
 
 	def getConcludedGradeForSubject(self, class_id: int, subject_id: int):
 		"""
@@ -309,20 +337,26 @@ class edap:
 			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
+		if self.return_processing_time:
+			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
-			xtab = soup.find("div", class_="grades").find("table").find_all("td", class_="t-center bold")[1].getText().strip()
+			x = soup.find("div", class_="grades").find("table").find_all("td", class_="t-center bold")[1].getText().strip()
 		except AttributeError as e:
 			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
-		if xtab:
-			self.__edlog(0, "Got unformatted string: [{%s}]" % xtab)
-			result = re.search(r'\((.*)\)', xtab).group(1)
+		if x:
+			self.__edlog(0, "Got unformatted string: [{%s}]" % x)
+			result = re.search(r'\((.*)\)', x).group(1)
 			self.__edlog(0, "Formatted string: [{%s}]" % result)
 			self.__edlog(0, "Found concluded grade for this subject")
+			if self.return_processing_time:
+				return True, int(result), timer() - start
 			return True, int(result)
 		else:
 			self.__edlog(0, "No concluded grade found for this subject")
+			if self.return_processing_time:
+				return False, None, timer() - start
 			return False, None
 
 	def getInfoForUser(self, class_id: int):
@@ -336,17 +370,30 @@ class edap:
 			response = self.__fetch("%s/pregled/osobni_podaci/%s" % (self.edurl, self.class_ids[class_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed to get info for class (%s)" % e)
+		if self.return_processing_time:
+			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
-			xtab = soup.find("div", class_="student-details").find("table").find_all("td")
+			x = soup.find("div", class_="student-details").find("table").find_all("td")
 		except AttributeError as e:
 			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
-		oData = {"number":int(xtab[0].getText()), "name":xtab[1].getText(), "oib":xtab[2].getText(), "birthdate":xtab[3].getText(), "birthplace":xtab[4].getText(), "matbroj":xtab[5].getText(), "address":xtab[6].getText(), "program":xtab[7].getText()}
+		user_data = {
+			"number":int(x[0].getText()),
+			"name":x[1].getText(),
+			"oib":x[2].getText(),
+			"birthdate":x[3].getText(),
+			"birthplace":x[4].getText(),
+			"matbroj":x[5].getText(),
+			"address":x[6].getText(),
+			"program":x[7].getText()
+		}
 		if self.hide_confidential:
-			del oData['oib']
-			del oData['matbroj']
-		return oData
+			del user_data['oib']
+			del user_data['matbroj']
+		if self.return_processing_time:
+			return user_data, timer() - start
+		return user_data
 
 	def getAbsentOverviewForClass(self, class_id: int):
 		"""
@@ -360,23 +407,28 @@ class edap:
 			response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed to get absent overview for class (%s)" % e)
+		if self.return_processing_time:
+			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
-			xtab = soup.find("table", class_="legend").find_all("td")
+			x = soup.find("table", class_="legend").find_all("td")
 		except AttributeError as e:
 			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
-		xtab_fix = []
-		for x in xtab:
+		x_fix = []
+		for x in x:
 			if not x.find("img"): # Ignore all <img> tags
-				xtab_fix.append(x.getText())
-		return {
-			'justified': int(xtab_fix[0].replace("Opravdanih: ", "")),
-			'unjustified': int(xtab_fix[1].replace("Neopravdanih: ", "")),
-			'awaiting': int(xtab_fix[2].replace("Čeka odluku razrednika: ", "")),
-			'sum': int(xtab_fix[3].replace("Ukupno: ", "")),
-			'sum_leftover': int(xtab_fix[4].replace("Ukupno ostalo: ", ""))
+				x_fix.append(x.getText())
+		final_returnable = {
+			'justified': int(x_fix[0].replace("Opravdanih: ", "")),
+			'unjustified': int(x_fix[1].replace("Neopravdanih: ", "")),
+			'awaiting': int(x_fix[2].replace("Čeka odluku razrednika: ", "")),
+			'sum': int(x_fix[3].replace("Ukupno: ", "")),
+			'sum_leftover': int(x_fix[4].replace("Ukupno ostalo: ", ""))
 		}
+		if self.return_processing_time:
+			return final_returnable, timer() - start
+		return final_returnable
 
 	def getAbsentFullListForClass(self, class_id: int):
 		"""
@@ -389,28 +441,29 @@ class edap:
 			response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed to get absent list for class (%s)" % e)
+		if self.return_processing_time:
+			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
-			xtab = soup.find_all("table")[1]
+			x = soup.find_all("table")[1]
 		except AttributeError as e:
 			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
 		## BLACK FUCKING MAGIC AHEAD ##
 		##    You have been warned   ##
-		o = xtab.find_all("tr")
-		o = o[1:]
+		o = x.find_all("tr")[1:]
 		abslist = []
-		lastSearched = 0
+		last_searched = 0
 		for x in o:
 			y = x.find_all("td", class_="datum")
 			if y:
 				spanning = int(y[0].get("rowspan"))
 				abslist.append({
 					'span': spanning,
-					'loc': lastSearched,
+					'loc': last_searched,
 					'date': _format_to_date(y[0].getText("\n").split()[1])
 				})
-			lastSearched += 1
+			last_searched += 1
 		abslist2 = []
 		for x in abslist:
 			absLst = {'date':x['date'], 'absences':[]}
@@ -422,4 +475,6 @@ class edap:
 				absObj["justified"] = absence.find("td", class_="opravdano").find("img").get("alt") == "Opravdano"
 				absLst['absences'].append(absObj)
 			abslist2.append(absLst)
+		if self.return_processing_time:
+			return abslist2, timer() - start
 		return abslist2
