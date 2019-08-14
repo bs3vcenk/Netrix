@@ -76,7 +76,7 @@ class edap:
 		self.hide_confidential = hide_confidential
 		self.class_ids = []
 		self.subject_ids = []
-		if redirect_log_to_file != False:
+		if redirect_log_to_file:
 			sys.stdout = open(redirect_log_to_file, "w")
 		print("=> EDAP (eDnevnikAndroidProject) %s" % EDAP_VERSION)
 		self.__edlog(1, "Init variables: parser=%s, edurl=%s, user=[{%s}], useragent=%s, debug=%s, loglevel=%s, hidepriv=%s, log_func_name=%s" %
