@@ -1,4 +1,4 @@
-# eDnevnikAndroidProject - main library
+"""A library for parsing CARNet's eDnevnik using BeautifulSoup."""
 import sys, inspect, re, requests
 from datetime import datetime
 try:
@@ -15,34 +15,42 @@ elif sys.version[2] <= "5":
 	sys.exit(1)
 
 class FatalLogExit(Exception):
-	pass
+	"""Level 4 log error (fatal), ex. parsing fail or HTTP != 200
+	TODO: Separate above into different exceptions
+	"""
 
 class WrongCredentials(Exception):
-	pass
+	"""Incorrect credentials"""
 
-edap_version = "B4"
+EDAP_VERSION = "B4"
 
-def formatToDate(preFStr: str, dateFormat="%d.%m.%Y.") -> int:
+def _format_to_date(preformat_string: str, date_format="%d.%m.%Y.") -> int:
 	"""
 		Formats a string into a UNIX timestamp.
 
-		ARGS: preFStr [str/required], dateFormat []
+		:param str preformat_string: Formatted date string
+		:param str date_format: The format in which preFStr is provided
+		:return: UNIX timestamp
+		:rtype: int
 	"""
-	return int(datetime.strptime(preFStr, dateFormat).timestamp())
+	return int(datetime.strptime(preformat_string, date_format).timestamp())
 
 class edap:
+	"""
+		eDnevnik scraping library.
+	"""
 	def __init__(self,
-		user: str,
-		pasw: str,
-		parser="html.parser",
-		edurl="https://ocjene.skole.hr",
-		useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0",
-		debug=False,
-		loglevel=1,
-		hidepriv=True,
-		log_func_name=True,
-		redirect_log_to_file=False,
-		hideConfidential=True):
+	             user: str,
+	             pasw: str,
+	             parser="html.parser",
+	             edurl="https://ocjene.skole.hr",
+	             useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0",
+	             debug=False,
+	             loglevel=1,
+	             hidepriv=True,
+	             log_func_name=True,
+	             redirect_log_to_file=False,
+	             hideConfidential=True):
 		"""
 			Authenticates the user to eDnevnik.
 
@@ -72,7 +80,7 @@ class edap:
 		self.hideConfidential = hideConfidential
 		if redirect_log_to_file != False:
 			sys.stdout = open(redirect_log_to_file, "w")
-		print("=> EDAP (eDnevnikAndroidProject) %s" % edap_version)
+		print("=> EDAP (eDnevnikAndroidProject) %s" % EDAP_VERSION)
 		self.__edlog(1, "Init variables: parser=%s, edurl=%s, user=[{%s}], useragent=%s, debug=%s, loglevel=%s, hidepriv=%s, log_func_name=%s" %
 			(self.parser, self.edurl, self.user, self.useragent, self.debug, self.loglevel, self.hidepriv, self.log_func_name))
 		self.__edlog(1, "Initializing requests.Session() object")
@@ -230,7 +238,7 @@ class edap:
 		for i in range(len(xtab)):
 			xtab[i] = xtab[i].getText()
 		af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
-		afx = [{"subject": x, "test": y, "date": formatToDate(z)} for x, y, z in af]
+		afx = [{"subject": x, "test": y, "date": _format_to_date(z)} for x, y, z in af]
 		self.__edlog(1, "Completed with %s tests processed" % len(afx))
 		return afx
 
@@ -259,7 +267,7 @@ class edap:
 			self.__edlog(1, "No grades found for this subject")
 			return []
 		for y in af:
-			fg_list.append({"date": formatToDate(y[0]), "note":y[1], "grade":int(y[2])})
+			fg_list.append({"date": _format_to_date(y[0]), "note":y[1], "grade":int(y[2])})
 		return fg_list
 
 	def getNotesForSubject(self, class_id: int, subject_id: int):
@@ -287,7 +295,7 @@ class edap:
 			self.__edlog(1, "No notes found for this subject")
 			return []
 		for y in af:
-			fn_list.append({"date": formatToDate(y[0]), "note":y[1]})
+			fn_list.append({"date": _format_to_date(y[0]), "note":y[1]})
 		return fn_list
 
 	def getConcludedGradeForSubject(self, class_id: int, subject_id: int):
@@ -403,7 +411,7 @@ class edap:
 				abslist.append({
 					'span': spanning,
 					'loc': lastSearched,
-					'date': formatToDate(y[0].getText("\n").split()[1])
+					'date': _format_to_date(y[0].getText("\n").split()[1])
 				})
 			lastSearched += 1
 		abslist2 = []
