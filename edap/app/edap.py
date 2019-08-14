@@ -390,13 +390,13 @@ class edap:
 		self.__edlog(0, "Getting absent list for class id %s" % class_id)
 		try:
 			response = self.__fetchUrl("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
-		except Exception as e:
+		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed to get absent list for class (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
 			xtab = soup.find_all("table")[1]
-		except:
+		except AttributeError as e:
 			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,soup))
 		## BLACK FUCKING MAGIC AHEAD ##
 		##    You have been warned   ##
