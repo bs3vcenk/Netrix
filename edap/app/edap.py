@@ -10,13 +10,6 @@ except ModuleNotFoundError:
 	print("ERROR: BeautifulSoup isn't installed -- check the instructions and try again.")
 	sys.exit(1)
 
-if sys.version[0] == "2":
-	print("ERROR: eDAP does not support Python 2. Upgrade to Python 3.5 or newer to use eDAP.")
-	sys.exit(1)
-elif sys.version[2] <= "5":
-	print("ERROR: Your version of Python does not support PEP 484 typing. Upgrade to Python 3.5 or newer.")
-	sys.exit(1)
-
 class FatalLogExit(Exception):
 	"""Level 4 log error (fatal), ex. parsing fail or HTTP != 200
 	TODO: Separate above into different exceptions
