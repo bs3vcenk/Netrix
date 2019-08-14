@@ -314,7 +314,7 @@ class edap:
 			xtab = soup.find("div", class_="grades").find("table").find_all("td", class_="t-center bold")[1].getText().strip()
 		except AttributeError as e:
 			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
-		if len(xtab) > 0:
+		if xtab:
 			self.__edlog(0, "Got unformatted string: [{%s}]" % xtab)
 			result = re.search(r'\((.*)\)', xtab).group(1)
 			self.__edlog(0, "Formatted string: [{%s}]" % result)
@@ -402,7 +402,7 @@ class edap:
 		lastSearched = 0
 		for x in o:
 			y = x.find_all("td", class_="datum")
-			if len(y) > 0:
+			if y:
 				spanning = int(y[0].get("rowspan"))
 				abslist.append({
 					'span': spanning,
