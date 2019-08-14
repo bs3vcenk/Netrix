@@ -182,24 +182,25 @@ class edap:
 			self.__edlog(4, "Failed getting subject list (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		subjectlist_preformat = soup.find_all("div", id="courses")
-		sl2 = subjectlist_preformat[0].find_all("a")
+		subjectlist_preformat = soup.find("div", id="courses").find_all("a")
 		self.__edlog(0, "Populating subject list")
 		subjinfo = []
-		for i in sl2:
+		for i in subjectlist_preformat:
+			if not i.has_attr('name'):
+				self.__edlog(1, 'Object has no name attribute, skipping')
+				continue
 			try:
-				h = i.find("div", class_="course").get_text("\n").split("\n")
+				x = i.find("div", class_="course").get_text("\n").split("\n")
 			except AttributeError as e:
-				self.__edlog(3, "HTML parsing error! [%s] Probably new grade notification, attempting workaround..." % (e))
-				h = i.find_all("div", class_="course")[1].get_text("\n").split("\n")
-			prof = ''.join(h[1:]).split(", ")
+				self.__edlog(3, "HTML parsing error! [%s]" % (e))
+			prof = ''.join(x[1:]).split(", ")
 			try:
 				t = prof.index("/")
 				self.__edlog(0, "Found empty professor string, replacing")
 				prof[t] = None
 			except ValueError:
 				self.__edlog(0, "No empty professor string found, continuing normally")
-			subjinfo.append({'subject':h[0].strip(), 'professors':prof})
+			subjinfo.append({'subject':x[0].strip(), 'professors':prof})
 			self.subject_ids.append(i["href"])
 		self.__edlog(1, "Completed with %s subjects found" % len(subjinfo))
 		return subjinfo
