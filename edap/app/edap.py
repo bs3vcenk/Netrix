@@ -231,8 +231,8 @@ class edap:
 			self.__edlog(1, "No tests remaining found")
 			return []
 		self.__edlog(1, "Formatting table into list")
-		for i in range(len(xtab)):
-			xtab[i] = xtab[i].getText()
+		for i, item in enumerate(xtab):
+			xtab[i] = item.getText()
 		af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
 		afx = [{"subject": x, "test": y, "date": _format_to_date(z)} for x, y, z in af]
 		self.__edlog(1, "Completed with %s tests processed" % len(afx))
@@ -255,8 +255,8 @@ class edap:
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		xtab = soup.find("div", class_="grades").find_all("table")[1].find_all("td")
-		for x in range(len(xtab)):
-			xtab[x] = xtab[x].getText().strip()
+		for i, item in enumerate(xtab):
+			xtab[i] = item.getText().strip()
 		af = [xtab[x:x+3] for x in range(0, len(xtab), 3)] # Every three items get grouped into a list
 		fg_list = []
 		if af[0][0] == "Nema ostalih bilježaka":
@@ -283,8 +283,8 @@ class edap:
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		xtab = soup.find("div", class_="grades").find_all("table")[2].find_all("td")
-		for x in range(len(xtab)):
-			xtab[x] = xtab[x].getText().strip()
+		for i, item in enumerate(xtab):
+			xtab[i] = item.getText().strip()
 		af = [xtab[x:x+2] for x in range(0, len(xtab), 2)] # Every two items get grouped into a list
 		fn_list = []
 		if af[0][0] == "Nema ostalih bilježaka":
