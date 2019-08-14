@@ -19,7 +19,7 @@ class FatalLogExit(Exception):
 class WrongCredentials(Exception):
 	"""Incorrect credentials"""
 
-EDAP_VERSION = "B4"
+EDAP_VERSION = "C1"
 
 def _format_to_date(preformat_string: str, date_format="%d.%m.%Y.") -> int:
 	"""
