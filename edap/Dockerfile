@@ -188,6 +188,7 @@ RUN apk add --no-cache --virtual .pydeps python3-dev openssl-dev \
     redis \
     pyfcm \
     google-cloud-firestore \
+	lxml \
     && apk del .pydeps .build-deps \
     && apk add --no-cache libstdc++ redis
 
