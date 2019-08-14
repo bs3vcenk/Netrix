@@ -1,6 +1,9 @@
 """A library for parsing CARNet's eDnevnik using BeautifulSoup."""
-import sys, inspect, re, requests
 from datetime import datetime
+import sys
+import inspect
+import re
+import requests
 try:
 	from bs4 import BeautifulSoup
 except ModuleNotFoundError:
