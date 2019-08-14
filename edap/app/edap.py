@@ -78,6 +78,8 @@ class edap:
 		self.hidepriv = hidepriv
 		self.log_func_name = log_func_name
 		self.hideConfidential = hideConfidential
+		self.class_ids = []
+		self.subject_ids = []
 		if redirect_log_to_file != False:
 			sys.stdout = open(redirect_log_to_file, "w")
 		print("=> EDAP (eDnevnikAndroidProject) %s" % EDAP_VERSION)
@@ -151,7 +153,6 @@ class edap:
 		classlist_preformat = soup.find_all("a", class_="class-wrap")
 		self.__edlog(0, "Populating class list")
 		classlist = []
-		self.class_ids = []
 		for i in classlist_preformat:
 			try:
 				x = i.find("div", class_="class").get_text("\n").split("\n")
@@ -188,7 +189,6 @@ class edap:
 		subjectlist_preformat = soup.find_all("div", id="courses")
 		sl2 = subjectlist_preformat[0].find_all("a")
 		self.__edlog(0, "Populating subject list")
-		self.subject_ids = []
 		subjinfo = []
 		for i in sl2:
 			try:
