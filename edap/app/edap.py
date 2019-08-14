@@ -46,7 +46,7 @@ class edap:
 	             hidepriv=True,
 	             log_func_name=True,
 	             redirect_log_to_file=False,
-	             hideConfidential=True):
+	             hide_confidential=True):
 		"""
 			Authenticates the user to eDnevnik.
 
@@ -61,7 +61,7 @@ class edap:
 			:param bool log_func_name: Enables/disables logging function names, may increase performance
 			:param redirect_log_to_file: Enables logging to file, if False it is disabled
 			:type redirect_log_to_file: str or False
-			:param bool hideConfidential: Enables/disables returning confidential information, such as OIB/SSN
+			:param bool hide_confidential: Enables/disables returning confidential information, such as OIB
 
 			:raises WrongCredentials: If the provided credentials are invalid
 		"""
@@ -73,14 +73,14 @@ class edap:
 		self.loglevel = loglevel
 		self.hidepriv = hidepriv
 		self.log_func_name = log_func_name
-		self.hideConfidential = hideConfidential
+		self.hide_confidential = hide_confidential
 		self.class_ids = []
 		self.subject_ids = []
 		if redirect_log_to_file != False:
 			sys.stdout = open(redirect_log_to_file, "w")
 		print("=> EDAP (eDnevnikAndroidProject) %s" % EDAP_VERSION)
 		self.__edlog(1, "Init variables: parser=%s, edurl=%s, user=[{%s}], useragent=%s, debug=%s, loglevel=%s, hidepriv=%s, log_func_name=%s" %
-			(self.parser, self.edurl, self.user, self.useragent, self.debug, self.loglevel, self.hidepriv, self.log_func_name))
+		             (self.parser, self.edurl, self.user, self.useragent, self.debug, self.loglevel, self.hidepriv, self.log_func_name))
 		self.__edlog(1, "Initializing requests.Session() object")
 		self.session = requests.Session()
 		self.session.headers.update({"User-Agent":self.useragent})
@@ -124,7 +124,7 @@ class edap:
 			if loglevel == 4:
 				raise FatalLogExit
 
-	def __fetchUrl(self, url):
+	def __fetch(self, url):
 		o = self.session.get(url)
 		o.raise_for_status()
 		return o.text
@@ -141,7 +141,7 @@ class edap:
 		self.__edlog(1, "Listing classes for [{%s}]" % self.user)
 		self.__edlog(0, "Getting class selection HTML")
 		try:
-			response = self.__fetchUrl("%s/razredi/odabir" % self.edurl)
+			response = self.__fetch("%s/razredi/odabir" % self.edurl)
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting class selection HTML (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -153,7 +153,7 @@ class edap:
 			try:
 				x = i.find("div", class_="class").get_text("\n").split("\n")
 			except AttributeError as e:
-				self.__edlog(3, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,i))
+				self.__edlog(3, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, i))
 				continue
 			# x[0] -> class number and letter
 			# x[1] -> school year
@@ -177,7 +177,7 @@ class edap:
 		"""
 		self.__edlog(1, "Getting subject list for class id %s (remote ID [{%s}])" % (class_id, self.class_ids[class_id]))
 		try:
-			response = self.__fetchUrl("%s/pregled/predmeti/%s" % (self.edurl, self.class_ids[class_id]))
+			response = self.__fetch("%s/pregled/predmeti/%s" % (self.edurl, self.class_ids[class_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting subject list (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -220,7 +220,7 @@ class edap:
 		else:
 			addon = ""
 		try:
-			response = self.__fetchUrl("%s/pregled/ispiti/%s" % (self.edurl, str(self.class_ids[class_id]) + addon))
+			response = self.__fetch("%s/pregled/ispiti/%s" % (self.edurl, str(self.class_ids[class_id]) + addon))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting test list (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -249,7 +249,7 @@ class edap:
 		"""
 		self.__edlog(0, "Getting grade list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
-			response = self.__fetchUrl("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -277,7 +277,7 @@ class edap:
 		"""
 		self.__edlog(0, "Getting note list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
-			response = self.__fetchUrl("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting notes for subject (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -305,7 +305,7 @@ class edap:
 		"""
 		self.__edlog(0, "Getting concluded grade for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
-			response = self.__fetchUrl("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -313,7 +313,7 @@ class edap:
 		try:
 			xtab = soup.find("div", class_="grades").find("table").find_all("td", class_="t-center bold")[1].getText().strip()
 		except AttributeError as e:
-			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,soup))
+			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
 		if len(xtab) > 0:
 			self.__edlog(0, "Got unformatted string: [{%s}]" % xtab)
 			result = re.search(r'\((.*)\)', xtab).group(1)
@@ -332,7 +332,7 @@ class edap:
 		"""
 		self.__edlog(0, "Getting info for class id %s" % class_id)
 		try:
-			response = self.__fetchUrl("%s/pregled/osobni_podaci/%s" % (self.edurl, self.class_ids[class_id]))
+			response = self.__fetch("%s/pregled/osobni_podaci/%s" % (self.edurl, self.class_ids[class_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed to get info for class (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -340,9 +340,9 @@ class edap:
 		try:
 			xtab = soup.find("div", class_="student-details").find("table").find_all("td")
 		except AttributeError as e:
-			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,soup))
+			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
 		oData = {"number":int(xtab[0].getText()), "name":xtab[1].getText(), "oib":xtab[2].getText(), "birthdate":xtab[3].getText(), "birthplace":xtab[4].getText(), "matbroj":xtab[5].getText(), "address":xtab[6].getText(), "program":xtab[7].getText()}
-		if self.hideConfidential:
+		if self.hide_confidential:
 			del oData['oib']
 			del oData['matbroj']
 		return oData
@@ -356,7 +356,7 @@ class edap:
 		"""
 		self.__edlog(0, "Getting absent overview for class id %s" % class_id)
 		try:
-			response = self.__fetchUrl("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
+			response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed to get absent overview for class (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -364,7 +364,7 @@ class edap:
 		try:
 			xtab = soup.find("table", class_="legend").find_all("td")
 		except AttributeError as e:
-			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,soup))
+			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
 		xtab_fix = []
 		for x in xtab:
 			if not x.find("img"): # Ignore all <img> tags
@@ -385,7 +385,7 @@ class edap:
 		"""
 		self.__edlog(0, "Getting absent list for class id %s" % class_id)
 		try:
-			response = self.__fetchUrl("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
+			response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed to get absent list for class (%s)" % e)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -393,7 +393,7 @@ class edap:
 		try:
 			xtab = soup.find_all("table")[1]
 		except AttributeError as e:
-			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e,soup))
+			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
 		## BLACK FUCKING MAGIC AHEAD ##
 		##    You have been warned   ##
 		o = xtab.find_all("tr")
@@ -402,7 +402,7 @@ class edap:
 		lastSearched = 0
 		for x in o:
 			y = x.find_all("td", class_="datum")
-			if len(y)>0:
+			if len(y) > 0:
 				spanning = int(y[0].get("rowspan"))
 				abslist.append({
 					'span': spanning,
