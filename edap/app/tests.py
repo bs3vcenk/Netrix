@@ -10,13 +10,15 @@ def to_ms(seconds: int) -> str:
 def main():
 	"""Main function"""
 	full_start = timer()
+	total_processing_time = 0
 	print("= 1/10 => edap.__init__() => ", end='')
 	try:
 		start = timer()
 		student = edap.edap(
 			user=sys.argv[1],
 			pasw=sys.argv[2],
-			return_processing_time=True)
+			return_processing_time=True,
+			parser=PARSER)
 		end = timer()
 		print("SUCCEEDED [%s]" % (to_ms(end - start)))
 	except edap.FatalLogExit as e:
@@ -28,6 +30,7 @@ def main():
 		start = timer()
 		_, x = student.getClasses()
 		end = timer()
+		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
 	except edap.FatalLogExit as e:
 		end = timer()
@@ -38,6 +41,7 @@ def main():
 		start = timer()
 		_, x = student.getSubjects(0)
 		end = timer()
+		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
 	except edap.FatalLogExit as e:
 		end = timer()
@@ -48,6 +52,7 @@ def main():
 		start = timer()
 		_, x = student.getTests(0, alltests=True)
 		end = timer()
+		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
 	except edap.FatalLogExit as e:
 		end = timer()
@@ -58,6 +63,7 @@ def main():
 		start = timer()
 		_, x = student.getInfoForUser(0)
 		end = timer()
+		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
 	except edap.FatalLogExit as e:
 		end = timer()
@@ -68,6 +74,7 @@ def main():
 		start = timer()
 		_, x = student.getGradesForSubject(0, 0)
 		end = timer()
+		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
 	except edap.FatalLogExit as e:
 		end = timer()
@@ -78,6 +85,7 @@ def main():
 		start = timer()
 		_, x = student.getNotesForSubject(0, 0)
 		end = timer()
+		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
 	except edap.FatalLogExit as e:
 		end = timer()
@@ -88,6 +96,7 @@ def main():
 		start = timer()
 		_, x = student.getAbsentOverviewForClass(0)
 		end = timer()
+		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
 	except edap.FatalLogExit as e:
 		end = timer()
@@ -98,6 +107,7 @@ def main():
 		start = timer()
 		_, x = student.getAbsentFullListForClass(0)
 		end = timer()
+		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
 	except edap.FatalLogExit as e:
 		end = timer()
@@ -108,6 +118,7 @@ def main():
 		start = timer()
 		_, _, x = student.getConcludedGradeForSubject(0, 0)
 		end = timer()
+		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
 	except edap.FatalLogExit as e:
 		end = timer()
@@ -115,6 +126,14 @@ def main():
 		sys.exit(1)
 	full_end = timer()
 	print("=======> FINISHED TESTS IN %s" % to_ms(full_end - full_start))
+	print("=======> Total time spent processing data: %s" % to_ms(total_processing_time))
 
 if __name__ == "__main__":
+	ARGS = sys.argv[3:]
+	if not ARGS:
+		PARSER = "lxml"
+		print('= conf => Using default parser lxml')
+	elif "--parser" in ARGS:
+		PARSER = sys.argv[sys.argv.index('--parser')+1]
+		print('= conf => Using %s as parser' % PARSER)
 	main()
