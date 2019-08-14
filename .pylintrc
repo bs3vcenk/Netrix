@@ -1,0 +1,9 @@
+[FORMAT]
+indent-string='\t'
+indent-after-paren=1
+# r => request in exported
+# o => __fetch() request
+# x => temp var for parsing
+# e => exception
+# i => iteration
+good-names=r,o,x,e,i
