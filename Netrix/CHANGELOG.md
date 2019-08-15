@@ -1,3 +1,7 @@
+## 1.8.2 (2019-08-15)
+* Riješavanje problema s performansom kada su reklame uključene
+* Prijevod na švedski (napravio Logaridexus)
+
 ## 1.8.1 (2019-08-13)
 * Novi dizajn ekrana za prijavu
 * Zamjena sumnjivog librarya za reklame s open-source libraryem
