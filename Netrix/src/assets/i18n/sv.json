@@ -1,0 +1,140 @@
+{
+  "generic": {
+    "alert": {
+      "network": "Nätverksfel",
+      "expiry": "Din inloggning har gått ut",
+      "database": "Databasanslutningen misslyckades (rapporteras automatiskt)",
+      "server": "Serverfel (rapporteras automatiskt)"
+    },
+    "back": "Tillbaka",
+    "text": {
+      "nonetwork": {
+        "header": "Inget nätverk",
+        "content": "Kontrollera nätverksanslutningen och försök igen."
+      },
+      "nodb": {
+        "header": "Serverfel",
+        "content": "Något gick fel på serversidan. Vi arbetar snabbt för att fixa det!"
+      }
+    },
+    "choice": {
+      "yes": "Ja",
+      "no": "Nej"
+    }
+  },
+  "tab1": {
+    "title": "Skolämnen",
+    "text": {
+      "other": "och NUM_PROFS till",
+      "average": "Ditt genomsnitt är:"
+    }
+  },
+  "tab2": {
+    "title": "Tentor",
+    "showall": "Visa alla tentor",
+    "notests": "Inga tentor",
+    "search": "Sök tentor"
+  },
+  "tab3": {
+    "title": "Inställningar",
+    "text": {
+      "logout": "Logga ut"
+    },
+    "alert": {
+      "logout": {
+        "header": "Logga ut?",
+        "content": "Detta raderar dina data från Netrix servrar och avaktiverar alla aviseringar."
+      },
+      "time": {
+        "choice": {
+          "done": "OK",
+          "cancel": "Annullera"
+        }
+      },
+      "effect_on_restart": "Denna ändring träder i kraft efter att du har startat om programmet."
+    }
+  },
+  "tab4": {
+    "title": "Frånvaro",
+    "text": {
+      "noabsences": "Inga frånvaro",
+      "justified": "Motiverade",
+      "unjustified": "Oberättigad",
+      "waiting": "Väntar",
+      "sum": "Allt"
+    }
+  },
+  "overview": {
+    "title": "Översikt",
+    "alert": {
+      "nogrades": {
+        "header": "Inga betyg",
+        "content": "Detta skolämne har inget betyg."
+      }
+    },
+    "text": {
+      "average": "Medel",
+      "grades": "Betyg",
+      "notes": "Anteckningar"
+    }
+  },
+  "login": {
+    "title": "Logga in",
+    "alert": {
+      "credentials": {
+        "header": "Ogiltiga uppgifter",
+        "content": "Kontrollera ditt användarnamn och lösenord och försök igen."
+      },
+      "data": {
+        "header": "Felrapportering",
+        "content": "Enhetens modellnamn och OS-version skickas till API-servern för att hjälpa till att kategorisera och felsöka fel.<br><br>Vi samlar <b>inte in några</b> personuppgifter utanför den information som anges i vår integritetspolicy."
+      },
+      "loggingin": "Loggar in..."
+    },
+    "text": {
+      "login": "Logga in",
+      "holder_user": "eDnevnik-användarnamn",
+      "holder_pass": "eDnevnik-lösenord",
+      "appdesc": "Ett modernt gränssnitt för eDnevnik",
+      "privacy": "Integritetspolicy"
+    }
+  },
+  "tabs": {
+    "subjects": "Skolämnen",
+    "tests": "Tentor",
+    "settings": "Inställningar",
+    "absences": "Frånvaro"
+  },
+  "settings": {
+    "api": {
+      "analytics": "Analytics och annonser",
+      "devinfo": "Skicka enhetsinfo",
+      "notifs": "Anmälningar",
+      "notifs_master": "Alla aviseringar",
+      "ads": "Visa annonser",
+      "time_singular": "dag",
+      "time_plural": "dagar",
+      "notifs_test_time": "Meddela innan testet",
+      "notifs_exclude": "Anmälningshantering"
+    },
+    "client": {
+      "experimental": "Experimentell",
+      "darkmode": "Mörkt läge",
+      "preload": "Förbelasta ämnen"
+    }
+  },
+  "notifSettings": {
+    "title": "Anmälningshantering",
+    "tests": "Tentor",
+    "grades": "Betyg",
+    "classes": "Klasser",
+    "notes": "Anteckningar",
+    "absences": "Frånvaro"
+  },
+  "notif": {
+    "text": {
+      "test": "Gör dig redo!",
+      "inXdays": "om DAYS dagar"
+    }
+  }
+}
