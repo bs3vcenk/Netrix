@@ -671,9 +671,9 @@ def populateData(obj=None, username=None, password=None, time=False):
 		log.debug("Error getting info: %s" % (str(e)))
 	request_time = _clock() - start
 	if time == False:
-		log.debug("==> TIMER => {0:.0f}ms".format(request_time))
+		log.debug("==> TIMER => %s" % request_time)
 	else:
-		log.info("==> TIMER => {0:.0f}ms".format(request_time))
+		log.info("==> TIMER => %s" % request_time)
 	return dataDict
 
 def updateData(token):
