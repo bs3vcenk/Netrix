@@ -111,35 +111,17 @@ Nakon ove komande, potrebno je i omogućiti korištenje `logError()` funkcije u 
 
 * Testno okruženje (bez Cordove):
     `ionic s` (UPOZORENJE: Netrix se prebacio na [Native HTTP](https://ionicframework.com/docs/native/http), što znači da ova komanda više ne radi.)
+* Testno okruženje (s Cordovom):
+    `ionic cordova run browser` (UPOZORENJE: Dosta Cordova plugina nema podršku za browser, stoga ovo nije preporučeno.)
 
 
 * Android: Debug build (omogućava remote DevTools):
     `ionic cordova build android`
 * Android: Release build (bez debug mogućnosti, za Play Store):
     `rm -rf www && ionic cordova build android --prod --release`
-* iOS: Debug build
+* iOS: Debug build:
     `ionic cordova run ios`
-* iOS: Debug build za uređaj
+* iOS: Debug build za uređaj:
     `ionic cordova run ios --device`
 * iOS: Release build:
     Upute stižu kasnije
-
-## Build za Android
-
-Build za Android trenutno treba patch nakon stvaranja platforme jer AdMobFree definira prestaru verziju Google Play Services. Potrebno je prvo kreirati platformu:
-
-```shell
-ionic cordova platform add android --no-resources
-```
-
-Pa onda napraviti patch:
-
-```shell
-./patches/patchGPlayVersion.sh
-```
-
-Pa će tek tada biti moguć build:
-
-```shell
-ionic cordova build android # --prod --release
-```
