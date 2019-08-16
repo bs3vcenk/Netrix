@@ -384,7 +384,7 @@ def login():
 		},
 		'lang': None,
 		'resolution': None,
-		'new': None,
+		'new': [],
 		'generated_with': API_VERSION,
 		'settings': {
 			'notif': {
