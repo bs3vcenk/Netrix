@@ -5,7 +5,7 @@ from flask_cors import CORS
 from apiBackend import *
 import edap
 
-API_VERSION = "2.5.2"
+API_VERSION = "2.5.3"
 
 log = logging.getLogger('EDAP-API')
 
@@ -352,7 +352,7 @@ def login():
 		updateCounter("logins:fail:generic")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	dev_ip = request.remote_addr
-	username = request.json["username"]
+	username = request.json["username"].strip().lower()
 	password = request.json["password"]
 	if "@skole.hr" in username:
 		username = username.replace("@skole.hr", "")
