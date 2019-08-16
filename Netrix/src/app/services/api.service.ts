@@ -34,6 +34,7 @@ export class ApiService {
   loadingFinishedTests = new BehaviorSubject(false);
   loadingFinishedAbsences = new BehaviorSubject(false);
   loadingFinishedNotif = new BehaviorSubject(false);
+  loadingFinishedNew = new BehaviorSubject(false);
 
   ignoredNotifTypes = [];
 
@@ -44,6 +45,8 @@ export class ApiService {
 
   subjects = null;
   fullAvg = null;
+
+  news = [];
 
   dbError = new BehaviorSubject(false);
   networkError = new BehaviorSubject(false);
@@ -65,9 +68,15 @@ export class ApiService {
     this.getTests();
     this.getAbsences();
     this.getNotifConfig();
-    forkJoin([this.loadingFinishedAbsences, this.loadingFinishedNotif, this.loadingFinishedSubj, this.loadingFinishedTests])
-    .subscribe(([abs, notif, subj, test]) => {
-      if (abs && notif && subj && test) {
+    forkJoin([
+      this.loadingFinishedAbsences,
+      this.loadingFinishedNotif,
+      this.loadingFinishedSubj,
+      this.loadingFinishedTests,
+      this.loadingFinishedNew
+    ])
+    .subscribe(([abs, notif, subj, test, news]) => {
+      if (abs && notif && subj && test && news) {
         this.loadingFinishedAll.next(true);
       }
     });
@@ -93,6 +102,26 @@ export class ApiService {
       this.networkError.next(true);
       throw errorObj;
     }
+  }
+
+  getNewStuff() {
+    this.firebase.startTrace('getNewStuff');
+    this.http.get(
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/new',
+      {},
+      this.httpHeader
+    ).then((rx) => {
+      const response = JSON.parse(rx.data);
+      this.news = response.new;
+      this.firebase.stopTrace('getNewStuff');
+      this.loadingFinishedNew.next(true);
+      this.loadingFinishedNew.complete();
+    }, (error) => {
+      this.firebase.stopTrace('getNewStuff');
+      this.handleErr(error);
+      this.loadingFinishedNew.next(true);
+      this.loadingFinishedNew.complete();
+    });
   }
 
   receiveNotifType(nType: string) {
