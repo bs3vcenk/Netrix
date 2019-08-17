@@ -38,7 +38,7 @@ export class AuthenticationService {
         this.checkToken();
         /* Enable certificate pinning */
         this.http.setSSLCertMode('pinned');
-      });
+    });
   }
 
   checkToken() {

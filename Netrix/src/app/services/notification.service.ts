@@ -4,6 +4,7 @@ import { ApiService } from './api.service';
 import { BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from './settings.service';
+import { Platform } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,8 @@ export class NotificationService {
     private notif: LocalNotifications,
     private apiSvc: ApiService,
     private translate: TranslateService,
-    private settings: SettingsService
+    private settings: SettingsService,
+    private plt: Platform
   ) {
     /* Get all scheduled notifications and let scheduleTestNotifications
      * know we're done */
@@ -27,16 +29,18 @@ export class NotificationService {
   }
 
   syncLocalLists() {
-    console.log('NotificationService/syncLocalLists(): Resetting notification lists');
-    this.notif.getAll().then(notifs => {
-      this.scheduledNotifIDs = [];
-      notifs.forEach(notifX => {
-        this.scheduledNotifIDs.push(notifX.id);
+    this.plt.ready().then(() => {
+      console.log('NotificationService/syncLocalLists(): Resetting notification lists');
+      this.notif.getAll().then(notifs => {
+        this.scheduledNotifIDs = [];
+        notifs.forEach(notifX => {
+          this.scheduledNotifIDs.push(notifX.id);
+        });
+        this.scheduledNotifs = notifs;
+        this.notifInitFinished.next(true);
+        /*console.log('NotificationService/syncLocalLists(): notifs:');
+        console.log(notifs);*/
       });
-      this.scheduledNotifs = notifs;
-      this.notifInitFinished.next(true);
-      /*console.log('NotificationService/syncLocalLists(): notifs:');
-      console.log(notifs);*/
     });
   }
 
