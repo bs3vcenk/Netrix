@@ -1,11 +1,9 @@
 #! /usr/bin/env sh
 set -e
 
-redis-server --daemonize yes --dir /data --appendonly yes
-
 # Explicitly add installed Python packages and uWSGI Python packages to PYTHONPATH
 # Otherwise uWSGI can't import Flask
-export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.6/site-packages:/usr/lib/python3.6/site-packages
+export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.7/site-packages:/usr/lib/python3.7/site-packages
 
 # Get the maximum upload file size for Nginx, default to 0: unlimited
 USE_NGINX_MAX_UPLOAD=${NGINX_MAX_UPLOAD:-0}
@@ -71,9 +69,24 @@ else
         content_ssl='server {\n'
         content_ssl=$content_ssl'    listen 443 ssl http2;\n'
         content_ssl=$content_ssl"    server_name ${SERVER_NAME};\n"
-        content_ssl=$content_ssl'    ssl on;\n'
+        # Set SSL cert paths
         content_ssl=$content_ssl"    ssl_certificate ${SSL_CERT};\n"
         content_ssl=$content_ssl"    ssl_certificate_key ${SSL_KEY};\n"
+        # Hardened SSL settings
+        content_ssl=$content_ssl'    ssl_protocols TLSv1.3;\n'
+        content_ssl=$content_ssl'    ssl_prefer_server_ciphers on;\n'
+        content_ssl=$content_ssl'    ssl_ciphers EECDH+AESGCM:EDH+AESGCM;\n'
+        content_ssl=$content_ssl'    ssl_ecdh_curve secp384r1;\n'
+        content_ssl=$content_ssl'    ssl_session_timeout  10m;\n'
+        content_ssl=$content_ssl'    ssl_session_cache shared:SSL:10m;\n'
+        content_ssl=$content_ssl'    ssl_session_tickets off;\n'
+        content_ssl=$content_ssl'    ssl_stapling on;\n'
+        content_ssl=$content_ssl'    ssl_stapling_verify on;\n'
+        content_ssl=$content_ssl'    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"\n';
+        content_ssl=$content_ssl'    add_header X-Frame-Options DENY;\n'
+        content_ssl=$content_ssl'    add_header X-Content-Type-Options nosniff;\n'
+        content_ssl=$content_ssl'    add_header X-XSS-Protection "1; mode=block";\n'
+        # UWSGI passthrough
         content_ssl=$content_ssl'    location / {\n'
         content_ssl=$content_ssl'        include uwsgi_params;\n'
         content_ssl=$content_ssl'        uwsgi_pass unix:///tmp/uwsgi.sock;\n'
