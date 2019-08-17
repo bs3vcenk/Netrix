@@ -73,7 +73,7 @@ else
         content_ssl=$content_ssl"    ssl_certificate ${SSL_CERT};\n"
         content_ssl=$content_ssl"    ssl_certificate_key ${SSL_KEY};\n"
         # Hardened SSL settings
-        content_ssl=$content_ssl'    ssl_protocols TLSv1.3;\n'
+        content_ssl=$content_ssl'    ssl_protocols TLSv1.3 TLSv1.2;\n'
         content_ssl=$content_ssl'    ssl_prefer_server_ciphers on;\n'
         content_ssl=$content_ssl'    ssl_ciphers EECDH+AESGCM:EDH+AESGCM;\n'
         content_ssl=$content_ssl'    ssl_ecdh_curve secp384r1;\n'
