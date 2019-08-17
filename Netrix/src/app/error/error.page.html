@@ -14,6 +14,7 @@
       <h2 id="netContent" text-wrap>{{ 'generic.text.nonetwork.content' | translate }}</h2>
     </ion-label>
   </ion-item>
+
   <!-- Server-side error -->
   <ion-item text-center *ngIf="dbError" lines="none" id="cntr">
     <ion-label>
@@ -23,6 +24,18 @@
       <h1 id="netHeader" text-wrap>{{ 'generic.text.nodb.header' | translate }}</h1>
       <!-- Long desc/instructions -->
       <h2 id="netContent" text-wrap>{{ 'generic.text.nodb.content' | translate }}</h2>
+    </ion-label>
+  </ion-item>
+
+  <!-- SSL Verification error -->
+  <ion-item text-center *ngIf="trustError" lines="none" id="cntr">
+    <ion-label>
+      <!-- "Lock" emoji -->
+      <object width="150" type="image/svg+xml" data="./assets/emoji/lock.svg"></object>
+      <!-- Short description of error -->
+      <h1 id="netHeader" text-wrap>{{ 'generic.text.trusterror.header' | translate }}</h1>
+      <!-- Long desc/instructions -->
+      <h2 id="netContent" text-wrap>{{ 'generic.text.trusterror.content' | translate }}</h2>
     </ion-label>
   </ion-item>
 </ion-content>

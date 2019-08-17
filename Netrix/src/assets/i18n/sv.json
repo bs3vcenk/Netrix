@@ -15,6 +15,10 @@
       "nodb": {
         "header": "Serverfel",
         "content": "Något gick fel på serversidan. Vi arbetar snabbt för att fixa det!"
+      },
+      "trusterror": {
+        "header": "Osäker anslutning",
+        "content": "Vi kan inte verifiera identiteten på servern vi försöker ansluta till. Det kan bero på att du ännu inte har loggat in på en offentlig Wi-Fi, eller att det kan vara någon som försöker stjäla dina data."
       }
     },
     "choice": {

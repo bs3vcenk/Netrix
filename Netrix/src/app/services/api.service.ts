@@ -50,6 +50,7 @@ export class ApiService {
 
   dbError = new BehaviorSubject(false);
   networkError = new BehaviorSubject(false);
+  trustError = new BehaviorSubject(false);
 
   constructor(
     private http: HTTP,
@@ -74,6 +75,7 @@ export class ApiService {
       this.getTests();
       this.getAbsences();
       this.getNotifConfig();
+      this.getNewStuff();
       forkJoin([
         this.loadingFinishedAbsences,
         this.loadingFinishedNotif,
@@ -101,6 +103,9 @@ export class ApiService {
       /* Server-side issue, such as a failed DB connection (first statement), unreachable
        * origin server (second statement), or a generic server error (third statement) */
       this.dbError.next(true);
+    } else if (errorObj.status === -2) {
+      /* Certificate not trusted, either MITM or public Wi-Fi login page */
+      this.trustError.next(true);
     } else {
       /* Unknown error, probably a network error (e.g. no Internet access)
        *

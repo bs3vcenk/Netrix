@@ -10,12 +10,14 @@ export class ErrorPage implements OnInit {
 
   dbError = false;
   networkError = false;
+  trustError = false;
 
   constructor(
     private apiSvc: ApiService
   ) {
     this.dbError = this.apiSvc.dbError.value;
     this.networkError = this.apiSvc.networkError.value;
+    this.trustError = this.apiSvc.trustError.value;
   }
 
   ngOnInit() {

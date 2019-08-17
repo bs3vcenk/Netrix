@@ -110,6 +110,11 @@ export class AppComponent {
           this.router.navigate(['error'], {replaceUrl: true});
         }
       });
+      this.apiSvc.trustError.subscribe(val => {
+        if (val) {
+          this.router.navigate(['error'], {replaceUrl: true});
+        }
+      });
 
       if (!environment.production) {
         this.toastController.create({

@@ -15,6 +15,10 @@
       "nodb": {
         "header": "Serverska greška",
         "content": "Dogodila se greška kod servera. Radimo da ju što prije riješimo!"
+      },
+      "trusterror": {
+        "header": "Nesigurna veza",
+        "content": "Ne možemo potvrditi identitet servera na kojeg se spajamo. To može biti jer se još nisi prijavio na javnu Wi-Fi mrežu, ali je moguće i da netko pokušava ukrasti tvoje osobne podatke."
       }
     },
     "choice": {
