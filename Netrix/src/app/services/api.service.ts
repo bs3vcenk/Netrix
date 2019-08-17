@@ -1,4 +1,3 @@
-// tslint:disable: variable-name
 import { Injectable } from '@angular/core';
 import { SettingsService } from './settings.service';
 import { AuthenticationService } from './authentication.service';
@@ -60,6 +59,8 @@ export class ApiService {
   ) {
     /* Default to JSON as we'll be receiving only JSON from the API */
     this.http.setDataSerializer('json');
+    /* Enable certificate pinning */
+    this.http.setSSLCertMode('pinned');
   }
 
   async preCacheData() {
