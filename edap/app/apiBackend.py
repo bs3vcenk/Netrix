@@ -62,6 +62,13 @@ def localize(token, locId):
 			"absence": "New absence",
 			"test": "New test",
 			"class": "New class"
+		},
+		"sv": {
+			"note": "New note",
+			"grade": "New grade",
+			"absence": "New absence",
+			"test": "New test",
+			"class": "New class"
 		}
 	}
 	lang = getData(token)['lang']
