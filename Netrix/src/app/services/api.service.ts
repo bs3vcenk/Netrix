@@ -5,6 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { HTTP } from '@ionic-native/http/ngx';
+import { Platform } from '@ionic/angular';
 
 export interface SubjectData {
   name: string;
@@ -55,12 +56,15 @@ export class ApiService {
     private settings: SettingsService,
     private authServ: AuthenticationService,
     private translate: TranslateService,
-    private firebase: FirebaseX
+    private firebase: FirebaseX,
+    private plt: Platform
   ) {
-    /* Default to JSON as we'll be receiving only JSON from the API */
-    this.http.setDataSerializer('json');
-    /* Enable certificate pinning */
-    this.http.setSSLCertMode('pinned');
+    this.plt.ready().then(() => {
+      /* Default to JSON as we'll be receiving only JSON from the API */
+      this.http.setDataSerializer('json');
+      /* Enable certificate pinning */
+      this.http.setSSLCertMode('pinned');
+    });
   }
 
   async preCacheData() {
