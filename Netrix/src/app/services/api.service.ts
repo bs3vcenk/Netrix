@@ -68,22 +68,24 @@ export class ApiService {
   }
 
   async preCacheData() {
-    /* Execute all get functions */
-    this.getSubjects();
-    this.getTests();
-    this.getAbsences();
-    this.getNotifConfig();
-    forkJoin([
-      this.loadingFinishedAbsences,
-      this.loadingFinishedNotif,
-      this.loadingFinishedSubj,
-      this.loadingFinishedTests,
-      this.loadingFinishedNew
-    ])
-    .subscribe(([abs, notif, subj, test, news]) => {
-      if (abs && notif && subj && test && news) {
-        this.loadingFinishedAll.next(true);
-      }
+    this.plt.ready().then(() => {
+      /* Execute all get functions */
+      this.getSubjects();
+      this.getTests();
+      this.getAbsences();
+      this.getNotifConfig();
+      forkJoin([
+        this.loadingFinishedAbsences,
+        this.loadingFinishedNotif,
+        this.loadingFinishedSubj,
+        this.loadingFinishedTests,
+        this.loadingFinishedNew
+      ])
+      .subscribe(([abs, notif, subj, test, news]) => {
+        if (abs && notif && subj && test && news) {
+          this.loadingFinishedAll.next(true);
+        }
+      });
     });
   }
 
