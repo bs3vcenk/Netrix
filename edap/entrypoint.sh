@@ -82,7 +82,7 @@ else
         content_ssl=$content_ssl'    ssl_session_tickets off;\n'
         content_ssl=$content_ssl'    ssl_stapling on;\n'
         content_ssl=$content_ssl'    ssl_stapling_verify on;\n'
-        content_ssl=$content_ssl'    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"\n';
+        content_ssl=$content_ssl'    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";\n'
         content_ssl=$content_ssl'    add_header X-Frame-Options DENY;\n'
         content_ssl=$content_ssl'    add_header X-Content-Type-Options nosniff;\n'
         content_ssl=$content_ssl'    add_header X-XSS-Protection "1; mode=block";\n'
