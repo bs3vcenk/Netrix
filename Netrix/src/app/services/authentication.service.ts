@@ -36,6 +36,8 @@ export class AuthenticationService {
             this.http.setDataSerializer('json');
             /* Check if the user already has a stored token */
             this.checkToken();
+            /* Enable certificate pinning */
+            this.http.setSSLCertMode('pinned');
         });
     }
 
