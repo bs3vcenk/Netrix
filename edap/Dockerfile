@@ -1,4 +1,4 @@
-FROM python:3.6-alpine3.9
+FROM python:3.6.9-alpine3.10
 
 # Standard set up Nginx Alpine
 # https://github.com/nginxinc/docker-nginx/blob/f3fc4d5753f0ebb9107738183b9c5cea1bf3f618/mainline/alpine/Dockerfile
