@@ -31,7 +31,7 @@
                 "output": "./svg"
               },
               {
-                "glob": "**/*.crt",
+                "glob": "**/*.cer",
                 "input": "src/certs",
                 "output": "certificates"
               }
