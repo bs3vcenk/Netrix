@@ -3,7 +3,7 @@ FROM python:3.6-alpine3.9
 # Standard set up Nginx Alpine
 # https://github.com/nginxinc/docker-nginx/blob/f3fc4d5753f0ebb9107738183b9c5cea1bf3f618/mainline/alpine/Dockerfile
 
-ENV NGINX_VERSION 1.15.3
+ENV NGINX_VERSION 1.16.1
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
