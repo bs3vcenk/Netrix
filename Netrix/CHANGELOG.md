@@ -1,3 +1,8 @@
+## 1.8.3 (2019-08-18)
+* SSL pinning (sigurnost od MITM napada)
+* Riješena greška koja je povećala veličinu zadnje dvije verzije
+* Riješena greška koja je u nekim slučajevima mogla onemogućiti postavljanje obavijesti za ispite
+
 ## 1.8.2 (2019-08-15)
 * Riješavanje problema s performansom kada su reklame uključene
 * Prijevod na švedski (napravio Logaridexus)
