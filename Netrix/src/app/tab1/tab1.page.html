@@ -17,9 +17,18 @@
       0.00
     </ion-label>
   </ion-item>
+  <!-- "Your average is:" skeleton object -->
+  <ion-item *ngIf="!fullAvg">
+    <ion-text id="preWholeAvgText" position="stacked" style="width: 30%">
+      <ion-skeleton-text animated style="width: 100%;line-height: 12px"></ion-skeleton-text>
+    </ion-text>
+    <ion-label id="wholeAvgText" position="stacked" style="width: 20%">
+      <ion-skeleton-text animated style="width: 100%;line-height: 38px"></ion-skeleton-text>
+    </ion-label>
+  </ion-item>
 
   <!-- List of subjects -->
-  <ion-list lines="full">
+  <ion-list lines="full" *ngIf="subjects">
     <!-- <ion-item> for every subject, sets routerLink to subjectOverview for
          that subject's ID -->
     <ion-item [@fadeInOut] button *ngFor="let subject of subjects" routerLink="/subj-overview/{{subject.id}}" routerDirection="forward">
@@ -31,9 +40,25 @@
           <ion-note text-wrap>{{subject.professors}}</ion-note>
         </div>
       </ion-label>
-      <ion-text item-right text-right>
-        <!-- The average grade for this subject (shown to the right) -->
-        <div id="average">{{subject.average}}</div>
+      <!-- The average grade for this subject (shown to the right) -->
+      <ion-text id="average" item-right text-right>
+        {{subject.average}}
+      </ion-text>
+    </ion-item>
+  </ion-list>
+
+  <!-- Temporary/skeleton list of subjects, shown while loading -->
+  <ion-list lines="full" *ngIf="!subjects">
+    <!-- Empty <ion-item> -->
+    <ion-item button *ngFor="let tempSubject of tempSubjects" id="tempSubject">
+      <ion-label>
+        <div id="title" stacked>
+          <h3><ion-skeleton-text animated style="width: 50%;line-height: 20px"></ion-skeleton-text></h3>
+          <ion-note text-wrap><ion-skeleton-text animated style="width: 80%;line-height: 15px"></ion-skeleton-text></ion-note>
+        </div>
+      </ion-label>
+      <ion-text id="average" item-right text-right style="width: 7%">
+        <ion-skeleton-text animated style="width: 100%;line-height: 29px"></ion-skeleton-text>
       </ion-text>
     </ion-item>
   </ion-list>
