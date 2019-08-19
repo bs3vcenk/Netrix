@@ -95,15 +95,17 @@ export class Tab3Page {
   }*/
 
   updAdPreference() {
-    this.settings.changePreference('ad-preference', this.adPreference);
-    this.settings.adPreference = this.adPreference;
-    this.toastControl.create({
-      message: this.translate.instant('tab3.alert.effect_on_restart'),
-      duration: 3000,
-      color: 'dark'
-    }).then((toast) => {
-      toast.present();
-    });
+    if (this.adPreference !== this.settings.adPreference) {
+      this.settings.changePreference('ad-preference', this.adPreference);
+      this.settings.adPreference = this.adPreference;
+      this.toastControl.create({
+        message: this.translate.instant('tab3.alert.effect_on_restart'),
+        duration: 3000,
+        color: 'dark'
+      }).then((toast) => {
+        toast.present();
+      });
+    }
   }
 
   updMainNotificationPreference() {
