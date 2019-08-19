@@ -3,7 +3,7 @@ import { SettingsService } from './settings.service';
 import { AuthenticationService } from './authentication.service';
 import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { BehaviorSubject, forkJoin } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Platform } from '@ionic/angular';
 
@@ -28,13 +28,12 @@ export class ApiService {
 
   subjCacheMap = {};
 
-  loadingFinishedAll = new BehaviorSubject(false);
+  // loadingFinishedAll = new BehaviorSubject(false);
 
   loadingFinishedSubj = new BehaviorSubject(false);
   loadingFinishedTests = new BehaviorSubject(false);
   loadingFinishedAbsences = new BehaviorSubject(false);
   loadingFinishedNotif = new BehaviorSubject(false);
-  loadingFinishedNew = new BehaviorSubject(false);
 
   ignoredNotifTypes = [];
 
@@ -45,8 +44,6 @@ export class ApiService {
 
   subjects = null;
   fullAvg = null;
-
-  news = [];
 
   dbError = new BehaviorSubject(false);
   networkError = new BehaviorSubject(false);
@@ -75,8 +72,7 @@ export class ApiService {
       this.getTests();
       this.getAbsences();
       this.getNotifConfig();
-      this.getNewStuff();
-      forkJoin([
+      /*forkJoin([
         this.loadingFinishedAbsences,
         this.loadingFinishedNotif,
         this.loadingFinishedSubj,
@@ -87,7 +83,7 @@ export class ApiService {
         if (abs && notif && subj && test && news) {
           this.loadingFinishedAll.next(true);
         }
-      });
+      });*/
     });
   }
 
@@ -114,26 +110,6 @@ export class ApiService {
       this.networkError.next(true);
       throw errorObj;
     }
-  }
-
-  getNewStuff() {
-    this.firebase.startTrace('getNewStuff');
-    this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/new',
-      {},
-      this.httpHeader
-    ).then((rx) => {
-      const response = JSON.parse(rx.data);
-      this.news = response.new;
-      this.firebase.stopTrace('getNewStuff');
-      this.loadingFinishedNew.next(true);
-      this.loadingFinishedNew.complete();
-    }, (error) => {
-      this.firebase.stopTrace('getNewStuff');
-      this.handleErr(error);
-      this.loadingFinishedNew.next(true);
-      this.loadingFinishedNew.complete();
-    });
   }
 
   receiveNotifType(nType: string) {
@@ -199,13 +175,13 @@ export class ApiService {
       this.firebase.stopTrace('getNotifConfig');
       /* Let preCacheData() know we're done */
       this.loadingFinishedNotif.next(true);
-      this.loadingFinishedNotif.complete();
+      // this.loadingFinishedNotif.complete();
     }, (error) => {
       this.firebase.stopTrace('getNotifConfig');
       this.handleErr(error);
       /* Let preCacheData() know we're done */
       this.loadingFinishedNotif.next(true);
-      this.loadingFinishedNotif.complete();
+      // this.loadingFinishedNotif.complete();
     });
   }
 
@@ -240,14 +216,14 @@ export class ApiService {
       this.firebase.stopTrace('getSubjects');
       /* Let preCacheData() know we're done */
       this.loadingFinishedSubj.next(true);
-      this.loadingFinishedSubj.complete();
+      // this.loadingFinishedSubj.complete();
     },
     (error) => {
       this.firebase.stopTrace('getSubjects');
       this.handleErr(error);
       /* Let preCacheData() know we're done */
       this.loadingFinishedSubj.next(true);
-      this.loadingFinishedSubj.complete();
+      // this.loadingFinishedSubj.complete();
     });
   }
 
@@ -266,13 +242,13 @@ export class ApiService {
       this.firebase.stopTrace('getTests');
       /* Let preCacheData() know we're done */
       this.loadingFinishedTests.next(true);
-      this.loadingFinishedTests.complete();
+      // this.loadingFinishedTests.complete();
     }, (error) => {
       this.firebase.stopTrace('getTests');
       this.handleErr(error);
       /* Let preCacheData() know we're done */
       this.loadingFinishedTests.next(true);
-      this.loadingFinishedTests.complete();
+      // this.loadingFinishedTests.complete();
     });
   }
 
@@ -298,13 +274,13 @@ export class ApiService {
       this.firebase.stopTrace('getAbsences');
       /* Let preCacheData() know we're done */
       this.loadingFinishedAbsences.next(true);
-      this.loadingFinishedAbsences.complete();
+      // this.loadingFinishedAbsences.complete();
     }, (error) => {
       this.firebase.stopTrace('getAbsences');
       this.handleErr(error);
       /* Let preCacheData() know we're done */
       this.loadingFinishedAbsences.next(true);
-      this.loadingFinishedAbsences.complete();
+      // this.loadingFinishedAbsences.complete();
     });
   }
 

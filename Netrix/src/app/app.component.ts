@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Platform, Config, ToastController } from '@ionic/angular';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './services/authentication.service';
 import { LanguageService } from './services/language.service';
@@ -20,7 +19,6 @@ import { environment } from '../environments/environment';
 export class AppComponent {
   constructor(
     private platform: Platform,
-    private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private authenticationService: AuthenticationService,
     private router: Router,
@@ -60,11 +58,9 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      /* Set status bar color, style for white bg, black icons, and hide
-       * the splash screen once loaded */
+      /* Set status bar color, style for white bg and black icons */
       this.statusBar.backgroundColorByHexString('#ffffff');
       this.statusBar.styleDefault();
-      this.splashScreen.hide();
 
       /* Set the language */
       this.languageService.setInitialLang();
@@ -90,7 +86,7 @@ export class AppComponent {
           /* If the user is not logged in, direct to the login page */
           this.router.navigate(['login'], {replaceUrl: true});
           /* Reset BehaviorSubjects in case of a logout */
-          this.apiSvc.loadingFinishedAll.next(false);
+          // this.apiSvc.loadingFinishedAll.next(false);
           this.apiSvc.loadingFinishedTests.next(false);
           this.apiSvc.loadingFinishedSubj.next(false);
           this.apiSvc.loadingFinishedNotif.next(false);
