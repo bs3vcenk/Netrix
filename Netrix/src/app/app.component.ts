@@ -34,22 +34,25 @@ export class AppComponent {
     this.initializeApp();
   }
 
-  /*private async presentToast(message) {
+  private async presentToast(header: string, message: string) {
     const toast = await this.toastController.create({
+      header,
       message,
       duration: 3000,
       color: 'dark',
       position: 'top'
     });
     toast.present();
-  }*/
+  }
 
   private notificationSetup(token) {
     this.fcm.getToken(token);
     try {
       this.fcm.onNotifications().subscribe(
         (notifObject) => {
-          console.log(notifObject);
+          if (notifObject.body) {
+            this.presentToast(notifObject.title, notifObject.body);
+          }
         });
     } catch (e) {
       console.log('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running cordova.');
