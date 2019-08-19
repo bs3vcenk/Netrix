@@ -517,17 +517,8 @@ def get_subjects(token, class_id):
 	"""
 	if not verifyRequest(token, class_id):
 		abort(401)
-	ad = request.args.get('alldata', default=0, type=int)
-	log.info("%s => %s => Class %s", "STRIPPED" if ad == 0 else "FULL", token, class_id)
+	log.info("%s => Class %s", token, class_id)
 	o = getData(token)['data']['classes'][class_id]
-	if ad == 0:
-		log.warning('DEPRECATED METHOD (accessing in stripped-data mode)')
-		for x in o['subjects']:
-			try:
-				del x['notes']
-				del x['grades']
-			except KeyError:
-				pass
 	return make_response(jsonify({'subjects': o['subjects'], 'class_avg':o['complete_avg']}), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/tests', methods=["GET"])
