@@ -1,3 +1,11 @@
+## 1.8.4 (2019-08-19)
+* Novi logo (obavijesti, aplikacijski i na ekranu prijave)
+* Uklonjen splash screen
+* Dodan template ekran u slučaju da učitavanje predmeta dugo traje
+* Popravljeno prikazivanje poruke o primjeni postavke, čak i kada postavka nije bila promijenjena
+* Popravljeno hvatanje pravila o privatnosti
+* Optimizacija pokrivenosti koda
+
 ## 1.8.3 (2019-08-18)
 * SSL pinning (sigurnost od MITM napada)
 * Riješena greška koja je povećala veličinu zadnje dvije verzije
