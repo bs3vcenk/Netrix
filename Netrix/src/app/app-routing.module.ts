@@ -6,7 +6,6 @@ const routes: Routes = [
   { path: 'subj-overview/:subjid', loadChildren: () => import('./subj-overview/subj-overview.module').then(m => m.SubjOverviewPageModule) },
   { path: 'login', loadChildren: () => import('./login/login.module').then(m => m.LoginPageModule) },
   { path: 'privacy', loadChildren: () => import('./privacy/privacy.module').then(m => m.PrivacyPageModule) },
-  { path: 'notif-settings', loadChildren: () => import('./notif-settings/notif-settings.module').then(m => m.NotifSettingsPageModule) },
   { path: 'error', loadChildren: () => import('./error/error.module').then(m => m.ErrorPageModule) }
 ];
 @NgModule({
