@@ -21,6 +21,8 @@ import { AdmobService } from './services/admob.service';
 import { CountUpModule } from 'countup.js-angular2';
 import { HTTP } from '@ionic-native/http/ngx';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+import { ApiService } from './services/api.service';
+import { LocalApiService } from './services/api-local.service';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyDL7WpxGbkahzg6KJqqyxgQO0h-bez0MyY',
@@ -71,7 +73,9 @@ export function createTranslateLoader(http: HttpClient) {
     AdmobService,
     HTTP,
     LocalNotifications,
-    AdMob
+    AdMob,
+    ApiService,
+    LocalApiService
   ],
   bootstrap: [AppComponent]
 })

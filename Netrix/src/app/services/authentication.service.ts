@@ -35,7 +35,8 @@ export class AuthenticationService {
         /* Default to JSON as we'll be receiving only JSON from the API */
         this.http.setDataSerializer('json');
         /* Check if the user already has a stored token */
-        this.checkToken();
+        // this.checkToken();
+        this.authenticationState.next(true);
         /* Enable certificate pinning */
         this.http.setSSLCertMode('pinned');
     });

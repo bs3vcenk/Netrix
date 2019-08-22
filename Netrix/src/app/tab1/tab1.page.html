@@ -35,14 +35,17 @@
       <ion-label>
         <div id="title" stacked>
           <!-- Subject name -->
-          <h3>{{subject.subject}}</h3>
+          <h3>{{subject.name}}</h3>
           <!-- Processed list of professors -->
           <ion-note text-wrap>{{subject.professors}}</ion-note>
         </div>
       </ion-label>
       <!-- The average grade for this subject (shown to the right) -->
-      <ion-text id="average" item-right text-right>
+      <ion-text id="average" item-right text-right *ngIf="subject.average">
         {{subject.average}}
+      </ion-text>
+      <ion-text id="average" item-right text-right style="width: 7%" *ngIf="!subject.average">
+        <ion-skeleton-text animated style="width: 100%;line-height: 29px"></ion-skeleton-text>
       </ion-text>
     </ion-item>
   </ion-list>

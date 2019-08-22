@@ -20,6 +20,7 @@ export class SettingsService {
   adPreference = null;
   language = null;
   notifTime = null;
+  localProcPreference = null;
   apiServer = environment.production ? 'https://api.netrix.io' : 'https://dev-api.netrix.io';
   // httpLimit = 5000;
   globalTheme: string;
@@ -55,6 +56,16 @@ export class SettingsService {
           this.notifPreference = resx;
         } else {
           this.notifPreference = true;
+        }
+      });
+      this.storage.get('local-processing-preference').then(resx => {
+        if (resx != null) {
+          this.localProcPreference = resx;
+          if (resx === true) {
+            console.log('SettingsService/readPrefs(): Local processing enabled!');
+          }
+        } else {
+          this.localProcPreference = false;
         }
       });
       this.storage.get('notif-time').then(resx => {

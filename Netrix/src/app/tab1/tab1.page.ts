@@ -21,6 +21,7 @@ export class Tab1Page implements OnInit {
   subjects = null;
   fullAvg = null;
   tempSubjects: Array<any> = new Array(10);
+  classId = 0;
 
   constructor(
     private admobSvc: AdmobService,
@@ -39,10 +40,11 @@ export class Tab1Page implements OnInit {
   }
 
   initInBg() {
-    this.apiSvc.loadingFinishedSubj.subscribe((isLoaded) => {
-      if (isLoaded) {
+    this.apiSvc.fetchComplete.subscribe((isDone) => {
+      if (isDone) {
         this.fullAvg = this.apiSvc.fullAvg;
-        this.subjects = this.apiSvc.subjects;
+        this.subjects = this.apiSvc.perClassData[this.classId].subjects;
+        console.log(this.apiSvc.perClassData);
       }
     });
   }

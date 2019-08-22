@@ -29,7 +29,8 @@ export class AppComponent {
     private translate: TranslateService,
     private config: Config,
     private apiSvc: ApiService,
-    private notifSvc: NotificationService
+    // private notifSvc: NotificationService,
+    private localApiSvc: ApiService
   ) {
     this.initializeApp();
   }
@@ -79,9 +80,9 @@ export class AppComponent {
         if (state) {
           /* If the user is logged in, preload some data such as subjects, absences, tests
            * and settings (also all subjects' info if chosen) */
-          this.apiSvc.preCacheData();
+          this.apiSvc.preCacheData(0);
           /* Set up Firebase Cloud Messaging for notifications */
-          this.notificationSetup(this.authenticationService.token);
+          // this.notificationSetup(this.authenticationService.token);
           /* Navigate to the subject list and prevent returning to the login screen with
            * the back button/gesture */
           this.router.navigate(['tabs', 'tabs', 'tab1'], {replaceUrl: true});
@@ -90,16 +91,16 @@ export class AppComponent {
           this.router.navigate(['login'], {replaceUrl: true});
           /* Reset BehaviorSubjects in case of a logout */
           // this.apiSvc.loadingFinishedAll.next(false);
-          this.apiSvc.loadingFinishedTests.next(false);
+          /*this.apiSvc.loadingFinishedTests.next(false);
           this.apiSvc.loadingFinishedSubj.next(false);
           this.apiSvc.loadingFinishedNotif.next(false);
-          this.apiSvc.loadingFinishedAbsences.next(false);
+          this.apiSvc.loadingFinishedAbsences.next(false);*/
         }
       });
 
       /* Handle network and server errors, switching to the appropriate page if
        * there is an error */
-      this.apiSvc.networkError.subscribe(val => {
+      /*this.apiSvc.networkError.subscribe(val => {
         if (val) {
           this.router.navigate(['error'], {replaceUrl: true});
         }
@@ -113,7 +114,7 @@ export class AppComponent {
         if (val) {
           this.router.navigate(['error'], {replaceUrl: true});
         }
-      });
+      });*/
 
       if (!environment.production) {
         this.toastController.create({
@@ -124,12 +125,12 @@ export class AppComponent {
         });
       }
 
-      this.apiSvc.loadingFinishedTests.subscribe(val => {
+      /*this.apiSvc.loadingFinishedTests.subscribe(val => {
         if (val) {
           console.log('AppComponent/initializeApp(): Test loading finished');
           this.notifSvc.scheduleTestNotifications(this.settings.notifTime);
         }
-      });
+      });*/
     });
   }
 }

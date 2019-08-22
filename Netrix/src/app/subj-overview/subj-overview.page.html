@@ -54,15 +54,15 @@
 		</ion-item>
 	</ion-list>
 
-	<!-- NOTE LIST (if notes are available) -->
+	<!-- 
 	<ion-list lines="full" *ngIf="subject.notes.length > 0">
-		<!-- HEADER: Notes -->
+		
 		<ion-list-header>
 			<ion-label>{{ 'overview.text.notes' | translate }}</ion-label>
 		</ion-list-header>
-		<!-- <ion-item> for every note -->
+		
 		<ion-item *ngFor="let noteObj of subject.notes">
-			<!-- Note, shown as a simple list item -->
+			
 			<ion-label>
 				<div class="date">
 					{{convertToReadableDate(noteObj.date)}}
@@ -72,5 +72,5 @@
 				</div>
 			</ion-label>
 		</ion-item>
-	</ion-list>
+	</ion-list>-->
 </ion-content>

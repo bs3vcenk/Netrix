@@ -30,6 +30,7 @@ export class Tab3Page {
   adPreference = null;
   testNotifTime = null;
   darkModePreference = null;
+  localProcPreference = null;
   dayString = this.translate.instant('settings.api.time_plural');
   developer = !environment.production;
 
@@ -50,6 +51,7 @@ export class Tab3Page {
     this.testNotifTime = this.settings.notifTime;
     this.adPreference = this.settings.adPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
+    this.localProcPreference = this.settings.localProcPreference;
     if (this.testNotifTime === 1) {
       this.dayString = this.translate.instant('settings.api.time_singular');
     }
@@ -108,10 +110,18 @@ export class Tab3Page {
     }
   }
 
+  updLocalProcPreference() {
+    if (this.localProcPreference !== this.settings.localProcPreference) {
+      this.localProcPreference = this.settings.localProcPreference;
+      this.settings.changePreference('local-processing-preference', this.localProcPreference);
+      this.authServ.logout();
+    }
+  }
+
   updMainNotificationPreference() {
     this.settings.changePreference('notif-preference', this.notifPreference);
     this.settings.notifPreference = this.notifPreference;
-    this.apiSvc.setNotifDisabled(!this.notifPreference);
+    // this.apiSvc.setNotifDisabled(!this.notifPreference);
   }
 
   updDarkModePreference() {

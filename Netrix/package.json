@@ -34,6 +34,7 @@
     "@ionic/storage": "^2.2.0",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
+    "cheerio": "^1.0.0-rc.3",
     "cordova-admob-plus": "^0.30.0",
     "cordova-android": "^8.0.0",
     "cordova-plugin-advanced-http": "^2.1.1",

@@ -71,6 +71,11 @@
       <ion-label>{{ 'settings.client.darkmode' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="darkModePreference" (ionChange)="updDarkModePreference()"></ion-toggle>
     </ion-item>
+    <!-- SWITCH: On-device scraping -->
+    <ion-item>
+      <ion-label>Procesiraj podatke na uređaju (ALPHA)</ion-label>
+      <ion-toggle slot="end" [(ngModel)]="localProcPreference" (ionChange)="updLocalProcPreference()"></ion-toggle>
+    </ion-item>
   </ion-list>
 
 	<ion-list>
