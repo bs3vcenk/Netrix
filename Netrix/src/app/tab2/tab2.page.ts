@@ -34,12 +34,12 @@ export class Tab2Page {
   }
 
   initInBg() {
-    if (this.apiSvc.tests === null) {
+    /*if (this.apiSvc.tests === null) {
       this.apiSvc.getTests();
     }
     this.tests = this.apiSvc.tests;
     this.reInit();
-    this.currentTests = this.apiSvc.currentTests;
+    this.currentTests = this.apiSvc.currentTests;*/
   }
 
   private reInit() {

@@ -15,9 +15,9 @@ export class ErrorPage implements OnInit {
   constructor(
     private apiSvc: ApiService
   ) {
-    this.dbError = this.apiSvc.dbError.value;
+    /*this.dbError = this.apiSvc.dbError.value;
     this.networkError = this.apiSvc.networkError.value;
-    this.trustError = this.apiSvc.trustError.value;
+    this.trustError = this.apiSvc.trustError.value;*/
   }
 
   ngOnInit() {

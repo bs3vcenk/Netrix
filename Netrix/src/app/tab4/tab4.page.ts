@@ -25,10 +25,10 @@ export class Tab4Page implements OnInit {
     private apiSvc: ApiService,
     private firebase: FirebaseX
   ) {
-    if (this.apiSvc.absences === null) {
+    /*if (this.apiSvc.absences === null) {
       this.apiSvc.getAbsences();
     }
-    this.absences = this.apiSvc.absences;
+    this.absences = this.apiSvc.absences;*/
   }
 
   convertToReadableDate(unixTimestamp: number): string {

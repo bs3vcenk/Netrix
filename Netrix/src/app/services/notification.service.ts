@@ -66,8 +66,7 @@ export class NotificationService {
         let toBeScheduled = [];
         /* Format every 'current' test into a notification and append it
          * to a list of to-be-scheduled tests */
-        this.apiSvc.currentTests.forEach(test => {
-          /* If it's already scheduled, avoid scheduling again */
+        /*this.apiSvc.currentTests.forEach(test => {
           if (!this.scheduledNotifIDs.includes(test.id)) {
             toBeScheduled.push({
               id: test.id,
@@ -78,7 +77,7 @@ export class NotificationService {
             } as ILocalNotification);
             this.apiSvc.tests[test.id].scheduled = true;
           }
-        });
+        });*/
         /*console.log('NotificationService/scheduleTestNotifications(): toBeScheduled:');
         console.log(toBeScheduled);
         console.log('NotificationService/scheduleTestNotifications(): this.apiSvc.tests:');
