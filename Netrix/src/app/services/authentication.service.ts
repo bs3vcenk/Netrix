@@ -20,7 +20,8 @@ export class AuthenticationService {
   };
 
   authenticationState = new BehaviorSubject(false);
-  token = null;
+  username = null;
+  password = null;
   dataPreference = true;
 
   constructor(
@@ -35,8 +36,7 @@ export class AuthenticationService {
         /* Default to JSON as we'll be receiving only JSON from the API */
         this.http.setDataSerializer('json');
         /* Check if the user already has a stored token */
-        // this.checkToken();
-        this.authenticationState.next(true);
+        this.checkToken();
         /* Enable certificate pinning */
         this.http.setSSLCertMode('pinned');
     });
@@ -44,11 +44,11 @@ export class AuthenticationService {
 
   checkToken() {
     /* Check if user has already logged in (meaning they have a token already) */
-    this.storage.get('auth-token').then(res => {
+    this.storage.get('u-p-combo').then(res => {
       if (res) {
-        this.token = res;
-        /* Send analytics to API */
-        this.sendDeviceInfo();
+        const data = res.split(':');
+        this.username = data[0];
+        this.password = data[1];
         /* Log the login event to Firebase */
         this.firebase.logEvent('login', {});
         /* Let app.component know we're logged in */
@@ -57,8 +57,7 @@ export class AuthenticationService {
     });
   }
 
-  private sendDeviceInfo() {
-    /* Send the platform (Android/iOS), device model, language and WebView resolution to the API */
+  /*private sendDeviceInfo() {
     this.http.post(
       this.settings.apiServer + '/api/stats',
       {
@@ -91,63 +90,22 @@ export class AuthenticationService {
 
   private getLanguage() {
     return this.settings.language;
-  }
+  }*/
 
   login(username, password) {
     /* Called from the login page, sends a POST request to log in which returns back a token */
-    this.firebase.startTrace('login');
-    const response: Observable<HTTPResponse> = from(this.http.post(
-      this.settings.apiServer + '/api/login',
-      {username, password},
-      this.httpHeader
-    ));
-
-    const jsonResponse = response.pipe(catchError(err => this.handleError(err)));
-
-    const userResponse = jsonResponse.pipe(map(
-      data => this.handleLogin(data)
-    ));
-
-    return userResponse;
-  }
-
-  private handleLogin(data) {
-    const token = JSON.parse(data.data).token;
-    /* Store the token so we don't have to log in every time */
-    this.storage.set('auth-token', token).then(() => {
-      this.token = token;
-      /* Send analytics to Firebase */
-      this.sendDeviceInfo();
-      /* Log event to Firebase */
-      this.firebase.logEvent('login', {});
-      this.firebase.stopTrace('login');
-      /* Let app.component know we're logged in */
+    this.storage.set('u-p-combo', this.username + ':' + this.password).then(() => {
+      this.username = username;
+      this.password = password;
       this.authenticationState.next(true);
     });
   }
 
-  private handleError(error) {
-    this.firebase.stopTrace('login');
-    return throwError(error);
-  }
-
   logout() {
     /* Remove the authentication token from storage */
-    return this.storage.remove('auth-token').then(() => {
+    return this.storage.remove('u-p-combo').then(() => {
       /* Log event to Firebase */
       this.firebase.logEvent('logout', {});
-      /* Let the API know the user has logged out, so it knows it can discard the user's data */
-      this.http.get(
-        this.settings.apiServer + '/api/user/' + this.token + '/logout',
-        {},
-        this.httpHeader
-      ).then(() => {
-        console.log('AuthenticationService/logout(): Server-side data successfully deleted');
-      }, () => {
-        console.log('AuthenticationService/logout(): Failed to delete server-side data');
-      });
-      /* Unregister from FCM */
-      this.firebase.unregister();
       /* Let app.component know we're logged out */
       this.authenticationState.next(false);
     });

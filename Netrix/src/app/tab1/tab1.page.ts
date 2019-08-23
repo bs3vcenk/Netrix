@@ -40,7 +40,7 @@ export class Tab1Page implements OnInit {
   }
 
   initInBg() {
-    this.apiSvc.fetchComplete.subscribe((isDone) => {
+    this.apiSvc.subjFetchComplete.subscribe((isDone) => {
       if (isDone) {
         this.fullAvg = this.apiSvc.fullAvg;
         this.subjects = this.apiSvc.perClassData[this.classId].subjects;

@@ -18,7 +18,7 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 })
 export class Tab4Page implements OnInit {
 
-  absences = {overview: {justified: 0, unjustified: 0, waiting: 0, sum: 1}};
+  absences = {overview: {justified: 0, unjustified: 0, waiting: 0, sum: 1}, full: {}};
 
   constructor(
     // private translate: TranslateService,
@@ -27,8 +27,10 @@ export class Tab4Page implements OnInit {
   ) {
     /*if (this.apiSvc.absences === null) {
       this.apiSvc.getAbsences();
-    }
-    this.absences = this.apiSvc.absences;*/
+    }*/
+    this.absences.full = this.apiSvc.perClassData[0].absences_full;
+    this.absences.overview = this.apiSvc.perClassData[0].absences_overview;
+    console.log(this.absences);
   }
 
   convertToReadableDate(unixTimestamp: number): string {

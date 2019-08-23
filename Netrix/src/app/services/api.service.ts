@@ -1,12 +1,7 @@
 import { Injectable } from '@angular/core';
-import { SettingsService } from './settings.service';
-import { AuthenticationService } from './authentication.service';
-import { TranslateService } from '@ngx-translate/core';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { BehaviorSubject } from 'rxjs';
-import { HTTP } from '@ionic-native/http/ngx';
-import { Platform } from '@ionic/angular';
 import { LocalApiService, Grade } from './api-local.service';
+import { AuthenticationService } from './authentication.service';
 
 /*export interface SubjectData {
   name: string;
@@ -27,22 +22,34 @@ export interface FullSubject {
   id: number;
 }
 
+export interface DisplayableExam {
+  subject: string;
+  exam: string;
+  date: number;
+  current: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  fetchComplete = new BehaviorSubject(false);
+  examFetchComplete = new BehaviorSubject(false);
+  subjFetchComplete = new BehaviorSubject(false);
 
   perClassData = [];
   fullAvg = 0;
 
   constructor(
-    private apiSvc: LocalApiService
+    private apiSvc: LocalApiService,
+    private authSvc: AuthenticationService
   ) {}
 
   preCacheData(classId: number) {
-    this.apiSvc.login('bruno.sevcenko', '').then(() => {
+    this.apiSvc.login(this.authSvc.username, this.authSvc.password).then(() => {
       this.apiSvc.getClasses().then(classes => {
+        classes.forEach(() => {
+          this.perClassData.push({});
+        });
         this.apiSvc.getSubjects(classes[classId]).then(subjects => {
           const subjectsTemp = subjects as FullSubject[];
           subjectsTemp.forEach((subject, i) => {
@@ -55,9 +62,25 @@ export class ApiService {
             });
           });
           this.perClassData[classId] = {subjects: subjectsTemp};
-          this.fetchComplete.next(true);
+          this.subjFetchComplete.next(true);
+        }); // getSubjects()
+        this.apiSvc.getExams(classes[classId], true).then(exams => {
+          const tempExams = exams as DisplayableExam[];
+          const currentDate = Math.floor(Date.now() / 1000);
+          tempExams.forEach((exam, i) => {
+            tempExams[i].current = currentDate < exam.date;
+          });
+          this.perClassData[classId].exams = tempExams;
+          this.examFetchComplete.next(true);
+        }); // getExams()
+        this.apiSvc.getAbsencesFull(classes[classId]).then(absences => {
+          this.perClassData[classId].absences_full = absences;
+        }); // getAbsencesFull()
+        this.apiSvc.getAbsencesOverview(classes[classId]).then(absences => {
+          this.perClassData[classId].absences_overview = absences;
+          console.log(absences);
         });
-      });
-    });
+      }); // getClasses()
+    }); // login()
   }
 }

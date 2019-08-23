@@ -71,17 +71,17 @@ export class LoginPage implements OnInit {
   }
 
   _login() {
-    if (this.dataAlertShown === false) {
+    /*if (this.dataAlertShown === false) {
       // User hasn't seen alert, so we show it and set dataAlertShown to true,
       // so we don't show it again
       console.log('login/_login(): Data alert wasn\'t shown, showing it now');
       this.dataAlertShown = true;
       this.dataAlert();
-    } else {
+    } else {*/
       // User has seen alert, so no need to show it
       console.log('login/_login(): Data alert already shown, skipping');
       this.login();
-    }
+    // }
   }
 
   login() {
@@ -89,28 +89,7 @@ export class LoginPage implements OnInit {
     this.isLoading = true;
 
     // Send the request
-    this.authServ.login(this.loUsername, this.loPassword).subscribe(() => {
-      // Everything fine
-      console.log('login/login(): Successful login');
-      this.isLoading = false; // Stop the "Logging in..." alert
-    }, (err) => {
-      this.isLoading = false; // Stop alert
-      let e;
-      try { e = JSON.parse(err.error); } catch (ex) { e = {error: null}; }
-      if (e.error === 'E_INVALID_CREDENTIALS') {
-        // Bad creds
-        this.networkError(
-          this.translate.instant('login.alert.credentials.header'),
-          this.translate.instant('login.alert.credentials.content')
-        );
-      } else if (err.status === 500 || err.status === 521) {
-        // Server/network error
-        this.toastError(this.translate.instant('generic.alert.server'), null, 2500);
-        this.firebase.logError('Server error, status ' + err.status, null);
-      } else {
-        this.toastError(this.translate.instant('generic.alert.network'), null, 2500);
-      }
-    });
+    this.authServ.login(this.loUsername, this.loPassword);
   }
 
 }

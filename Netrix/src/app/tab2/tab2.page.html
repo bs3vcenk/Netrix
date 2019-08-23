@@ -31,14 +31,14 @@
       <ion-item [@fadeInOut] *ngIf="testObj.current || showAllPreference">
         <ion-label>
           <!-- Test name -->
-          <h2 id="testName" text-wrap>{{ testObj.test }}</h2>
+          <h2 id="testName" text-wrap>{{ testObj.exam }}</h2>
           <!-- Test date -->
           <h3 id="testDate">{{ convertToReadableDate(testObj.date) }}</h3>
           <!-- School subject for which the test is for -->
           <ion-note id="testSubject">{{ testObj.subject }}</ion-note>
         </ion-label>
         <!-- Notification icon with *ngIf to show only if this item has notifications turned on -->
-        <ion-icon item-right name="notifications" *ngIf="testObj.scheduled"></ion-icon>
+        <!--<ion-icon item-right name="notifications" *ngIf="testObj.scheduled"></ion-icon>-->
         <!-- Checkmark with *ngIf to show only if not current (already written) -->
         <ion-icon item-right name="checkmark" color="success" *ngIf="!testObj.current"></ion-icon>
       </ion-item>
