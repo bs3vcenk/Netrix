@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { LocalApiService, Grade } from './api-local.service';
 import { AuthenticationService } from './authentication.service';
+import { Storage } from '@ionic/storage';
 
 /*export interface SubjectData {
   name: string;
@@ -35,16 +36,42 @@ export interface DisplayableExam {
 export class ApiService {
   examFetchComplete = new BehaviorSubject(false);
   subjFetchComplete = new BehaviorSubject(false);
+  absenceOverviewFetchComplete = new BehaviorSubject(false);
+  absenceFullFetchComplete = new BehaviorSubject(false);
 
   perClassData = [];
+  saveData = {data: [], last_load_time: 0};
   fullAvg = 0;
 
   constructor(
     private apiSvc: LocalApiService,
-    private authSvc: AuthenticationService
+    private authSvc: AuthenticationService,
+    private storage: Storage
   ) {}
 
-  preCacheData(classId: number) {
+  private fetchAndCompareData(oldData) {
+    // TODO: Implement
+  }
+
+  private verifyData(dataObj) {
+    const currentTime = (new Date()).getTime();
+    if ((currentTime - dataObj.last_load_time) > 45 * 60 * 1000) { // 45 min
+      console.log('ApiService/verifyData(): Saved data is older than 45 minutes, fetching...');
+      this.fetchAndCompareData(dataObj);
+    }
+  }
+
+  loadData() {
+    this.storage.get('userData').then((resx) => {
+      if (resx === null) {
+        console.log('ApiService/loadData(): No stored data, fetching...');
+      } else {
+        this.verifyData(resx);
+      }
+    });
+  }
+
+  private async fetchData(classId: number) {
     this.apiSvc.login(this.authSvc.username, this.authSvc.password).then(() => {
       this.apiSvc.getClasses().then(classes => {
         classes.forEach(() => {
@@ -75,10 +102,11 @@ export class ApiService {
         }); // getExams()
         this.apiSvc.getAbsencesFull(classes[classId]).then(absences => {
           this.perClassData[classId].absences_full = absences;
+          this.absenceFullFetchComplete.next(true);
         }); // getAbsencesFull()
         this.apiSvc.getAbsencesOverview(classes[classId]).then(absences => {
           this.perClassData[classId].absences_overview = absences;
-          console.log(absences);
+          this.absenceOverviewFetchComplete.next(true);
         });
       }); // getClasses()
     }); // login()
