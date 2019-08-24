@@ -1,17 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { LocalApiService, Grade } from './api-local.service';
+import { LocalApiService, Grade, Exam, AbsencesOverview, AbsenceSort } from './api-local.service';
 import { AuthenticationService } from './authentication.service';
 import { Storage } from '@ionic/storage';
-
-/*export interface SubjectData {
-  name: string;
-  grades: any[];
-  notes: any[];
-  average: 0.00;
-  professors: string;
-  id: 0;
-}*/
 
 export interface FullSubject {
   name: string;
@@ -30,6 +21,23 @@ export interface DisplayableExam {
   current: boolean;
 }
 
+export interface StorageClass {
+  year: string;
+  name: string;
+  master: string;
+  class: string;
+  id: number;
+  _id: string;
+  data: ClassData;
+}
+
+export interface ClassData {
+  subjects: FullSubject[];
+  exams: Exam[];
+  absences: { overview: AbsencesOverview; full: AbsenceSort; };
+  last_load_time: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -39,8 +47,7 @@ export class ApiService {
   absenceOverviewFetchComplete = new BehaviorSubject(false);
   absenceFullFetchComplete = new BehaviorSubject(false);
 
-  perClassData = [];
-  saveData = {data: [], last_load_time: 0};
+  perClassData: ClassData[] = [];
   fullAvg = 0;
 
   constructor(
@@ -49,11 +56,11 @@ export class ApiService {
     private storage: Storage
   ) {}
 
-  private fetchAndCompareData(oldData) {
+  private fetchAndCompareData(oldData: ClassData) {
     // TODO: Implement
   }
 
-  private verifyData(dataObj) {
+  private verifyData(dataObj: ClassData) {
     const currentTime = (new Date()).getTime();
     if ((currentTime - dataObj.last_load_time) > 45 * 60 * 1000) { // 45 min
       console.log('ApiService/verifyData(): Saved data is older than 45 minutes, fetching...');
@@ -61,54 +68,52 @@ export class ApiService {
     }
   }
 
+  private saveData(dataObj: ClassData) {
+    this.storage.set('userData', dataObj);
+  }
+
   loadData() {
     this.storage.get('userData').then((resx) => {
       if (resx === null) {
         console.log('ApiService/loadData(): No stored data, fetching...');
+        this.fetchData(0).then((data) => {
+          this.saveData(data);
+        });
       } else {
         this.verifyData(resx);
       }
     });
   }
 
-  private async fetchData(classId: number) {
-    this.apiSvc.login(this.authSvc.username, this.authSvc.password).then(() => {
-      this.apiSvc.getClasses().then(classes => {
-        classes.forEach(() => {
-          this.perClassData.push({});
-        });
-        this.apiSvc.getSubjects(classes[classId]).then(subjects => {
-          const subjectsTemp = subjects as FullSubject[];
-          subjectsTemp.forEach((subject, i) => {
-            subjectsTemp[i].id = i;
-            this.apiSvc.getGrades(subject).then(grades => {
-              subjectsTemp[i].grades = grades;
-            });
-            this.apiSvc.getAverage(subject).then(average => {
-              subjectsTemp[i].average = average;
-            });
-          });
-          this.perClassData[classId] = {subjects: subjectsTemp};
-          this.subjFetchComplete.next(true);
-        }); // getSubjects()
-        this.apiSvc.getExams(classes[classId], true).then(exams => {
-          const tempExams = exams as DisplayableExam[];
-          const currentDate = Math.floor(Date.now() / 1000);
-          tempExams.forEach((exam, i) => {
-            tempExams[i].current = currentDate < exam.date;
-          });
-          this.perClassData[classId].exams = tempExams;
-          this.examFetchComplete.next(true);
-        }); // getExams()
-        this.apiSvc.getAbsencesFull(classes[classId]).then(absences => {
-          this.perClassData[classId].absences_full = absences;
-          this.absenceFullFetchComplete.next(true);
-        }); // getAbsencesFull()
-        this.apiSvc.getAbsencesOverview(classes[classId]).then(absences => {
-          this.perClassData[classId].absences_overview = absences;
-          this.absenceOverviewFetchComplete.next(true);
-        });
-      }); // getClasses()
-    }); // login()
+  private async fetchData(classId: number): Promise<ClassData> {
+    await this.apiSvc.login(this.authSvc.username, this.authSvc.password);
+    const classes = await this.apiSvc.getClasses();
+    const subjects = await this.apiSvc.getSubjects(classes[classId]) as FullSubject[];
+    subjects.forEach((subject, i) => {
+      subjects[i].id = i;
+      this.apiSvc.getGrades(subject).then(grades => {
+        subjects[i].grades = grades;
+      });
+      this.apiSvc.getAverage(subject).then(average => {
+        subjects[i].average = average;
+      });
+    });
+    const exams = await this.apiSvc.getExams(classes[classId], true) as DisplayableExam[];
+    const currentDate = Math.floor(Date.now() / 1000);
+    exams.forEach((exam, i) => {
+      exams[i].current = currentDate < exam.date;
+    });
+    const abFull = await this.apiSvc.getAbsencesFull(classes[classId]) as AbsenceSort;
+    const abOverview = await this.apiSvc.getAbsencesOverview(classes[classId]) as AbsencesOverview;
+    const data: ClassData = {
+      subjects,
+      exams,
+      absences: {
+        overview: abOverview,
+        full: abFull
+      },
+      last_load_time: (new Date()).getTime()
+    };
+    return data;
   }
 }
