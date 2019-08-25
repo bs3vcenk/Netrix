@@ -457,7 +457,7 @@ def _getVar(varname, _bool=False, default=None):
 		default = default if default != None else False
 	try:
 		return environ[varname] if not _bool else environ[varname] == "Y"
-	except:
+	except TypeError:
 		print("ERROR => %s => Variable not present" % varname)
 		return default
 
