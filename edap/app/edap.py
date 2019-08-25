@@ -80,6 +80,7 @@ class edap:
 		self.return_processing_time = return_processing_time
 		self.class_ids = []
 		self.subject_ids = []
+		self.subject_cache = {}
 		if redirect_log_to_file:
 			sys.stdout = open(redirect_log_to_file, "w")
 		self.__edlog(1, "Initializing requests.Session() object")
@@ -272,7 +273,11 @@ class edap:
 		"""
 		self.__edlog(0, "Getting grade list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
-			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			if not self.subject_ids[subject_id] in self.subject_cache:
+				response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+				self.subject_cache[self.subject_ids[subject_id]] = response
+			else:
+				response = self.subject_cache[self.subject_ids[subject_id]]
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
 		if self.return_processing_time:
@@ -302,7 +307,11 @@ class edap:
 		"""
 		self.__edlog(0, "Getting note list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
-			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			if not self.subject_ids[subject_id] in self.subject_cache:
+				response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+				self.subject_cache[self.subject_ids[subject_id]] = response
+			else:
+				response = self.subject_cache[self.subject_ids[subject_id]]
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting notes for subject (%s)" % e)
 		if self.return_processing_time:
@@ -334,7 +343,11 @@ class edap:
 		"""
 		self.__edlog(0, "Getting concluded grade for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
-			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			if not self.subject_ids[subject_id] in self.subject_cache:
+				response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+				self.subject_cache[self.subject_ids[subject_id]] = response
+			else:
+				response = self.subject_cache[self.subject_ids[subject_id]]
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
 		if self.return_processing_time:
