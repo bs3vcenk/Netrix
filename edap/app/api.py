@@ -143,29 +143,6 @@ def exh_redis_db_fail(e):
 	log.critical(" ==> DATBASE ACCESS FAILURE!!!!! <== [%s]", e)
 	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
 
-@app.route('/dev', methods=["GET"])
-@dev_area
-def dev_start_page():
-	"""
-		DEV: Main dev page listing all available functions
-	"""
-	html = '<a href="/dev/info">Generic info + counters page</a><br>'
-	html += '<a href="/dev/threads">Sync thread info</a><br>'
-	html += '<a href="/dev/log">View log</a><br>'
-	html += '<a href="/dev/dbinfo">Database info</a><br>'
-	html += '<a href="/dev/vars">Config/env variables</a>'
-	return makeHTML(content=html)
-
-@app.route('/dev/vars', methods=["GET"])
-@dev_area
-def dev_show_vars():
-	start = _time()
-	html = '<pre>'
-	html += '\n'.join(["%s=%s" % (x, config[x]) for x in config])
-	html += '</pre>'
-	html += timeGenerated(start)
-	return makeHTML(title="eDAP dev variables", content=html)
-
 @app.route('/dev/dbinfo', methods=["GET"])
 @dev_area
 def dev_db_info():
@@ -218,20 +195,9 @@ def dev_info():
 		DEV: Statistics page, also lists tokens (shown as usernames) and provides
 		a link to manage each one.
 	"""
-	start = _time()
-	html = "<h2>Users</h2>"
-	html += '<br>'.join(['%s || <a href="/dev/info/tokendebug/%s">Manage</a>' % (getData(i)["user"], i) for i in getTokens()])
-	html += "<h2>Logins</h2>"
-	html += "<h3>Successful</h3>"
-	html += "<p>Full/slow (with data fetch): %i</p>" % getCounter("logins:success:slow")
-	html += "<p>Fast (data cached): %i</p>" % getCounter("logins:success:fast")
-	html += "<h3>Failed</h3>"
-	html += "<p>Wrong password: %i</p>" % getCounter("logins:fail:credentials")
-	html += "<p>Generic (bad JSON, library exception etc.): %i</p>" % getCounter("logins:fail:generic")
-	html += "<h3>Options</h3>"
+	html = "<h3>Options</h3>"
 	html += "<p><a href=\"/dev/info/recreate\">Recreate data for all tokens</a> [WARNING: Clicking will proceed with operation!]</p>"
 	html += "<p><a href=\"/dev/info/testuser\">Add test user</a></p>"
-	html += timeGenerated(start)
 	return makeHTML(title="eDAP dev info", content=html)
 
 @app.route('/dev/token', methods=["GET"])
