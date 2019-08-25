@@ -395,9 +395,7 @@ def login():
 		'messages': []
 	}
 	if config["USE_CLOUDFLARE"]:
-		dataObj["cloudflare"] = {}
-		dataObj["cloudflare"]["last_ip"] = None
-		dataObj["cloudflare"]["country"] = None
+		dataObj["cloudflare"] = {"last_ip": None, "country": None}
 	saveData(token, dataObj)
 	log.debug("SLOW => Starting sync for %s", username)
 	startSync(token)
