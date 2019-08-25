@@ -2,7 +2,7 @@ from time import time as _time
 from functools import wraps
 from flask import Flask, jsonify, make_response, request, abort, redirect, escape
 from flask_cors import CORS
-from apiBackend import *
+from api_backend import *
 import edap
 
 API_VERSION = "2.5.3"
