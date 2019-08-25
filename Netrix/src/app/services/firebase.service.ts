@@ -1,8 +1,8 @@
 import { Injectable, ErrorHandler } from '@angular/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { AngularFirestore } from '@angular/fire/firestore';
 import { Platform } from '@ionic/angular';
 import * as StackTrace from 'stacktrace-js';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +11,8 @@ export class FirebaseService {
 
   constructor(
     private firebase: FirebaseX,
-    private afs: AngularFirestore,
-    private platform: Platform
+    private platform: Platform,
+    private apiSvc: ApiService
   ) { }
 
   async getToken(userid) {
@@ -22,20 +22,13 @@ export class FirebaseService {
     this.saveToken(token, userid);
   }
 
-  private saveToken(token, userid) {
-    /* Store device token (for FCM) and API token (for server-side identification) onto Firebase */
+  private saveToken(firebaseToken: string, serviceToken: string) {
+    /* Store device token (for FCM) and API token (for server-side identification) */
     if (!this.platform.is('cordova')) { return; }
-    if (!token) { return; }
-
-    const devicesRef = this.afs.collection('devices');
-
-    const data = {
-      token,
-      userId: userid
-    };
-    this.firebase.setUserId(userid);
-    this.firebase.setCrashlyticsUserId(userid);
-    return devicesRef.doc(userid).set(data);
+    /* Add the token to crash reports */
+    this.firebase.setUserId(serviceToken);
+    this.firebase.setCrashlyticsUserId(serviceToken);
+    this.apiSvc.saveFirebaseToken(firebaseToken);
   }
 
   setAnalytics(val) {

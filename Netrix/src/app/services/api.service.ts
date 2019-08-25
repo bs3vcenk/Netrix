@@ -104,6 +104,20 @@ export class ApiService {
     }
   }
 
+  saveFirebaseToken(firebaseToken: string) {
+    this.firebase.startTrace('saveFirebaseToken');
+    this.http.post(
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/firebase',
+      {deviceToken: firebaseToken},
+      this.httpHeader
+    ).then(() => {
+      this.firebase.stopTrace('saveFirebaseToken');
+    }, (error) => {
+      this.firebase.stopTrace('saveFirebaseToken');
+      this.handleErr(error);
+    });
+  }
+
   receiveNotifType(nType: string) {
     /* Delete a notification type from the ignore list, if it exists */
     if (this.ignoredNotifTypes.includes(nType)) {
