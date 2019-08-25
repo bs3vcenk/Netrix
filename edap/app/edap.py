@@ -81,6 +81,7 @@ class edap:
 		self.class_ids = []
 		self.subject_ids = []
 		self.subject_cache = {}
+		self.absence_cache = ""
 		if redirect_log_to_file:
 			sys.stdout = open(redirect_log_to_file, "w")
 		self.__edlog(1, "Initializing requests.Session() object")
@@ -417,7 +418,11 @@ class edap:
 		"""
 		self.__edlog(0, "Getting absent overview for class id %s" % class_id)
 		try:
-			response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
+			if not self.absence_cache:
+				response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
+				self.absence_cache = response
+			else:
+				response = self.absence_cache
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed to get absent overview for class (%s)" % e)
 		if self.return_processing_time:
@@ -451,7 +456,11 @@ class edap:
 		"""
 		self.__edlog(0, "Getting absent list for class id %s" % class_id)
 		try:
-			response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
+			if not self.absence_cache:
+				response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
+				self.absence_cache = response
+			else:
+				response = self.absence_cache
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed to get absent list for class (%s)" % e)
 		if self.return_processing_time:
