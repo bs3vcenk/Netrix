@@ -12,8 +12,6 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Device } from '@ionic-native/device/ngx';
-import { AngularFireModule } from '@angular/fire';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { CrashlyticsErrorHandler } from './services/firebase.service';
 import { AdMob } from '@ionic-native/admob-plus/ngx';
@@ -21,17 +19,6 @@ import { AdmobService } from './services/admob.service';
 import { CountUpModule } from 'countup.js-angular2';
 import { HTTP } from '@ionic-native/http/ngx';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
-
-const firebaseConfig = {
-    apiKey: 'AIzaSyDL7WpxGbkahzg6KJqqyxgQO0h-bez0MyY',
-    authDomain: 'netrix-2e6bf.firebaseapp.com',
-    databaseURL: 'https://netrix-2e6bf.firebaseio.com',
-    projectId: 'netrix-2e6bf',
-    storageBucket: 'netrix-2e6bf.appspot.com',
-    messagingSenderId: '431714020563',
-    appId: '1:431714020563:web:46d51f3a4163d676'
-  };
-
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
@@ -56,8 +43,6 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    AngularFireModule.initializeApp(firebaseConfig),
-    AngularFirestoreModule,
     CountUpModule,
     HttpClientModule
   ],
