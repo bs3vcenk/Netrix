@@ -425,13 +425,13 @@ def sendNotification(token, title, content, data=None):
 		doc = documentReference.get()
 		firebaseToken = doc.to_dict()["token"]
 	except Exception as e:
-		log.error('Error in Firestore => %s' % str(e))
+		log.error('Error in Firestore => %s', str(e))
 		raise e
 
 	try:
 		_fbPushService.notify_single_device(registration_id=firebaseToken, message_title=title, message_body=content, data_message=data)
 	except Exception as e:
-		log.error('Unknown error (Firebase Cloud Messaging) => %s' % str(e))
+		log.error('Unknown error (Firebase Cloud Messaging) => %s', str(e))
 		raise e
 
 def _sync(token):
@@ -440,7 +440,7 @@ def _sync(token):
 	"""
 	while True:
 		val = randint(3600, 5000)
-		log.debug("Waiting %i s for %s" % (val, token))
+		log.debug("Waiting %i s for %s", val, token)
 		sleep(val)
 		if _threads["sync:" + token]["run"] != True:
 			del _threads["sync:" + token]
