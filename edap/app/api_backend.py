@@ -682,6 +682,20 @@ def populateData(obj=None, username=None, password=None, time=False):
 		log.info("==> TIMER => %s" % request_time)
 	return dataDict
 
+def verifyDevRequest(token):
+	"""
+		Verify if a given dev API token is valid.
+	"""
+	return token in [i.decode('utf-8') for i in _redis.keys('dev-token:*')]
+
+def addDevToken():
+	"""
+		Authorizes a dev API token.
+	"""
+	token = _SHA256HASH(random_string(28))
+	_redis.set('dev-token:' + token, 'ALLOWED')
+	return token
+
 def verifyRequest(token, class_id=None, subject_id=None):
 	"""
 		Verify if a given token, class_id, and/or subject_id exist in the DB.
