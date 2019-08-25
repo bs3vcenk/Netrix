@@ -172,10 +172,7 @@ def dev_db_info():
 	"""
 		DEV: Database info page, currently only showing the size of the DB.
 	"""
-	start = _time()
-	html = '<p>DB Size: %s</p>' % convertSize(getDBSize())
-	html += timeGenerated(start)
-	return makeHTML(title="eDAP dev DB info", content=html)
+	return make_response(jsonify({'size':convertSize(getDBSize())}))
 
 @app.route('/dev/log', methods=["GET"])
 @dev_area
@@ -185,7 +182,7 @@ def dev_log():
 	"""
 	return make_response(jsonify({'log':readLog()}), 200)
 
-@app.route('/dev/users')
+@app.route('/dev/users', methods=["GET"])
 @dev_area
 def dev_users():
 	"""
@@ -195,6 +192,24 @@ def dev_users():
 	for token in getTokens():
 		tklist.append({'token': token, 'name': getData(token)["user"]})
 	return make_response(jsonify({'users':tklist}), 200)
+
+@app.route('/dev/stats', methods=["GET"])
+@dev_area
+def dev_stats():
+	"""
+		DEV: Statistics report, shows full and cached logins along with failed
+		ones.
+	"""
+	return make_response(jsonify({
+		'success': {
+			'slow_logins': getCounter("logins:success:slow"),
+			'fast_logins': getCounter("logins:success:fast")
+		},
+		'fails': {
+			'wrong_pw': getCounter("logins:fail:credentials"),
+			'exceptions': getCounter("logins:fail:generic")
+		}
+	}), 200)
 
 @app.route('/dev/info', methods=["GET"])
 @dev_pw_area
