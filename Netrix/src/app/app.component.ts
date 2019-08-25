@@ -115,15 +115,18 @@ export class AppComponent {
         }
       });
 
+      /* Indicate if using developer build */
       if (!environment.production) {
         this.toastController.create({
           message: 'Using a developer build',
           duration: 2000,
+          color: 'dark'
         }).then(alert => {
           alert.present();
         });
       }
 
+      /* Check and schedule exam notifications when ready */
       this.apiSvc.loadingFinishedTests.subscribe(val => {
         if (val) {
           console.log('AppComponent/initializeApp(): Test loading finished');
