@@ -47,8 +47,8 @@ class edap:
 	             hidepriv=True,
 	             log_func_name=True,
 	             redirect_log_to_file=False,
-				 hide_confidential=True,
-				 return_processing_time=False):
+	             hide_confidential=True,
+	             return_processing_time=False):
 		"""
 			Authenticates the user to eDnevnik.
 
