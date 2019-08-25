@@ -27,7 +27,7 @@ _fbPushService = None
 _fbFirestoreDB = None
 _redis = None
 
-threads = {}
+_threads = {}
 
 class NonExistentSetting(Exception):
 	pass
@@ -195,10 +195,10 @@ def purgeToken(token):
 		Remove a token from the DB and terminate its sync thread.
 	"""
 	log.info("LOGOUT => %s", token)
-	stopSync(token)
+	_stopSync(token)
 	_redis.delete('token:' + token)
 
-def formatAndSendNotification(token, notifData):
+def _formatAndSendNotification(token, notifData):
 	"""
 		Format a notification for the user based on data gotten from
 		profileDifference() in sync().
@@ -216,9 +216,9 @@ def formatAndSendNotification(token, notifData):
 		elif x['type'] == 'test' and 'test' not in exceptions:
 			testNotif.append("%s: %s" % (x['data']['subject'], x['data']['test']))
 		elif x['type'] == 'grade' and 'grade' not in exceptions:
-			gradeNotif.append("%s: %s (%s)" % (getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['grade'], x['data']['note']))
+			gradeNotif.append("%s: %s (%s)" % (_getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['grade'], x['data']['note']))
 		elif x['type'] == 'note' and 'note' not in exceptions:
-			noteNotif.append("%s: %s" % (getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['note']))
+			noteNotif.append("%s: %s" % (_getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['note']))
 		elif x['type'] == 'absence' and 'absence' not in exceptions:
 			absenceNotif = "ABS"
 	if len(classNotif) > 0:
@@ -249,7 +249,7 @@ def formatAndSendNotification(token, notifData):
 	for i in toSendQueue:
 		sendNotification(token, i['head'], i['content'])
 
-def getNameForSubjId(token, class_id, subject_id):
+def _getNameForSubjId(token, class_id, subject_id):
 	"""
 		Get the name belonging to a subject ID.
 	"""
@@ -257,43 +257,42 @@ def getNameForSubjId(token, class_id, subject_id):
 		raise Exception('Bad auth data')
 	return getData(token)['data']['classes'][class_id]['subjects'][subject_id]['subject']
 
-def stopSync(token):
+def _stopSync(token):
 	"""
 		Stop background sync thread for a given token, e.g. if
 		terminated.
 	"""
-	if "sync:" + token in threads.keys():
-		threads["sync:" + token]["run"] = False
+	if "sync:" + token in _threads.keys():
+		_threads["sync:" + token]["run"] = False
 
 def getSyncThreads():
 	"""
 		Get a list of sync threads.
 	"""
-	return [i.replace("sync:", "") for i in threads.keys()]
+	return [i.replace("sync:", "") for i in _threads.keys()]
 
 def isThreadAlive(token):
 	"""
 		Return the isAlive() of the sync thread belonging to a
 		given token.
 	"""
-	return threads["sync:" + token]["obj"].isAlive()
+	return _threads["sync:" + token]["obj"].isAlive()
 
 def startSync(token):
 	"""
 		Start a sync thread for a given token.
 	"""
-	global threads
-	if "sync:" + token not in threads:
+	global _threads
+	if "sync:" + token not in _threads:
 		to = Thread(target=_sync, args=(token,))
 		to.start()
-		threads["sync:" + token] = {"obj":None, "run":True}
-		threads["sync:" + token]["obj"] = to
+		_threads["sync:" + token] = {"obj":None, "run":True}
+		_threads["sync:" + token]["obj"] = to
 
 def restoreSyncs():
 	"""
 		Restore all sync threads (on startup).
 	"""
-	global threads
 	for token in getTokens():
 		if not 'ignore_updating' in getData(token).keys():
 			startSync(token)
@@ -304,12 +303,12 @@ def syncDev(data2, token):
 	"""
 	log.debug("Simulating sync")
 	o = getData(token)
-	diff = profileDifference(o["data"], data2)
+	diff = _profileDifference(o["data"], data2)
 	if len(diff) > 0:
 		log.debug("Difference detected")
 		o["new"] = diff
 		saveData(token, o)
-		formatAndSendNotification(token, diff)
+		_formatAndSendNotification(token, diff)
 
 def sync(token):
 	"""
@@ -319,14 +318,14 @@ def sync(token):
 	fData = getData(token)
 	data = fData["data"] # Old data
 	nData = populateData(edap.edap(fData["user"], fData["pasw"])) # New data
-	diff = profileDifference(data, nData)
+	diff = _profileDifference(data, nData)
 	if len(diff) > 0:
 		fData["data"] = nData
 		fData["new"] = diff
 		saveData(token, fData)
-		formatAndSendNotification(token, diff)
+		_formatAndSendNotification(token, diff)
 
-def profileDifference(dObj1, dObj2):
+def _profileDifference(dObj1, dObj2):
 	"""
 		Return the difference between two student data dicts.
 	"""
@@ -443,12 +442,12 @@ def _sync(token):
 		val = randint(3600, 5000)
 		log.debug("Waiting %i s for %s" % (val, token))
 		sleep(val)
-		if threads["sync:" + token]["run"] != True:
-			del threads["sync:" + token]
+		if _threads["sync:" + token]["run"] != True:
+			del _threads["sync:" + token]
 			break
 		sync(token)
 
-def getVar(varname, _bool=False, default=None):
+def _getVar(varname, _bool=False, default=None):
 	"""
 		Get environment variable and return it if it exists. If _bool is True,
 		return it as a boolean value. If default is set, return its value if
@@ -462,36 +461,36 @@ def getVar(varname, _bool=False, default=None):
 		print("ERROR => %s => Variable not present" % varname)
 		return default
 
-def initGoogleToken(fpath):
+def _initGoogleToken(fpath):
 	if not _fileExists(fpath):
 		print("ERROR => File %s given to initGoogleToken() does not exist!" % fpath)
 		_exit(1)
 	environ["GOOGLE_APPLICATION_CREDENTIALS"] = fpath
 
-def readConfig():
+def _readConfig():
 	global _fbPushService
 	global _fbFirestoreDB
-	DATA_FOLDER = getVar("DATA_FOLDER", default="/data")
-	GOOGLE_TOKEN_FILE = getVar("GOOGLE_TOKEN_FILE", default="google_creds.json")
+	DATA_FOLDER = _getVar("DATA_FOLDER", default="/data")
+	GOOGLE_TOKEN_FILE = _getVar("GOOGLE_TOKEN_FILE", default="google_creds.json")
 
-	ALLOW_DEV_ACCESS = getVar("DEV_ACCESS", _bool=True)
-	USE_CLOUDFLARE = getVar("CLOUDFLARE", _bool=True)
-	USE_FIREBASE = getVar("FIREBASE", _bool=True)
+	ALLOW_DEV_ACCESS = _getVar("DEV_ACCESS", _bool=True)
+	USE_CLOUDFLARE = _getVar("CLOUDFLARE", _bool=True)
+	USE_FIREBASE = _getVar("FIREBASE", _bool=True)
 
 	privUsername = privPassword = None
 	FIREBASE_TOKEN = None
 
 	if ALLOW_DEV_ACCESS:
-		privUsername = getVar("DEV_USER")
-		privPassword = getVar("DEV_PASW")
+		privUsername = _getVar("DEV_USER")
+		privPassword = _getVar("DEV_PASW")
 		if not privUsername or not privPassword:
 			print("[configuration] Dev access has been disabled, either no user or pass specified")
 			privUsername = privPassword = None
 			ALLOW_DEV_ACCESS = False
 
 	if USE_FIREBASE:
-		FIREBASE_TOKEN = getVar("FIREBASE_TOKEN")
-		initGoogleToken(_joinPath(DATA_FOLDER, GOOGLE_TOKEN_FILE))
+		FIREBASE_TOKEN = _getVar("FIREBASE_TOKEN")
+		_initGoogleToken(_joinPath(DATA_FOLDER, GOOGLE_TOKEN_FILE))
 		if not FIREBASE_TOKEN:
 			print("[configuration] Firebase has been disabled, no token specified")
 			USE_FIREBASE = False
@@ -538,7 +537,7 @@ def convertSize(size_bytes):
 	s = round(size_bytes / p, 2)
 	return "%s %s" % (s, size_name[i])
 
-def initDB(host="localhost", port=6379, db=0):
+def _initDB(host="localhost", port=6379, db=0):
 	"""
 		Initialize the Redis DB.
 	"""
@@ -683,17 +682,6 @@ def populateData(obj=None, username=None, password=None, time=False):
 		log.info("==> TIMER => %s" % request_time)
 	return dataDict
 
-def updateData(token):
-	"""
-		Update the stored data for a token.
-	"""
-	if not verifyRequest(token):
-		raise Exception('Bad token')
-	o = getData(token)
-	username = o["user"]
-	log.debug(username)
-	o['data'] = populateData()
-
 def verifyRequest(token, class_id=None, subject_id=None):
 	"""
 		Verify if a given token, class_id, and/or subject_id exist in the DB.
@@ -735,17 +723,17 @@ def getCounter(counter_id):
 			_redis.set("counter:"+counter_id, 0)
 			return 0
 
-def setCounter(counter_id, value):
+def _setCounter(counter_id, value):
 	_redis.set("counter:"+counter_id, value)
 
 def updateCounter(counter_id):
 	val = getCounter(counter_id)
-	setCounter(counter_id, val+1)
+	_setCounter(counter_id, val+1)
 
-config = readConfig()
+config = _readConfig()
 logging.basicConfig(
 	filename=_joinPath(config["DATA_FOLDER"], "edap_api.log"),
 	level=logging.INFO,
 	format="%(asctime)s || %(funcName)-16s || %(levelname)-8s || %(message)s"
 )
-_redis = initDB()
+_redis = _initDB()
