@@ -36,7 +36,7 @@ def _exit(exitCode):
 	print("!!! Exiting with code %i\n    Check the log file for more information." % exitCode)
 	_sysExit(exitCode)
 
-def localize(token, locId):
+def localize(token, notif_type):
 	"""
 		Localize a string according to the language reported by
 		the phone through /api/stats.
@@ -72,7 +72,7 @@ def localize(token, locId):
 		}
 	}
 	lang = getData(token)['lang']
-	return locs[lang][locId]
+	return locs[lang][notif_type]
 
 def random_string(length: int) -> str:
 	return ''.join(_randomChoice(ascii_letters) for m in range(length))
