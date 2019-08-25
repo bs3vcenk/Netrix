@@ -32,7 +32,7 @@ def authenticate():
 		401, {'WWW-Authenticate': 'Basic realm="Login Required"'}
 	)
 
-def dev_area(f):
+def dev_pw_area(f):
 	"""
 		Decorator that marks a function as belonging to the browser-side
 		/dev/ dashboard, and protects it with a username and password
@@ -57,7 +57,7 @@ def dev_area(f):
 		return f(*args, **kwargs)
 	return decorated
 
-def dev_pw_area(f):
+def dev_area(f):
 	"""
 		Decorator that marks a function as belonging to the /dev/ API
 		endpoints and checks for a token before allowing use.
