@@ -11,9 +11,9 @@ import { NotificationService } from '../services/notification.service';
 import { environment } from '../../environments/environment';
 
 @Component({
-  selector: 'app-tab3',
-  templateUrl: 'tab3.page.html',
-  styleUrls: ['tab3.page.scss'],
+  selector: 'app-settings',
+  templateUrl: 'settings.page.html',
+  styleUrls: ['settings.page.scss'],
   animations: [
     trigger('fadeInOut', [
       state('void', style({ opacity: '0' })),
