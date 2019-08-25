@@ -686,7 +686,7 @@ def verifyDevRequest(token):
 	"""
 		Verify if a given dev API token is valid.
 	"""
-	return token in [i.decode('utf-8') for i in _redis.keys('dev-token:*')]
+	return "dev-token:" + token in [i.decode('utf-8') for i in _redis.keys('dev-token:*')]
 
 def addDevToken():
 	"""
