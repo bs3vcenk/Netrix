@@ -692,7 +692,7 @@ def addDevToken():
 	"""
 		Authorizes a dev API token.
 	"""
-	token = _SHA256HASH(random_string(28).encode('utf-8'))
+	token = hashPassword(random_string(28))
 	_redis.set('dev-token:' + token, 'ALLOWED')
 	return token
 
