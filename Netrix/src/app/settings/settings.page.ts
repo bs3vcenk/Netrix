@@ -22,7 +22,7 @@ import { environment } from '../../environments/environment';
     ])
   ]
 })
-export class Tab3Page {
+export class SettingsPage {
 
   // dataPreference = null;
   notifPreference = null;
