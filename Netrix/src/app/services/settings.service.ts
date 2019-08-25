@@ -26,7 +26,6 @@ export class SettingsService {
 
   constructor(
     private storage: Storage,
-    private firebaseSvc: FirebaseService,
     private admobSvc: AdmobService,
     private statusBar: StatusBar,
     private firebase: FirebaseX
@@ -36,7 +35,7 @@ export class SettingsService {
     this.storage.get('data-preference').then(res => {
       // Force on for now
       this.dataPreference = true;
-      this.firebaseSvc.setAnalytics(true);
+      // this.firebaseSvc.setAnalytics(true);
       /*if (res != null) {
         this.firebaseSvc.setAnalytics(res);
         this.dataPreference = res;
