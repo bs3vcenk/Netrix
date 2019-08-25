@@ -386,6 +386,7 @@ def login():
 		'resolution': None,
 		'new': [],
 		'generated_with': API_VERSION,
+		'firebase_device_token': None,
 		'settings': {
 			'notif': {
 				'disable': False,
@@ -411,6 +412,18 @@ def get_user_info(token):
 		abort(401)
 	log.info(token)
 	return make_response(jsonify(getData(token)['data']['info']), 200)
+
+@app.route('/api/user/<string:token>/firebase', methods=["POST"])
+def set_firebase_token(token):
+	if not verifyRequest(token):
+		abort(401)
+	if not request.json or not "deviceToken" in request.json:
+		abort(400)
+	log.info("FIREBASE => %s", token)
+	user_data = getData(token)
+	user_data['firebase_device_token'] = request.json['deviceToken']
+	saveData(token, user_data)
+	return make_response(jsonify({'status':'ok'}), 200)
 
 @app.route('/api/user/<string:token>/settings/<string:action>', methods=["POST", "GET"])
 def setting(token, action):
