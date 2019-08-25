@@ -34,8 +34,8 @@ def authenticate():
 
 def dev_area(f):
 	"""
-		Decorator that marks a function as belonging to the /dev/ dashboard,
-		protecting it with a username and password (if enabled).
+		Decorator that marks a function as belonging to the browser-side
+		/dev/ dashboard, and protects it with a username and password
 	"""
 	@wraps(f)
 	def decorated(*args, **kwargs):
@@ -51,6 +51,32 @@ def dev_area(f):
 				if auth:
 					log.warning("FAIL => %s (%s) => Bad auth", ip, country)
 				return authenticate()
+		else:
+			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
+			abort(404)
+		return f(*args, **kwargs)
+	return decorated
+
+def dev_pw_area(f):
+	"""
+		Decorator that marks a function as belonging to the /dev/ API
+		endpoints and checks for a token before allowing use.
+	"""
+	@wraps(f)
+	def decorated(*args, **kwargs):
+		if config["USE_CLOUDFLARE"]:
+			ip = request.headers["CF-Connecting-IP"]
+			country = request.headers["CF-IPCountry"]
+		else:
+			ip = request.remote_addr
+			country = "Unknown"
+		if config["ALLOW_DEV_ACCESS"]:
+			if "X-API-Token" not in request.headers:
+				log.warning("FAIL => %s (%s) => No API token supplied", ip, country)
+				abort(403)
+			elif not verifyDevRequest(request.headers["X-API-Token"]):
+				log.warning("FAIL => %s (%s) => Bad API token %s", ip, country, request.headers["X-API-Token"])
+				abort(403)
 		else:
 			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
 			abort(404)
@@ -157,10 +183,21 @@ def dev_log():
 	"""
 		DEV: Simple page to print the log file.
 	"""
-	return makeHTML(bare=True, content='<pre>%s</pre>' % escape(readLog()))
+	return make_response(jsonify({'log':readLog()}), 200)
+
+@app.route('/dev/users')
+@dev_area
+def dev_users():
+	"""
+		DEV: Get usernames and tokens.
+	"""
+	tklist = []
+	for token in getTokens():
+		tklist.append({'token': token, 'name': getData(token)["user"]})
+	return make_response(jsonify({'users':tklist}), 200)
 
 @app.route('/dev/info', methods=["GET"])
-@dev_area
+@dev_pw_area
 def dev_info():
 	"""
 		DEV: Statistics page, also lists tokens (shown as usernames) and provides
@@ -182,6 +219,14 @@ def dev_info():
 	html += timeGenerated(start)
 	return makeHTML(title="eDAP dev info", content=html)
 
+@app.route('/dev/token', methods=["GET"])
+@dev_pw_area
+def dev_make_token():
+	"""
+		DEV: Create a dev API token.
+	"""
+	return makeHTML(title="eDAP dev API token generator", content="<p>Your token is: <code>%s<code></p>" % addDevToken())
+
 @app.route('/dev/threads', methods=["GET"])
 @dev_area
 def dev_thread_list():
@@ -189,16 +234,6 @@ def dev_thread_list():
 		DEV: List running background threads.
 	"""
 	return makeHTML(title="eDAP dev thread info", content='<h2>List</h2><pre>%s</pre>' % '\n'.join(getSyncThreads()))
-
-@app.route('/dev/threads/<string:token>', methods=["GET"])
-@dev_area
-def dev_thread_info(token):
-	"""
-		DEV: Show if a thread is still running.
-	"""
-	if not verifyRequest(token):
-		return make_response('Token does not exist', 404)
-	return makeHTML(title="eDAP dev thread info", content='<pre>isAlive: %s</pre>' % isThreadAlive(token))
 
 @app.route('/dev/info/testuser', methods=["GET"])
 @dev_area
