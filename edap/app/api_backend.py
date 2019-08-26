@@ -36,6 +36,14 @@ def _exit(exitCode):
 	print("!!! Exiting with code %i\n    Check the log file for more information." % exitCode)
 	_sysExit(exitCode)
 
+def tempMIGRATE_FIREBASE(token):
+	document_reference = _fbFirestoreDB.collection('devices').document(token)
+	doc = document_reference.get()
+	firebase_token = doc.to_dict()["token"]
+	old_data = getData(token)
+	old_data["firebase_device_token"] = firebase_token
+	saveData(token, old_data)
+
 def localize(token, notif_type):
 	"""
 		Localize a string according to the language reported by
@@ -418,14 +426,7 @@ def sendNotification(token, title, content, data=None):
 	if not verifyRequest(token):
 		raise Exception("Bad token")
 	log.info("Sending notification to %s", token)
-	documentReference = _fbFirestoreDB.collection('devices').document(token)
-
-	try:
-		doc = documentReference.get()
-		firebaseToken = doc.to_dict()["token"]
-	except Exception as e:
-		log.error('Error in Firestore => %s', str(e))
-		raise e
+	firebaseToken = getData(token)["firebase_device_token"]
 
 	try:
 		_fbPushService.notify_single_device(registration_id=firebaseToken, message_title=title, message_body=content, data_message=data)
