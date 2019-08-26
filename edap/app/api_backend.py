@@ -286,8 +286,7 @@ def startSync(token):
 	if "sync:" + token not in _threads:
 		to = Thread(target=_sync, args=(token,))
 		to.start()
-		_threads["sync:" + token] = {"obj":None, "run":True}
-		_threads["sync:" + token]["obj"] = to
+		_threads["sync:" + token] = {"obj":to, "run":True}
 
 def restoreSyncs():
 	"""
