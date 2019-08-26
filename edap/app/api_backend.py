@@ -290,6 +290,7 @@ def startSync(token):
 	"""
 		Start a sync thread for a given token.
 	"""
+	global _threads
 	if "sync:" + token not in _threads:
 		to = Thread(target=_sync, args=(token,))
 		to.start()
@@ -468,6 +469,8 @@ def _initGoogleToken(fpath):
 	environ["GOOGLE_APPLICATION_CREDENTIALS"] = fpath
 
 def _readConfig():
+	global _fbPushService
+	global _fbFirestoreDB
 	DATA_FOLDER = _getVar("DATA_FOLDER", default="/data")
 	GOOGLE_TOKEN_FILE = _getVar("GOOGLE_TOKEN_FILE", default="google_creds.json")
 
