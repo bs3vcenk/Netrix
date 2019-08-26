@@ -350,7 +350,6 @@ def login():
 			'model': None
 		},
 		'lang': None,
-		'resolution': None,
 		'new': [],
 		'generated_with': API_VERSION,
 		'firebase_device_token': None,
@@ -529,27 +528,24 @@ def log_stats():
 	if (not "token" in request.json
 	    or not "platform" in request.json
 	    or not "device" in request.json
-	    or not "language" in request.json
-	    or not "resolution" in request.json):
+	    or not "language" in request.json):
 		log.warning("Invalid JSON from %s", request.remote_addr)
 		abort(400)
 	token = request.json["token"]
 	if not verifyRequest(token):
 		abort(401)
 	log.info(
-		"STATS => %s => %s, %s, %s, %s",
+		"STATS => %s => %s, %s, %s",
 		token,
 		request.json["platform"],
 		request.json["device"],
-		request.json["language"],
-		request.json["resolution"]
+		request.json["language"]
 	)
 	dataObj = getData(token)
 	dataObj['last_ip'] = request.remote_addr
 	dataObj['device']['platform'] = request.json["platform"]
 	dataObj['device']['model'] = request.json["device"]
 	dataObj['lang'] = request.json["language"]
-	dataObj['resolution'] = request.json["resolution"]
 	if config["USE_CLOUDFLARE"]:
 		dataObj['cloudflare']['country'] = request.headers["CF-IPCountry"]
 		dataObj['cloudflare']['last_ip'] = request.headers["CF-Connecting-IP"]
