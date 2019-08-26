@@ -322,7 +322,8 @@ def sync(token):
 		fData["data"] = nData
 		fData["new"] = diff
 		saveData(token, fData)
-		_formatAndSendNotification(token, diff)
+		if not fData["settings"]["notif"]["disable"]:
+			_formatAndSendNotification(token, diff)
 
 def _profileDifference(dObj1, dObj2):
 	"""
