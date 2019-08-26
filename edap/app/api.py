@@ -170,6 +170,32 @@ def dev_users():
 		tklist.append({'token': token, 'name': getData(token)["user"]})
 	return make_response(jsonify({'users':tklist}), 200)
 
+@app.route('/dev/users/<string:token>', methods=["DELETE", "GET"])
+@dev_area
+def dev_token_mgmt(token):
+	"""
+		DEV: Token management endpoint, allows getting info or deleting
+		the token.
+	"""
+	if request.method == "GET":
+		data = getData(token)
+		return {
+			'username': data["user"],
+			'device': {
+				'os': data["device"]["platform"],
+				'device': data["device"]["model"],
+				'language': data["lang"]
+			},
+			'ip': data["last_ip"],
+			'cloudflare': None if not config["USE_CLOUDFLARE"] else {
+				'last_ip': data["cloudflare"]["last_ip"],
+				'country': data["cloudflare"]["country"]
+			}
+		}
+	elif request.method == "DELETE":
+		purgeToken(token)
+		return {'status':'success'}
+
 @app.route('/dev/stats', methods=["GET"])
 @dev_area
 def dev_stats():
@@ -228,7 +254,7 @@ def devAddTestUser():
 	html += "<p>Token: <code>%s</code></p>" % testToken
 	return makeHTML(title="Test user creation", content=html)
 
-@app.route('/dev/info/recreate', methods=["GET"])
+@app.route('/dev/recreate', methods=["GET"])
 @dev_area
 def dev_reload_info():
 	"""
@@ -245,54 +271,10 @@ def dev_reload_info():
 			o['generated_with'] = API_VERSION
 			saveData(token, o)
 		except Exception as e:
-			failed.append({'token':token, 'reason':e})
+			failed.append({'token':token, 'reason':str(e)})
 			log.error('DEV OPERATION => Update FAILED for token %s, reason %s', token, e)
 			continue
-	html = "<p>Success for %i/%i tokens<p>" % (len(tokens) - len(failed), len(tokens))
-	if not failed:
-		html += "<h2>Fails</h2>"
-		for fail in failed:
-			html += "<h3>%s<h3>" % fail['token']
-			html += str(fail['reason'])
-	return makeHTML(title="Token resync", content=html)
-
-@app.route('/dev/info/tokendebug/<string:token>', methods=["GET"])
-@dev_area
-def dev_token_debug(token):
-	"""
-		DEV: Management page for a given token. Shows things such as the
-		username, IP, country (if using Cloudflare), OS, device model,
-		language, WebView resoultion. Also has an option to delete the
-		token from the DB (e.g. if the dataset needs to be recreated
-		because of a new feature).
-	"""
-	start = _time()
-	data = getData(token)
-	html = "<h2>General</h2>"
-	html += "<p>Username: %s</p>" % data["user"]
-	if config["USE_CLOUDFLARE"]:
-		html += "<p>Last originating IP: %s</p>" % data["cloudflare"]["last_ip"]
-		html += "<p>Last country: %s</p>" % data["cloudflare"]["country"]
-	else:
-		html += "<p>Last originating IP: %s</p>"  % data["last_ip"]
-	html += "<h2>Device</h2>"
-	html += "<p>OS: %s</p>" % data["device"]["platform"]
-	html += "<p>Device: %s</p>" % data["device"]["model"]
-	html += "<p>Language: %s</p>" % data["lang"]
-	html += "<p>Resolution: %s</p>" % data["resolution"]
-	html += "<h2>Management</h2>"
-	html += "<p><a href=\"/dev/info/tokendebug/%s/revoke\">Remove from DB</a></p>" % token
-	html += "<p><a href=\"/dev/info/tokendebug/%s/diff\">Update local data</a></p>" % token
-	html += timeGenerated(start)
-	return makeHTML(title="eDAP dev token manage", content=html)
-
-@app.route('/dev/info/tokendebug/<string:token>/diff', methods=["GET"])
-@dev_area
-def dev_diff_token(token):
-	"""
-		DEV: Use profileDifference() to show upstream profile changes.
-	"""
-	return make_response(jsonify(sync(token)), 200)
+	return make_response(jsonify({'sample': len(tokens), 'fails': failed}))
 
 @app.route('/dev/info/tokendebug/<string:token>/testdiff', methods=["POST"])
 @dev_area
@@ -309,37 +291,6 @@ def dev_test_diff(token):
 	o['classes'][0]['subjects'][request.json["subjId"]]['grades'].append(request.json["gradeData"])
 	syncDev(o, token)
 	return make_response(jsonify({'status':'ok'}), 200)
-
-@app.route('/dev/info/tokendebug/<string:token>/revoke', methods=["GET"])
-@dev_area
-def dev_remove_token(token):
-	"""
-		DEV: Remove the data for a token for a DB.
-	"""
-	purgeToken(token)
-	return 'Success!'
-
-@app.route('/dev/info/tokendebug/<string:token>/notification', methods=["POST"])
-@dev_area
-def dev_send_notification(token):
-	"""
-		DEV: Send a notification through Firebase to the device belonging
-		to a given token.
-	"""
-	if not request.json or not 'title' in request.json or not 'content' in request.json:
-		log.error("Bad JSON")
-		abort(400)
-	if not verifyRequest(token):
-		abort(401)
-	if 'data' in request.json:
-		data = request.json['data']
-	else:
-		data = None
-	try:
-		sendNotification(token, request.json['title'], request.json['content'], data=data)
-	except Exception as e:
-		return make_response(jsonify({'error':str(e)}), 500)
-	return make_response(jsonify({'status':'SENT'}), 200)
 
 @app.route('/api/login', methods=["POST"])
 def login():
