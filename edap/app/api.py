@@ -213,18 +213,6 @@ def dev_stats():
 		}
 	}), 200)
 
-@app.route('/dev/info', methods=["GET"])
-@dev_pw_area
-def dev_info():
-	"""
-		DEV: Statistics page, also lists tokens (shown as usernames) and provides
-		a link to manage each one.
-	"""
-	html = "<h3>Options</h3>"
-	html += "<p><a href=\"/dev/info/recreate\">Recreate data for all tokens</a> [WARNING: Clicking will proceed with operation!]</p>"
-	html += "<p><a href=\"/dev/info/testuser\">Add test user</a></p>"
-	return makeHTML(title="eDAP dev info", content=html)
-
 @app.route('/dev/token', methods=["GET"])
 @dev_pw_area
 def dev_make_token():
@@ -239,10 +227,10 @@ def dev_thread_list():
 	"""
 		DEV: List running background threads.
 	"""
-	return makeHTML(title="eDAP dev thread info", content='<h2>List</h2><pre>%s</pre>' % '\n'.join(getSyncThreads()))
+	return make_response(jsonify({'threads': getSyncThreads()}), 200)
 
 @app.route('/dev/info/testuser', methods=["GET"])
-@dev_area
+@dev_pw_area
 def devAddTestUser():
 	"""
 		DEV: Add a test user
