@@ -246,6 +246,7 @@ def devAddTestUser():
 @dev_pw_area
 def dev_migrate_firebase():
 	tokens = getTokens()
+	log.info(tokens)
 	log.info("DEV OPERATION => MIGRATING %i TOKENS' FIREBASE DATA TO DB", len(tokens))
 	for token in tokens:
 		tempMIGRATE_FIREBASE(token)

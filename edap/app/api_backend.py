@@ -37,12 +37,15 @@ def _exit(exitCode):
 	_sysExit(exitCode)
 
 def tempMIGRATE_FIREBASE(token):
-	document_reference = _fbFirestoreDB.collection('devices').document(token)
-	doc = document_reference.get()
-	firebase_token = doc.to_dict()["token"]
-	old_data = getData(token)
-	old_data["firebase_device_token"] = firebase_token
-	saveData(token, old_data)
+	try:
+		document_reference = _fbFirestoreDB.collection('devices').document(token)
+		doc = document_reference.get()
+		firebase_token = doc.to_dict()["token"]
+		old_data = getData(token)
+		old_data["firebase_device_token"] = firebase_token
+		saveData(token, old_data)
+	except Exception as e:
+		log.error('Something went wrong for token %s: %s', token, str(e))
 
 def localize(token, notif_type):
 	"""
