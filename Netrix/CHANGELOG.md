@@ -1,3 +1,9 @@
+## 1.8.5 (2019-09-27)
+* Postavke više nisu zasebni tab, već pod gumbom na stranici "Predmeti"
+* Spremanje tokena prebačeno na API umjesto Firestore
+* Puno optimizacija na strani servera, kao npr. brža prijava
+* Riješena greška zbog koje se korišteni font spremio dva puta
+
 ## 1.8.4 (2019-08-19)
 * Novi logo (obavijesti, aplikacijski i na ekranu prijave)
 * Uklonjen splash screen
