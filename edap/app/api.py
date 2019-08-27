@@ -241,17 +241,6 @@ def devAddTestUser():
 	html += "<p>Token: <code>%s</code></p>" % testToken
 	return makeHTML(title="Test user creation", content=html)
 
-# TEMPORARY FUNCTION
-@app.route('/dev/migrate/firebase', methods=["GET"])
-@dev_pw_area
-def dev_migrate_firebase():
-	tokens = getTokens()
-	log.info(tokens)
-	log.info("DEV OPERATION => MIGRATING %i TOKENS' FIREBASE DATA TO DB", len(tokens))
-	for token in tokens:
-		tempMIGRATE_FIREBASE(token)
-	return('good', 200)
-
 @app.route('/dev/recreate', methods=["GET"])
 @dev_area
 def dev_reload_info():
