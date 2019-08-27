@@ -404,6 +404,7 @@ class edap:
 		}
 		if self.hide_confidential:
 			del user_data['oib']
+			del user_data['address']
 			del user_data['matbroj']
 		if self.return_processing_time:
 			return user_data, timer() - start
