@@ -40,6 +40,16 @@
     "search": "Suche Prüfungen"
   },
   "tab3": {
+    "title": "Abwesenheiten",
+    "text": {
+      "noabsences": "Keine Abwesenheiten",
+      "justified": "Rechtfertigte",
+      "unjustified": "Ungerechtfertigte",
+      "waiting": "Warten",
+      "sum": "Alle"
+    }
+  },
+  "settings_page": {
     "title": "Einstellungen",
     "text": {
       "logout": "Abmelden"
@@ -56,16 +66,6 @@
         }
       },
       "effect_on_restart": "Diese Änderung wird nach einem Neustart der Anwendung wirksam."
-    }
-  },
-  "tab4": {
-    "title": "Abwesenheiten",
-    "text": {
-      "noabsences": "Keine Abwesenheiten",
-      "justified": "Rechtfertigte",
-      "unjustified": "Ungerechtfertigte",
-      "waiting": "Warten",
-      "sum": "Alle"
     }
   },
   "overview": {

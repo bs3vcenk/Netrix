@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-// import { TranslateService } from '@ngx-translate/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../services/api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
-  selector: 'app-tab4',
-  templateUrl: 'tab4.page.html',
-  styleUrls: ['tab4.page.scss'],
+  selector: 'app-tab3',
+  templateUrl: 'tab3.page.html',
+  styleUrls: ['tab3.page.scss'],
   animations: [
     trigger('fadeInOut', [
       state('void', style({ opacity: '0' })),
@@ -16,12 +15,11 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
     ])
   ]
 })
-export class Tab4Page implements OnInit {
+export class Tab3Page implements OnInit {
 
   absences = {overview: {justified: 0, unjustified: 0, waiting: 0, sum: 1}};
 
   constructor(
-    // private translate: TranslateService,
     private apiSvc: ApiService,
     private firebase: FirebaseX
   ) {

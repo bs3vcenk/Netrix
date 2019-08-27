@@ -40,6 +40,16 @@
     "search": "Sök tentor"
   },
   "tab3": {
+    "title": "Frånvaro",
+    "text": {
+      "noabsences": "Inga frånvaro",
+      "justified": "Motiverade",
+      "unjustified": "Oberättigad",
+      "waiting": "Väntar",
+      "sum": "Allt"
+    }
+  },
+  "settings_page": {
     "title": "Inställningar",
     "text": {
       "logout": "Logga ut"
@@ -56,16 +66,6 @@
         }
       },
       "effect_on_restart": "Denna ändring träder i kraft efter att du har startat om programmet."
-    }
-  },
-  "tab4": {
-    "title": "Frånvaro",
-    "text": {
-      "noabsences": "Inga frånvaro",
-      "justified": "Motiverade",
-      "unjustified": "Oberättigad",
-      "waiting": "Väntar",
-      "sum": "Allt"
     }
   },
   "overview": {

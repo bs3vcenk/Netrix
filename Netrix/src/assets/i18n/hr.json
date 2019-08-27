@@ -40,6 +40,16 @@
     "search": "Pretraži ispite"
   },
   "tab3": {
+    "title": "Izostanci",
+    "text": {
+      "noabsences": "Nema izostanaka",
+      "justified": "Opravdani",
+      "unjustified": "Neopravdani",
+      "waiting": "Na čekanju",
+      "sum": "Svi"
+    }
+  },
+  "settings_page": {
     "title": "Postavke",
     "text": {
       "logout": "Odjava"
@@ -56,16 +66,6 @@
         }
       },
       "effect_on_restart": "Ova promjena će stupiti na snagu nakon ponovnog pokretanja aplikacije."
-    }
-  },
-  "tab4": {
-    "title": "Izostanci",
-    "text": {
-      "noabsences": "Nema izostanaka",
-      "justified": "Opravdani",
-      "unjustified": "Neopravdani",
-      "waiting": "Na čekanju",
-      "sum": "Svi"
     }
   },
   "overview": {

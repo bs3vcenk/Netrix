@@ -40,6 +40,16 @@
     "search": "Search tests"
   },
   "tab3": {
+    "title": "Absences",
+    "text": {
+      "noabsences": "No absences",
+      "justified": "Justified",
+      "unjustified": "Unjustified",
+      "waiting": "Waiting",
+      "sum": "All"
+    }
+  },
+  "settings_page": {
     "title": "Settings",
     "text": {
       "logout": "Log out"
@@ -56,16 +66,6 @@
         }
       },
       "effect_on_restart": "This change will go into effect after you restart the application."
-    }
-  },
-  "tab4": {
-    "title": "Absences",
-    "text": {
-      "noabsences": "No absences",
-      "justified": "Justified",
-      "unjustified": "Unjustified",
-      "waiting": "Waiting",
-      "sum": "All"
     }
   },
   "overview": {

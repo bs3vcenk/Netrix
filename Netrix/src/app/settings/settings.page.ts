@@ -66,8 +66,8 @@ export class SettingsPage {
   logout() {
     // Data collection alert
     this.alertControl.create({
-      header: this.translate.instant('tab3.alert.logout.header'),
-      message: this.translate.instant('tab3.alert.logout.content'),
+      header: this.translate.instant('settings_page.alert.logout.header'),
+      message: this.translate.instant('settings_page.alert.logout.content'),
       buttons: [
         {
           text: this.translate.instant('generic.choice.no'),
@@ -99,7 +99,7 @@ export class SettingsPage {
       this.settings.changePreference('ad-preference', this.adPreference);
       this.settings.adPreference = this.adPreference;
       this.toastControl.create({
-        message: this.translate.instant('tab3.alert.effect_on_restart'),
+        message: this.translate.instant('settings_page.alert.effect_on_restart'),
         duration: 3000,
         color: 'dark'
       }).then((toast) => {
@@ -128,11 +128,11 @@ export class SettingsPage {
     const opts: PickerOptions = {
       buttons: [
         {
-          text: this.translate.instant('tab3.alert.time.choice.cancel'),
+          text: this.translate.instant('settings_page.alert.time.choice.cancel'),
           role: 'cancel'
         },
         {
-          text: this.translate.instant('tab3.alert.time.choice.done'),
+          text: this.translate.instant('settings_page.alert.time.choice.done'),
           handler: (choice: any) => {
             this.testNotifTime = choice.time.value;
             this.settings.changePreference('notif-time', this.testNotifTime);

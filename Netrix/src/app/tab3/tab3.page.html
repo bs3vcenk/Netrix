@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ 'tab4.title' | translate }}</ion-title>
+    <ion-title>{{ 'tab3.title' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -11,7 +11,7 @@
     <!-- Justified absences -->
     <div id="flexItem">
       <ion-text id="descText">
-        {{ 'tab4.text.justified' | translate }}
+        {{ 'tab3.text.justified' | translate }}
       </ion-text><br/>
       <ion-label id="infoText">
         {{ absences.overview.justified }}
@@ -20,7 +20,7 @@
     <!-- Unjustified absences -->
     <div id="flexItem">
       <ion-text id="descText" color="danger">
-        {{ 'tab4.text.unjustified' | translate }}
+        {{ 'tab3.text.unjustified' | translate }}
       </ion-text><br/>
       <ion-label id="infoText" color="danger">
         {{ absences.overview.unjustified }}
@@ -30,7 +30,7 @@
          waiting absences -->
     <div id="flexItem" *ngIf="absences.overview.waiting > 0">
       <ion-text id="descText">
-        {{ 'tab4.text.waiting' | translate }}
+        {{ 'tab3.text.waiting' | translate }}
       </ion-text><br/>
       <ion-label id="infoText">
         {{ absences.overview.waiting }}
@@ -41,7 +41,7 @@
          show duplicate numbers) -->
     <div id="flexItem" *ngIf="absences.overview.sum !== absences.overview.justified">
       <ion-text id="descText">
-        {{ 'tab4.text.sum' | translate }}
+        {{ 'tab3.text.sum' | translate }}
       </ion-text><br/>
       <ion-label id="infoText">
         {{ absences.overview.sum }}
@@ -53,7 +53,7 @@
   <ion-item text-center [@fadeInOut] *ngIf="absences.overview.sum == 0" lines="none" id="cntr">
     <ion-label>
       <object width="150" type="image/svg+xml" data="./assets/emoji/thumbsup.svg"></object>
-      <h1 id="netHeader" text-wrap>{{ 'tab4.text.noabsences' | translate }}</h1>
+      <h1 id="netHeader" text-wrap>{{ 'tab3.text.noabsences' | translate }}</h1>
     </ion-label>
   </ion-item>
 
