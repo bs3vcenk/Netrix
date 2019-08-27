@@ -7,27 +7,27 @@
 
 @font-face {
   font-family: 'San Francisco';
-  src: url(../assets/fonts/SF-Pro-Display-Regular.otf);
+  src: url(../fonts/SF-Pro-Display-Regular.otf);
   font-weight: 400;
   unicode-range: U+000-5FF;
 }
 
 @font-face {
   font-family: 'San Francisco';
-  src: url(../assets/fonts/SF-Pro-Display-Bold.otf);
+  src: url(../fonts/SF-Pro-Display-Bold.otf);
   font-weight: 600;
   unicode-range: U+000-5FF;
 }
 
 @font-face {
   font-family: 'San Francisco';
-  src: url(../assets/fonts/SF-Pro-Display-Heavy.otf);
+  src: url(../fonts/SF-Pro-Display-Heavy.otf);
   font-weight: 700;
   unicode-range: U+000-5FF;
 }
 
 * {
-	font-family: 'San Francisco';
+  font-family: 'San Francisco';
 }
 
 ion-title, h1 {
@@ -44,7 +44,7 @@ h1, h2 {
 }
 
 ion-card-title {
-	font-weight: 600;
+  font-weight: 600;
 }
 
 ion-label, ion-text {
