@@ -1,8 +1,0 @@
-requests
-BeautifulSoup4
-flask
-flask-cors
-redis
-pyfcm
-google-cloud-firestore
-lxml

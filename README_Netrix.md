@@ -1,6 +1,6 @@
 # Netrix
 
-Netrix je frontend za EDAP library, pisan u [Ionic](https://ionicframework.com/) frameworku (Angular).
+Netrix je aplikacija za eDnevnik, pisan u [Ionic](https://ionicframework.com/) frameworku (Angular).
 
 ## Upotreba
 
