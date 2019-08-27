@@ -166,23 +166,22 @@ def getSetting(token, action):
 		Get action data/value for token.
 	"""
 	o = getData(token)
-	if 'settings' not in o.keys():
+	if 'settings' not in o:
 		o['settings'] = {'notif':{'disable': False, 'ignore':[]}}
 	if action == 'notif.disable':
 		return o['settings']['notif']['disable']
-	elif action == 'notif.ignore':
+	if action == 'notif.ignore':
 		return o['settings']['notif']['ignore']
-	elif action == 'notif.all':
+	if action == 'notif.all':
 		return o['settings']['notif']
-	else:
-		raise NonExistentSetting
+	raise NonExistentSetting
 
 def processSetting(token, action, val):
 	"""
 		Do an action, with val as the data/arguments on a profile.
 	"""
 	o = getData(token)
-	if 'settings' not in o.keys():
+	if 'settings' not in o:
 		o['settings'] = {'notif':{'disable': False, 'ignore':[]}}
 	if action == 'notif.disable':
 		o['settings']['notif']['disable'] = val
@@ -229,27 +228,27 @@ def _formatAndSendNotification(token, notifData):
 			noteNotif.append("%s: %s" % (_getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['note']))
 		elif x['type'] == 'absence' and 'absence' not in exceptions:
 			absenceNotif = "ABS"
-	if len(classNotif) > 0:
+	if classNotif:
 		toSendQueue.append({
 			'head': localize(token, 'class'),
 			'content': ", ".join(classNotif)
 		})
-	if len(gradeNotif) > 0:
+	if gradeNotif:
 		toSendQueue.append({
 			'head': localize(token, 'grade'),
 			'content': ", ".join(gradeNotif)
 		})
-	if len(testNotif) > 0:
+	if testNotif:
 		toSendQueue.append({
 			'head': localize(token, 'test'),
 			'content': ", ".join(testNotif)
 		})
-	if len(noteNotif) > 0:
+	if noteNotif:
 		toSendQueue.append({
 			'head': localize(token, 'note'),
 			'content': ", ".join(noteNotif)
 		})
-	if len(absenceNotif) > 0:
+	if absenceNotif:
 		toSendQueue.append({
 			'head': localize(token, 'absence'),
 			'content': absenceNotif
@@ -270,14 +269,14 @@ def _stopSync(token):
 		Stop background sync thread for a given token, e.g. if
 		terminated.
 	"""
-	if "sync:" + token in _threads.keys():
+	if "sync:" + token in _threads:
 		_threads["sync:" + token]["run"] = False
 
 def getSyncThreads():
 	"""
 		Get a list of sync threads.
 	"""
-	return [i.replace("sync:", "") for i in _threads.keys()]
+	return [i.replace("sync:", "") for i in _threads]
 
 def isThreadAlive(token):
 	"""
@@ -301,7 +300,7 @@ def restoreSyncs():
 		Restore all sync threads (on startup).
 	"""
 	for token in getTokens():
-		if not 'ignore_updating' in getData(token).keys():
+		if not 'ignore_updating' in getData(token):
 			startSync(token)
 
 def syncDev(data2, token):
@@ -311,7 +310,7 @@ def syncDev(data2, token):
 	log.debug("Simulating sync")
 	o = getData(token)
 	diff = _profileDifference(o["data"], data2)
-	if len(diff) > 0:
+	if diff:
 		log.debug("Difference detected")
 		o["new"] = diff
 		saveData(token, o)
@@ -326,7 +325,7 @@ def sync(token):
 	data = fData["data"] # Old data
 	nData = populateData(edap.edap(fData["user"], fData["pasw"])) # New data
 	diff = _profileDifference(data, nData)
-	if len(diff) > 0:
+	if diff:
 		fData["data"] = nData
 		fData["new"] = diff
 		saveData(token, fData)
@@ -342,11 +341,11 @@ def _profileDifference(dObj1, dObj2):
 	## CLASS DIFFERENCE ##
 	t1 = deepcopy(dObj1['classes'])
 	t2 = deepcopy(dObj2['classes'])
-	for y in [t1,t2]:
+	for y in [t1, t2]:
 		del y[0]['tests']
 		del y[0]['subjects']
 	difflist = [x for x in t2 if x not in t1]
-	if len(difflist) > 0:
+	if difflist:
 		log.debug("Found difference in classes")
 		for i in difflist:
 			_finalReturn.append({'type':'class', 'data':{'year':i["year"], 'class':i["class"]}})
@@ -358,7 +357,7 @@ def _profileDifference(dObj1, dObj2):
 	t1 = deepcopy(dObj1['classes'][0]['tests'])
 	t2 = deepcopy(dObj2['classes'][0]['tests'])
 	difflist = [x for x in t2 if x not in t1]
-	if len(difflist) > 0:
+	if difflist:
 		log.debug("Found difference in tests")
 		for i in difflist:
 			_finalReturn.append({'type':'test', 'classId':0, 'data':i})
@@ -374,23 +373,23 @@ def _profileDifference(dObj1, dObj2):
 	# https://stackoverflow.com/a/1663826
 	sId = 0
 	for i, j in zip(dObj1['classes'][0]['subjects'], dObj2['classes'][0]['subjects']):
-		if "grades" in j.keys():
-			if j["grades"] == None:
+		if "grades" in j:
+			if j["grades"] is None:
 				continue
 			t1 = deepcopy(i['grades'])
 			t2 = deepcopy(j['grades'])
 			difflist = [x for x in t2 if x not in t1]
-			if len(difflist) > 0:
+			if difflist:
 				log.debug("Found difference in grades")
 				for x in difflist:
 					_finalReturn.append({'type':'grade', 'classId':0, 'subjectId': sId, 'data':x})
-		elif "notes" in j.keys():
-			if j["notes"] == None:
+		elif "notes" in j:
+			if j["notes"] is None:
 				continue
 			t1 = deepcopy(i['notes'])
 			t2 = deepcopy(j['notes'])
 			difflist = [x for x in t2 if x not in t1]
-			if len(difflist) > 0:
+			if difflist:
 				log.debug("Found difference in notes")
 				for x in difflist:
 					_finalReturn.append({'type':'note', 'classId':0, 'subjectId': sId, 'data':x})
@@ -443,7 +442,7 @@ def _sync(token):
 		val = randint(3600, 5000)
 		log.debug("Waiting %i s for %s", val, token)
 		sleep(val)
-		if _threads["sync:" + token]["run"] != True:
+		if not _threads["sync:" + token]["run"]:
 			del _threads["sync:" + token]
 			break
 		sync(token)
@@ -515,14 +514,14 @@ def readLog():
 	with open(_joinPath(config["DATA_FOLDER"], "edap_api.log")) as f:
 		return f.read()
 
-def makeHTML(title="eDAP dev", content="None", bare=False):
+def makeHTML(title="eDAP dev", content=None, bare=False):
 	"""
 		HTML creator template for the /dev/ dashboard. Allows specifying the title,
 		content, and if the page needs to have no header (e.g. the /dev/log page).
 	"""
-	if bare == False:
+	if not bare:
 		return '<!DOCTYPE html><html><head><title>%s</title></head><body><h1>%s</h1>%s</body></html>' % (title, title, content)
-	elif bare == True:
+	else:
 		return '<!DOCTYPE html><html><head><title>%s</title></head><body>%s</body></html>' % (title, content)
 
 # https://stackoverflow.com/a/14822210
@@ -584,7 +583,7 @@ def _subjectIDExists(token, cid, sid):
 	"""
 	return sid in range(len(getData(token)['data']['classes'][cid]['subjects']))
 
-def populateData(obj=None, username=None, password=None, time=False):
+def populateData(obj, time=False):
 	"""
 		Fill in the 'data' part of the user dict. This will contain subjects, grades, etc.
 
@@ -609,7 +608,7 @@ def populateData(obj=None, username=None, password=None, time=False):
 	try:
 		output = obj.getClasses()
 	except Exception as e:
-		log.error("Error getting classes: %s" % e)
+		log.error("Error getting classes: %s", e)
 		raise e
 
 	try:
@@ -625,7 +624,7 @@ def populateData(obj=None, username=None, password=None, time=False):
 			testId += 1
 		output[0]['tests'] = tests_all
 	except Exception as e:
-		log.debug("Error getting tests for class: %s" % e)
+		log.debug("Error getting tests for class: %s", e)
 		output[0]['tests'] = None
 
 	try:
@@ -633,20 +632,20 @@ def populateData(obj=None, username=None, password=None, time=False):
 		absences_full = obj.getAbsentFullListForClass(0)
 		output[0]['absences'] = {'overview':absences_overview, 'full':absences_full}
 	except Exception as e:
-		log.debug("Error getting absences for class: %s" % e)
+		log.debug("Error getting absences for class: %s", e)
 		output[0]['absences'] = None
 
 	try:
 		output[0]['subjects'] = obj.getSubjects(0)
 	except Exception as e:
-		log.debug("Error getting subjects for class: %s" % e)
+		log.debug("Error getting subjects for class: %s", e)
 		output[0]['subjects'] = None
 	allSubjAverageGrades = []
 	for z in range(len(output[0]['subjects'])):
 		output[0]['subjects'][z]['id'] = z
 		try:
 			output[0]['subjects'][z]['grades'] = obj.getGradesForSubject(0, z)
-			if len(output[0]['subjects'][z]['grades']) == 0:
+			if not output[0]['subjects'][z]['grades']:
 				output[0]['subjects'][z]['grades'] = None
 			isconcl, concluded = obj.getConcludedGradeForSubject(0, z)
 			if isconcl:
@@ -659,15 +658,15 @@ def populateData(obj=None, username=None, password=None, time=False):
 				output[0]['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
 				allSubjAverageGrades.append(round(sum(lgrades)/len(lgrades), 0))
 		except Exception as e:
-			log.debug("Error getting grades for subject %s: %s" % (z, e))
+			log.debug("Error getting grades for subject %s: %s", z, e)
 			output[0]['subjects'][z]['grades'] = None
 			continue
 		try:
 			output[0]['subjects'][z]['notes'] = obj.getNotesForSubject(0, z)
-			if len(output[0]['subjects'][z]['notes']) == 0:
+			if not output[0]['subjects'][z]['notes']:
 				output[0]['subjects'][z]['notes'] = None
 		except Exception as e:
-			log.debug("Error getting notes for subject %s: %s" % (z, e))
+			log.debug("Error getting notes for subject %s: %s", z, e)
 			output[0]['subjects'][z]['notes'] = None
 			continue
 	output[0]['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
@@ -675,12 +674,12 @@ def populateData(obj=None, username=None, password=None, time=False):
 	try:
 		dataDict['info'] = obj.getInfoForUser(0)
 	except Exception as e:
-		log.debug("Error getting info: %s" % (str(e)))
+		log.debug("Error getting info: %s", str(e))
 	request_time = _clock() - start
-	if time == False:
-		log.debug("==> TIMER => %s" % request_time)
+	if not time:
+		log.debug("==> TIMER => %s", request_time)
 	else:
-		log.info("==> TIMER => %s" % request_time)
+		log.info("==> TIMER => %s", request_time)
 	return dataDict
 
 def verifyDevRequest(token):
@@ -702,15 +701,15 @@ def verifyRequest(token, class_id=None, subject_id=None):
 		Verify if a given token, class_id, and/or subject_id exist in the DB.
 	"""
 	if not _userInDatabase(token):
-		log.warning("Token %s not in DB" % token)
+		log.warning("Token %s not in DB", token)
 		return False
 	if class_id:
 		if not _classIDExists(token, class_id):
-			log.warning("Class ID %s does not exist for token %s" % (class_id, token))
+			log.warning("Class ID %s does not exist for token %s", class_id, token)
 			return False
 	if subject_id:
 		if not _subjectIDExists(token, class_id, subject_id):
-			log.warning("Subject ID %s does not exist for class ID %s for token %s" % (subject_id, class_id, token))
+			log.warning("Subject ID %s does not exist for class ID %s for token %s", subject_id, class_id, token)
 			return False
 	return True
 
@@ -728,15 +727,10 @@ def hashPassword(inp):
 
 def getCounter(counter_id):
 	val = _redis.get("counter:"+counter_id)
-	if val == None:
+	if val is None:
 		_redis.set("counter:"+counter_id, 0)
 		return 0
-	else:
-		try:
-			return int(val)
-		except:
-			_redis.set("counter:"+counter_id, 0)
-			return 0
+	return int(val)
 
 def _setCounter(counter_id, value):
 	_redis.set("counter:"+counter_id, value)
