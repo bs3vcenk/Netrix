@@ -14,7 +14,6 @@ from os import environ
 from os.path import exists as _fileExists
 from os.path import join as _joinPath
 from os.path import getsize as _getFileSize
-from google.cloud import firestore
 from pyfcm import FCMNotification
 from threading import Thread
 from time import sleep
@@ -24,7 +23,6 @@ from string import ascii_letters
 
 log = logging.getLogger(__name__)
 _fbPushService = None
-_fbFirestoreDB = None
 _redis = None
 
 _threads = {}
@@ -461,7 +459,6 @@ def _initGoogleToken(fpath):
 
 def _readConfig():
 	global _fbPushService
-	global _fbFirestoreDB
 	DATA_FOLDER = _getVar("DATA_FOLDER", default="/data")
 	GOOGLE_TOKEN_FILE = _getVar("GOOGLE_TOKEN_FILE", default="google_creds.json")
 
@@ -489,8 +486,6 @@ def _readConfig():
 		else:
 			print("[configuration] Initializing Firebase Cloud Messaging...")
 			_fbPushService = FCMNotification(api_key=FIREBASE_TOKEN)
-			print("[configuration] Initializing Firestore...")
-			_fbFirestoreDB = firestore.Client()
 	return {
 		"DATA_FOLDER": DATA_FOLDER,
 		"GOOGLE_TOKEN_FILE": GOOGLE_TOKEN_FILE,

@@ -4,5 +4,4 @@ flask
 flask-cors
 redis
 pyfcm
-google-cloud-firestore
 lxml
