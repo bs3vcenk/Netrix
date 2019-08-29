@@ -298,10 +298,10 @@ def login():
 		log.error("Bad JSON")
 		updateCounter("logins:fail:generic")
 		abort(400)
-	elif (request.json["username"] is None
-	or request.json["password"] is None
-	or len(request.json["username"]) < 4
-	or len(request.json["password"]) < 4):
+	elif (request.json["username"] is None or
+	      request.json["password"] is None or
+	      len(request.json["username"]) < 4 or
+	      len(request.json["password"]) < 4):
 		log.error("Bad auth data")
 		updateCounter("logins:fail:generic")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
