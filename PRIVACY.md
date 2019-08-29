@@ -1,6 +1,6 @@
 # Pravila o privatnosti
 
-Zadnje ažuriranje: 18. kolovoza, 2019.
+Zadnje ažuriranje: 29. kolovoza, 2019.
 
 Prijašnje inačice ovog dokumenta možete zatražiti upitom na e-mail bs3vcenk@gmail.com.
 
@@ -34,7 +34,6 @@ Netrix omogućuje brz pregled ocjena, izostanaka, ispita i korisničkih informac
 * **IP adresa s koje je zahtjev prijave stigao** - kako bi se identificirali i blokirali potencijalni napadi na servis
 * **Platforma uređaja** - npr. *Android/iOS/drugo*, služi za bolje kategoriziranje mogućih problema u radu aplikacije (npr. događa li se greška samo na toj platformi)
 * **Model uređaja** - npr. *SM-G965F*, služi za bolje kategoriziranje mogućih problema u radu aplikacije (npr. događa li se greška samo kod tog proizvođača ili tog modela uređaja)
-* **Rezolucija ekrana** - služi za bolje kategoriziranje mogućih problema u radu aplikacije (npr. je li tekst čitljiv samo na ovoj rezoluciji i sl.)
 
 Gore navedene podatke je moguće isbrisati pritiskom na gumb "Odjava" pod tabom "Postavke" u aplikaciji.
 
@@ -55,8 +54,6 @@ U slučaju da korisnik ne stisne gumb "Prijava", aplikacija se neće javiti na s
 ## netrix.io
 
 Web stranica [netrix.io](https://netrix.io) koristi Cloudflare Workers, koji nam daje samo statističke podatke o korištenju (broj korisnika).
-
-Netrix.io koristi i Google Analytics za detaljniju statistiku. Za više informacije, provjerite [Googleova pravila o privatnosti](https://policies.google.com/privacy).
 
 ## Sigurnost prijenosa podataka
 
