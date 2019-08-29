@@ -39,6 +39,9 @@ docker run -d --name netrix -p 80:80 -v redis-data:/data -e CLOUDFLARE=Y netrix 
 ```bash
 DATA_FOLDER=[/data] # Mapa za logove, DB i Firebase token JSON
 CLOUDFLARE=[N] # Cloudflare integracije (hvatanje pravog IP-a iza Cloudflare servera)
+VAULT_SERVER=[] # Adresa Hashicorp Vault servera (API)
+VAULT_TOKEN_READ=[] # Token za Vault server koji ima dopuštenje čitanja
+VAULT_TOKEN_WRITE=[] # Token za Vault server koji ima dopuštenje pisanja/kreiranja
 FIREBASE=[N] # Firebase integracija (obavijesti)
   GOOGLE_TOKEN_FILE=[google_creds.json] # https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk
   FIREBASE_TOKEN=[] # Token za Firebase Cloud Messaging

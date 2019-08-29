@@ -1,4 +1,4 @@
-import logging, redis, edap
+import logging, redis, edap, requests
 from hashlib import md5 as _MD5HASH
 from hashlib import sha256 as _SHA256HASH
 from json import loads as _jsonLoad
@@ -30,8 +30,33 @@ _threads = {}
 class NonExistentSetting(Exception):
 	pass
 
+def get_credentials(token):
+	"""
+		Call Vault to get the creds for a token.
+	"""
+	data = requests.get(
+		'%s/v1/secret/data/%s' % (config["VAULT_SERVER"], token),
+		headers={'X-Vault-Token': config["VAULT_TOKEN_READ"]}
+	)
+	data.raise_for_status()
+	return data.json()["data"]["data"]
+
+def set_credentials(token, username, password):
+	"""
+		Call Vault to set a credential pair for a token.
+	"""
+	data = requests.get(
+		'%s/v1/secret/data/%s' % (config["VAULT_SERVER"], token),
+		headers={'X-Vault-Token': config["VAULT_TOKEN_WRITE"]},
+		json={
+			"username": username,
+			"password": password
+		}
+	)
+	data.raise_for_status()
+
 def _exit(exitCode):
-	print("!!! Exiting with code %i\n    Check the log file for more information." % exitCode)
+	print("!!! Exiting with code %i\n    Check the log file for more information if possible." % exitCode)
 	_sysExit(exitCode)
 
 def localize(token, notif_type):
@@ -447,8 +472,7 @@ def _getVar(varname, _bool=False, default=None):
 		default = default if default != None else False
 	try:
 		return environ[varname] if not _bool else environ[varname] == "Y"
-	except TypeError:
-		print("ERROR => %s => Variable not present" % varname)
+	except KeyError:
 		return default
 
 def _initGoogleToken(fpath):
@@ -461,6 +485,17 @@ def _readConfig():
 	global _fbPushService
 	DATA_FOLDER = _getVar("DATA_FOLDER", default="/data")
 	GOOGLE_TOKEN_FILE = _getVar("GOOGLE_TOKEN_FILE", default="google_creds.json")
+
+	VAULT_SERVER = _getVar("VAULT_SERVER")
+	VAULT_TOKEN_READ = _getVar("VAULT_TOKEN_READ")
+	VAULT_TOKEN_WRITE = _getVar("VAULT_TOKEN_WRITE")
+
+	if not VAULT_TOKEN_READ or not VAULT_TOKEN_WRITE:
+		print("[configuration] No Hashicorp Vault tokens supplied!")
+		_exit(1)
+	elif not VAULT_SERVER:
+		print("[configuration] No Hashicorp Vault server supplied!")
+		_exit(1)
 
 	ALLOW_DEV_ACCESS = _getVar("DEV_ACCESS", _bool=True)
 	USE_CLOUDFLARE = _getVar("CLOUDFLARE", _bool=True)
@@ -494,7 +529,9 @@ def _readConfig():
 		"privUsername": privUsername,
 		"privPassword": privPassword,
 		"USE_FIREBASE": USE_FIREBASE,
-		"FIREBASE_TOKEN": FIREBASE_TOKEN
+		"FIREBASE_TOKEN": FIREBASE_TOKEN,
+		"VAULT_TOKEN_READ": VAULT_TOKEN_READ,
+		"VAULT_TOKEN_WRITE": VAULT_TOKEN_WRITE
 	}
 
 def readLog():
