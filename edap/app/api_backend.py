@@ -45,12 +45,14 @@ def set_credentials(token, username, password):
 	"""
 		Call Vault to set a credential pair for a token.
 	"""
-	data = requests.put(
+	data = requests.post(
 		'%s/v1/secret/data/%s' % (config["VAULT_SERVER"], token),
 		headers={'X-Vault-Token': config["VAULT_TOKEN_WRITE"]},
 		json={
-			"username": username,
-			"password": password
+			"data": {
+				"username": username,
+				"password": password
+			}
 		}
 	)
 	data.raise_for_status()
