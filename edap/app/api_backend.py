@@ -310,17 +310,6 @@ def startSync(token):
 		to.start()
 		_threads["sync:" + token] = {"obj":to, "run":True}
 
-def _check_maintenance():
-	while True:
-		_set_maintenance("trenutno u nadogradnji" in requests.get('https://ocjene.skole.hr/').text)
-		sleep(120)
-
-def _start_maintenance_check():
-	"""
-		Start a bg thread checking if maintenance is active.
-	"""
-	Thread(target=_check_maintenance).start()
-
 def restoreSyncs():
 	"""
 		Restore all sync threads (on startup).
@@ -768,12 +757,6 @@ def getCounter(counter_id):
 		return 0
 	return int(val)
 
-def is_maintenance():
-	return _redis.get('flag:maintenance')
-
-def _set_maintenance(val):
-	_redis.set('flag:maintenance', val)
-
 def _setCounter(counter_id, value):
 	_redis.set("counter:"+counter_id, value)
 
@@ -788,4 +771,3 @@ logging.basicConfig(
 	format="%(asctime)s || %(funcName)-16s || %(levelname)-8s || %(message)s"
 )
 _redis = _initDB()
-_start_maintenance_check()

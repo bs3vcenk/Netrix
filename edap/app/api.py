@@ -538,12 +538,5 @@ def log_stats():
 	saveData(token, dataObj)
 	return make_response(jsonify({"result":"ok"}), 200)
 
-@app.route('/api/maintenance', methods=["GET"])
-def check_maintenance():
-	"""
-		Checks if e-Dnevnik is in maintenance mode.
-	"""
-	return make_response(jsonify({'maintenance':is_maintenance()}), 200)
-
 if __name__ == '__main__':
 	app.run(debug=True)
