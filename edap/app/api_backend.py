@@ -784,3 +784,4 @@ logging.basicConfig(
 	format="%(asctime)s || %(funcName)-16s || %(levelname)-8s || %(message)s"
 )
 _redis = _initDB()
+_start_maintenance_check()
