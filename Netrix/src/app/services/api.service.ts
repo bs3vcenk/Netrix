@@ -28,8 +28,6 @@ export class ApiService {
 
   subjCacheMap = {};
 
-  // loadingFinishedAll = new BehaviorSubject(false);
-
   loadingFinishedSubj = new BehaviorSubject(false);
   loadingFinishedTests = new BehaviorSubject(false);
   loadingFinishedAbsences = new BehaviorSubject(false);
@@ -51,6 +49,7 @@ export class ApiService {
   dbError = new BehaviorSubject(false);
   networkError = new BehaviorSubject(false);
   trustError = new BehaviorSubject(false);
+  maintenanceError = new BehaviorSubject(false);
 
   constructor(
     private http: HTTP,
@@ -102,6 +101,23 @@ export class ApiService {
       this.networkError.next(true);
       throw errorObj;
     }
+  }
+
+  getMaintenanceMode() {
+    this.firebase.startTrace('getMaintenanceMode');
+    this.http.get(
+      'https://ocjene.skole.hr/',
+      {},
+      this.httpHeader
+    ).then((rx) => {
+      if (rx.data.contains('trenutno u nadogradnji')) {
+        this.maintenanceError.next(true);
+      }
+      this.firebase.stopTrace('getMaintenanceMode');
+    }, (error) => {
+      this.firebase.stopTrace('getMaintenanceMode');
+      this.handleErr(error);
+    });
   }
 
   saveFirebaseToken(firebaseToken: string) {
