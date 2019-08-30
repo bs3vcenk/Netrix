@@ -108,8 +108,6 @@ def generateTestUser() -> (str, str, str):
 	pasw = random_string(10)
 	token = hashString(user + ":" + pasw)
 	data = {
-		'user': user,
-		'pasw': pasw,
 		'ignore_updating': True,
 		'data': {
 			'info': {
@@ -174,6 +172,7 @@ def generateTestUser() -> (str, str, str):
 		'messages': []
 	}
 	saveData(token, data)
+	set_credentials(token, user, pasw)
 	return user, pasw, token
 
 def getSetting(token, action):
