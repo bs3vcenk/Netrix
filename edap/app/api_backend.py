@@ -312,7 +312,7 @@ def startSync(token):
 
 def _check_maintenance():
 	while True:
-		_redis.set("flag:maintenance", "trenutno u nadogradnji" in requests.get('https://ocjene.skole.hr/').text)
+		_set_maintenance("trenutno u nadogradnji" in requests.get('https://ocjene.skole.hr/').text)
 		sleep(120)
 
 def _start_maintenance_check():
@@ -770,6 +770,9 @@ def getCounter(counter_id):
 
 def is_maintenance():
 	return _redis.get('flag:maintenance')
+
+def _set_maintenance(val):
+	_redis.set('flag:maintenance', val)
 
 def _setCounter(counter_id, value):
 	_redis.set("counter:"+counter_id, value)
