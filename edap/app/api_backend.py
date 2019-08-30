@@ -22,6 +22,7 @@ from time import clock as _clock
 from string import ascii_letters
 
 log = logging.getLogger(__name__)
+maintenance = False
 _fbPushService = None
 _redis = None
 
@@ -309,6 +310,18 @@ def startSync(token):
 		to = Thread(target=_sync, args=(token,))
 		to.start()
 		_threads["sync:" + token] = {"obj":to, "run":True}
+
+def _check_maintenance():
+	global maintenance
+	while True:
+		maintenance = "trenutno u nadogradnji" in requests.get('https://ocjene.skole.hr/').text
+		sleep(120)
+
+def _start_maintenance_check():
+	"""
+		Start a bg thread checking if maintenance is active.
+	"""
+	Thread(target=_check_maintenance).start()
 
 def restoreSyncs():
 	"""
