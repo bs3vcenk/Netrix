@@ -82,6 +82,8 @@ else
         content_ssl=$content_ssl'    ssl_session_tickets off;\n'
         content_ssl=$content_ssl'    ssl_stapling on;\n'
         content_ssl=$content_ssl'    ssl_stapling_verify on;\n'
+        content_ssl=$content_ssl'    resolver 1.1.1.1 1.0.0.1 valid=300s;\n'
+        content_ssl=$content_ssl'    resolver_timeout 5s;\n'
         content_ssl=$content_ssl'    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";\n'
         content_ssl=$content_ssl'    add_header X-Frame-Options DENY;\n'
         content_ssl=$content_ssl'    add_header X-Content-Type-Options nosniff;\n'
