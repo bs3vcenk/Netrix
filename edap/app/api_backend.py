@@ -343,7 +343,11 @@ def sync(token):
 	nData = populateData(edap.edap(credentials["username"], credentials["password"])) # New data
 	diff = _profileDifference(data, nData)
 	if diff:
-		fData["data"] = nData
+		# Overwrite everything if new class
+		if diff[0]['type'] == 'class':
+			fData["data"] = nData
+		else:
+			fData["data"][0] = nData[0]
 		fData["new"] = diff
 		saveData(token, fData)
 		if not fData["settings"]["notif"]["disable"]:
@@ -610,7 +614,24 @@ def _subjectIDExists(token, cid, sid):
 	"""
 	return sid in range(len(getData(token)['data']['classes'][cid]['subjects']))
 
-def populateData(obj, time=False):
+def fetch_new_class(token, class_id):
+	"""
+		Fetch a new class
+	"""
+	full_data = getData(token)
+	# If not already pulled
+	if not 'full' in full_data['data']['classes'][class_id]:
+		credentials = get_credentials(token)
+		edap_object = edap.edap(credentials['username'], credentials['password'])
+		# Overwrite existing "bare" class profile with new complete profile
+		full_data['data']['classes'][class_id] = get_class_profile(
+			edap_object,
+			class_id,
+			full_data['data']['classes'][class_id]
+		)
+		saveData(token, full_data)
+
+def populateData(obj):
 	"""
 		Fill in the 'data' part of the user dict. This will contain subjects, grades, etc.
 
@@ -630,17 +651,21 @@ def populateData(obj, time=False):
 
 		Finally, return all the collected data.
 	"""
-	start = _clock()
-	dataDict = {'classes':None, 'info':None}
+	data_dict = {'classes':None}
 	try:
 		output = obj.getClasses()
 	except Exception as e:
 		log.error("Error getting classes: %s", e)
 		raise e
 
+	output[0] = get_class_profile(obj, 0, output[0])
+	data_dict['classes'] = output
+	return data_dict
+
+def get_class_profile(obj, class_id, class_obj):
 	try:
-		tests_nowonly = obj.getTests(0, alltests=False)
-		tests_all = obj.getTests(0, alltests=True)
+		tests_nowonly = obj.getTests(class_id, alltests=False)
+		tests_all = obj.getTests(class_id, alltests=True)
 		testId = 0
 		for x in tests_all:
 			if x not in tests_nowonly:
@@ -649,65 +674,60 @@ def populateData(obj, time=False):
 				x['current'] = True
 			x['id'] = testId
 			testId += 1
-		output[0]['tests'] = tests_all
+		class_obj['tests'] = tests_all
 	except Exception as e:
 		log.debug("Error getting tests for class: %s", e)
-		output[0]['tests'] = None
+		class_obj['tests'] = None
 
 	try:
-		absences_overview = obj.getAbsentOverviewForClass(0)
-		absences_full = obj.getAbsentFullListForClass(0)
-		output[0]['absences'] = {'overview':absences_overview, 'full':absences_full}
+		absences_overview = obj.getAbsentOverviewForClass(class_id)
+		absences_full = obj.getAbsentFullListForClass(class_id)
+		class_obj['absences'] = {'overview':absences_overview, 'full':absences_full}
 	except Exception as e:
 		log.debug("Error getting absences for class: %s", e)
-		output[0]['absences'] = None
+		class_obj['absences'] = None
 
 	try:
-		output[0]['subjects'] = obj.getSubjects(0)
+		class_obj['subjects'] = obj.getSubjects(class_id)
 	except Exception as e:
 		log.debug("Error getting subjects for class: %s", e)
-		output[0]['subjects'] = None
+		class_obj['subjects'] = None
 	allSubjAverageGrades = []
-	for z in range(len(output[0]['subjects'])):
-		output[0]['subjects'][z]['id'] = z
+	for z in range(len(class_obj['subjects'])):
+		class_obj['subjects'][z]['id'] = z
 		try:
-			output[0]['subjects'][z]['grades'] = obj.getGradesForSubject(0, z)
-			if not output[0]['subjects'][z]['grades']:
-				output[0]['subjects'][z]['grades'] = None
+			class_obj['subjects'][z]['grades'] = obj.getGradesForSubject(class_id, z)
+			if not class_obj['subjects'][z]['grades']:
+				class_obj['subjects'][z]['grades'] = None
 			isconcl, concluded = obj.getConcludedGradeForSubject(0, z)
 			if isconcl:
-				output[0]['subjects'][z]['average'] = concluded
+				class_obj['subjects'][z]['average'] = concluded
 				allSubjAverageGrades.append(concluded)
 			else:
 				lgrades = []
-				for i in output[0]['subjects'][z]['grades']:
+				for i in class_obj['subjects'][z]['grades']:
 					lgrades.append(i['grade'])
-				output[0]['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
+				class_obj['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
 				allSubjAverageGrades.append(round(sum(lgrades)/len(lgrades), 0))
 		except Exception as e:
 			log.debug("Error getting grades for subject %s: %s", z, e)
-			output[0]['subjects'][z]['grades'] = None
+			class_obj['subjects'][z]['grades'] = None
 			continue
 		try:
-			output[0]['subjects'][z]['notes'] = obj.getNotesForSubject(0, z)
-			if not output[0]['subjects'][z]['notes']:
-				output[0]['subjects'][z]['notes'] = None
+			class_obj['subjects'][z]['notes'] = obj.getNotesForSubject(class_id, z)
+			if not class_obj['subjects'][z]['notes']:
+				class_obj['subjects'][z]['notes'] = None
 		except Exception as e:
 			log.debug("Error getting notes for subject %s: %s", z, e)
-			output[0]['subjects'][z]['notes'] = None
+			class_obj['subjects'][z]['notes'] = None
 			continue
-	output[0]['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
-	dataDict['classes'] = output
+	class_obj['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
 	try:
-		dataDict['info'] = obj.getInfoForUser(0)
+		class_obj['info'] = obj.getInfoForUser(0)
 	except Exception as e:
 		log.debug("Error getting info: %s", str(e))
-	request_time = _clock() - start
-	if not time:
-		log.debug("==> TIMER => %s", request_time)
-	else:
-		log.info("==> TIMER => %s", request_time)
-	return dataDict
+	class_obj['full'] = True
+	return class_obj
 
 def verifyDevRequest(token):
 	"""

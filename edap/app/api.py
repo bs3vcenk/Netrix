@@ -355,16 +355,6 @@ def login():
 	updateCounter("logins:success:slow")
 	return make_response(jsonify({'token':token}), 200)
 
-@app.route('/api/user/<string:token>/info', methods=["GET"])
-def get_user_info(token):
-	"""
-		Get the user's personal information.
-	"""
-	if not verifyRequest(token):
-		abort(401)
-	log.info(token)
-	return make_response(jsonify(getData(token)['data']['info']), 200)
-
 @app.route('/api/user/<string:token>/firebase', methods=["POST"])
 def set_firebase_token(token):
 	if not verifyRequest(token):
@@ -376,6 +366,16 @@ def set_firebase_token(token):
 	user_data['firebase_device_token'] = request.json['deviceToken']
 	saveData(token, user_data)
 	return make_response(jsonify({'status':'ok'}), 200)
+
+@app.route('/api/user/<string:token>/fetchclass', methods=["POST"])
+def fill_class(token):
+	if not verifyRequest(token):
+		abort(401)
+	if not request.json or not "class_id" in request.json:
+		abort(400)
+	log.info("FETCH => %s => %s", token, request.json["class_id"])
+	fetch_new_class(token, request.json["class_id"])
+	return make_response('', 200)
 
 @app.route('/api/user/<string:token>/settings/<string:action>', methods=["POST", "GET"])
 def setting(token, action):
@@ -458,10 +458,20 @@ def get_classes(token):
 			del i['subjects']
 			del i['tests']
 			del i['absences']
+			del i['info']
 		except KeyError:
 			pass
-	del o['info']
 	return make_response(jsonify(o), 200)
+
+@app.route('/api/user/<string:token>/classes/<int:class_id>/info', methods=["GET"])
+def get_user_info(token, class_id):
+	"""
+		Get the user's personal information.
+	"""
+	if not verifyRequest(token, class_id):
+		abort(401)
+	log.info(token)
+	return make_response(jsonify(getData(token)['data']['classes'][class_id]['info']), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/absences', methods=["GET"])
 def get_absences(token, class_id):
