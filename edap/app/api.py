@@ -326,6 +326,10 @@ def login():
 		log.error("SLOW => eDAP FAIL => %s => %s", username, e)
 		updateCounter("logins:fail:generic")
 		abort(500)
+	except edap.ServerInMaintenance as e:
+		log.error("SLOW => MAINTENANCE => %s", username)
+		updateCounter("logins:fail:generic")
+		return make_response(jsonify({'error':'E_UPSTREAM_MAINTENANCE'}), 500)
 	log.info("SLOW => SUCCESS => %s (%s)", username, token)
 	dataObj = {
 		'data': populateData(obj, time=True),
