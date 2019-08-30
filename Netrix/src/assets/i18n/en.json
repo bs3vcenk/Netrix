@@ -19,6 +19,10 @@
       "trusterror": {
         "header": "Unsafe connection",
         "content": "We can't verify the identity of the server we're trying to connect to. This might be because you haven't yet logged in to a public Wi-Fi, or it could be someone trying to steal your data."
+      },
+      "maintenance": {
+        "header": "Maintenance in progress",
+        "content": "e-Dnevnik is currently undergoing maintenance (we have no control over this). Check the website for more information."
       }
     },
     "choice": {

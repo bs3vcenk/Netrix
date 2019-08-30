@@ -79,6 +79,7 @@ export class AppComponent {
       this.translate.get('generic.back').subscribe((res: string) => {
         this.config.set('backButtonText', res);
       });
+      this.apiSvc.getMaintenanceMode();
       /* Subscribe to the authenticationState object, and check if the user is
        * logged in or not. */
       this.authenticationService.authenticationState.subscribe(state => {
@@ -112,6 +113,9 @@ export class AppComponent {
         this.handleErrorSender(val);
       });
       this.apiSvc.trustError.subscribe(val => {
+        this.handleErrorSender(val);
+      });
+      this.apiSvc.maintenanceError.subscribe(val => {
         this.handleErrorSender(val);
       });
 

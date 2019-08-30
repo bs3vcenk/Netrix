@@ -19,6 +19,10 @@
       "trusterror": {
         "header": "Nicht sichere Verbindung",
         "content": "Wir können die Identität des Servers, mit dem wir versuchen, eine Verbindung herzustellen, nicht überprüfen. Dies kann daran liegen, dass du dich noch nicht bei einem öffentlichen WLAN angemeldet hast, oder es könnte jemand sein, der versucht, deine Daten zu stehlen."
+      },
+      "maintenance": {
+        "header": "Wartung läuft",
+        "content": "e-Dnevnik befindet sich derzeit in der Wartung (wir haben keine Kontrolle darüber). Weitere Informationen findest du auf der Website."
       }
     },
     "choice": {

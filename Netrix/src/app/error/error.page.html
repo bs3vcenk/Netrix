@@ -38,4 +38,16 @@
       <h2 id="netContent" text-wrap>{{ 'generic.text.trusterror.content' | translate }}</h2>
     </ion-label>
   </ion-item>
+
+  <!-- Maintenance -->
+  <ion-item text-center *ngIf="maintenanceError" lines="none" id="cntr">
+    <ion-label>
+      <!-- "Lock" emoji -->
+      <object width="150" type="image/svg+xml" data="./assets/emoji/wrench.svg"></object>
+      <!-- Short description of error -->
+      <h1 id="netHeader" text-wrap>{{ 'generic.text.maintenance.header' | translate }}</h1>
+      <!-- Long desc/instructions -->
+      <h2 id="netContent" text-wrap>{{ 'generic.text.maintenance.content' | translate }}</h2>
+    </ion-label>
+  </ion-item>
 </ion-content>

@@ -110,7 +110,7 @@ export class ApiService {
       {},
       this.httpHeader
     ).then((rx) => {
-      if (rx.data.contains('trenutno u nadogradnji')) {
+      if (rx.data.includes('trenutno u nadogradnji')) {
         this.maintenanceError.next(true);
       }
       this.firebase.stopTrace('getMaintenanceMode');
