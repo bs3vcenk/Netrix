@@ -19,6 +19,9 @@ class FatalLogExit(Exception):
 class WrongCredentials(Exception):
 	"""Incorrect credentials"""
 
+class ServerInMaintenance(Exception):
+	"""Host (e-Dnevnik) is in maintenance mode"""
+
 EDAP_VERSION = "D2"
 
 def _format_to_date(preformat_string: str, date_format="%d.%m.%Y.") -> int:
@@ -93,7 +96,12 @@ class edap:
 			r.raise_for_status()
 			self.csrf = self.session.cookies["csrf_cookie"]
 		except requests.exceptions.HTTPError as e:
-			self.__edlog(4, "Failed to connect to eDnevnik (%s)" % e)
+			self.__edlog(4, "Failed to connect to eDnevnik [requests.exceptions.HTTPError] (%s)" % e)
+		except KeyError as e:
+			if "u nadogradnji" in r.text:
+				raise ServerInMaintenance
+			else:
+				self.__edlog(4, "Can't get CSRF (%s)" % e)
 		self.__edlog(1, "Got CSRF: [{%s}]" % self.csrf)
 		self.__edlog(1, "Trying to authenticate %s" % self.user)
 		try:
