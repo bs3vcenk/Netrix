@@ -332,7 +332,7 @@ def login():
 		return make_response(jsonify({'error':'E_UPSTREAM_MAINTENANCE'}), 500)
 	log.info("SLOW => SUCCESS => %s (%s)", username, token)
 	dataObj = {
-		'data': populateData(obj, time=True),
+		'data': populateData(obj),
 		'last_ip': dev_ip,
 		'device': {
 			'platform': None,
