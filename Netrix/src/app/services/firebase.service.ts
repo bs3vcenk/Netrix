@@ -3,6 +3,7 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { Platform } from '@ionic/angular';
 import * as StackTrace from 'stacktrace-js';
 import { ApiService } from './api.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -58,12 +59,14 @@ export class CrashlyticsErrorHandler extends ErrorHandler {
   handleError(error) {
     /* Send exceptions to Crashlytics */
     super.handleError(error);
-    try {
-      StackTrace.fromError(error).then(st => {
-        this.firebase.logError(error.message, st);
-      });
-    } catch (e) {
-      console.error(e);
+    if (environment.production) {
+      try {
+        StackTrace.fromError(error).then(st => {
+          this.firebase.logError(error.message, st);
+        });
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 }
