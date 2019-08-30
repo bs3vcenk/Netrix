@@ -59,6 +59,12 @@ export class AppComponent {
     }
   }
 
+  private handleErrorSender(val) {
+    if (val) {
+      this.router.navigate(['error'], {replaceUrl: true});
+    }
+  }
+
   initializeApp() {
     this.platform.ready().then(() => {
       /* Set status bar color, style for white bg and black icons */
@@ -100,19 +106,13 @@ export class AppComponent {
       /* Handle network and server errors, switching to the appropriate page if
        * there is an error */
       this.apiSvc.networkError.subscribe(val => {
-        if (val) {
-          this.router.navigate(['error'], {replaceUrl: true});
-        }
+        this.handleErrorSender(val);
       });
       this.apiSvc.dbError.subscribe(val => {
-        if (val) {
-          this.router.navigate(['error'], {replaceUrl: true});
-        }
+        this.handleErrorSender(val);
       });
       this.apiSvc.trustError.subscribe(val => {
-        if (val) {
-          this.router.navigate(['error'], {replaceUrl: true});
-        }
+        this.handleErrorSender(val);
       });
 
       /* Indicate if using developer build */
