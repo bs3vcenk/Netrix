@@ -306,7 +306,7 @@ def login():
 		updateCounter("logins:fail:generic")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	dev_ip = request.remote_addr
-	username = request.json["username"].strip().lower()
+	username = request.json["username"].strip()
 	password = request.json["password"]
 	if "@skole.hr" in username:
 		username = username.replace("@skole.hr", "")
