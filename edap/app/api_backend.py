@@ -22,7 +22,6 @@ from time import clock as _clock
 from string import ascii_letters
 
 log = logging.getLogger(__name__)
-maintenance = False
 _fbPushService = None
 _redis = None
 
@@ -312,10 +311,8 @@ def startSync(token):
 		_threads["sync:" + token] = {"obj":to, "run":True}
 
 def _check_maintenance():
-	global maintenance
 	while True:
-		maintenance = "trenutno u nadogradnji" in requests.get('https://ocjene.skole.hr/').text
-		log.info(maintenance)
+		_redis.set("flag:maintenance", "trenutno u nadogradnji" in requests.get('https://ocjene.skole.hr/').text)
 		sleep(120)
 
 def _start_maintenance_check():
@@ -770,6 +767,9 @@ def getCounter(counter_id):
 		_redis.set("counter:"+counter_id, 0)
 		return 0
 	return int(val)
+
+def is_maintenance():
+	return _redis.get('flag:maintenance')
 
 def _setCounter(counter_id, value):
 	_redis.set("counter:"+counter_id, value)
