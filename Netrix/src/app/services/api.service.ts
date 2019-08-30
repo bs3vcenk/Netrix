@@ -36,6 +36,10 @@ export class ApiService {
 
   ignoredNotifTypes = [];
 
+  classId = new BehaviorSubject(0);
+
+  classes = null;
+
   tests = null;
   currentTests = [];
 
@@ -101,6 +105,22 @@ export class ApiService {
       this.networkError.next(true);
       throw errorObj;
     }
+  }
+
+  getClasses() {
+    this.firebase.startTrace('getClasses');
+    this.http.get(
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes',
+      {},
+      this.httpHeader
+    ).then((rx) => {
+      const response = JSON.parse(rx.data);
+      this.classes = response.classes;
+      this.firebase.stopTrace('getClasses');
+    }, (error) => {
+      this.firebase.stopTrace('getClasses');
+      this.handleErr(error);
+    });
   }
 
   getMaintenanceMode() {
@@ -188,7 +208,7 @@ export class ApiService {
   getUserInfo() {
     this.firebase.startTrace('getUserInfo');
     this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/info',
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/info',
       {},
       this.httpHeader
     ).then((response) => {
