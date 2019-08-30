@@ -315,6 +315,7 @@ def _check_maintenance():
 	global maintenance
 	while True:
 		maintenance = "trenutno u nadogradnji" in requests.get('https://ocjene.skole.hr/').text
+		log.info(maintenance)
 		sleep(120)
 
 def _start_maintenance_check():
