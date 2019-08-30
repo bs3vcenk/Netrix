@@ -338,7 +338,8 @@ def sync(token):
 	log.debug("Syncing %s", token)
 	fData = getData(token)
 	data = fData["data"] # Old data
-	nData = populateData(edap.edap(fData["user"], fData["pasw"])) # New data
+	credentials = get_credentials(token)
+	nData = populateData(edap.edap(credentials["username"], credentials["password"])) # New data
 	diff = _profileDifference(data, nData)
 	if diff:
 		fData["data"] = nData

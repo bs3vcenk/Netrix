@@ -328,8 +328,6 @@ def login():
 		abort(500)
 	log.info("SLOW => SUCCESS => %s (%s)", username, token)
 	dataObj = {
-		'user': username,
-		'pasw': password,
 		'data': populateData(obj, time=True),
 		'last_ip': dev_ip,
 		'device': {
@@ -348,6 +346,7 @@ def login():
 		},
 		'messages': []
 	}
+	set_credentials(token, username, password)
 	if config["USE_CLOUDFLARE"]:
 		dataObj["cloudflare"] = {"last_ip": None, "country": None}
 	saveData(token, dataObj)
