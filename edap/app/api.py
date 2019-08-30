@@ -2,7 +2,7 @@ from functools import wraps
 from flask import Flask, jsonify, make_response, request, abort, redirect
 from flask_cors import CORS
 from api_backend import *
-import edap
+import edap, requests
 
 API_VERSION = "2.6.1"
 
@@ -537,6 +537,15 @@ def log_stats():
 		dataObj['cloudflare']['last_ip'] = request.headers["CF-Connecting-IP"]
 	saveData(token, dataObj)
 	return make_response(jsonify({"result":"ok"}), 200)
+
+@app.route('/api/maintenance', methods=["GET"])
+def check_maintenance():
+	"""
+		Checks if e-Dnevnik is in maintenance mode.
+	"""
+	if "trenutno u nadogradnji" in requests.get('https://ocjene.skole.hr/').text:
+		return make_response(jsonify({'maintenance':True}), 200)
+	return make_response(jsonify({'maintenance':False}), 200)
 
 if __name__ == '__main__':
 	app.run(debug=True)
