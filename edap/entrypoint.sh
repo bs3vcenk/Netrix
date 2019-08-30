@@ -9,7 +9,7 @@ export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.7/site-packages:/usr/lib/py
 USE_NGINX_MAX_UPLOAD=${NGINX_MAX_UPLOAD:-0}
 
 # Get the number of workers for Nginx, default to 1
-USE_NGINX_WORKER_PROCESSES=${NGINX_WORKER_PROCESSES:-1}
+USE_NGINX_WORKER_PROCESSES=${NGINX_WORKER_PROCESSES:-4}
 
 # Set the max number of connections per worker for Nginx, if requested
 # Cannot exceed worker_rlimit_nofile, see NGINX_WORKER_OPEN_FILES below
