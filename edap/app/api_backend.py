@@ -623,6 +623,8 @@ def fetch_new_class(token, class_id):
 	if not 'full' in full_data['data']['classes'][class_id]:
 		credentials = get_credentials(token)
 		edap_object = edap.edap(credentials['username'], credentials['password'])
+		# Get the classes so they're saved in the object
+		edap_object.getClasses()
 		# Overwrite existing "bare" class profile with new complete profile
 		full_data['data']['classes'][class_id] = get_class_profile(
 			edap_object,
