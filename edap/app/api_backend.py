@@ -676,7 +676,7 @@ def get_class_profile(obj, class_id, class_obj):
 			testId += 1
 		class_obj['tests'] = tests_all
 	except Exception as e:
-		log.debug("Error getting tests for class: %s", e)
+		log.error("Error getting tests for class: %s", e)
 		class_obj['tests'] = None
 
 	try:
@@ -684,13 +684,13 @@ def get_class_profile(obj, class_id, class_obj):
 		absences_full = obj.getAbsentFullListForClass(class_id)
 		class_obj['absences'] = {'overview':absences_overview, 'full':absences_full}
 	except Exception as e:
-		log.debug("Error getting absences for class: %s", e)
+		log.error("Error getting absences for class: %s", e)
 		class_obj['absences'] = None
 
 	try:
 		class_obj['subjects'] = obj.getSubjects(class_id)
 	except Exception as e:
-		log.debug("Error getting subjects for class: %s", e)
+		log.error("Error getting subjects for class: %s", e)
 		class_obj['subjects'] = None
 	allSubjAverageGrades = []
 	for z in range(len(class_obj['subjects'])):
@@ -710,7 +710,7 @@ def get_class_profile(obj, class_id, class_obj):
 				class_obj['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
 				allSubjAverageGrades.append(round(sum(lgrades)/len(lgrades), 0))
 		except Exception as e:
-			log.debug("Error getting grades for subject %s: %s", z, e)
+			log.error("Error getting grades for subject %s: %s", z, e)
 			class_obj['subjects'][z]['grades'] = None
 			continue
 		try:
@@ -718,14 +718,14 @@ def get_class_profile(obj, class_id, class_obj):
 			if not class_obj['subjects'][z]['notes']:
 				class_obj['subjects'][z]['notes'] = None
 		except Exception as e:
-			log.debug("Error getting notes for subject %s: %s", z, e)
+			log.error("Error getting notes for subject %s: %s", z, e)
 			class_obj['subjects'][z]['notes'] = None
 			continue
 	class_obj['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
 	try:
 		class_obj['info'] = obj.getInfoForUser(0)
 	except Exception as e:
-		log.debug("Error getting info: %s", str(e))
+		log.error("Error getting info: %s", str(e))
 	class_obj['full'] = True
 	return class_obj
 
