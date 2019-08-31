@@ -112,28 +112,38 @@ def generateTestUser() -> (str, str, str):
 	data = {
 		'ignore_updating': True,
 		'data': {
-			'info': {
-				"address": "Street, Place",
-				"birthdate": "1. 1. 2000.",
-				"birthplace": "City, Country",
-				"name": "Name Surname",
-				"number": 1,
-				"program": "Program"
-			},
 			'classes': [
 				{
 					"class": "1.a",
-					"classmaster": "Classmaster",
+					"classmaster": "Razrednik",
 					"complete_avg": 4.20,
-					"school_city": "City",
-					"school_name": "School Name",
-					"year": "6969./6969.",
+					"school_city": "Grad",
+					"school_name": "Ime škole",
+					"year": "2018./2019.",
 					"subjects": [
 						{
-							"average": 4.20,
+							"average": 4.58,
 							"id": 0,
-							"professors": ["Professor", "Professor", "Professor", "Professor", "Professor", "Professor"],
-							"subject": "Subject Name"
+							"professors": ["Netko Netkić", "Nitko Nitkić"],
+							"subject": "Hrvatski jezik"
+						},
+						{
+							"average": 5.00,
+							"id": 1,
+							"professors": ["Netko Netkić"],
+							"subject": "Engleski jezik"
+						},
+						{
+							"average": 3.89,
+							"id": 1,
+							"professors": ["Nitko Nitkić"],
+							"subject": "Latinski jezik"
+						},
+						{
+							"average": 4.96,
+							"id": 1,
+							"professors": ["Ivan Ivanović"],
+							"subject": "Fizika"
 						}
 					],
 					"tests": [
@@ -141,17 +151,25 @@ def generateTestUser() -> (str, str, str):
 							"current": False,
 							"date": _time() - 120,
 							"id": 0,
-							"subject": "School subject",
-							"test": "Non-current test subject"
+							"subject": "Hrvatski",
+							"test": "Prvi ispit znanja"
 						},
 						{
 							"current": True,
 							"date": _time() + 259200 + 120,
 							"id": 1,
-							"subject": "School subject",
-							"test": "Current test subject"
+							"subject": "Hrvatski",
+							"test": "Drugi ispit znanja"
 						}
 					],
+					'info': {
+						"address": "Ulica, Mjesto",
+						"birthdate": "1. 1. 2000.",
+						"birthplace": "Grad, Država",
+						"name": "Netko Netkić",
+						"number": 1,
+						"program": "Program"
+					},
 					"absences": {"overview":{"awaiting":0,"justified":0,"sum":0,"sum_leftover":0,"unjustified":0}, "full":[]}
 				}
 			]
