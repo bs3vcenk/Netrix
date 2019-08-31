@@ -74,6 +74,7 @@ export class ApiService {
   async preCacheData() {
     this.plt.ready().then(() => {
       /* Execute all get functions */
+      this.getClasses();
       this.getSubjects();
       this.getTests();
       this.getAbsences();
@@ -115,6 +116,7 @@ export class ApiService {
       this.httpHeader
     ).then((rx) => {
       const response = JSON.parse(rx.data);
+      console.log(response);
       this.classes = response.classes;
       this.firebase.stopTrace('getClasses');
     }, (error) => {

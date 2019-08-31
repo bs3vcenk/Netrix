@@ -34,7 +34,8 @@
     "title": "Skolämnen",
     "text": {
       "other": "och NUM_PROFS till",
-      "average": "Ditt genomsnitt är:"
+      "average": "Ditt genomsnitt är:",
+      "classes": "Classes"
     }
   },
   "tab2": {

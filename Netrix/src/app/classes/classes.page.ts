@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-classes',
@@ -7,7 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ClassesPage implements OnInit {
 
-  constructor() { }
+  classes = null;
+
+  constructor(
+    private apiSvc: ApiService
+  ) {
+    this.classes = this.apiSvc.classes;
+  }
 
   ngOnInit() {
   }

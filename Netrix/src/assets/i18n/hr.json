@@ -34,7 +34,8 @@
     "title": "Predmeti",
     "text": {
       "other": "i još NUM_PROFS",
-      "average": "Tvoj prosjek je:"
+      "average": "Tvoj prosjek je:",
+      "classes": "Razredi"
     }
   },
   "tab2": {

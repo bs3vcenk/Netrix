@@ -34,7 +34,8 @@
     "title": "Schulfächer",
     "text": {
       "other": "und NUM_PROFS mehr",
-      "average": "Dein Durchschnitt ist:"
+      "average": "Dein Durchschnitt ist:",
+      "classes": "Classes"
     }
   },
   "tab2": {
