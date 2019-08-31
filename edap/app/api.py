@@ -166,8 +166,18 @@ def dev_users():
 	"""
 	tklist = []
 	for token in getTokens():
-		tklist.append({'token': token, 'name': getData(token)["user"]})
+		tklist.append({'token': token, 'name': ''})
 	return make_response(jsonify({'users':tklist}), 200)
+
+@app.route('/dev/migrate/vault', methods=["GET"])
+@dev_pw_area
+def dev_migrate_vault():
+	for token in getTokens():
+		o = getData(token)
+		set_credentials(token, o['user'], o['pasw'])
+		del o['user']
+		del o['pasw']
+		saveData(token, o)
 
 @app.route('/dev/users/<string:token>', methods=["DELETE", "GET"])
 @dev_area
