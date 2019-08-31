@@ -7,7 +7,7 @@
 <ion-content>
   <!-- HEADER: Quick information overview with *ngIf to show only if
        the user has any absences -->
-  <ion-item [@fadeInOut] *ngIf="absences.overview.sum > 0" id="wrapper">
+  <ion-item *ngIf="absences.overview.sum > 0" id="wrapper">
     <!-- Justified absences -->
     <div id="flexItem">
       <ion-text id="descText">
@@ -50,7 +50,7 @@
   </ion-item>
 
   <!-- "No absences" message if user has no absences -->
-  <ion-item text-center [@fadeInOut] *ngIf="absences.overview.sum == 0" lines="none" id="cntr">
+  <ion-item text-center *ngIf="absences.overview.sum == 0" lines="none" id="cntr">
     <ion-label>
       <object width="150" type="image/svg+xml" data="./assets/emoji/thumbsup.svg"></object>
       <h1 id="netHeader" text-wrap>{{ 'tab3.text.noabsences' | translate }}</h1>
@@ -62,12 +62,12 @@
     <!-- <ng-container> for every grouped absence list (for separation by date) -->
     <ng-container *ngFor="let absObj of absences.full">
       <!-- HEADER: Date of absences -->
-      <ion-list-header [@fadeInOut]>
+      <ion-list-header>
         <ion-label>{{ convertToReadableDate(absObj.date) }}</ion-label>
       </ion-list-header>
 
       <!-- <ion-item> for every absence in grouped list -->
-      <ion-item [@fadeInOut] *ngFor="let mcl of absObj.absences">
+      <ion-item *ngFor="let mcl of absObj.absences">
         <ion-label>
           <!-- Class period the absence was marked for -->
           <div class="number">
