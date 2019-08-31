@@ -9,11 +9,13 @@ import { ApiService } from '../services/api.service';
 export class ClassesPage implements OnInit {
 
   classes = null;
+  currentClass = null;
 
   constructor(
     private apiSvc: ApiService
   ) {
     this.classes = this.apiSvc.classes;
+    this.currentClass = this.apiSvc.classId.value;
   }
 
   ngOnInit() {
