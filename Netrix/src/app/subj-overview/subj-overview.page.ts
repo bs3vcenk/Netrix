@@ -64,7 +64,7 @@ export class SubjOverviewPage implements OnInit {
   }
 
   async getSubjectInfo(subjId: string) {
-    this.apiSvc.getSubject(subjId).then((subject) => {
+    this.apiSvc.getSubject(subjId, this.apiSvc.classId.value).then((subject) => {
       if (subject.notes.length === 0 && subject.grades.length === 0) {
         this.alertError(
           this.translate.instant('overview.alert.nogrades.header'),

@@ -84,6 +84,13 @@ export class AppComponent {
        * logged in or not. */
       this.authenticationService.authenticationState.subscribe(state => {
         if (state) {
+          /* First, reset the class ID to 0, since only ID 0 is stored on login
+           * (other IDs are available by calling the /fetchclass endpoint).
+           *
+           * This is needed because after a logout and a login without restarting
+           * the app, the app will try to fetch the last set ID, which may not be
+           * zero. */
+          this.apiSvc.classId.next(0);
           /* If the user is logged in, preload some data such as subjects, absences, tests
            * and settings (also all subjects' info if chosen) */
           this.apiSvc.preCacheData();
@@ -96,11 +103,7 @@ export class AppComponent {
           /* If the user is not logged in, direct to the login page */
           this.router.navigate(['login'], {replaceUrl: true});
           /* Reset BehaviorSubjects in case of a logout */
-          // this.apiSvc.loadingFinishedAll.next(false);
-          this.apiSvc.loadingFinishedTests.next(false);
-          this.apiSvc.loadingFinishedSubj.next(false);
-          this.apiSvc.loadingFinishedNotif.next(false);
-          this.apiSvc.loadingFinishedAbsences.next(false);
+          this.apiSvc.resetLoadingState();
         }
       });
 

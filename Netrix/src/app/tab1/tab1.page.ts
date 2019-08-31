@@ -40,10 +40,8 @@ export class Tab1Page implements OnInit {
 
   initInBg() {
     this.apiSvc.loadingFinishedSubj.subscribe((isLoaded) => {
-      if (isLoaded) {
-        this.fullAvg = this.apiSvc.fullAvg;
-        this.subjects = this.apiSvc.subjects;
-      }
+      this.fullAvg = this.apiSvc.fullAvg;
+      this.subjects = this.apiSvc.subjects;
     });
   }
 }

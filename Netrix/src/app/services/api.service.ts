@@ -73,13 +73,15 @@ export class ApiService {
 
   async preCacheData() {
     this.plt.ready().then(() => {
-      /* Execute all get functions */
-      this.getClasses();
-      this.getSubjects();
-      this.getTests();
-      this.getAbsences();
-      this.getNotifConfig();
-      this.getUserInfo();
+      this.classId.subscribe((activeClassId) => {
+        /* Execute all get functions */
+        this.getClasses();
+        this.getSubjects(activeClassId);
+        this.getTests(activeClassId);
+        this.getAbsences(activeClassId);
+        this.getNotifConfig();
+        this.getUserInfo(activeClassId);
+      });
     });
   }
 
@@ -106,6 +108,48 @@ export class ApiService {
       this.networkError.next(true);
       throw errorObj;
     }
+  }
+
+  resetLoadingState() {
+    this.classes = null;
+    this.tests = null;
+    this.currentTests = [];
+    this.absences = null;
+    this.subjects = null;
+    this.fullAvg = null;
+    this.info = null;
+    this.loadingFinishedAbsences.next(false);
+    this.loadingFinishedInfo.next(false);
+    this.loadingFinishedNotif.next(false);
+    this.loadingFinishedSubj.next(false);
+    this.loadingFinishedTests.next(false);
+  }
+
+  async switchActiveClass(classId: number) {
+    /* Clear out subject cache */
+    this.subjCacheMap = {};
+    /* Reset loadingFinished objects */
+    this.resetLoadingState();
+    /* Fetch class ID */
+    await this.fetchClass(classId);
+    /* Re-fetch all data by setting a new classId (the classId.subscribe()
+     * in preCacheData() will be re-executed) */
+    this.classId.next(classId);
+  }
+
+  async fetchClass(classId: number) {
+    this.firebase.startTrace('fetchClass');
+    try {
+      await this.http.post(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/fetchclass',
+        {class_id: classId},
+        this.httpHeader
+      );
+    } catch (e) {
+      this.firebase.stopTrace('fetchClass');
+      this.handleErr(e);
+    }
+    this.firebase.stopTrace('fetchClass');
   }
 
   getClasses() {
@@ -207,10 +251,10 @@ export class ApiService {
     }
   }
 
-  getUserInfo() {
+  getUserInfo(classId: number) {
     this.firebase.startTrace('getUserInfo');
     this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/info',
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info',
       {},
       this.httpHeader
     ).then((response) => {
@@ -246,11 +290,11 @@ export class ApiService {
     });
   }
 
-  getSubjects() {
+  getSubjects(classId: number) {
     /* Get a stripped list of all subjects (alldata=0), containing no grades or notes */
     this.firebase.startTrace('getSubjects');
     this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects?alldata=1',
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects?alldata=1',
       {},
       this.httpHeader
     ).then((rx) => {
@@ -288,10 +332,10 @@ export class ApiService {
     });
   }
 
-  getTests() {
+  getTests(classId: number) {
     this.firebase.startTrace('getTests');
     this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/tests',
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/tests',
       {},
       this.httpHeader
     ).then((rx) => {
@@ -323,11 +367,11 @@ export class ApiService {
     });
   }
 
-  getAbsences() {
+  getAbsences(classId: number) {
     /* Get a list of absences, both an overview and a detailed list */
     this.firebase.startTrace('getAbsences');
     this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/absences',
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/absences',
       {},
       this.httpHeader
     ).then((response) => {
@@ -372,7 +416,7 @@ export class ApiService {
     return subject;
   }
 
-  getSubject(subjId: string) {
+  getSubject(subjId: string, classId: number) {
     return new Promise<SubjectData>((resolve, reject) => {
       /* Check if we have the subject ID cached already */
       if (this.subjCacheMap[subjId]) {
@@ -384,7 +428,7 @@ export class ApiService {
          * into the cache */
         console.log('ApiService/getSubjectNativeHTTP(): Subject ID ' + subjId + ' not cached, fetching remote');
         this.http.get(
-          this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/0/subjects/' + subjId,
+          this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects/' + subjId,
           {},
           this.httpHeader
         ).then((rx) => {

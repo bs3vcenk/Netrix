@@ -10,7 +10,7 @@
 
 <ion-content>
   <ion-list lines="full">
-    <ion-item *ngFor="let class of classes">
+    <ion-item *ngFor="let class of classes" (click)="switchClass(classes.indexOf(class))">
       <ion-label>
         <div id="classIdentifier">{{class.class}}</div>
         <div id="classInfo">
