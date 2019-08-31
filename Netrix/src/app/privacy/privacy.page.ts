@@ -13,10 +13,11 @@ export class PrivacyPage implements OnInit {
 
   constructor(
     private http: HTTP
-  ) {}
+  ) {
+    this.render();
+  }
 
   ngOnInit() {
-    this.render();
   }
 
   private render() {
