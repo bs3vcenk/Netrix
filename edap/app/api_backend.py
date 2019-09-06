@@ -741,7 +741,10 @@ def get_class_profile(obj, class_id, class_obj):
 			log.error("Error getting notes for subject %s: %s", z, e)
 			class_obj['subjects'][z]['notes'] = None
 			continue
-	class_obj['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
+	try:
+		class_obj['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
+	except:
+		class_obj['complete_avg'] = 0
 	try:
 		class_obj['info'] = obj.getInfoForUser(0)
 	except Exception as e:
