@@ -370,7 +370,7 @@ def login():
 	return make_response(jsonify({'token':token}), 200)
 
 @app.route('/api/user/<string:token>/info', methods=["GET"])
-def get_user_info(token):
+def get_user_info_old(token):
 	"""
 		Get the user's personal information.
 	"""
