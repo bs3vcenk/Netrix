@@ -253,7 +253,7 @@ def _formatAndSendNotification(token, notifData):
 	exceptions = getData(token)['settings']['notif']['ignore']
 	for x in notifData:
 		if x['type'] == 'class' and 'class' not in exceptions:
-			classNotif.append("%s (%s)" % (x['data']['class'], x['data']['class']))
+			classNotif.append("%s" % (x['data']['class']))
 		elif x['type'] == 'test' and 'test' not in exceptions:
 			testNotif.append("%s: %s" % (x['data']['subject'], x['data']['test']))
 		elif x['type'] == 'grade' and 'grade' not in exceptions:
