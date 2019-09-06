@@ -252,9 +252,7 @@ def _formatAndSendNotification(token, notifData):
 	toSendQueue = []
 	exceptions = getData(token)['settings']['notif']['ignore']
 	for x in notifData:
-		if x['type'] == 'class' and 'class' not in exceptions:
-			classNotif.append("%s" % (x['data']['class']))
-		elif x['type'] == 'test' and 'test' not in exceptions:
+		if x['type'] == 'test' and 'test' not in exceptions:
 			testNotif.append("%s: %s" % (x['data']['subject'], x['data']['test']))
 		elif x['type'] == 'grade' and 'grade' not in exceptions:
 			gradeNotif.append("%s: %s (%s)" % (_getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['grade'], x['data']['note']))
@@ -385,13 +383,7 @@ def _profileDifference(dObj1, dObj2):
 		del y[0]['subjects']
 	difflist = [x for x in t2 if x not in t1]
 	if difflist:
-		log.debug("Found difference in classes")
-		for i in difflist:
-			_finalReturn.append({'type':'class', 'data':{'year':i["year"], 'class':i["class"]}})
-		# At this point, we can't compare anything else, as only the
-		# first class' information is pulled by populateData(), so
-		# we'll just return.
-		return _finalReturn
+		return []
 	## TEST DIFFERENCE (FIRST CLASS ONLY) ##
 	t1 = deepcopy(dObj1['classes'][0]['tests'])
 	t2 = deepcopy(dObj2['classes'][0]['tests'])
