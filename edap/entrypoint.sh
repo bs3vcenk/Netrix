@@ -39,6 +39,7 @@ else
     content=$content'    sendfile        on;\n'
     content=$content'    keepalive_timeout  65;\n'
     content=$content'    include /etc/nginx/conf.d/*.conf;\n'
+    content=$content'    server_tokens off;\n'
     content=$content'}\n'
     content=$content'daemon off;\n'
     # Set the max number of open file descriptors for Nginx workers, if requested
