@@ -1,4 +1,11 @@
-## 1.8.5 (2019-09-27)
+## 1.8.6 (2019-09-06)
+* Dodan izbor razreda – sada je moguće odabrati i starije razrede
+* Popravljena greška zbog koje se u nekim slučajevima izostanci nisu učitavali
+* Popravljen prikaz općeg prosjeka – ako je prosjek bio 0 (bez ikakvih ocjena), prikazivalo se kao da ga nije bilo
+* Popravljena prijava za razrede bez ocjena
+* Sigurnije spremanje podataka za prijavu
+
+## 1.8.5 (2019-08-27)
 * Postavke više nisu zasebni tab, već pod gumbom na stranici "Predmeti"
 * Spremanje tokena prebačeno na API umjesto Firestore
 * Puno optimizacija na strani servera, kao npr. brža prijava
