@@ -255,7 +255,6 @@ def _formatAndSendNotification(token, notifData):
 		Format a notification for the user based on data gotten from
 		profileDifference() in sync().
 	"""
-	classNotif = []
 	gradeNotif = []
 	testNotif = []
 	noteNotif = []
@@ -263,9 +262,7 @@ def _formatAndSendNotification(token, notifData):
 	toSendQueue = []
 	exceptions = getData(token)['settings']['notif']['ignore']
 	for x in notifData:
-		if x['type'] == 'class' and 'class' not in exceptions:
-			classNotif.append("%s" % (x['data']['class']))
-		elif x['type'] == 'test' and 'test' not in exceptions:
+		if x['type'] == 'test' and 'test' not in exceptions:
 			testNotif.append("%s: %s" % (x['data']['subject'], x['data']['test']))
 		elif x['type'] == 'grade' and 'grade' not in exceptions:
 			gradeNotif.append("%s: %s (%s)" % (_getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['grade'], x['data']['note']))
@@ -273,11 +270,6 @@ def _formatAndSendNotification(token, notifData):
 			noteNotif.append("%s: %s" % (_getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['note']))
 		elif x['type'] == 'absence' and 'absence' not in exceptions:
 			absenceNotif = "ABS"
-	if classNotif:
-		toSendQueue.append({
-			'head': localize(token, 'class'),
-			'content': ", ".join(classNotif)
-		})
 	if gradeNotif:
 		toSendQueue.append({
 			'head': localize(token, 'grade'),
