@@ -51,7 +51,8 @@ class edap:
 	             log_func_name=True,
 	             redirect_log_to_file=False,
 	             hide_confidential=True,
-	             return_processing_time=False):
+	             return_processing_time=False,
+				 dumpable_logs=True):
 		"""
 			Authenticates the user to eDnevnik.
 
@@ -81,16 +82,16 @@ class edap:
 		self.log_func_name = log_func_name
 		self.hide_confidential = hide_confidential
 		self.return_processing_time = return_processing_time
+		self.dumpable_logs = dumpable_logs
+		self.log = ""
 		self.class_ids = []
 		self.subject_ids = []
 		self.subject_cache = {}
-		self.absence_cache = ""
+		self.absence_cache = {}
 		if redirect_log_to_file:
 			sys.stdout = open(redirect_log_to_file, "w")
-		self.__edlog(1, "Initializing requests.Session() object")
 		self.session = requests.Session()
 		self.session.headers.update({"User-Agent":self.useragent})
-		self.__edlog(1, "Getting CSRF")
 		try:
 			r = self.session.get("%s/pocetna/prijava" % self.edurl)
 			r.raise_for_status()
@@ -129,15 +130,30 @@ class edap:
 
 			:raises FatalLogExit: If something is logged with level 4/FATAL
 		"""
+		if loglevel > 4:
+			print("EDAP/Error: Unknown loglevel %s" % loglevel)
+		logl = ["Verbose", "Info", "Warning", "Error", "FATAL"]
+		if "[{" and "}]" in logs and self.hidepriv:
+			logs = re.sub(r'\[\{.+?\}\]', '[PRIVATE]', logs)
+		log_string = "EDAP/%s/%s: %s" % (logl[loglevel], inspect.stack()[1].function, logs)
 		if self.debug and loglevel >= self.loglevel or loglevel == 4:
-			if loglevel > 4:
-				print("EDAP/Error: Unknown loglevel %s" % loglevel)
-			logl = ["Verbose", "Info", "Warning", "Error", "FATAL"]
-			if "[{" and "}]" in logs and self.hidepriv:
-				logs = re.sub(r'\[\{.+?\}\]', '[PRIVATE]', logs)
-			print("EDAP/%s/%s: %s" % (logl[loglevel], inspect.stack()[1].function, logs))
-			if loglevel == 4:
-				raise FatalLogExit
+			print(log_string)
+		if self.dumpable_logs and loglevel >= self.loglevel:
+			self.log += log_string + "\n"
+		if loglevel == 4:
+			raise FatalLogExit
+
+	def dump_data(self):
+		"""
+			Dump stored variables and log if possible.
+		"""
+		print('USERNAME: %s' % self.user)
+		print('PARSER: %s' % self.parser)
+		print('USER AGENT: %s' % self.useragent)
+		print('SUBJECT CACHE: %s' % ('No' if not self.subject_cache else 'Yes (%s)' % (len(self.subject_cache.keys()))))
+		print('ABSENCE CACHE: %s' % ('No' if not self.absence_cache else 'Yes'))
+		print('CLASS IDs: %s' % (', '.join(self.class_ids) if self.class_ids else 'not initialized'))
+		print('==========\n%s' % self.log if self.dumpable_logs else 'Dumpable logs not enabled')
 
 	def __fetch(self, url):
 		o = self.session.get(url)
@@ -283,9 +299,11 @@ class edap:
 		self.__edlog(0, "Getting grade list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
 			if not self.subject_ids[subject_id] in self.subject_cache:
+				self.__edlog(1, "Fetching subject %s from server" % subject_id)
 				response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 				self.subject_cache[self.subject_ids[subject_id]] = response
 			else:
+				self.__edlog(1, "Fetching subject %s from cache" % subject_id)
 				response = self.subject_cache[self.subject_ids[subject_id]]
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
@@ -317,9 +335,11 @@ class edap:
 		self.__edlog(0, "Getting note list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
 			if not self.subject_ids[subject_id] in self.subject_cache:
+				self.__edlog(1, "Fetching subject %s from server" % subject_id)
 				response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 				self.subject_cache[self.subject_ids[subject_id]] = response
 			else:
+				self.__edlog(1, "Fetching subject %s from cache" % subject_id)
 				response = self.subject_cache[self.subject_ids[subject_id]]
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting notes for subject (%s)" % e)
@@ -353,9 +373,11 @@ class edap:
 		self.__edlog(0, "Getting concluded grade for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		try:
 			if not self.subject_ids[subject_id] in self.subject_cache:
+				self.__edlog(1, "Fetching subject %s from server" % subject_id)
 				response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
 				self.subject_cache[self.subject_ids[subject_id]] = response
 			else:
+				self.__edlog(1, "Fetching subject %s from cache" % subject_id)
 				response = self.subject_cache[self.subject_ids[subject_id]]
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
@@ -427,11 +449,13 @@ class edap:
 		"""
 		self.__edlog(0, "Getting absent overview for class id %s" % class_id)
 		try:
-			if not self.absence_cache:
+			if not self.class_ids[class_id] in self.absence_cache:
+				self.__edlog(1, "Fetching absences from server")
 				response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
-				self.absence_cache = response
+				self.absence_cache[self.class_ids[class_id]] = response
 			else:
-				response = self.absence_cache
+				self.__edlog(1, "Fetching absences from cache")
+				response = self.absence_cache[self.class_ids[class_id]]
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed to get absent overview for class (%s)" % e)
 		if self.return_processing_time:
@@ -465,11 +489,13 @@ class edap:
 		"""
 		self.__edlog(0, "Getting absent list for class id %s" % class_id)
 		try:
-			if not self.absence_cache:
+			if not self.class_ids[class_id] in self.absence_cache:
+				self.__edlog(1, "Fetching absences from server")
 				response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
-				self.absence_cache = response
+				self.absence_cache[self.class_ids[class_id]] = response
 			else:
-				response = self.absence_cache
+				self.__edlog(1, "Fetching absences from cache")
+				response = self.absence_cache[self.class_ids[class_id]]
 		except requests.exceptions.HTTPError as e:
 			self.__edlog(4, "Failed to get absent list for class (%s)" % e)
 		if self.return_processing_time:
