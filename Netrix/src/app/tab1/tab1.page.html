@@ -19,7 +19,7 @@
 <ion-content>
   <!-- "Your average is:" text at the top
        Shows only when we have the complete average  -->
-  <ion-item [@fadeInOut] *ngIf="fullAvg">
+  <ion-item [@fadeInOut] *ngIf="fullAvg >= 0 && fullAvg !== null">
     <ion-text id="preWholeAvgText" position="stacked">
       {{ 'tab1.text.average' | translate }}
     </ion-text>
@@ -28,7 +28,7 @@
     </ion-label>
   </ion-item>
   <!-- "Your average is:" skeleton object -->
-  <ion-item *ngIf="!fullAvg">
+  <ion-item *ngIf="fullAvg === null">
     <ion-text id="preWholeAvgText" position="stacked" style="width: 30%">
       <ion-skeleton-text animated style="width: 100%;line-height: 12px"></ion-skeleton-text>
     </ion-text>
