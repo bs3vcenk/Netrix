@@ -243,6 +243,8 @@ def main():
 	full_end = timer()
 	print("=======> FINISHED TESTS IN %s" % to_ms(full_end - full_start))
 	print("=======> Total time spent processing data: %s" % to_ms(total_processing_time))
+	print("=======> student.dump_data() output:")
+	student.dump_data()
 
 if __name__ == "__main__":
 	ARGS = sys.argv[3:]
