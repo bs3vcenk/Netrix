@@ -175,6 +175,9 @@ def dev_migrate_vault():
 	for token in getTokens():
 		o = getData(token)
 		set_credentials(token, o['user'], o['pasw'])
+		info = o['data']['info']
+		o['data']['classes'][0]['info'] = info
+		del o['data']['info']
 		del o['user']
 		del o['pasw']
 		saveData(token, o)
