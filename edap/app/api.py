@@ -2,7 +2,7 @@ from functools import wraps
 from flask import Flask, jsonify, make_response, request, abort, redirect
 from flask_cors import CORS
 from api_backend import *
-import edap, requests
+import edap
 
 API_VERSION = "2.6.1"
 
