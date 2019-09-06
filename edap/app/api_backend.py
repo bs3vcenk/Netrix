@@ -57,6 +57,16 @@ def set_credentials(token, username, password):
 	)
 	data.raise_for_status()
 
+def rm_credentials(token):
+	"""
+		Call Vault to remove a credential pair for a token.
+	"""
+	data = requests.delete(
+		'%s/v1/secret/data/%s' % (config["VAULT_SERVER"], token),
+		headers={'X-Vault-Token': config["VAULT_TOKEN_WRITE"]}
+	)
+	data.raise_for_status()
+
 def _exit(exitCode):
 	print("!!! Exiting with code %i\n    Check the log file for more information if possible." % exitCode)
 	_sysExit(exitCode)
@@ -238,6 +248,7 @@ def purgeToken(token):
 	log.info("LOGOUT => %s", token)
 	_stopSync(token)
 	_redis.delete('token:' + token)
+	rm_credentials(token)
 
 def _formatAndSendNotification(token, notifData):
 	"""
