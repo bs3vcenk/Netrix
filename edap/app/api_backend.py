@@ -704,11 +704,16 @@ def get_class_profile(obj, class_id, class_obj):
 
 	try:
 		absences_overview = obj.getAbsentOverviewForClass(class_id)
-		absences_full = obj.getAbsentFullListForClass(class_id)
-		class_obj['absences'] = {'overview':absences_overview, 'full':absences_full}
+		class_obj['absences'] = {'overview':absences_overview, 'full':None}
 	except Exception as e:
-		log.error("Error getting absences for class: %s", e)
+		log.error("Error getting absence overview for class: %s", e)
 		class_obj['absences'] = None
+	try:
+		if class_obj['absences'] != None:
+			absences_full = obj.getAbsentFullListForClass(class_id)
+			class_obj['absences']['full'] = absences_full
+	except Exception as e:
+		log.error("Error getting absence full list for class: %s", e)
 
 	try:
 		class_obj['subjects'] = obj.getSubjects(class_id)
