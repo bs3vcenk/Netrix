@@ -155,7 +155,7 @@ def main():
 	print("= 3/10 => student.getSubjects() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getSubjects(0)
+		_, x = student.getSubjects(ID)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -166,7 +166,7 @@ def main():
 	print("= 4/10 => student.getTests() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getTests(0, alltests=True)
+		_, x = student.getTests(ID, alltests=True)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -177,7 +177,7 @@ def main():
 	print("= 5/10 => student.getInfoForUser() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getInfoForUser(0)
+		_, x = student.getInfoForUser(ID)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -188,7 +188,7 @@ def main():
 	print("= 6/10 => student.getGradesForSubject() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getGradesForSubject(0, 0)
+		_, x = student.getGradesForSubject(ID, 0)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -199,7 +199,7 @@ def main():
 	print("= 7/10 => student.getNotesForSubject() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getNotesForSubject(0, 0)
+		_, x = student.getNotesForSubject(ID, 0)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -210,7 +210,7 @@ def main():
 	print("= 8/10 => student.getAbsentOverviewForClass() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getAbsentOverviewForClass(0)
+		_, x = student.getAbsentOverviewForClass(ID)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -221,7 +221,7 @@ def main():
 	print("= 9/10 => student.getAbsentFullListForClass() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getAbsentFullListForClass(0)
+		_, x = student.getAbsentFullListForClass(ID)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -232,7 +232,7 @@ def main():
 	print("= 10/10 => student.getConcludedGradeForSubject() => ", end='')
 	try:
 		start = timer()
-		_, _, x = student.getConcludedGradeForSubject(0, 0)
+		_, _, x = student.getConcludedGradeForSubject(ID, 0)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -246,18 +246,24 @@ def main():
 
 if __name__ == "__main__":
 	ARGS = sys.argv[3:]
-	if not ARGS:
-		PARSER = "lxml"
-		print('= conf => Using default parser lxml')
-	elif "--parser" in ARGS:
+	if "--parser" in ARGS:
 		PARSER = sys.argv[sys.argv.index('--parser')+1]
 		print('= conf => Using %s as parser' % PARSER)
+	else:
+		PARSER = "lxml"
+		print('= conf => Using default parser lxml')
 	if "--type" in ARGS:
 		TYPE = sys.argv[sys.argv.index('--type')+1]
 		print('= conf => Testing with %s method' % TYPE)
 	else:
 		TYPE = 'bare'
 		print('= conf => Testing bare eDAP library')
+	if "--id" in ARGS:
+		ID = int(sys.argv[sys.argv.index('--id')+1])
+		print('= conf => Testing for subject ID %s' % ID)
+	else:
+		ID = 0
+		print('= conf => Testing default subject ID 0')
 	if TYPE == 'bare':
 		main()
 	elif TYPE == 'api':
