@@ -595,9 +595,12 @@ def _initDB(host="localhost", port=6379, db=0):
 	"""
 	try:
 		r = redis.Redis(host=host, port=port, db=db)
-		r.get('token:*')
-		log.info("Database connection successful")
-		return r
+		if r.ping():
+			log.info("Database connection successful")
+			return r
+		else:
+			log.critical("Database connection failed!")
+			_exit(1)
 	except redis.exceptions.ConnectionError:
 		log.critical("Database connection failed!")
 		_exit(1)
