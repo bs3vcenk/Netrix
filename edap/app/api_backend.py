@@ -468,12 +468,21 @@ def sendNotification(token, title, content, data=None):
 	if not verifyRequest(token):
 		raise Exception("Bad token")
 	log.info("Sending notification to %s", token)
-	firebaseToken = getData(token)["firebase_device_token"]
+	firebase_token = getData(token)["firebase_device_token"]
+
+	out_json = {
+		"to": firebase_token,
+		"notification": {
+			"title": title,
+			"body": content
+		}
+	}
 
 	try:
-		_fbPushService.notify_single_device(registration_id=firebaseToken, message_title=title, message_body=content, data_message=data)
-	except Exception as e:
-		log.error('Unknown error (Firebase Cloud Messaging) => %s', str(e))
+		a = requests.post('https://fcm.googleapis.com/fcm/send', json=out_json, headers={"Authorization":"key=%s" % config["FIREBASE_TOKEN"]})
+		a.raise_for_status()
+	except requests.exceptions.HTTPError as e:
+		log.error('Non-200 code (Firebase Cloud Messaging) => %s', str(e))
 		raise e
 
 def _sync(token):
@@ -502,16 +511,9 @@ def _getVar(varname, _bool=False, default=None):
 	except KeyError:
 		return default
 
-def _initGoogleToken(fpath):
-	if not _fileExists(fpath):
-		print("ERROR => File %s given to initGoogleToken() does not exist!" % fpath)
-		_exit(1)
-	environ["GOOGLE_APPLICATION_CREDENTIALS"] = fpath
-
 def _readConfig():
 	global _fbPushService
 	DATA_FOLDER = _getVar("DATA_FOLDER", default="/data")
-	GOOGLE_TOKEN_FILE = _getVar("GOOGLE_TOKEN_FILE", default="google_creds.json")
 
 	VAULT_SERVER = _getVar("VAULT_SERVER")
 	VAULT_TOKEN_READ = _getVar("VAULT_TOKEN_READ")
@@ -541,13 +543,9 @@ def _readConfig():
 
 	if USE_FIREBASE:
 		FIREBASE_TOKEN = _getVar("FIREBASE_TOKEN")
-		_initGoogleToken(_joinPath(DATA_FOLDER, GOOGLE_TOKEN_FILE))
 		if not FIREBASE_TOKEN:
 			print("[configuration] Firebase has been disabled, no token specified")
 			USE_FIREBASE = False
-		else:
-			print("[configuration] Initializing Firebase Cloud Messaging...")
-			_fbPushService = FCMNotification(api_key=FIREBASE_TOKEN)
 	return {
 		"DATA_FOLDER": DATA_FOLDER,
 		"GOOGLE_TOKEN_FILE": GOOGLE_TOKEN_FILE,

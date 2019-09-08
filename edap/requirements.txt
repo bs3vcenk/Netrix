@@ -3,6 +3,5 @@ BeautifulSoup4
 flask
 flask-cors
 redis
-pyfcm
 lxml
 hiredis
