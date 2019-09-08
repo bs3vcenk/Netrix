@@ -1,20 +1,18 @@
 import logging, redis, edap, requests
 from hashlib import md5 as _MD5HASH
 from hashlib import sha256 as _SHA256HASH
-from json import loads as _jsonLoad
-from json import dumps as _jsonConvert
+from json import loads as _json_load
+from json import dumps as _json_convert
 from copy import deepcopy
 from random import randint
-from random import choice as _randomChoice
-from sys import exit as _sysExit
-from math import floor as _mFloor
-from math import log as _mLog
-from math import pow as _mPow
+from random import choice as _random_choice
+from sys import exit as _sys_exit
+from math import floor as _math_floor
+from math import log as _math_log
+from math import pow as _math_pow
 from os import environ
-from os.path import exists as _fileExists
-from os.path import join as _joinPath
-from os.path import getsize as _getFileSize
-from pyfcm import FCMNotification
+from os.path import join as _join_path
+from os.path import getsize as _get_file_size
 from threading import Thread
 from time import sleep
 from time import time as _time
@@ -22,7 +20,6 @@ from time import clock as _clock
 from string import ascii_letters
 
 log = logging.getLogger(__name__)
-_fbPushService = None
 _redis = None
 
 _threads = {}
@@ -69,7 +66,7 @@ def rm_credentials(token):
 
 def _exit(exitCode):
 	print("!!! Exiting with code %i\n    Check the log file for more information if possible." % exitCode)
-	_sysExit(exitCode)
+	_sys_exit(exitCode)
 
 def localize(token, notif_type):
 	"""
@@ -106,19 +103,19 @@ def localize(token, notif_type):
 			"class": "New class"
 		}
 	}
-	lang = getData(token)['lang']
+	lang = get_data(token)['lang']
 	return locs[lang][notif_type]
 
 def random_string(length: int) -> str:
-	return ''.join(_randomChoice(ascii_letters) for m in range(length))
+	return ''.join(_random_choice(ascii_letters) for m in range(length))
 
-def generateTestUser() -> (str, str, str):
+def generate_test_user() -> (str, str, str):
 	"""
 		Generate a user for testing purposes.
 	"""
 	user = random_string(6)
 	pasw = random_string(10)
-	token = hashString(user + ":" + pasw)
+	token = hash_string(user + ":" + pasw)
 	data = {
 		'ignore_updating': True,
 		'data': {
@@ -201,15 +198,15 @@ def generateTestUser() -> (str, str, str):
 		},
 		'messages': []
 	}
-	saveData(token, data)
+	save_data(token, data)
 	set_credentials(token, user, pasw)
 	return user, pasw, token
 
-def getSetting(token, action):
+def get_setting(token, action):
 	"""
 		Get action data/value for token.
 	"""
-	o = getData(token)
+	o = get_data(token)
 	if 'settings' not in o:
 		o['settings'] = {'notif':{'disable': False, 'ignore':[]}}
 	if action == 'notif.disable':
@@ -220,11 +217,11 @@ def getSetting(token, action):
 		return o['settings']['notif']
 	raise NonExistentSetting
 
-def processSetting(token, action, val):
+def process_setting(token, action, val):
 	"""
 		Do an action, with val as the data/arguments on a profile.
 	"""
-	o = getData(token)
+	o = get_data(token)
 	if 'settings' not in o:
 		o['settings'] = {'notif':{'disable': False, 'ignore':[]}}
 	if action == 'notif.disable':
@@ -239,14 +236,14 @@ def processSetting(token, action, val):
 			raise NonExistentSetting
 	else:
 		raise NonExistentSetting
-	saveData(token, o)
+	save_data(token, o)
 
-def purgeToken(token):
+def purge_token(token):
 	"""
 		Remove a token from the DB and terminate its sync thread.
 	"""
 	log.info("LOGOUT => %s", token)
-	_stopSync(token)
+	_stop_sync(token)
 	_redis.delete('token:' + token)
 	rm_credentials(token)
 
@@ -260,14 +257,14 @@ def _formatAndSendNotification(token, notifData):
 	noteNotif = []
 	absenceNotif = ""
 	toSendQueue = []
-	exceptions = getData(token)['settings']['notif']['ignore']
+	exceptions = get_data(token)['settings']['notif']['ignore']
 	for x in notifData:
 		if x['type'] == 'test' and 'test' not in exceptions:
 			testNotif.append("%s: %s" % (x['data']['subject'], x['data']['test']))
 		elif x['type'] == 'grade' and 'grade' not in exceptions:
-			gradeNotif.append("%s: %s (%s)" % (_getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['grade'], x['data']['note']))
+			gradeNotif.append("%s: %s (%s)" % (_subj_id_to_name(token, x['classId'], x['subjectId']), x['data']['grade'], x['data']['note']))
 		elif x['type'] == 'note' and 'note' not in exceptions:
-			noteNotif.append("%s: %s" % (_getNameForSubjId(token, x['classId'], x['subjectId']), x['data']['note']))
+			noteNotif.append("%s: %s" % (_subj_id_to_name(token, x['classId'], x['subjectId']), x['data']['note']))
 		elif x['type'] == 'absence' and 'absence' not in exceptions:
 			absenceNotif = "ABS"
 	if gradeNotif:
@@ -293,15 +290,15 @@ def _formatAndSendNotification(token, notifData):
 	for i in toSendQueue:
 		sendNotification(token, i['head'], i['content'])
 
-def _getNameForSubjId(token, class_id, subject_id):
+def _subj_id_to_name(token, class_id, subject_id):
 	"""
 		Get the name belonging to a subject ID.
 	"""
-	if not verifyRequest(token, class_id, subject_id):
+	if not verify_request(token, class_id, subject_id):
 		raise Exception('Bad auth data')
-	return getData(token)['data']['classes'][class_id]['subjects'][subject_id]['subject']
+	return get_data(token)['data']['classes'][class_id]['subjects'][subject_id]['subject']
 
-def _stopSync(token):
+def _stop_sync(token):
 	"""
 		Stop background sync thread for a given token, e.g. if
 		terminated.
@@ -309,20 +306,13 @@ def _stopSync(token):
 	if "sync:" + token in _threads:
 		_threads["sync:" + token]["run"] = False
 
-def getSyncThreads():
+def get_sync_threads():
 	"""
 		Get a list of sync threads.
 	"""
 	return [i.replace("sync:", "") for i in _threads]
 
-def isThreadAlive(token):
-	"""
-		Return the isAlive() of the sync thread belonging to a
-		given token.
-	"""
-	return _threads["sync:" + token]["obj"].isAlive()
-
-def startSync(token):
+def start_sync(token):
 	"""
 		Start a sync thread for a given token.
 	"""
@@ -332,25 +322,25 @@ def startSync(token):
 		to.start()
 		_threads["sync:" + token] = {"obj":to, "run":True}
 
-def restoreSyncs():
+def restore_syncs():
 	"""
 		Restore all sync threads (on startup).
 	"""
-	for token in getTokens():
-		if not 'ignore_updating' in getData(token):
-			startSync(token)
+	for token in get_tokens():
+		if not 'ignore_updating' in get_data(token):
+			start_sync(token)
 
-def syncDev(data2, token):
+def sync_dev(data2, token):
 	"""
 		DEV: Simulate sync with two objects.
 	"""
 	log.debug("Simulating sync")
-	o = getData(token)
-	diff = _profileDifference(o["data"], data2)
+	o = get_data(token)
+	diff = _profile_difference(o["data"], data2)
 	if diff:
 		log.debug("Difference detected")
 		o["new"] = diff
-		saveData(token, o)
+		save_data(token, o)
 		_formatAndSendNotification(token, diff)
 
 def sync(token):
@@ -358,11 +348,11 @@ def sync(token):
 		Pull remote data, compare with current and replace if needed.
 	"""
 	log.debug("Syncing %s", token)
-	fData = getData(token)
+	fData = get_data(token)
 	data = fData["data"] # Old data
 	credentials = get_credentials(token)
-	nData = populateData(edap.edap(credentials["username"], credentials["password"])) # New data
-	diff = _profileDifference(data, nData)
+	nData = populate_data(edap.edap(credentials["username"], credentials["password"])) # New data
+	diff = _profile_difference(data, nData)
 	if diff:
 		# Overwrite everything if new class
 		if diff[0]['type'] == 'class':
@@ -370,11 +360,11 @@ def sync(token):
 		else:
 			fData["data"][0] = nData[0]
 		fData["new"] = diff
-		saveData(token, fData)
+		save_data(token, fData)
 		if not fData["settings"]["notif"]["disable"]:
 			_formatAndSendNotification(token, diff)
 
-def _profileDifference(dObj1, dObj2):
+def _profile_difference(dObj1, dObj2):
 	"""
 		Return the difference between two student data dicts.
 	"""
@@ -442,33 +432,26 @@ def _profileDifference(dObj1, dObj2):
 	log.debug("==> TIMER => {0:.0f}ms".format(request_time))
 	return _finalReturn
 
-def saveData(token, dataObj):
+def save_data(token, dataObj):
 	"""
 		Save data for a token.
 	"""
-	_redis.set('token:' + token, _jsonConvert(dataObj))
+	_redis.set('token:' + token, _json_convert(dataObj))
 
-def getDBSize():
+def get_db_size():
 	"""
 		Get the size of Redis' appendonly.aof database in bytes.
 	"""
-	return _getFileSize(_joinPath(config["DATA_FOLDER"], "appendonly.aof"))
-
-def timeGenerated(startTime):
-	"""
-		Return a templated "Page generated in <time>" footer for dynamic
-		/dev/ pages.
-	"""
-	return "<small>Page generated in %0.3f ms</small>" % ((_clock() - startTime)*1000.0)
+	return _get_file_size(_join_path(config["DATA_FOLDER"], "appendonly.aof"))
 
 def sendNotification(token, title, content, data=None):
 	"""
 		Send a notification to a user's device through Firebase.
 	"""
-	if not verifyRequest(token):
+	if not verify_request(token):
 		raise Exception("Bad token")
 	log.info("Sending notification to %s", token)
-	firebase_token = getData(token)["firebase_device_token"]
+	firebase_token = get_data(token)["firebase_device_token"]
 
 	out_json = {
 		"to": firebase_token,
@@ -498,7 +481,7 @@ def _sync(token):
 			break
 		sync(token)
 
-def _getVar(varname, _bool=False, default=None):
+def _get_var(varname, _bool=False, default=None):
 	"""
 		Get environment variable and return it if it exists. If _bool is True,
 		return it as a boolean value. If default is set, return its value if
@@ -511,13 +494,13 @@ def _getVar(varname, _bool=False, default=None):
 	except KeyError:
 		return default
 
-def _readConfig():
-	DATA_FOLDER = _getVar("DATA_FOLDER", default="/data")
+def _read_config():
+	DATA_FOLDER = _get_var("DATA_FOLDER", default="/data")
 	print("[configuration] Storing data in: %s" % DATA_FOLDER)
 
-	VAULT_SERVER = _getVar("VAULT_SERVER")
-	VAULT_TOKEN_READ = _getVar("VAULT_TOKEN_READ")
-	VAULT_TOKEN_WRITE = _getVar("VAULT_TOKEN_WRITE")
+	VAULT_SERVER = _get_var("VAULT_SERVER")
+	VAULT_TOKEN_READ = _get_var("VAULT_TOKEN_READ")
+	VAULT_TOKEN_WRITE = _get_var("VAULT_TOKEN_WRITE")
 
 	if not VAULT_TOKEN_READ or not VAULT_TOKEN_WRITE:
 		print("[configuration] No Hashicorp Vault tokens supplied!")
@@ -528,9 +511,9 @@ def _readConfig():
 
 	print("[configuration] Hashicorp Vault server at: %s" % VAULT_SERVER)
 
-	ALLOW_DEV_ACCESS = _getVar("DEV_ACCESS", _bool=True)
-	USE_CLOUDFLARE = _getVar("CLOUDFLARE", _bool=True)
-	USE_FIREBASE = _getVar("FIREBASE", _bool=True)
+	ALLOW_DEV_ACCESS = _get_var("DEV_ACCESS", _bool=True)
+	USE_CLOUDFLARE = _get_var("CLOUDFLARE", _bool=True)
+	USE_FIREBASE = _get_var("FIREBASE", _bool=True)
 	print("[configuration] Developer access enabled: %s" % ALLOW_DEV_ACCESS)
 	print("[configuration] Using Cloudflare: %s" % USE_CLOUDFLARE)
 	print("[configuration] Using Firebase: %s" % USE_FIREBASE)
@@ -539,14 +522,14 @@ def _readConfig():
 	FIREBASE_TOKEN = None
 
 	if ALLOW_DEV_ACCESS:
-		privUsername = _getVar("DEV_USER")
-		privPassword = _getVar("DEV_PASW")
+		privUsername = _get_var("DEV_USER")
+		privPassword = _get_var("DEV_PASW")
 		if not privUsername or not privPassword:
 			print("[configuration] Dev access has been disabled, either no user or pass specified")
 			ALLOW_DEV_ACCESS = False
 
 	if USE_FIREBASE:
-		FIREBASE_TOKEN = _getVar("FIREBASE_TOKEN")
+		FIREBASE_TOKEN = _get_var("FIREBASE_TOKEN")
 		if not FIREBASE_TOKEN:
 			print("[configuration] Firebase has been disabled, no token specified")
 			USE_FIREBASE = False
@@ -563,11 +546,11 @@ def _readConfig():
 		"VAULT_TOKEN_WRITE": VAULT_TOKEN_WRITE
 	}
 
-def readLog():
-	with open(_joinPath(config["DATA_FOLDER"], "edap_api.log")) as f:
+def read_log():
+	with open(_join_path(config["DATA_FOLDER"], "edap_api.log")) as f:
 		return f.read()
 
-def makeHTML(title="eDAP dev", content=None, bare=False):
+def make_html(title="eDAP dev", content=None, bare=False):
 	"""
 		HTML creator template for the /dev/ dashboard. Allows specifying the title,
 		content, and if the page needs to have no header (e.g. the /dev/log page).
@@ -578,19 +561,19 @@ def makeHTML(title="eDAP dev", content=None, bare=False):
 		return '<!DOCTYPE html><html><head><title>%s</title></head><body>%s</body></html>' % (title, content)
 
 # https://stackoverflow.com/a/14822210
-def convertSize(size_bytes):
+def convert_size(size_bytes):
 	"""
 		Convert bytes to a human-readable format.
 	"""
 	if size_bytes == 0:
 		return "0B"
 	size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-	i = int(_mFloor(_mLog(size_bytes, 1024)))
-	p = _mPow(1024, i)
+	i = int(_math_floor(_math_log(size_bytes, 1024)))
+	p = _math_pow(1024, i)
 	s = round(size_bytes / p, 2)
 	return "%s %s" % (s, size_name[i])
 
-def _initDB(host="localhost", port=6379, db=0):
+def _init_db(host="localhost", port=6379, db=0):
 	"""
 		Initialize the Redis DB.
 	"""
@@ -606,44 +589,44 @@ def _initDB(host="localhost", port=6379, db=0):
 		log.critical("Database connection failed!")
 		_exit(1)
 
-def getData(token):
+def get_data(token):
 	"""
 		Retreive JSON from Redis by token, format it from bytes to string,
 		and return it as a dict.
 	"""
-	return _jsonLoad(_redis.get("token:" + token).decode("utf-8"))
+	return _json_load(_redis.get("token:" + token).decode("utf-8"))
 
-def getTokens():
+def get_tokens():
 	"""
 		Return a list of all tokens in the DB.
 	"""
 	return [i.decode('utf-8').replace("token:", "") for i in _redis.keys('token:*')]
 
-def _userInDatabase(token):
+def _user_in_database(token):
 	"""
 		Check if a given token exists in the DB.
 	"""
 	return "token:" + token in [i.decode('utf-8') for i in _redis.keys('token:*')]
 
-def _classIDExists(token, cid):
+def _class_id_exists(token, cid):
 	"""
 		Check if a given class ID exists in the DB. Assumes that userInDatabase()
 		was already called and returned True.
 	"""
-	return cid <= len(getData(token)['data']['classes'])
+	return cid <= len(get_data(token)['data']['classes'])
 
-def _subjectIDExists(token, cid, sid):
+def _subject_id_exists(token, cid, sid):
 	"""
 		Check if a given subject ID exists in the DB. Assumes that userInDatabase()
 		and classIDExists() were both already called and returned True.
 	"""
-	return sid in range(len(getData(token)['data']['classes'][cid]['subjects']))
+	return sid in range(len(get_data(token)['data']['classes'][cid]['subjects']))
 
 def fetch_new_class(token, class_id):
 	"""
 		Fetch a new class
 	"""
-	full_data = getData(token)
+	full_data = get_data(token)
 	# If not already pulled
 	if not 'full' in full_data['data']['classes'][class_id]:
 		credentials = get_credentials(token)
@@ -656,9 +639,9 @@ def fetch_new_class(token, class_id):
 			class_id,
 			full_data['data']['classes'][class_id]
 		)
-		saveData(token, full_data)
+		save_data(token, full_data)
 
-def populateData(obj):
+def populate_data(obj):
 	"""
 		Fill in the 'data' part of the user dict. This will contain subjects, grades, etc.
 
@@ -764,67 +747,67 @@ def get_class_profile(obj, class_id, class_obj):
 	class_obj['full'] = True
 	return class_obj
 
-def verifyDevRequest(token):
+def verify_dev_request(token):
 	"""
 		Verify if a given dev API token is valid.
 	"""
 	return "dev-token:" + token in [i.decode('utf-8') for i in _redis.keys('dev-token:*')]
 
-def addDevToken():
+def add_dev_token():
 	"""
 		Authorizes a dev API token.
 	"""
-	token = hashPassword(random_string(28))
+	token = hash_password(random_string(28))
 	_redis.set('dev-token:' + token, 'ALLOWED')
 	return token
 
-def verifyRequest(token, class_id=None, subject_id=None):
+def verify_request(token, class_id=None, subject_id=None):
 	"""
 		Verify if a given token, class_id, and/or subject_id exist in the DB.
 	"""
-	if not _userInDatabase(token):
+	if not _user_in_database(token):
 		log.warning("Token %s not in DB", token)
 		return False
 	if class_id:
-		if not _classIDExists(token, class_id):
+		if not _class_id_exists(token, class_id):
 			log.warning("Class ID %s does not exist for token %s", class_id, token)
 			return False
 	if subject_id:
-		if not _subjectIDExists(token, class_id, subject_id):
+		if not _subject_id_exists(token, class_id, subject_id):
 			log.warning("Subject ID %s does not exist for class ID %s for token %s", subject_id, class_id, token)
 			return False
 	return True
 
-def hashString(inp):
+def hash_string(inp):
 	"""
 		Return the MD5 hash of a string. Used for tokens.
 	"""
 	return _MD5HASH(inp.encode()).hexdigest()
 
-def hashPassword(inp):
+def hash_password(inp):
 	"""
 		Return the SHA256 hash of a string. Used for the /dev/ password.
 	"""
 	return _SHA256HASH(inp.encode()).hexdigest()
 
-def getCounter(counter_id):
+def get_counter(counter_id):
 	val = _redis.get("counter:"+counter_id)
 	if val is None:
 		_redis.set("counter:"+counter_id, 0)
 		return 0
 	return int(val)
 
-def _setCounter(counter_id, value):
+def _set_counter(counter_id, value):
 	_redis.set("counter:"+counter_id, value)
 
-def updateCounter(counter_id):
-	val = getCounter(counter_id)
-	_setCounter(counter_id, val+1)
+def update_counter(counter_id):
+	val = get_counter(counter_id)
+	_set_counter(counter_id, val+1)
 
-config = _readConfig()
+config = _read_config()
 logging.basicConfig(
-	filename=_joinPath(config["DATA_FOLDER"], "edap_api.log"),
+	filename=_join_path(config["DATA_FOLDER"], "edap_api.log"),
 	level=logging.INFO,
 	format="%(asctime)s || %(funcName)-16s || %(levelname)-8s || %(message)s"
 )
-_redis = _initDB()
+_redis = _init_db()

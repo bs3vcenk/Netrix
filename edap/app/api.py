@@ -13,13 +13,13 @@ log.info("eDAP-API v%s starting up...", API_VERSION)
 app = Flask("EDAP-API")
 CORS(app)
 
-restoreSyncs()
+restore_syncs()
 
 def check_auth(username, password):
 	"""
 		Check if the specified username and password hash match the set ones.
 	"""
-	return username == config["privUsername"] and hashPassword(password) == config["privPassword"]
+	return username == config["privUsername"] and hash_password(password) == config["privPassword"]
 
 def authenticate():
 	"""
@@ -73,7 +73,7 @@ def dev_area(f):
 			if "X-API-Token" not in request.headers:
 				log.warning("FAIL => %s (%s) => No API token supplied", ip, country)
 				abort(403)
-			elif not verifyDevRequest(request.headers["X-API-Token"]):
+			elif not verify_dev_request(request.headers["X-API-Token"]):
 				log.warning("FAIL => %s (%s) => Bad API token %s", ip, country, request.headers["X-API-Token"])
 				abort(403)
 		else:
@@ -148,7 +148,7 @@ def dev_db_info():
 	"""
 		DEV: Database info page, currently only showing the size of the DB.
 	"""
-	return make_response(jsonify({'size':convertSize(getDBSize())}))
+	return make_response(jsonify({'size':convert_size(get_db_size())}))
 
 @app.route('/dev/log', methods=["GET"])
 @dev_area
@@ -156,7 +156,7 @@ def dev_log():
 	"""
 		DEV: Simple page to print the log file.
 	"""
-	return make_response(jsonify({'log':readLog()}), 200)
+	return make_response(jsonify({'log':read_log()}), 200)
 
 @app.route('/dev/users', methods=["GET"])
 @dev_area
@@ -165,7 +165,7 @@ def dev_users():
 		DEV: Get usernames and tokens.
 	"""
 	tklist = []
-	for token in getTokens():
+	for token in get_tokens():
 		tklist.append({'token': token, 'name': ''})
 	return make_response(jsonify({'users':tklist}), 200)
 
@@ -177,7 +177,7 @@ def dev_token_mgmt(token):
 		the token.
 	"""
 	if request.method == "GET":
-		data = getData(token)
+		data = get_data(token)
 		return {
 			'username': data["user"],
 			'device': {
@@ -192,7 +192,7 @@ def dev_token_mgmt(token):
 			}
 		}
 	elif request.method == "DELETE":
-		purgeToken(token)
+		purge_token(token)
 		return {'status':'success'}
 
 @app.route('/dev/stats', methods=["GET"])
@@ -204,12 +204,12 @@ def dev_stats():
 	"""
 	return make_response(jsonify({
 		'success': {
-			'slow_logins': getCounter("logins:success:slow"),
-			'fast_logins': getCounter("logins:success:fast")
+			'slow_logins': get_counter("logins:success:slow"),
+			'fast_logins': get_counter("logins:success:fast")
 		},
 		'fails': {
-			'wrong_pw': getCounter("logins:fail:credentials"),
-			'exceptions': getCounter("logins:fail:generic")
+			'wrong_pw': get_counter("logins:fail:credentials"),
+			'exceptions': get_counter("logins:fail:generic")
 		}
 	}), 200)
 
@@ -219,7 +219,7 @@ def dev_make_token():
 	"""
 		DEV: Create a dev API token.
 	"""
-	return makeHTML(title="eDAP dev API token generator", content="<p>Your token is: <code>%s<code></p>" % addDevToken())
+	return make_html(title="eDAP dev API token generator", content="<p>Your token is: <code>%s<code></p>" % add_dev_token())
 
 @app.route('/dev/threads', methods=["GET"])
 @dev_area
@@ -227,7 +227,7 @@ def dev_thread_list():
 	"""
 		DEV: List running background threads.
 	"""
-	return make_response(jsonify({'threads': getSyncThreads()}), 200)
+	return make_response(jsonify({'threads': get_sync_threads()}), 200)
 
 @app.route('/dev/info/testuser', methods=["GET"])
 @dev_pw_area
@@ -235,11 +235,11 @@ def devAddTestUser():
 	"""
 		DEV: Add a test user
 	"""
-	testUser, testPasw, testToken = generateTestUser()
+	testUser, testPasw, testToken = generate_test_user()
 	html = "<p>Username: <code>%s</code></p>" % testUser
 	html += "<p>Password: <code>%s</code></p>" % testPasw
 	html += "<p>Token: <code>%s</code></p>" % testToken
-	return makeHTML(title="Test user creation", content=html)
+	return make_html(title="Test user creation", content=html)
 
 @app.route('/dev/recreate', methods=["GET"])
 @dev_area
@@ -247,16 +247,16 @@ def dev_reload_info():
 	"""
 		DEV: Re-fetches the 'data' key for all tokens in the database.
 	"""
-	tokens = getTokens()
+	tokens = get_tokens()
 	failed = []
 	log.info("DEV OPERATION => RECREATING DATA OBJECTS FOR %i TOKENS", len(tokens))
 	for token in tokens:
 		try:
-			o = getData(token)
+			o = get_data(token)
 			userObj = edap.edap(o['user'], o['pasw'])
-			o['data'] = populateData(userObj)
+			o['data'] = populate_data(userObj)
 			o['generated_with'] = API_VERSION
-			saveData(token, o)
+			save_data(token, o)
 		except Exception as e:
 			failed.append({'token':token, 'reason':str(e)})
 			log.error('DEV OPERATION => Update FAILED for token %s, reason %s', token, e)
@@ -272,11 +272,11 @@ def dev_test_diff(token):
 	elif not "grade" in request.json["gradeData"] or not "note" in request.json["gradeData"]:
 		log.error("Bad grade spec in JSON")
 		abort(400)
-	elif not verifyRequest(token):
+	elif not verify_request(token):
 		abort(401)
-	o = getData(token)["data"]
+	o = get_data(token)["data"]
 	o['classes'][0]['subjects'][request.json["subjId"]]['grades'].append(request.json["gradeData"])
-	syncDev(o, token)
+	sync_dev(o, token)
 	return make_response(jsonify({'status':'ok'}), 200)
 
 @app.route('/api/login', methods=["POST"])
@@ -296,43 +296,43 @@ def login():
 	"""
 	if not request.json or not 'username' in request.json or not 'password' in request.json:
 		log.error("Bad JSON")
-		updateCounter("logins:fail:generic")
+		update_counter("logins:fail:generic")
 		abort(400)
 	elif (request.json["username"] is None or
 	      request.json["password"] is None or
 	      len(request.json["username"]) < 4 or
 	      len(request.json["password"]) < 4):
 		log.error("Bad auth data")
-		updateCounter("logins:fail:generic")
+		update_counter("logins:fail:generic")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	dev_ip = request.remote_addr
 	username = request.json["username"].strip()
 	password = request.json["password"]
 	if "@skole.hr" in username:
 		username = username.replace("@skole.hr", "")
-	token = hashString(username + ":" + password)
-	if verifyRequest(token):
+	token = hash_string(username + ":" + password)
+	if verify_request(token):
 		log.info("FAST => %s", username)
-		updateCounter("logins:success:fast")
+		update_counter("logins:success:fast")
 		return make_response(jsonify({'token':token}), 200)
 	log.info("SLOW => %s", username)
 	try:
 		obj = edap.edap(username, password)
 	except edap.WrongCredentials:
 		log.error("SLOW => WRONG CREDS => %s", username)
-		updateCounter("logins:fail:credentials")
+		update_counter("logins:fail:credentials")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	except edap.FatalLogExit as e:
 		log.error("SLOW => eDAP FAIL => %s => %s", username, e)
-		updateCounter("logins:fail:generic")
+		update_counter("logins:fail:generic")
 		abort(500)
 	except edap.ServerInMaintenance as e:
 		log.error("SLOW => MAINTENANCE => %s", username)
-		updateCounter("logins:fail:generic")
+		update_counter("logins:fail:generic")
 		return make_response(jsonify({'error':'E_UPSTREAM_MAINTENANCE'}), 500)
 	log.info("SLOW => SUCCESS => %s (%s)", username, token)
 	dataObj = {
-		'data': populateData(obj),
+		'data': populate_data(obj),
 		'last_ip': dev_ip,
 		'device': {
 			'platform': None,
@@ -353,10 +353,10 @@ def login():
 	set_credentials(token, username, password)
 	if config["USE_CLOUDFLARE"]:
 		dataObj["cloudflare"] = {"last_ip": None, "country": None}
-	saveData(token, dataObj)
+	save_data(token, dataObj)
 	log.debug("SLOW => Starting sync for %s", username)
-	startSync(token)
-	updateCounter("logins:success:slow")
+	start_sync(token)
+	update_counter("logins:success:slow")
 	return make_response(jsonify({'token':token}), 200)
 
 @app.route('/api/user/<string:token>/info', methods=["GET"])
@@ -364,7 +364,7 @@ def get_user_info_old(token):
 	"""
 		Get the user's personal information.
 	"""
-	if not verifyRequest(token):
+	if not verify_request(token):
 		abort(401)
 	log.warning('DEPRECATED METHOD')
 	log.info(token)
@@ -372,19 +372,19 @@ def get_user_info_old(token):
 
 @app.route('/api/user/<string:token>/firebase', methods=["POST"])
 def set_firebase_token(token):
-	if not verifyRequest(token):
+	if not verify_request(token):
 		abort(401)
 	if not request.json or not "deviceToken" in request.json:
 		abort(400)
 	log.info("FIREBASE => %s", token)
-	user_data = getData(token)
+	user_data = get_data(token)
 	user_data['firebase_device_token'] = request.json['deviceToken']
-	saveData(token, user_data)
+	save_data(token, user_data)
 	return make_response(jsonify({'status':'ok'}), 200)
 
 @app.route('/api/user/<string:token>/fetchclass', methods=["POST"])
 def fill_class(token):
-	if not verifyRequest(token):
+	if not verify_request(token):
 		abort(401)
 	if not request.json or not "class_id" in request.json:
 		abort(400)
@@ -397,21 +397,21 @@ def setting(token, action):
 	"""
 		Set a user's setting.
 	"""
-	if not verifyRequest(token):
+	if not verify_request(token):
 		abort(401)
 	if request.method == "POST":
 		if not request.json or not "parameter" in request.json:
 			abort(400)
 		log.info("SET => %s => %s => %s", token, action, request.json["parameter"])
 		try:
-			processSetting(token, action, request.json["parameter"])
+			process_setting(token, action, request.json["parameter"])
 		except NonExistentSetting:
 			return make_response(jsonify({'error':'E_SETTING_NONEXISTENT'}), 400)
 		return make_response(jsonify({'status':'ok'}), 200)
 	elif request.method == "GET":
 		log.info("GET => %s => %s", token, action)
 		try:
-			val = getSetting(token, action)
+			val = get_setting(token, action)
 		except NonExistentSetting:
 			return make_response(jsonify({'error':'E_SETTING_NONEXISTENT'}), 400)
 		return make_response(jsonify({'value':val}), 200)
@@ -422,15 +422,15 @@ def generate_message(token):
 		Fetch a message for a user, if available. If not, generate
 		a message if needed (e.g. country != HR, device, etc.).
 	"""
-	if not verifyRequest(token):
+	if not verify_request(token):
 		abort(401)
 	log.info(token)
 	rsp = {'messages':[]}
-	o = getData(token)
+	o = get_data(token)
 	# TEMP CODE
-	if not 'messages' in o.keys():
+	if not 'messages' in o:
 		o['messages'] = []
-	if len(o['messages']) > 0:
+	if o['messages']:
 		rsp['messages'].append(o['messages'])
 	return rsp
 
@@ -439,13 +439,13 @@ def get_new(token):
 	"""
 		Get the user's new grades/tests.
 	"""
-	if not verifyRequest(token):
+	if not verify_request(token):
 		abort(401)
 	log.info(token)
-	o = getData(token)
+	o = get_data(token)
 	new = o['new']
 	o['new'] = []
-	saveData(token, o)
+	save_data(token, o)
 	return make_response(jsonify({'new':new}), 200)
 
 @app.route('/api/user/<string:token>/logout', methods=["GET"])
@@ -453,9 +453,9 @@ def logout(token):
 	"""
 		Log the user out.
 	"""
-	if not verifyRequest(token):
+	if not verify_request(token):
 		abort(401)
-	purgeToken(token)
+	purge_token(token)
 	return make_response(jsonify({"status":"ok"}), 200)
 
 @app.route('/api/user/<string:token>/classes', methods=["GET"])
@@ -464,10 +464,10 @@ def get_classes(token):
 		Get the user's classes. Currently unused by the frontend, as
 		we currently fetch data for the newest/most recent class only.
 	"""
-	if not verifyRequest(token):
+	if not verify_request(token):
 		abort(401)
 	log.info(token)
-	o = getData(token)['data']
+	o = get_data(token)['data']
 	for i in o['classes']:
 		try:
 			del i['subjects']
@@ -483,30 +483,30 @@ def get_user_info(token, class_id):
 	"""
 		Get the user's personal information.
 	"""
-	if not verifyRequest(token, class_id):
+	if not verify_request(token, class_id):
 		abort(401)
 	log.info(token)
-	return make_response(jsonify(getData(token)['data']['classes'][class_id]['info']), 200)
+	return make_response(jsonify(get_data(token)['data']['classes'][class_id]['info']), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/absences', methods=["GET"])
 def get_absences(token, class_id):
 	"""
 		Get the user's absences.
 	"""
-	if not verifyRequest(token, class_id):
+	if not verify_request(token, class_id):
 		abort(401)
 	log.info("%s => Class %s", token, class_id)
-	return make_response(jsonify(getData(token)['data']['classes'][class_id]['absences']), 200)
+	return make_response(jsonify(get_data(token)['data']['classes'][class_id]['absences']), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects', methods=["GET"])
 def get_subjects(token, class_id):
 	"""
 		Get the subjects for a given class ID.
 	"""
-	if not verifyRequest(token, class_id):
+	if not verify_request(token, class_id):
 		abort(401)
 	log.info("%s => Class %s", token, class_id)
-	o = getData(token)['data']['classes'][class_id]
+	o = get_data(token)['data']['classes'][class_id]
 	return make_response(jsonify({'subjects': o['subjects'], 'class_avg':o['complete_avg']}), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/tests', methods=["GET"])
@@ -514,10 +514,10 @@ def get_tests(token, class_id):
 	"""
 		Get the tests for a given class ID.
 	"""
-	if not verifyRequest(token, class_id):
+	if not verify_request(token, class_id):
 		abort(401)
 	log.info("%s => Class %s", token, class_id)
-	o = getData(token)['data']['classes'][class_id]['tests']
+	o = get_data(token)['data']['classes'][class_id]['tests']
 	return make_response(jsonify({'tests': o}), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>', methods=["GET"])
@@ -525,10 +525,10 @@ def get_subject(token, class_id, subject_id):
 	"""
 		Get subject info for a given subject ID.
 	"""
-	if not verifyRequest(token, class_id, subject_id):
+	if not verify_request(token, class_id, subject_id):
 		abort(401)
 	log.info("%s => Class %s => Subject %s", token, class_id, subject_id)
-	o = getData(token)['data']['classes'][class_id]['subjects'][subject_id]
+	o = get_data(token)['data']['classes'][class_id]['subjects'][subject_id]
 	return make_response(jsonify(o), 200)
 
 @app.route('/api/stats', methods=["POST"])
@@ -543,7 +543,7 @@ def log_stats():
 		log.warning("Invalid JSON from %s", request.remote_addr)
 		abort(400)
 	token = request.json["token"]
-	if not verifyRequest(token):
+	if not verify_request(token):
 		abort(401)
 	log.info(
 		"STATS => %s => %s, %s, %s",
@@ -552,7 +552,7 @@ def log_stats():
 		request.json["device"],
 		request.json["language"]
 	)
-	dataObj = getData(token)
+	dataObj = get_data(token)
 	dataObj['last_ip'] = request.remote_addr
 	dataObj['device']['platform'] = request.json["platform"]
 	dataObj['device']['model'] = request.json["device"]
@@ -560,7 +560,7 @@ def log_stats():
 	if config["USE_CLOUDFLARE"]:
 		dataObj['cloudflare']['country'] = request.headers["CF-IPCountry"]
 		dataObj['cloudflare']['last_ip'] = request.headers["CF-Connecting-IP"]
-	saveData(token, dataObj)
+	save_data(token, dataObj)
 	return make_response(jsonify({"result":"ok"}), 200)
 
 if __name__ == '__main__':
