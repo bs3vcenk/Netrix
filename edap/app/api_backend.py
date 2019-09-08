@@ -512,8 +512,8 @@ def _getVar(varname, _bool=False, default=None):
 		return default
 
 def _readConfig():
-	global _fbPushService
 	DATA_FOLDER = _getVar("DATA_FOLDER", default="/data")
+	print("[configuration] Storing data in: %s" % DATA_FOLDER)
 
 	VAULT_SERVER = _getVar("VAULT_SERVER")
 	VAULT_TOKEN_READ = _getVar("VAULT_TOKEN_READ")
@@ -526,9 +526,14 @@ def _readConfig():
 		print("[configuration] No Hashicorp Vault server supplied!")
 		_exit(1)
 
+	print("[configuration] Hashicorp Vault server at: %s" % VAULT_SERVER)
+
 	ALLOW_DEV_ACCESS = _getVar("DEV_ACCESS", _bool=True)
 	USE_CLOUDFLARE = _getVar("CLOUDFLARE", _bool=True)
 	USE_FIREBASE = _getVar("FIREBASE", _bool=True)
+	print("[configuration] Developer access enabled: %s" % ALLOW_DEV_ACCESS)
+	print("[configuration] Using Cloudflare: %s" % USE_CLOUDFLARE)
+	print("[configuration] Using Firebase: %s" % USE_FIREBASE)
 
 	privUsername = privPassword = None
 	FIREBASE_TOKEN = None
@@ -538,7 +543,6 @@ def _readConfig():
 		privPassword = _getVar("DEV_PASW")
 		if not privUsername or not privPassword:
 			print("[configuration] Dev access has been disabled, either no user or pass specified")
-			privUsername = privPassword = None
 			ALLOW_DEV_ACCESS = False
 
 	if USE_FIREBASE:
@@ -548,7 +552,6 @@ def _readConfig():
 			USE_FIREBASE = False
 	return {
 		"DATA_FOLDER": DATA_FOLDER,
-		"GOOGLE_TOKEN_FILE": GOOGLE_TOKEN_FILE,
 		"USE_CLOUDFLARE": USE_CLOUDFLARE,
 		"ALLOW_DEV_ACCESS": ALLOW_DEV_ACCESS,
 		"privUsername": privUsername,
