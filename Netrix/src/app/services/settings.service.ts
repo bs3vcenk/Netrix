@@ -32,21 +32,16 @@ export class SettingsService {
 
   readPrefs() {
     this.storage.get('data-preference').then(res => {
-      // Force on for now
-      this.dataPreference = true;
-      // this.firebaseSvc.setAnalytics(true);
-      /*if (res != null) {
-        this.firebaseSvc.setAnalytics(res);
+      if (res != null) {
+        this.firebase.setAnalyticsCollectionEnabled(res);
         this.dataPreference = res;
-        this.dataPrefUnset = false;
       } else { // If it isn't stored, store it and set default (false)
         this.storage.set('data-preference', false).then(() => {
           this.dataPreference = false;
-          this.dataPrefUnset = true;
-          this.firebaseSvc.setAnalytics(false);
-          console.log('SettingsService/readPrefs(): API analytics preference defaulted to false');
+          this.firebase.setAnalyticsCollectionEnabled(false);
+          console.log('SettingsService/readPrefs(): API analytics preference defaulted to off');
         });
-      }*/
+      }
       // this.hasLoadedDataPref.next(true);
       this.storage.get('notif-preference').then(resx => {
         if (resx != null) {
@@ -147,26 +142,17 @@ export class SettingsService {
     }
   }
 
-  /*setDataCollection(val) {
+  setDataCollection(val) {
     this.changePreference('data-preference', val);
-    this.firebase.setAnalytics(val);
+    this.firebase.setAnalyticsCollectionEnabled(val);
     this.dataPreference = val;
-    this.dataPrefUnset = false;
-  }*/
+  }
 
   setAdShow(val) {
     this.changePreference('ad-preference', val);
     this.admobSvc.adPreference = val;
     this.adPreference = val;
   }
-
-  /*setErrorReporting(val) {
-    Sentry.setShouldSendCallback((event) => {
-      return val;
-    });
-    this.changePreference("error-preference", val);
-    this.errorPreference = val;
-  }*/
 
   changePreference(pref, prefValue) {
     this.firebase.logEvent('changed_preference', {

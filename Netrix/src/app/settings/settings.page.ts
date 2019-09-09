@@ -24,13 +24,16 @@ import { environment } from '../../environments/environment';
 })
 export class SettingsPage {
 
-  // dataPreference = null;
+  timeSingular = this.translate.instant('settings.api.time_singular');
+  timePlural = this.translate.instant('settings.api.time_plural');
+
+  dataPreference = null;
   notifPreference = null;
   errorPreference = null;
   adPreference = null;
   testNotifTime = null;
   darkModePreference = null;
-  dayString = this.translate.instant('settings.api.time_plural');
+  dayString = this.timePlural;
   developer = !environment.production;
 
   constructor(
@@ -44,7 +47,7 @@ export class SettingsPage {
     private toastControl: ToastController,
     private notifSvc: NotificationService
   ) {
-    // this.dataPreference = this.settings.dataPreference;
+    this.dataPreference = this.settings.dataPreference;
     // this.errorPreference = this.settings.errorPreference;
     this.notifPreference = this.settings.notifPreference;
     this.testNotifTime = this.settings.notifTime;
@@ -150,13 +153,13 @@ export class SettingsPage {
         {
           name: 'time',
           options: [
-            {text: '10 days', value: 10},
-            {text: '7 days', value: 7},
-            {text: '5 days', value: 5},
-            {text: '4 days', value: 4},
-            {text: '3 days', value: 3},
-            {text: '2 days', value: 2},
-            {text: '1 day', value: 1}
+            {text: '10 ' + this.timePlural, value: 10},
+            {text: '7 ' + this.timePlural, value: 7},
+            {text: '5 ' + this.timePlural, value: 5},
+            {text: '4 ' + this.timePlural, value: 4},
+            {text: '3 ' + this.timePlural, value: 3},
+            {text: '2 ' + this.timePlural, value: 2},
+            {text: '1 ' + this.timeSingular, value: 1}
           ]
         }
       ]
