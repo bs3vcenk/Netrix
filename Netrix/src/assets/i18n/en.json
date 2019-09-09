@@ -35,7 +35,8 @@
     "text": {
       "other": "and NUM_PROFS more",
       "average": "Your average is:",
-      "classes": "Classes"
+      "classes": "Classes",
+      "no_grades": "No grades"
     }
   },
   "tab2": {

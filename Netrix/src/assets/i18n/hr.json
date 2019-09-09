@@ -35,7 +35,8 @@
     "text": {
       "other": "i još NUM_PROFS",
       "average": "Tvoj prosjek je:",
-      "classes": "Razredi"
+      "classes": "Razredi",
+      "no_grades": "Nema ocjena"
     }
   },
   "tab2": {

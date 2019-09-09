@@ -35,7 +35,8 @@
     "text": {
       "other": "och NUM_PROFS till",
       "average": "Ditt genomsnitt är:",
-      "classes": "Classes"
+      "classes": "Classes",
+      "no_grades": "No grades"
     }
   },
   "tab2": {
