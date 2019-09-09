@@ -31,7 +31,7 @@
       <ion-item [@fadeInOut] *ngIf="testObj.current || showAllPreference">
         <ion-label>
           <!-- Test name -->
-          <h2 id="testName" text-wrap>{{ testObj.test }}</h2>
+          <h2 id="testName" class="ion-text-wrap">{{ testObj.test }}</h2>
           <!-- Test date -->
           <h3 id="testDate">{{ convertToReadableDate(testObj.date) }}</h3>
           <!-- School subject for which the test is for -->
@@ -46,12 +46,12 @@
   </ion-list>
 
   <!-- "No tests" message with *ngIf to show only if no tests and "Show all" is disabled -->
-  <ion-item text-center [@fadeInOut] *ngIf="currentTests.length == 0 && showAllPreference == false" lines="none" id="cntr">
+  <ion-item class="ion-text-center" [@fadeInOut] *ngIf="currentTests.length == 0 && showAllPreference == false" lines="none" id="cntr">
     <ion-label>
       <!-- "Thumbs up" emoji -->
       <object width="150" type="image/svg+xml" data="./assets/emoji/thumbsup.svg"></object>
       <!-- Styled "no tests" message -->
-      <h1 id="netHeader" text-wrap>{{ 'tab2.notests' | translate }}</h1>
+      <h1 id="netHeader" class="ion-text-wrap">{{ 'tab2.notests' | translate }}</h1>
     </ion-label>
   </ion-item>
 </ion-content>

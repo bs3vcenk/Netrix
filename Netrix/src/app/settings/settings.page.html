@@ -52,7 +52,7 @@
     <!-- BUTTON: Test notification time -->
     <ion-item [@fadeInOut] detail="false" button (click)="openNotifTimePicker()" *ngIf="notifPreference">
       <ion-label>{{ 'settings.api.notifs_test_time' | translate}}</ion-label>
-      <ion-text item-right text-right>{{ testNotifTime }} {{ dayString }}</ion-text>
+      <ion-text class="ion-text-right">{{ testNotifTime }} {{ dayString }}</ion-text>
     </ion-item>
 
     <!-- SEP: Experimental -->

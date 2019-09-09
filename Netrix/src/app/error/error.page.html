@@ -4,50 +4,50 @@
 <ion-content>
   <!-- Error/Info pages -->
   <!-- Network error -->
-  <ion-item text-center *ngIf="networkError" lines="none" id="cntr">
+  <ion-item class="ion-text-center" *ngIf="networkError" lines="none" id="cntr">
     <ion-label>
       <!-- "Pensive/sad" emoji -->
       <object width="150" type="image/svg+xml" data="./assets/emoji/pensive.svg"></object>
       <!-- Short description of error -->
-      <h1 id="netHeader" text-wrap>{{ 'generic.text.nonetwork.header' | translate }}</h1>
+      <h1 id="netHeader" class="ion-text-wrap">{{ 'generic.text.nonetwork.header' | translate }}</h1>
       <!-- Long desc/instructions -->
-      <h2 id="netContent" text-wrap>{{ 'generic.text.nonetwork.content' | translate }}</h2>
+      <h2 id="netContent" class="ion-text-wrap">{{ 'generic.text.nonetwork.content' | translate }}</h2>
     </ion-label>
   </ion-item>
 
   <!-- Server-side error -->
-  <ion-item text-center *ngIf="dbError" lines="none" id="cntr">
+  <ion-item class="ion-text-center" *ngIf="dbError" lines="none" id="cntr">
     <ion-label>
       <!-- "Wrench" emoji -->
       <object width="150" type="image/svg+xml" data="./assets/emoji/wrench.svg"></object>
       <!-- Short description of error -->
-      <h1 id="netHeader" text-wrap>{{ 'generic.text.nodb.header' | translate }}</h1>
+      <h1 id="netHeader" class="ion-text-wrap">{{ 'generic.text.nodb.header' | translate }}</h1>
       <!-- Long desc/instructions -->
-      <h2 id="netContent" text-wrap>{{ 'generic.text.nodb.content' | translate }}</h2>
+      <h2 id="netContent" class="ion-text-wrap">{{ 'generic.text.nodb.content' | translate }}</h2>
     </ion-label>
   </ion-item>
 
   <!-- SSL Verification error -->
-  <ion-item text-center *ngIf="trustError" lines="none" id="cntr">
+  <ion-item class="ion-text-center" *ngIf="trustError" lines="none" id="cntr">
     <ion-label>
       <!-- "Lock" emoji -->
       <object width="150" type="image/svg+xml" data="./assets/emoji/lock.svg"></object>
       <!-- Short description of error -->
-      <h1 id="netHeader" text-wrap>{{ 'generic.text.trusterror.header' | translate }}</h1>
+      <h1 id="netHeader" class="ion-text-wrap">{{ 'generic.text.trusterror.header' | translate }}</h1>
       <!-- Long desc/instructions -->
-      <h2 id="netContent" text-wrap>{{ 'generic.text.trusterror.content' | translate }}</h2>
+      <h2 id="netContent" class="ion-text-wrap">{{ 'generic.text.trusterror.content' | translate }}</h2>
     </ion-label>
   </ion-item>
 
   <!-- Maintenance -->
-  <ion-item text-center *ngIf="maintenanceError" lines="none" id="cntr">
+  <ion-item class="ion-text-center" *ngIf="maintenanceError" lines="none" id="cntr">
     <ion-label>
       <!-- "Lock" emoji -->
       <object width="150" type="image/svg+xml" data="./assets/emoji/wrench.svg"></object>
       <!-- Short description of error -->
-      <h1 id="netHeader" text-wrap>{{ 'generic.text.maintenance.header' | translate }}</h1>
+      <h1 id="netHeader" class="ion-text-wrap">{{ 'generic.text.maintenance.header' | translate }}</h1>
       <!-- Long desc/instructions -->
-      <h2 id="netContent" text-wrap>{{ 'generic.text.maintenance.content' | translate }}</h2>
+      <h2 id="netContent" class="ion-text-wrap">{{ 'generic.text.maintenance.content' | translate }}</h2>
     </ion-label>
   </ion-item>
 </ion-content>

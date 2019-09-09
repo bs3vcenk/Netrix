@@ -24,9 +24,9 @@
 	<ion-list lines="inset">
 		<ion-item lines="full">
 			<!-- Translated text "Average" -->
-			<ion-label text-left>{{ 'overview.text.average' | translate }}</ion-label>
+			<ion-label class="ion-text-left">{{ 'overview.text.average' | translate }}</ion-label>
 			<!-- Subject average -->
-			<ion-label item-right text-right style="font-weight: 600;">{{subject.average}}</ion-label>
+			<ion-label class="ion-text-right" style="font-weight: 600;">{{subject.average}}</ion-label>
 		</ion-item>
 	</ion-list>
 
@@ -47,7 +47,7 @@
 					{{gradeObject.grade}}
 				</div>
 				<!-- Note, shown to the right -->
-				<div class="description" text-wrap>
+				<div class="description" class="ion-text-wrap">
 					{{gradeObject.note}}
 				</div>
 			</ion-label>
@@ -67,7 +67,7 @@
 				<div class="date">
 					{{convertToReadableDate(noteObj.date)}}
 				</div>
-				<div text-wrap>
+				<div class="ion-text-wrap">
 					{{ noteObj.note }}
 				</div>
 			</ion-label>

@@ -48,13 +48,13 @@
       <ion-label>
         <div id="title" stacked>
           <!-- Subject name -->
-          <h3 text-wrap>{{subject.subject}}</h3>
+          <h3 class="ion-text-wrap">{{subject.subject}}</h3>
           <!-- Processed list of professors -->
-          <ion-note text-wrap>{{subject.professors}}</ion-note>
+          <ion-note class="ion-text-wrap">{{subject.professors}}</ion-note>
         </div>
       </ion-label>
       <!-- The average grade for this subject (shown to the right) -->
-      <ion-text id="average" item-right text-right>
+      <ion-text id="average" class="ion-text-right">
         {{subject.average}}
       </ion-text>
     </ion-item>
@@ -67,10 +67,10 @@
       <ion-label>
         <div id="title" stacked>
           <h3><ion-skeleton-text animated style="width: 50%;line-height: 20px"></ion-skeleton-text></h3>
-          <ion-note text-wrap><ion-skeleton-text animated style="width: 80%;line-height: 15px"></ion-skeleton-text></ion-note>
+          <ion-note class="ion-text-wrap"><ion-skeleton-text animated style="width: 80%;line-height: 15px"></ion-skeleton-text></ion-note>
         </div>
       </ion-label>
-      <ion-text id="average" item-right text-right style="width: 7%">
+      <ion-text id="average" class="ion-text-right" style="width: 7%">
         <ion-skeleton-text animated style="width: 100%;line-height: 29px"></ion-skeleton-text>
       </ion-text>
     </ion-item>
