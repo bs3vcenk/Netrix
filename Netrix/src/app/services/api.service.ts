@@ -160,7 +160,6 @@ export class ApiService {
       this.httpHeader
     ).then((rx) => {
       const response = JSON.parse(rx.data);
-      console.log(response);
       this.classes = response.classes;
       this.firebase.stopTrace('getClasses');
     }, (error) => {
