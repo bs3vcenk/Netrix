@@ -94,7 +94,9 @@ export class SettingsPage {
   }
 
   updDeviceInfoPreference() {
-    this.settings.setDataCollection(this.dataPreference);
+    if (this.dataPreference !== this.settings.dataPreference) {
+      this.settings.setDataCollection(this.dataPreference);
+    }
   }
 
   updAdPreference() {
@@ -112,9 +114,11 @@ export class SettingsPage {
   }
 
   updMainNotificationPreference() {
-    this.settings.changePreference('notif-preference', this.notifPreference);
-    this.settings.notifPreference = this.notifPreference;
-    this.apiSvc.setNotifDisabled(!this.notifPreference);
+    if (this.notifPreference !== this.settings.notifPreference) {
+      this.settings.changePreference('notif-preference', this.notifPreference);
+      this.settings.notifPreference = this.notifPreference;
+      this.apiSvc.setNotifDisabled(!this.notifPreference);
+    }
   }
 
   updDarkModePreference() {
