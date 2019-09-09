@@ -104,6 +104,8 @@ export class AppComponent {
           this.router.navigate(['login'], {replaceUrl: true});
           /* Reset BehaviorSubjects in case of a logout */
           this.apiSvc.resetLoadingState();
+          /* Delete scheduled test notifications */
+          this.notifSvc.disableAll();
         }
       });
 
