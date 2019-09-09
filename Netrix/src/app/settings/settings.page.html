@@ -69,6 +69,10 @@
     <ion-item button (click)="fakeCrash()" *ngIf="developer">
       <ion-label>Fake unhandled exception</ion-label>
     </ion-item>
+    <!-- BUTTON: Force language to hr -->
+    <ion-item button (click)="forceCroatian()" *ngIf="developer">
+      <ion-label>Force switch to HR locale</ion-label>
+    </ion-item>
     <!-- User-facing -->
     <!-- SWITCH: Dark mode-->
     <ion-item>

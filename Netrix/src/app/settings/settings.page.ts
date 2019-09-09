@@ -174,4 +174,8 @@ export class SettingsPage {
     }
   }
 
+  forceCroatian() {
+    this.translate.use('hr');
+  }
+
 }
