@@ -149,7 +149,6 @@ export class ApiService {
       this.firebase.stopTrace('fetchClass');
       this.handleErr(e);
     }
-    this.firebase.stopTrace('fetchClass');
   }
 
   getClasses() {
