@@ -93,9 +93,9 @@ export class SettingsPage {
     });
   }
 
-  /*updDeviceInfoPreference() {
+  updDeviceInfoPreference() {
     this.settings.setDataCollection(this.dataPreference);
-  }*/
+  }
 
   updAdPreference() {
     if (this.adPreference !== this.settings.adPreference) {
