@@ -30,7 +30,7 @@ export class AuthenticationService {
     private device: Device,
     private settings: SettingsService,
     private firebase: FirebaseX
-    ) {
+  ) {
       this.plt.ready().then(() => {
         /* Default to JSON as we'll be receiving only JSON from the API */
         this.http.setDataSerializer('json');
