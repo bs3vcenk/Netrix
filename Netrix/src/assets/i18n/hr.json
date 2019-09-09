@@ -145,5 +145,8 @@
       "test": "Pripremi se!",
       "inXdays": "za DAYS dana"
     }
+  },
+  "classes": {
+    "title": "Razredi"
   }
 }

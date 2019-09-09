@@ -35,7 +35,7 @@
     "text": {
       "other": "und NUM_PROFS mehr",
       "average": "Dein Durchschnitt ist:",
-      "classes": "Classes"
+      "classes": "Klassen"
     }
   },
   "tab2": {
@@ -145,5 +145,8 @@
       "test": "Bereite dich vor!",
       "inXdays": "in DAYS Tagen"
     }
+  },
+  "classes": {
+    "title": "Klassen"
   }
 }

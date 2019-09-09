@@ -145,5 +145,8 @@
       "test": "Gör dig redo!",
       "inXdays": "om DAYS dagar"
     }
+  },
+  "classes": {
+    "title": "Classes"
   }
 }

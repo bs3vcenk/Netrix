@@ -145,5 +145,8 @@
       "test": "Get ready!",
       "inXdays": "in DAYS days"
     }
+  },
+  "classes": {
+    "title": "Classes"
   }
 }
