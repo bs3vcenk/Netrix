@@ -118,7 +118,7 @@
   "settings": {
     "api": {
       "analytics": "Analytics and ads",
-      "devinfo": "Send device info",
+      "devinfo": "Send usage info",
       "notifs": "Notifications",
       "notifs_master": "All notifications",
       "ads": "Show advertisements",

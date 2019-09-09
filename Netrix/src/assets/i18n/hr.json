@@ -118,7 +118,7 @@
   "settings": {
     "api": {
       "analytics": "Analitika i reklame",
-      "devinfo": "Šalji informacije o uređaju",
+      "devinfo": "Šalji podatke o korištenju",
       "notifs": "Obavijesti",
       "notifs_master": "Sve obavijesti",
       "ads": "Prikazuj reklame",

@@ -118,7 +118,7 @@
   "settings": {
     "api": {
       "analytics": "Analytics und Werbungen",
-      "devinfo": "Geräteinformationen senden",
+      "devinfo": "Nutzungsinformationen senden",
       "notifs": "Benachrichtigungen",
       "notifs_master": "Alle Benachrichtigungen",
       "ads": "Werbungen anzeigen",
