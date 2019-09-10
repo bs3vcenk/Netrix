@@ -141,6 +141,8 @@ export class ApiService {
   }
 
   async fetchClass(classId: number) {
+    /* Fetch server-side endpoint which tells the server to scrape the data
+     * for the selected class ID */
     this.firebase.startTrace('fetchClass');
     try {
       await this.http.post(
@@ -155,6 +157,7 @@ export class ApiService {
   }
 
   getClasses() {
+    /* Gets a list of classes */
     this.firebase.startTrace('getClasses');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes',
@@ -171,6 +174,7 @@ export class ApiService {
   }
 
   getMaintenanceMode() {
+    /* Check if maintenance mode is in progress */
     this.firebase.startTrace('getMaintenanceMode');
     this.http.get(
       'https://ocjene.skole.hr/',
@@ -188,6 +192,8 @@ export class ApiService {
   }
 
   saveFirebaseToken(firebaseToken: string) {
+    /* Tell the server to store the device token with the user's
+     * profile */
     this.firebase.startTrace('saveFirebaseToken');
     this.http.post(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/firebase',
@@ -253,6 +259,7 @@ export class ApiService {
   }
 
   getUserInfo(classId: number) {
+    /* Get information about user */
     this.firebase.startTrace('getUserInfo');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info',

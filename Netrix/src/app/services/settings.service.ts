@@ -19,7 +19,7 @@ export class SettingsService {
   notifTime = null;
   apiServer = environment.production ? 'https://api.netrix.io' : 'https://dev-api.netrix.io';
   // httpLimit = 5000;
-  globalTheme: string;
+  globalTheme: 'dark' | 'light';
 
   constructor(
     private storage: Storage,
@@ -67,7 +67,9 @@ export class SettingsService {
     });
   }
 
-  setGlobalTheme(nThemeName: string) {
+  setGlobalTheme(nThemeName: 'dark' | 'light') {
+    /* Set/unset dark mode */
+    /* CSS variables for theming the app */
     const themeVars = {
       dark: {
         '--ion-background-color': '#000000',
@@ -122,37 +124,46 @@ export class SettingsService {
     };
     const root = document.documentElement;
     if (nThemeName === 'light') {
+      /* Set the light theme */
       console.log('SettingsService/setGlobalTheme(): Setting light theme');
+      /* Recursively apply values in themeVars */
       // tslint:disable-next-line: forin
       for (const varName in themeVars.light) {
         root.style.setProperty(varName, themeVars.light[varName]);
       }
+      /* Make status bar colour fit with theme */
       this.statusBar.backgroundColorByHexString('#ffffff');
       this.statusBar.styleDefault();
     } else if (nThemeName === 'dark') {
+      /* Set the dark theme */
       console.log('SettingsService/setGlobalTheme(): Setting dark theme');
+      /* Recursively apply values in themeVars */
       // tslint:disable-next-line: forin
       for (const varName in themeVars.dark) {
         root.style.setProperty(varName, themeVars.dark[varName]);
       }
+      /* Make status bar colour fit with theme */
       this.statusBar.backgroundColorByHexString('#000000');
       this.statusBar.styleLightContent();
     }
   }
 
-  setDataCollection(val) {
+  setDataCollection(val: boolean) {
+    /* Change the analytics collection preference */
     this.changePreference('data-preference', val);
     this.firebase.setAnalyticsCollectionEnabled(val);
     this.dataPreference = val;
   }
 
-  setAdShow(val) {
+  setAdShow(val: boolean) {
+    /* Change whether the banner ad should be initialized on startup */
     this.changePreference('ad-preference', val);
     this.admobSvc.adPreference = val;
     this.adPreference = val;
   }
 
   changePreference(pref, prefValue) {
+    /* Set `pref` to `prefValue` */
     this.firebase.logEvent('changed_preference', {
       preference: pref,
       value: prefValue

@@ -29,6 +29,7 @@ export class FirebaseService {
     /* Add the token to crash reports */
     this.firebase.setUserId(serviceToken);
     this.firebase.setCrashlyticsUserId(serviceToken);
+    /* Push the device token to the API */
     this.apiSvc.saveFirebaseToken(firebaseToken);
   }
 
@@ -57,10 +58,16 @@ export class CrashlyticsErrorHandler extends ErrorHandler {
   }
 
   handleError(error) {
-    /* Send exceptions to Crashlytics */
+    /* Send exceptions to Crashlytics
+     *
+     * NOTE: Requires patching the FirebaseX index.js and index.d.ts files to
+     *       allow a second argument. */
     super.handleError(error);
+    /* Only send if this is a production build (don't want to clutter
+     * Crashlytics with debug errors) */
     if (environment.production) {
       try {
+        /* Try to expand the stacktrace using stacktrace.js */
         StackTrace.fromError(error).then(st => {
           this.firebase.logError(error.message, st);
         });
