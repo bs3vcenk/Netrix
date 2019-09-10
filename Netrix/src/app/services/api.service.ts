@@ -100,6 +100,9 @@ export class ApiService {
     } else if (errorObj.status === -2) {
       /* Certificate not trusted, either MITM or public Wi-Fi login page */
       this.trustError.next(true);
+    } else if (errorObj.status === -3) {
+      /* Network error */
+      this.networkError.next(true);
     } else {
       /* Unknown error, probably a network error (e.g. no Internet access)
        *
