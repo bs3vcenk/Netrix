@@ -1,19 +1,19 @@
 # Netrix
 
-Netrix je frontend za EDAP library, pisan u [Ionic](https://ionicframework.com/) frameworku (Angular).
+Netrix je frontend za eDAP API, pisan u [Ionic](https://ionicframework.com/) frameworku (Angular).
 
-## Upotreba
+## Instalacija okruženja
 
 ### Linux/macOS
 
-1. Klonirajte repository na disk i `cd` u njega:
+1. **Klonirajte repository na disk**:
 
 ```bash
 git clone git@github.com:btx3/Netrix # ili "git clone https://github.com/btx3/Netrix" ako nemate SSH podešen
 cd Netrix/Netrix
 ```
 
-2. Instalirajte potrebne programe:
+2. **Instalirajte potrebne programe**:
 
 ```bash
 sudo apt install npm nodejs -y # NodeJS i package manager NPM
@@ -90,7 +90,7 @@ Version 29.0.1-5644136
 Installed as /home/btx3/Android/Sdk/platform-tools/adb
 ```
 
-3. Instalirajte NodeJS module:
+3. **Instalirajte NodeJS module**:
 
 Za dostupnost nekih NPM moduleova potrebno ih je instalirati globalno (`-g` argument). Ako se ne želite zamarati problemima pristupa, preporučeno je da slijedite [ove upute](https://github.com/sindresorhus/guides/blob/master/npm-global-without-sudo.md) za omogućivanje *sudo-less global NPM* prije instalacije.
 
@@ -101,27 +101,51 @@ npm i
 npm i -g cordova cordova-res ionic native-run
 ```
 
-Nakon ove komande, potrebno je i omogućiti korištenje `logError()` funkcije u `@ionic-native/firebase-x` pomoću ove komande:
+## Konfiguracija aplikacije
+
+1. **Podesite Firebase**:
+
+Potrebno je preuzeti `google-services.json` (za Android) i `GoogleService-Info.plist` (za iOS) datoteke i staviti ih u `Netrix/` mapu.
+
+Nakon toga, potrebno je i omogućiti korištenje `logError()` funkcije u `@ionic-native/firebase-x` pomoću ove komande:
 
 ```bash
 ./patches/patchFirebase.sh
 ```
 
-4. Pokrenite:
+2. **Podesite Android platformu**:
 
-* Testno okruženje (bez Cordove):
-    `ionic s` (UPOZORENJE: Netrix se prebacio na [Native HTTP](https://ionicframework.com/docs/native/http), što znači da ova komanda više ne radi.)
-* Testno okruženje (s Cordovom):
-    `ionic cordova run browser` (UPOZORENJE: Dosta Cordova plugina nema podršku za browser, stoga ovo nije preporučeno.)
+Potrebno je pokrenuti ovu komandu:
+```bash
+ionic cordova platform add android --no-resources
+```
 
+3. **Pokrenite**:
 
-* Android: Debug build (omogućava remote DevTools):
-    `ionic cordova build android`
-* Android: Release build (bez debug mogućnosti, za Play Store):
-    `rm -rf www && ionic cordova build android --prod --release`
-* iOS: Debug build:
-    `ionic cordova run ios`
-* iOS: Debug build za uređaj:
-    `ionic cordova run ios --device`
-* iOS: Release build:
-    Upute stižu kasnije
+### Android
+
+Testno okruženje s automatskim ažuriranjem (live reloading, ostavite mobitel povezan s računalom):
+```bash
+ionic cordova run android -s --ssl
+```
+Standalone debug build (omogućava remote DevTools):
+```bash
+ionic cordova build android
+```
+Standalone release build u APK formatu (bez debug mogućnosti, za Play Store):
+```bash
+rm -rf www && ionic cordova build android --prod --release
+```
+
+### iOS
+
+**UPOZORENJE**: Podrška za iOS nije najbolja, uglavnom zato što nemam iOS uređaj za testiranje, a ni 99 dolara godišnje za obavijesti nije baš jeftino.
+
+Debug build:
+```bash
+ionic cordova run ios
+```
+Debug build za uređaj:
+```bash
+ionic cordova run ios --device
+```
