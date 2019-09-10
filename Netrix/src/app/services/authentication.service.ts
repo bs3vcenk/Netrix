@@ -65,8 +65,7 @@ export class AuthenticationService {
         platform: this.getPlatform(),
         device: this.getDevice(),
         language: this.getLanguage(),
-        resolution: this.getResolution(),
-        equivSupportedVersion: this.settings.equivSupportedServerVersion
+        resolution: this.getResolution()
       },
       this.httpHeader)
     .then(() => {

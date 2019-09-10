@@ -12,8 +12,6 @@ export class SettingsService {
 
   // hasLoadedDataPref = new BehaviorSubject(false);
 
-  equivSupportedServerVersion = '2.5';
-
   dataPreference = null;
   notifPreference = null;
   adPreference = null;
