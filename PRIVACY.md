@@ -1,6 +1,6 @@
 # Pravila o privatnosti
 
-Zadnje ažuriranje: 30. kolovoza, 2019.
+Zadnje ažuriranje: 10.9.2019.
 
 Prijašnje inačice ovog dokumenta možete zatražiti upitom na e-mail bs3vcenk@gmail.com.
 
