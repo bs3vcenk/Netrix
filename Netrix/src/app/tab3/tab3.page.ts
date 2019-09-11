@@ -15,7 +15,11 @@ export class Tab3Page implements OnInit {
     private apiSvc: ApiService,
     private firebase: FirebaseX
   ) {
-    this.absences = this.apiSvc.absences;
+    this.apiSvc.loadingFinishedAbsences.subscribe((val) => {
+      if (val) {
+        this.absences = this.apiSvc.absences;
+      }
+    });
   }
 
   convertToReadableDate(unixTimestamp: number): string {

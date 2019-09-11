@@ -26,7 +26,11 @@ export class Tab2Page {
     private apiSvc: ApiService,
     private firebase: FirebaseX
   ) {
-    this.initInBg();
+    this.apiSvc.loadingFinishedTests.subscribe((val) => {
+      if (val) {
+        this.initInBg();
+      }
+    });
   }
 
   ionViewDidEnter() {
