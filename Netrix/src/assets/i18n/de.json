@@ -93,19 +93,14 @@
     "alert": {
       "credentials": {
         "header": "Falsche Zugangsdaten",
-        "content": "Überprüfen Sie Ihren Benutzernamen und Ihr Passwort, und versuchen Sie es erneut."
-      },
-      "data": {
-        "header": "Fehlerberichterstattung",
-        "content": "Der Modellname und die Betriebssystem-Version deines Geräts werden an den API-Server gesendet, um Fehler zu kategorisieren und zu debuggen.<br><br>Wir erheben <b>keine</b> personenbezogenen Daten außerhalb der in unserer Datenschutzerklärung genannten Informationen."
-      },
-      "loggingin": "Anmelden..."
+        "content": "Prüfe deinen Benutzernamen und dein Passwort und versuche es erneut."
+      }
     },
     "text": {
       "login": "Einmelden",
-      "holder_user": "eDnevnik Benutzername",
-      "holder_pass": "eDnevnik Password",
-      "appdesc": "Eine moderne Schnittstelle für eDnevnik",
+      "holder_user": "Benutzername",
+      "holder_pass": "Kennwort",
+      "appdesc": "Eine moderne Schnittstelle für e-Dnevnik",
       "privacy": "Datenschutzerklärung"
     }
   },
@@ -116,22 +111,23 @@
     "absences": "Abwesenheiten"
   },
   "settings": {
-    "api": {
-      "analytics": "Analytics und Werbungen",
-      "devinfo": "Nutzungsinformationen senden",
-      "notifs": "Benachrichtigungen",
-      "notifs_master": "Alle Benachrichtigungen",
+    "analytics": {
+      "header": "Analytics und Werbungen",
       "ads": "Werbungen anzeigen",
-      "time_singular": "Tag",
-      "time_plural": "Tagen",
-      "notifs_test_time": "Vor Prüfung benachrichtigen",
-      "notifs_exclude": "Benachrichtigungsverwaltung"
+      "usage": "Nutzungsinformationen senden"
     },
-    "client": {
-      "experimental": "Experimentell",
-      "darkmode": "Dunkler Modus",
-      "preload": "Schulfächer vorladen"
-    }
+    "notifs": {
+      "header": "Benachrichtigungen",
+      "management": "Benachrichtigungsverwaltung",
+      "time": "Vor Prüfung benachrichtigen",
+      "master": "Alle Benachrichtigungen"
+    },
+    "design": {
+      "header": "Design",
+      "darkmode": "Dunkler Modus"
+    },
+    "time_singular": "Tag",
+    "time_plural": "Tagen"
   },
   "notifSettings": {
     "title": "Benachrichtigungsverwaltung",

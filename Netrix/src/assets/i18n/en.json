@@ -94,18 +94,13 @@
       "credentials": {
         "header": "Invalid credentials",
         "content": "Check your username and password, and try again."
-      },
-      "data": {
-        "header": "Error reporting",
-        "content": "Your device's model name and OS version is sent to the API server to help categorize and debug errors.<br><br>We <b>do not</b> collect <b>any</b> personal data outside the information outlined in our privacy policy."
-      },
-      "loggingin": "Logging in..."
+      }
     },
     "text": {
       "login": "Log in",
-      "holder_user": "eDnevnik username",
-      "holder_pass": "eDnevnik password",
-      "appdesc": "A modern interface for eDnevnik",
+      "holder_user": "Username",
+      "holder_pass": "Password",
+      "appdesc": "A modern interface for e-Dnevnik",
       "privacy": "Privacy policy"
     }
   },
@@ -116,22 +111,23 @@
     "absences": "Absences"
   },
   "settings": {
-    "api": {
-      "analytics": "Analytics and ads",
-      "devinfo": "Send usage info",
-      "notifs": "Notifications",
-      "notifs_master": "All notifications",
+    "analytics": {
+      "header": "Analytics and ads",
       "ads": "Show advertisements",
-      "time_singular": "day",
-      "time_plural": "days",
-      "notifs_test_time": "Notify before test",
-      "notifs_exclude": "Notification management"
+      "usage": "Send usage info"
     },
-    "client": {
-      "experimental": "Experimental",
-      "darkmode": "Dark mode",
-      "preload": "Preload subjects"
-    }
+    "notifs": {
+      "header": "Notifications",
+      "management": "Notification management",
+      "time": "Notify before test",
+      "master": "All notifications"
+    },
+    "design": {
+      "header": "Design",
+      "darkmode": "Dark mode"
+    },
+    "time_singular": "day",
+    "time_plural": "days"
   },
   "notifSettings": {
     "title": "Notification management",

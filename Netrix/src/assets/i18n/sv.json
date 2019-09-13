@@ -94,18 +94,13 @@
       "credentials": {
         "header": "Ogiltiga uppgifter",
         "content": "Kontrollera ditt användarnamn och lösenord och försök igen."
-      },
-      "data": {
-        "header": "Felrapportering",
-        "content": "Enhetens modellnamn och OS-version skickas till API-servern för att hjälpa till att kategorisera och felsöka fel.<br><br>Vi samlar <b>inte in några</b> personuppgifter utanför den information som anges i vår integritetspolicy."
-      },
-      "loggingin": "Loggar in..."
+      }
     },
     "text": {
       "login": "Logga in",
-      "holder_user": "eDnevnik-användarnamn",
-      "holder_pass": "eDnevnik-lösenord",
-      "appdesc": "Ett modernt gränssnitt för eDnevnik",
+      "holder_user": "Användarnamn",
+      "holder_pass": "Lösenord",
+      "appdesc": "Ett modernt gränssnitt för e-Dnevnik",
       "privacy": "Integritetspolicy"
     }
   },
@@ -116,22 +111,23 @@
     "absences": "Frånvaro"
   },
   "settings": {
-    "api": {
-      "analytics": "Analytics och annonser",
-      "devinfo": "Skicka enhetsinfo",
-      "notifs": "Anmälningar",
-      "notifs_master": "Alla aviseringar",
+    "analytics": {
+      "header": "Analytics och annonser",
       "ads": "Visa annonser",
-      "time_singular": "dag",
-      "time_plural": "dagar",
-      "notifs_test_time": "Meddela innan testet",
-      "notifs_exclude": "Anmälningshantering"
+      "usage": "Skicka enhetsinfo"
     },
-    "client": {
-      "experimental": "Experimentell",
-      "darkmode": "Mörkt läge",
-      "preload": "Förbelasta ämnen"
-    }
+    "notifs": {
+      "header": "Anmälningar",
+      "management": "Anmälningshantering",
+      "time": "Meddela innan testet",
+      "master": "Alla aviseringar"
+    },
+    "design": {
+      "header": "Design",
+      "darkmode": "Mörkt läge"
+    },
+    "time_singular": "dag",
+    "time_plural": "dagar"
   },
   "notifSettings": {
     "title": "Anmälningshantering",

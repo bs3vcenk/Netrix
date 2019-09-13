@@ -24,8 +24,8 @@ import { environment } from '../../environments/environment';
 })
 export class SettingsPage {
 
-  timeSingular = this.translate.instant('settings.api.time_singular');
-  timePlural = this.translate.instant('settings.api.time_plural');
+  timeSingular = this.translate.instant('settings.time_singular');
+  timePlural = this.translate.instant('settings.time_plural');
 
   dataPreference = null;
   notifPreference = null;
@@ -54,7 +54,7 @@ export class SettingsPage {
     this.adPreference = this.settings.adPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
     if (this.testNotifTime === 1) {
-      this.dayString = this.translate.instant('settings.api.time_singular');
+      this.dayString = this.timeSingular;
     }
   }
 

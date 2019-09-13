@@ -94,17 +94,12 @@
       "credentials": {
         "header": "Netočni podaci za prijavu",
         "content": "Provjeri svoje korisničko ime i lozinu, pa pokušaj ponovo."
-      },
-      "data": {
-        "header": "Prijavljivanje grešaka u radu",
-        "content": "Model i verzija operativnog sustava tvog uređaja se šalje na API server kako bi se moglo točno odrediti što uzrokuje greške.<br><br>Ne prikupljamo <b>nikakve</b> osobne podatke izvan informacija navedenih u Pravilima o privatnosti."
-      },
-      "loggingin": "Prijavljivanje..."
+      }
     },
     "text": {
       "login": "Prijavi se",
-      "holder_user": "Korisničko ime za eDnevnik",
-      "holder_pass": "Lozinka za eDnevnik",
+      "holder_user": "Korisničko ime",
+      "holder_pass": "Lozinka",
       "appdesc": "Moderno sučelje za eDnevnik",
       "privacy": "Pravila o privatnosti"
     }
@@ -116,22 +111,23 @@
     "absences": "Izostanci"
   },
   "settings": {
-    "api": {
-      "analytics": "Analitika i reklame",
-      "devinfo": "Šalji podatke o korištenju",
-      "notifs": "Obavijesti",
-      "notifs_master": "Sve obavijesti",
+    "analytics": {
+      "header": "Analitika i reklame",
       "ads": "Prikazuj reklame",
-      "time_singular": "dan",
-      "time_plural": "dana",
-      "notifs_test_time": "Obavjesti prije ispita",
-      "notifs_exclude": "Upravljanje obavijestima"
+      "usage": "Šalji podatke o upotrebi"
     },
-    "client": {
-      "experimental": "Eksperimentalno",
-      "darkmode": "Tamni način",
-      "preload": "Preloadaj predmete"
-    }
+    "notifs": {
+      "header": "Obavijesti",
+      "management": "Upravljanje obavijestima",
+      "time": "Obavjesti prije ispita",
+      "master": "Sve obavijesti"
+    },
+    "design": {
+      "header": "Izgled",
+      "darkmode": "Tamni način"
+    },
+    "time_singular": "dan",
+    "time_plural": "dana"
   },
   "notifSettings": {
     "title": "Upravljanje obavijestima",
