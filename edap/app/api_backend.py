@@ -807,7 +807,7 @@ def update_counter(counter_id):
 config = _read_config()
 logging.basicConfig(
 	filename=_join_path(config["DATA_FOLDER"], "edap_api.log"),
-	level=logging.INFO,
+	level=logging.DEBUG,
 	format="%(asctime)s || %(funcName)-16s || %(levelname)-8s || %(message)s"
 )
 _redis = _init_db()
