@@ -373,16 +373,32 @@ def _profile_difference(dObj1, dObj2):
 	## CLASS DIFFERENCE ##
 	t1 = deepcopy(dObj1['classes'])
 	t2 = deepcopy(dObj2['classes'])
-	for y in [t1, t2]:
-		for x in y:
-			del x['tests']
-			del x['subjects']
-			del x['absences']
-			del x['info']
-			if 'complete_avg' in x:
-				del x['complete_avg']
-			if 'full' in x:
-				del x['full']
+	for x in range(len(t1)):
+		if 'tests' in t1[x]:
+			del t1[x]['tests']
+		if 'subjects' in t1[x]:
+			del t1[x]['subjects']
+		if 'absences' in t1[x]:
+			del t1[x]['absences']
+		if 'info' in t1[x]:
+			del t1[x]['info']
+		if 'complete_avg' in t1[x]:
+			del t1[x]['complete_avg']
+		if 'full' in t1[x]:
+			del t1[x]['full']
+	for x in range(len(t2)):
+		if 'tests' in t2[x]:
+			del t2[x]['tests']
+		if 'subjects' in t2[x]:
+			del t2[x]['subjects']
+		if 'absences' in t2[x]:
+			del t2[x]['absences']
+		if 'info' in t2[x]:
+			del t2[x]['info']
+		if 'complete_avg' in t2[x]:
+			del t2[x]['complete_avg']
+		if 'full' in t2[x]:
+			del t2[x]['full']
 	difflist = [x for x in t2 if x not in t1]
 	if difflist:
 		log.debug("Found difference in classes")
