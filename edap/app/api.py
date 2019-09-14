@@ -264,7 +264,7 @@ def dev_reload_info():
 	return make_response(jsonify({'sample': len(tokens), 'fails': failed}))
 
 @app.route('/dev/info/tokendebug/<string:token>/testdiff', methods=["POST"])
-@dev_area
+@dev_pw_area
 def dev_test_diff(token):
 	if not request.json or not "subjId" in request.json or not "gradeData" in request.json:
 		log.error("Bad JSON")
