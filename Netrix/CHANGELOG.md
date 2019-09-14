@@ -1,3 +1,16 @@
+## 1.8.7 (2019-09-14)
+* Od sada je po zadanom isključeno prikupljanje podataka o korištenju
+* Maknuto upozorenje pri prijavi
+* Tamni način sada mijenja i boju navigacijske trake
+* Tamni način je sada pod kategorijom "Izgled"
+* Ako nema ocjena (tj. prosjek je 0), prikazuje se tekst "Nema ocjena"
+* Popravljena greška zbog koje se ispiti i izostanci nisu ažurirali pri promjeni razreda
+* Popravljena greška zbog koje su obavijesti ostale zakazane i nakon odjave
+* Popravljen izgled stranice izbora razreda
+* Popravljen naslov na stranici izbora razreda
+* Popravljene neke greške vezane za Firebase i svojstva elemenata
+* Dodan handling u slučaju greške s mrežom
+
 ## 1.8.6 (2019-09-06)
 * Dodan izbor razreda – sada je moguće odabrati i starije razrede
 * Popravljena greška zbog koje se u nekim slučajevima izostanci nisu učitavali
