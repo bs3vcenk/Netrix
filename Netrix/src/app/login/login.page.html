@@ -27,7 +27,7 @@
 			</ion-item>
 		</ion-list>
 		<!-- Login button-->
-		<ion-button id="loginButton" (click)="_login()">
+		<ion-button id="loginButton" (click)="login()">
 			<div *ngIf="!isLoading">{{ 'login.text.login' | translate }}</div>
 			<div *ngIf="isLoading"><ion-spinner name="crescent"></ion-spinner></div>
 		</ion-button>
