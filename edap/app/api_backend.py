@@ -735,8 +735,6 @@ def get_class_profile(obj, class_id, class_obj):
 		class_obj['subjects'][z]['id'] = z
 		try:
 			class_obj['subjects'][z]['grades'] = obj.getGradesForSubject(class_id, z)
-			if not class_obj['subjects'][z]['grades']:
-				class_obj['subjects'][z]['grades'] = None
 			isconcl, concluded = obj.getConcludedGradeForSubject(0, z)
 			if isconcl:
 				class_obj['subjects'][z]['average'] = concluded
@@ -749,15 +747,13 @@ def get_class_profile(obj, class_id, class_obj):
 				allSubjAverageGrades.append(round(sum(lgrades)/len(lgrades), 0))
 		except Exception as e:
 			log.error("Error getting grades for subject %s: %s", z, e)
-			class_obj['subjects'][z]['grades'] = None
+			class_obj['subjects'][z]['grades'] = []
 			continue
 		try:
 			class_obj['subjects'][z]['notes'] = obj.getNotesForSubject(class_id, z)
-			if not class_obj['subjects'][z]['notes']:
-				class_obj['subjects'][z]['notes'] = None
 		except Exception as e:
 			log.error("Error getting notes for subject %s: %s", z, e)
-			class_obj['subjects'][z]['notes'] = None
+			class_obj['subjects'][z]['notes'] = []
 			continue
 	try:
 		class_obj['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
