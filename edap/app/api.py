@@ -253,7 +253,8 @@ def dev_reload_info():
 	for token in tokens:
 		try:
 			o = get_data(token)
-			userObj = edap.edap(o['user'], o['pasw'])
+			creds = get_credentials(token)
+			userObj = edap.edap(creds['username'], creds['password'])
 			o['data'] = populate_data(userObj)
 			o['generated_with'] = API_VERSION
 			save_data(token, o)
