@@ -77,7 +77,7 @@ else
         content_ssl=$content_ssl'    ssl_protocols TLSv1.3 TLSv1.2;\n'
         content_ssl=$content_ssl'    ssl_prefer_server_ciphers on;\n'
         content_ssl=$content_ssl'    ssl_ciphers EECDH+AESGCM:EDH+AESGCM;\n'
-        content_ssl=$content_ssl'    ssl_ecdh_curve secp384r1;\n'
+        content_ssl=$content_ssl'    ssl_ecdh_curve prime256v1;\n'
         content_ssl=$content_ssl'    ssl_session_timeout  10m;\n'
         content_ssl=$content_ssl'    ssl_session_cache shared:SSL:10m;\n'
         content_ssl=$content_ssl'    ssl_session_tickets off;\n'
