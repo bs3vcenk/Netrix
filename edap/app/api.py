@@ -166,7 +166,8 @@ def dev_users():
 	"""
 	tklist = []
 	for token in get_tokens():
-		tklist.append({'token': token, 'name': ''})
+		creds = get_credentials(token)
+		tklist.append({'token': token, 'name': creds['username']})
 	return make_response(jsonify({'users':tklist}), 200)
 
 @app.route('/dev/users/<string:token>', methods=["DELETE", "GET"])
@@ -178,8 +179,9 @@ def dev_token_mgmt(token):
 	"""
 	if request.method == "GET":
 		data = get_data(token)
+		creds = get_credentials(token)
 		return {
-			'username': data["user"],
+			'username': creds["username"],
 			'device': {
 				'os': data["device"]["platform"],
 				'device': data["device"]["model"],
