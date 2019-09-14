@@ -714,12 +714,12 @@ def get_class_profile(obj, class_id, class_obj):
 
 	try:
 		absences_overview = obj.getAbsentOverviewForClass(class_id)
-		class_obj['absences'] = {'overview':absences_overview, 'full':None}
+		class_obj['absences'] = {'overview':absences_overview, 'full': []}
 	except Exception as e:
 		log.error("Error getting absence overview for class: %s", e)
-		class_obj['absences'] = None
+		class_obj['absences'] = {'overview': None, 'full': []}
 	try:
-		if class_obj['absences'] != None:
+		if class_obj['absences']['overview']:
 			absences_full = obj.getAbsentFullListForClass(class_id)
 			class_obj['absences']['full'] = absences_full
 	except Exception as e:
