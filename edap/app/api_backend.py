@@ -374,8 +374,15 @@ def _profile_difference(dObj1, dObj2):
 	t1 = deepcopy(dObj1['classes'])
 	t2 = deepcopy(dObj2['classes'])
 	for y in [t1, t2]:
-		del y[0]['tests']
-		del y[0]['subjects']
+		for x in y:
+			del x['tests']
+			del x['subjects']
+			del x['absences']
+			del x['info']
+			if 'complete_avg' in x:
+				del x['complete_avg']
+			if 'full' in x:
+				del x['full']
 	difflist = [x for x in t2 if x not in t1]
 	if difflist:
 		log.debug("Found difference in classes")
