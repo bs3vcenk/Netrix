@@ -145,9 +145,9 @@ export class SettingsPage {
             this.settings.changePreference('notif-time', this.testNotifTime);
             this.settings.notifTime = this.testNotifTime;
             if (this.testNotifTime === 1) {
-              this.dayString = this.translate.instant('settings.api.time_singular');
+              this.dayString = this.timeSingular;
             } else {
-              this.dayString = this.translate.instant('settings.api.time_plural');
+              this.dayString = this.timePlural;
             }
             this.resetNotif();
           },
