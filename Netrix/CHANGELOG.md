@@ -1,3 +1,6 @@
+## 1.8.8 (2019-09-16)
+* Popravljena kriva identifikacija za prijevod prilikom promjene postavke "Obavijesti prije ispita"
+
 ## 1.8.7 (2019-09-14)
 * Od sada je po zadanom isključeno prikupljanje podataka o korištenju
 * Maknuto upozorenje pri prijavi
