@@ -370,7 +370,7 @@ def sync(token, debug=False):
 		if diff[0]['type'] == 'class':
 			fData["data"] = nData
 		else:
-			fData["data"][0] = nData[0]
+			fData["data"]["classes"][0] = nData["classes"][0]
 		fData["new"] = diff
 		save_data(token, fData)
 		if not fData["settings"]["notif"]["disable"]:
