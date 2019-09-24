@@ -44,7 +44,7 @@ class edap:
 	             pasw: str,
 	             parser="lxml",
 	             edurl="https://ocjene.skole.hr",
-	             ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0",
+	             ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/69.0",
 	             debug=False,
 	             loglevel=1,
 	             hidepriv=True,
