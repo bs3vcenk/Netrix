@@ -266,7 +266,7 @@ def dev_reload_info():
 			continue
 	return make_response(jsonify({'sample': len(tokens), 'fails': failed}))
 
-@app.route('/dev/info/tokendebug/<string:token>/testdiff', methods=["POST"])
+@app.route('/dev/users/<string:token>/testdiff', methods=["POST"])
 @dev_pw_area
 def dev_test_diff(token):
 	if not request.json or not "subjId" in request.json or not "gradeData" in request.json:
@@ -281,6 +281,14 @@ def dev_test_diff(token):
 	o['classes'][0]['subjects'][request.json["subjId"]]['grades'].append(request.json["gradeData"])
 	sync_dev(o, token)
 	return make_response(jsonify({'status':'ok'}), 200)
+
+@app.route('/dev/users/<string:token>/diff', methods=["POST"])
+@dev_pw_area
+def dev_force_diff(token):
+	if not verify_request(token):
+		abort(401)
+	debug_output = sync(token, debug=True)
+	return make_response(debug_output, 200)
 
 @app.route('/api/login', methods=["POST"])
 def login():

@@ -343,16 +343,28 @@ def sync_dev(data2, token):
 		save_data(token, o)
 		_formatAndSendNotification(token, diff)
 
-def sync(token):
+def sync(token, debug=False):
 	"""
 		Pull remote data, compare with current and replace if needed.
 	"""
+	if debug:
+		log_buffer = ""
 	log.debug("Syncing %s", token)
+	if debug:
+		log_buffer += "START_SYNC token:%s\n" % token
+		log_buffer += "FETCH_OLD_DATA\n"
 	fData = get_data(token)
 	data = fData["data"] # Old data
 	credentials = get_credentials(token)
+	if debug:
+		log_buffer += "CREDENTIALS username:%s password:%s\n" % (credentials['username'], credentials['password'])
+		log_buffer += "FETCH_NEW_DATA\n"
 	nData = populate_data(edap.edap(credentials["username"], credentials["password"])) # New data
+	if debug:
+		log_buffer += "GET_DIFFERENCE\n"
 	diff = _profile_difference(data, nData)
+	if debug:
+		log_buffer += "DIFF_RESULT diff:%s\n" % diff
 	if diff:
 		# Overwrite everything if new class
 		if diff[0]['type'] == 'class':
@@ -363,6 +375,8 @@ def sync(token):
 		save_data(token, fData)
 		if not fData["settings"]["notif"]["disable"]:
 			_formatAndSendNotification(token, diff)
+	if debug:
+		return log_buffer
 
 def _profile_difference(dObj1, dObj2):
 	"""
@@ -375,7 +389,7 @@ def _profile_difference(dObj1, dObj2):
 	t2 = deepcopy(dObj2['classes'])
 	difflist = len(t1) != len(t2)
 	if difflist:
-		log.debug("Found difference in classes")
+		log.info("Found difference in classes")
 		_finalReturn.append({'type':'class'})
 		# At this point, we can't compare anything else, as only the
 		# first class' information is pulled by populateData(), so
@@ -386,7 +400,7 @@ def _profile_difference(dObj1, dObj2):
 	t2 = deepcopy(dObj2['classes'][0]['tests'])
 	difflist = [x for x in t2 if x not in t1]
 	if difflist:
-		log.debug("Found difference in tests")
+		log.info("Found difference in tests")
 		for i in difflist:
 			_finalReturn.append({'type':'test', 'classId':0, 'data':i})
 	## ABSENCE DIFFERENCE (FIRST CLASS ONLY) ##
@@ -408,7 +422,7 @@ def _profile_difference(dObj1, dObj2):
 			t2 = deepcopy(j['grades'])
 			difflist = [x for x in t2 if x not in t1]
 			if difflist:
-				log.debug("Found difference in grades")
+				log.info("Found difference in grades")
 				for x in difflist:
 					_finalReturn.append({'type':'grade', 'classId':0, 'subjectId': sId, 'data':x})
 		elif "notes" in j:
@@ -418,7 +432,7 @@ def _profile_difference(dObj1, dObj2):
 			t2 = deepcopy(j['notes'])
 			difflist = [x for x in t2 if x not in t1]
 			if difflist:
-				log.debug("Found difference in notes")
+				log.info("Found difference in notes")
 				for x in difflist:
 					_finalReturn.append({'type':'note', 'classId':0, 'subjectId': sId, 'data':x})
 		else:
