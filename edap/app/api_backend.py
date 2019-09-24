@@ -65,7 +65,10 @@ def rm_credentials(token):
 	data.raise_for_status()
 
 def _exit(exitCode):
-	print("!!! Exiting with code %i\n    Check the log file for more information if possible." % exitCode)
+	"""
+		Present additional information on exit (exit code and instructions).
+	"""
+	print("!!! Exited with code %i\n    Check the log file for more information if possible." % exitCode)
 	_sys_exit(exitCode)
 
 def localize(token, notif_type):
@@ -505,28 +508,31 @@ def _get_var(varname, _bool=False, default=None):
 		return default
 
 def _read_config():
+	"""
+		Read, verify and print the configuration.
+	"""
 	DATA_FOLDER = _get_var("DATA_FOLDER", default="/data")
-	print("[configuration] Storing data in: %s" % DATA_FOLDER)
+	print("[eDAP] [INFO] Storing data in: %s" % DATA_FOLDER)
 
 	VAULT_SERVER = _get_var("VAULT_SERVER")
 	VAULT_TOKEN_READ = _get_var("VAULT_TOKEN_READ")
 	VAULT_TOKEN_WRITE = _get_var("VAULT_TOKEN_WRITE")
 
 	if not VAULT_TOKEN_READ or not VAULT_TOKEN_WRITE:
-		print("[configuration] No Hashicorp Vault tokens supplied!")
+		print("[eDAP] [ERROR] Vault read and/or write tokens not specified!")
 		_exit(1)
 	elif not VAULT_SERVER:
-		print("[configuration] No Hashicorp Vault server supplied!")
+		print("[eDAP] [ERROR] Vault server not specified!")
 		_exit(1)
 
-	print("[configuration] Hashicorp Vault server at: %s" % VAULT_SERVER)
+	print("[eDAP] [INFO] Hashicorp Vault server at: %s" % VAULT_SERVER)
 
 	ALLOW_DEV_ACCESS = _get_var("DEV_ACCESS", _bool=True)
 	USE_CLOUDFLARE = _get_var("CLOUDFLARE", _bool=True)
 	USE_FIREBASE = _get_var("FIREBASE", _bool=True)
-	print("[configuration] Developer access enabled: %s" % ALLOW_DEV_ACCESS)
-	print("[configuration] Using Cloudflare: %s" % USE_CLOUDFLARE)
-	print("[configuration] Using Firebase: %s" % USE_FIREBASE)
+	print("[eDAP] [INFO] Developer access enabled: %s" % ALLOW_DEV_ACCESS)
+	print("[eDAP] [INFO] Using Cloudflare: %s" % USE_CLOUDFLARE)
+	print("[eDAP] [INFO] Using Firebase: %s" % USE_FIREBASE)
 
 	privUsername = privPassword = None
 	FIREBASE_TOKEN = None
@@ -535,13 +541,13 @@ def _read_config():
 		privUsername = _get_var("DEV_USER")
 		privPassword = _get_var("DEV_PASW")
 		if not privUsername or not privPassword:
-			print("[configuration] Dev access has been disabled, either no user or pass specified")
+			print("[eDAP] [WARN] Dev access has been disabled; both user & password need to be specified!")
 			ALLOW_DEV_ACCESS = False
 
 	if USE_FIREBASE:
 		FIREBASE_TOKEN = _get_var("FIREBASE_TOKEN")
 		if not FIREBASE_TOKEN:
-			print("[configuration] Firebase has been disabled, no token specified")
+			print("[eDAP] [WARN] Firebase has been disabled; no FCM token was specified!")
 			USE_FIREBASE = False
 	return {
 		"DATA_FOLDER": DATA_FOLDER,
