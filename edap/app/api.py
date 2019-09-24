@@ -137,7 +137,7 @@ def index():
 @app.errorhandler(redis.exceptions.ConnectionError)
 def exh_redis_db_fail(e):
 	"""
-		Default handler in case the Redis DB fails.
+		Default handler in case the Redis DB connection fails.
 	"""
 	log.critical(" ==> DATBASE ACCESS FAILURE!!!!! <== [%s]", e)
 	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
@@ -235,7 +235,8 @@ def dev_thread_list():
 @dev_pw_area
 def devAddTestUser():
 	"""
-		DEV: Add a test user
+		DEV: Add a test user. Contains a test dataset; more info
+		in api_backend/generate_test_user().
 	"""
 	testUser, testPasw, testToken = generate_test_user()
 	html = "<p>Username: <code>%s</code></p>" % testUser
@@ -269,6 +270,12 @@ def dev_reload_info():
 @app.route('/dev/users/<string:token>/testdiff', methods=["POST"])
 @dev_pw_area
 def dev_test_diff(token):
+	"""
+		DEV: Simulate a sync by adding a fake grade object to a list
+		of a subject's grades. This new dataset will then be checked
+		against the current one and a notification will be fired off
+		to the user.
+	"""
 	if not request.json or not "subjId" in request.json or not "gradeData" in request.json:
 		log.error("Bad JSON")
 		abort(400)
@@ -285,6 +292,10 @@ def dev_test_diff(token):
 @app.route('/dev/users/<string:token>/diff', methods=["POST"])
 @dev_pw_area
 def dev_force_diff(token):
+	"""
+		DEV: Force a sync operation for a token. Will output debugging
+		logs, which include credentials!
+	"""
 	if not verify_request(token):
 		abort(401)
 	debug_output = sync(token, debug=True)

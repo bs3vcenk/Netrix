@@ -556,9 +556,14 @@ def _read_config():
 		"VAULT_TOKEN_WRITE": VAULT_TOKEN_WRITE
 	}
 
-def read_log():
+def read_log(exclude_syncing=False):
+	log_lines = []
 	with open(_join_path(config["DATA_FOLDER"], "edap_api.log")) as f:
-		return f.read()
+		for x in f.readlines():
+			if exclude_syncing and 'get_class_profile' in x:
+				continue
+			log_lines.append(x)
+	return ''.join(log_lines)
 
 def make_html(title="eDAP dev", content=None, bare=False):
 	"""
@@ -634,7 +639,8 @@ def _subject_id_exists(token, cid, sid):
 
 def fetch_new_class(token, class_id):
 	"""
-		Fetch a new class
+		Fetch a new class. Handles all the background credential collection
+		and other things.
 	"""
 	full_data = get_data(token)
 	# If not already pulled
@@ -653,23 +659,10 @@ def fetch_new_class(token, class_id):
 
 def populate_data(obj):
 	"""
-		Fill in the 'data' part of the user dict. This will contain subjects, grades, etc.
-
-		First, get the class list (this also fills the class ID list for eDAP).
-
-		Second, get the list of tests for the first class, both current and full, and
-		compare them, assigning a "current" flag to each which will say if the test
-		has already been written or not.
-
-		Third, get the subjects for a class, and get the grades for each one. If there
-		is a concluded grade available, use it as the average, otherwise calculate an average.
-		Get the list of "additional notes" for each subject.
-
-		Fourth, write this data into the "classes" key in the dict.
-
-		Fifth, get the user's personal info and write it into the "info" key in the dict.
-
-		Finally, return all the collected data.
+		Call get_class_profile() to initialize the data object in
+		a newly-created profile.
+		TODO: Should probably be removed and the invoking code
+		refactored to just call get_class_profile().
 	"""
 	data_dict = {'classes':None}
 	try:
@@ -683,29 +676,47 @@ def populate_data(obj):
 	return data_dict
 
 def get_class_profile(obj, class_id, class_obj):
+	"""
+		Add/modify a list of classes from eDAP. `class_id` is the
+		class ID that will be "expanded" (add grades, exams, etc.)
+		and class_obj is the class object to which the data will
+		be assigned to.
+
+		TODO: Refactor a lot of this and the invoking code, makes
+		very little sense right now.
+	"""
 	try:
+		# Get a list of current tests and all tests
 		tests_nowonly = obj.getTests(class_id, alltests=False)
 		tests_all = obj.getTests(class_id, alltests=True)
+		# Init a testId var so we can assign an ID to the tests
 		testId = 0
 		for x in tests_all:
+			# Check if a test is present in the list of current tests
+			# and mark it as such (so we know which ones to show and
+			# which to ignore)
 			if x not in tests_nowonly:
 				x['current'] = False
 			else:
 				x['current'] = True
 			x['id'] = testId
 			testId += 1
+		# Create a new 'tests' item in the dictionary
 		class_obj['tests'] = tests_all
 	except Exception as e:
 		log.error("Error getting tests for class: %s", e)
 		class_obj['tests'] = None
 
 	try:
+		# Get an overview of absences (counters)
 		absences_overview = obj.getAbsentOverviewForClass(class_id)
 		class_obj['absences'] = {'overview':absences_overview, 'full': []}
 	except Exception as e:
 		log.error("Error getting absence overview for class: %s", e)
 		class_obj['absences'] = {'overview': None, 'full': []}
 	try:
+		# If we have an overview, we can continue with making a full
+		# list of absences, sorted by day.
 		if class_obj['absences']['overview']:
 			absences_full = obj.getAbsentFullListForClass(class_id)
 			class_obj['absences']['full'] = absences_full
@@ -713,20 +724,29 @@ def get_class_profile(obj, class_id, class_obj):
 		log.error("Error getting absence full list for class: %s", e)
 
 	try:
+		# Get a list of subjects
 		class_obj['subjects'] = obj.getSubjects(class_id)
 	except Exception as e:
 		log.error("Error getting subjects for class: %s", e)
 		class_obj['subjects'] = None
+	# Init a list of average grades for all subjects (for calculating
+	# the general average)
 	allSubjAverageGrades = []
 	for z in range(len(class_obj['subjects'])):
 		class_obj['subjects'][z]['id'] = z
 		try:
+			# Get a list of all grades
 			class_obj['subjects'][z]['grades'] = obj.getGradesForSubject(class_id, z)
+			# Check if we have a concluded grade
 			isconcl, concluded = obj.getConcludedGradeForSubject(0, z)
+			# Store the boolean for use in the UI
+			class_obj['subjects'][z]['concluded'] = isconcl
 			if isconcl:
+				# Skip calculating grade if it's already concluded
 				class_obj['subjects'][z]['average'] = concluded
 				allSubjAverageGrades.append(concluded)
 			else:
+				# Otherwise do the standard calculating (sum(grades)/len(grades))
 				lgrades = []
 				for i in class_obj['subjects'][z]['grades']:
 					lgrades.append(i['grade'])
@@ -737,19 +757,24 @@ def get_class_profile(obj, class_id, class_obj):
 			class_obj['subjects'][z]['grades'] = []
 			continue
 		try:
+			# Get a list of notes
 			class_obj['subjects'][z]['notes'] = obj.getNotesForSubject(class_id, z)
 		except Exception as e:
 			log.error("Error getting notes for subject %s: %s", z, e)
 			class_obj['subjects'][z]['notes'] = []
 			continue
 	try:
+		# Calculate the general average
 		class_obj['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
 	except:
+		# Avoid division by zero/no grades
 		class_obj['complete_avg'] = 0
 	try:
+		# Finally, get user information
 		class_obj['info'] = obj.getInfoForUser(0)
 	except Exception as e:
 		log.error("Error getting info: %s", str(e))
+	# Mark it as full/expanded
 	class_obj['full'] = True
 	return class_obj
 
