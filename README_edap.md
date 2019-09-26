@@ -6,12 +6,12 @@ To je API pisan pomoću Flask frameworka koji mapira funkcije eDAPa na [ReST](ht
 
 Za bazu podataka koristi [Redis](https://redis.io/) u (po mogućnosti) AOF (Append-Only file) načinu.
 
-### Potrebni programi
+## Potrebni programi
 
 * [Docker](https://docs.docker.com/install/) – za produkciju
 * [Python 3.5+](https://www.python.org/downloads/) – za dev testing na računalu
 
-### Instalacija
+## Instalacija
 
 Za vrijeme razvijanja projekta je potrebno pokrenuti Redis instancu u jednom prozoru:
 ```bash
@@ -61,14 +61,14 @@ SERVER_NAME=api-test.netrix.io
 i onda ju dati kao argument `docker` komandi:
 ```bash
 docker run -d --name netrix \
-      --env-file ./env.list \
+      --env-file /opt/env.list \
       -p 80:80 \
       -v redis-data:/data \
       --restart unless-stopped \
       netrix:latest
 ```
 
-### Lista konfiguracijskih varijabla
+## Lista konfiguracijskih varijabla
 
 Zadani iznos varijabla je unutar zagrada.
 
