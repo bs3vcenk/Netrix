@@ -352,6 +352,8 @@ export class ApiService {
       /* Count the number of "current" tests, so that we know if we need to show the
        * "No tests" message or not */
       this.countTests();
+      /* Sort tests by week */
+      this.tests = this.groupTestsByWeek(this.tests);
       this.firebase.stopTrace('getTests');
       /* Let preCacheData() know we're done */
       this.loadingFinishedTests.next(true);
@@ -363,6 +365,23 @@ export class ApiService {
       this.loadingFinishedTests.next(true);
       // this.loadingFinishedTests.complete();
     });
+  }
+
+  private groupTestsByWeek(obj) {
+    let objPeriod = [];
+    const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
+    let existingWeeks = [];
+    for (let i = 0; i < obj.length; i++) {
+      const d = new Date(obj[i].date * 1000);
+      const indx = Math.floor(d.getTime() / (oneDay * 7));
+      if (!existingWeeks.includes(indx)) {
+        existingWeeks.push(indx);
+        objPeriod.push({week: indx, items: []});
+      }
+      const currentIndex = existingWeeks.indexOf(indx);
+      objPeriod[currentIndex].items.push(obj[i]);
+    }
+    return objPeriod;
   }
 
   private async countTests() {

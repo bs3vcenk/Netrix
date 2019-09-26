@@ -20,7 +20,7 @@ export class Tab2Page {
   tests = null;
   showAllPreference = false;
   currentTests = [];
-  results = null;
+  oneWeek = 604800000; // in ms
 
   constructor(
     private apiSvc: ApiService,
@@ -45,6 +45,16 @@ export class Tab2Page {
   convertToReadableDate(unixTimestamp: number): string {
     const date = new Date(unixTimestamp * 1000);
     return date.toLocaleDateString();
+  }
+
+  convertToReadableWeekSpan(startingWeekTimestamp: number): string {
+    const startWeek = new Date(startingWeekTimestamp * this.oneWeek);
+    const startWeekMonth = startWeek.getMonth() + 1; // Months start from 0 in JS
+    const startWeekDay = startWeek.getDate();
+    const endWeek = new Date(startingWeekTimestamp * this.oneWeek + this.oneWeek);
+    const endWeekMonth = endWeek.getMonth() + 1;
+    const endWeekDay = endWeek.getDate();
+    return startWeekDay + '.' + startWeekMonth + '. - ' + endWeekDay + '.' + endWeekMonth + '.';
   }
 
 }

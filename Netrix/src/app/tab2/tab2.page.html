@@ -20,11 +20,14 @@
     <!-- <ng-container> for every test in available search results
          Not using <ion-item> only because you can't use both *ngFor and
          *ngIf on one item -->
-    <ng-container *ngFor="let testObj of results">
+    <ng-container *ngFor="let testGroup of tests">
       <!-- <ion-item> with *ngIf to check if:
            1. either the test is current (not yet written), or
            2. the "Show all" switch is enabled -->
-      <ion-item [@fadeInOut] *ngIf="testObj.current || showAllPreference">
+      <ion-list-header>
+        <ion-label>{{ convertToReadableWeekSpan(testGroup.week) }} ({{ testGroup.items.length }} ispita)</ion-label>
+      </ion-list-header>
+      <ion-item [@fadeInOut] *ngFor="let testObj of testGroup.items">
         <ion-label>
           <!-- Test name -->
           <h2 id="testName" class="ion-text-wrap">{{ testObj.test }}</h2>
@@ -34,7 +37,7 @@
           <ion-note id="testSubject">{{ testObj.subject }}</ion-note>
         </ion-label>
         <!-- Notification icon with *ngIf to show only if this item has notifications turned on -->
-        <ion-icon item-right name="notifications" *ngIf="testObj.scheduled"></ion-icon>
+        <!--<ion-icon item-right name="notifications" *ngIf="testObj.scheduled"></ion-icon>-->
         <!-- Checkmark with *ngIf to show only if not current (already written) -->
         <ion-icon item-right name="checkmark" color="success" *ngIf="!testObj.current"></ion-icon>
       </ion-item>
