@@ -39,29 +39,12 @@ export class Tab2Page {
 
   initInBg() {
     this.tests = this.apiSvc.tests;
-    this.reInit();
     this.currentTests = this.apiSvc.currentTests;
-  }
-
-  private reInit() {
-    this.results = this.tests;
   }
 
   convertToReadableDate(unixTimestamp: number): string {
     const date = new Date(unixTimestamp * 1000);
     return date.toLocaleDateString();
-  }
-
-  searchHandler(event) {
-    this.reInit();
-    const val = event.target.value;
-    if (val && val.trim() !== '') {
-      this.results = this.results.filter((item) => {
-        return ((item.test.toLowerCase().indexOf(val.toLowerCase()) > -1) || (item.subject.toLowerCase().indexOf(val.toLowerCase()) > -1));
-      });
-    } else {
-      this.results = this.tests;
-    }
   }
 
 }
