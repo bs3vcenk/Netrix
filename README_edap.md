@@ -70,21 +70,94 @@ docker run -d --name netrix \
 
 ## Lista konfiguracijskih varijabla
 
-Zadani iznos varijabla je unutar zagrada.
+Varijable označene s [R] moraju biti definirane.
 
-```bash
-DATA_FOLDER=[/data] # Mapa za logove, DB i Firebase token JSON
-CLOUDFLARE=[N] # Cloudflare integracije (hvatanje pravog IP-a iza Cloudflare servera)
-VAULT_SERVER=[] # Adresa Hashicorp Vault servera (API)
-VAULT_TOKEN_READ=[] # Token za Vault server koji ima dopuštenje čitanja
-VAULT_TOKEN_WRITE=[] # Token za Vault server koji ima dopuštenje pisanja/kreiranja
-FIREBASE=[N] # Firebase integracija (obavijesti)
-  FIREBASE_TOKEN=[] # Token za Firebase Cloud Messaging
-DEV_ACCESS=[N] # /dev/ interface
-  DEV_USER=[] # Username za /dev/ interface
-  DEV_PASW=[] # SHA256 lozinke za /dev/ interface
-SERVER_NAME=[api.netrix.io] # Hostname servera
-SSL=[N] # SSL konfiguracija za NGINX
-  SSL_CERT=[] # Putanja do PEM certifikata
-  SSL_KEY=[] # Putanja do PEM ključa/private key
-```
+### DATA_FOLDER [R]
+
+Zadana vrijednost: `/data`
+
+Ovdje se spremaju logovi te se pretpostavlja da je i Redis AOF baza podataka (`appendonly.aof`) na istoj lokaciji.
+
+### CLOUDFLARE
+
+Zadana vrijednost: `N`
+
+Omogućuje integraciju s Cloudflareom. Uključivanjem dobivaju se dodatne informacije za klijent (npr. država) te se iz headera izvlači prava IP adresa korisnika.
+
+### VAULT_SERVER [R]
+
+Zadana vrijednost: ništa
+
+HTTPS adresa Hashicorp Vault servera. Koristi se u daljnjim zahtjevima za spremanje, modificiranje i brisanje podataka za prijavu na servis e-Dnevnik.
+
+### VAULT_TOKEN_READ [R]
+
+Zadana vrijednost: ništa
+
+Token za Hashicorp Vault server s dopuštenjem čitanja.
+
+### VAULT_TOKEN_WRITE [R]
+
+Zadana vrijednost: ništa
+
+Token za Hashicorp Vault server s dopuštenjem kreiranja/pisanja i modificiranja.
+
+### FIREBASE
+
+Zadana vrijednost: `N`
+
+Omogućuje Firebase Cloud Messaging integraciju. Koristi se za slanje obavijesti o promjenama podataka.
+
+Ako je ova varijabla uključena, potrebno je dopuniti i FIREBASE_TOKEN, inače će se automatski isključiti.
+
+### FIREBASE_TOKEN [R samo ako FIREBASE == Y]
+
+Zadana vrijednost: ništa
+
+Token za Firebase Cloud Messaging.
+
+### DEV_ACCESS
+
+Zadana vrijednost: `N`
+
+Omogućuje pristup statistikama, popisima i zapisima na serveru te ograničenu kontrolu nad nekim korisnicima. Endpointovi koje ova varijabla kontrolira imaju prefix `/dev/` u zahtjevima i `dev_` u funkcijama.
+
+Ako je ova varijabla uključena, potrebno je dopuniti i DEV_USER i DEV_PASW, inače će se automatski isključiti.
+
+### DEV_USER [R samo ako DEV_ACCESS == Y]
+
+Zadana vrijednost: ništa
+
+Korisničko ime za dio dev sučelja koji podržava pristup pomoću preglednika.
+
+### DEV_PASW [R samo ako DEV_ACCESS == Y]
+
+Zadana vrijednost: ništa
+
+SHA256 hash lozinke za dio dev sučelja koji podržava pristup pomoću preglednika.
+
+### SERVER_NAME [R]
+
+Zadana vrijednost: `api.netrix.io`
+
+Hostname servera; koristi se u NGINX konfiguraciji (instrukcija `server_name`).
+
+### SSL
+
+Zadana vrijednost: `N`
+
+Omogućuje HTTPS konfiguraciju s podrškom za moderne klijente (ocjena A+ na ssllabs.com).
+
+Ako je ova varijabla uključena, potrebno je dopuniti i SSL_CERT i SSL_KEY te osigurati da su te datoteke dostupne i certifikati važeći za domenu navedenu pod SERVER_NAME.
+
+### SSL_CERT [R samo ako SSL == Y]
+
+Zadana vrijednost: ništa
+
+SSL certifikat.
+
+### SSL_KEY [R samo ako SSL == Y]
+
+Zadana vrijednost: ništa
+
+SSL private key.
