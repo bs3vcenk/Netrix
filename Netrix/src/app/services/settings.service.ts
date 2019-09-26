@@ -3,7 +3,6 @@ import { Storage } from '@ionic/storage';
 import { AdmobService } from './admob.service';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +16,7 @@ export class SettingsService {
   adPreference = null;
   language = null;
   notifTime = null;
-  apiServer = environment.production ? 'https://api.netrix.io' : 'https://dev-api.netrix.io';
+  apiServer = 'https://api.netrix.io';
   // httpLimit = 5000;
   globalTheme: 'dark' | 'light';
 
