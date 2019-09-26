@@ -30,13 +30,14 @@ export class SettingsService {
   readPrefs() {
     this.storage.get('data-preference').then(res => {
       if (res != null) {
+        console.log('SettingsService/readPrefs(): Firebase Analytics preference set to ' + res);
         this.firebase.setAnalyticsCollectionEnabled(res);
         this.dataPreference = res;
       } else { // If it isn't stored, store it and set default (false)
         this.storage.set('data-preference', false).then(() => {
           this.dataPreference = false;
           this.firebase.setAnalyticsCollectionEnabled(false);
-          console.log('SettingsService/readPrefs(): API analytics preference defaulted to off');
+          console.log('SettingsService/readPrefs(): Firebase Analytics preference defaulted to off');
         });
       }
       // this.hasLoadedDataPref.next(true);
