@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Tab1Page } from './tab1.page';
 import { TranslateModule } from '@ngx-translate/core';
-import { CountUpModule } from 'countup.js-angular2';
 
 @NgModule({
   imports: [
@@ -13,8 +12,7 @@ import { CountUpModule } from 'countup.js-angular2';
     CommonModule,
     FormsModule,
     RouterModule.forChild([{ path: '', component: Tab1Page }]),
-    TranslateModule,
-    CountUpModule
+    TranslateModule
   ],
   declarations: [Tab1Page]
 })

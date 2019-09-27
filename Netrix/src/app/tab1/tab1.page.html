@@ -23,8 +23,8 @@
     <ion-text id="preWholeAvgText" position="stacked">
       {{ 'tab1.text.average' | translate }}
     </ion-text>
-    <ion-label id="wholeAvgText" position="stacked" [countUp]="fullAvg" [options]="{decimalPlaces: 2,duration: 1}" *ngIf="fullAvg !== 0">
-      0.00
+    <ion-label id="wholeAvgText" position="stacked" *ngIf="fullAvg !== 0">
+      {{ fullAvg }}
     </ion-label>
     <ion-label id="wholeAvgText" position="stacked" *ngIf="fullAvg === 0">
       {{ 'tab1.text.no_grades' | translate }}
