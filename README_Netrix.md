@@ -120,7 +120,11 @@ Potrebno je pokrenuti ovu komandu:
 ionic cordova platform add android --no-resources
 ```
 
-3. **Pokrenite**:
+3. **Napravite potrebne izmjene**:
+
+Provjerite [ovaj dokument](https://github.com/btx3/Netrix/blob/master/Netrix/PATCHES.md) za više informacija.
+
+4. **Pokrenite**:
 
 ### Android
 
