@@ -87,7 +87,7 @@ def e404(err):
 	"""
 		Default handler in case a nonexistent API endpoint is accessed.
 	"""
-	log.error('HTTP 404 (%s)', err)
+	log.debug('HTTP 404 (%s)', err)
 	return make_response(jsonify({'error':'E_UNKNOWN_ENDPOINT'}), 404)
 
 @app.errorhandler(401)
@@ -97,7 +97,7 @@ def e401(err):
 		This error is also returned if a given class ID or subject ID don't
 		exist in the DB.
 	"""
-	log.error('HTTP 401 (%s)', err)
+	log.info('HTTP 401 (%s)', err)
 	return make_response(jsonify({'error':'E_TOKEN_NONEXISTENT'}), 401)
 
 @app.errorhandler(400)
@@ -106,7 +106,7 @@ def e400(err):
 		Default handler in case the user sends an invalid JSON (bad format,
 		missing keys/values, etc.)
 	"""
-	log.error('HTTP 400 (%s)', err)
+	log.info('HTTP 400 (%s)', err)
 	return make_response(jsonify({'error':'E_INVALID_DATA'}), 400)
 
 @app.errorhandler(405)
@@ -115,7 +115,7 @@ def e405(err):
 		Default handler in case the request method with which the endpoint
 		is called isn't in the specified methods list in the decorator.
 	"""
-	log.error('HTTP 405 (%s)', err)
+	log.info('HTTP 405 (%s)', err)
 	return make_response(jsonify({'error':'E_INVALID_METHOD'}), 405)
 
 @app.errorhandler(500)

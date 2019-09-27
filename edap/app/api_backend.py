@@ -803,15 +803,15 @@ def verify_request(token, class_id=None, subject_id=None):
 		Verify if a given token, class_id, and/or subject_id exist in the DB.
 	"""
 	if not _user_in_database(token):
-		log.warning("Token %s not in DB", token)
+		log.debug("Token %s not in DB", token)
 		return False
 	if class_id:
 		if not _class_id_exists(token, class_id):
-			log.warning("Class ID %s does not exist for token %s", class_id, token)
+			log.debug("Class ID %s does not exist for token %s", class_id, token)
 			return False
 	if subject_id:
 		if not _subject_id_exists(token, class_id, subject_id):
-			log.warning("Subject ID %s does not exist for class ID %s for token %s", subject_id, class_id, token)
+			log.debug("Subject ID %s does not exist for class ID %s for token %s", subject_id, class_id, token)
 			return False
 	return True
 
