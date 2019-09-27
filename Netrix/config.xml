@@ -20,7 +20,6 @@
         <config-file parent="application" target="AndroidManifest.xml">
             <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/notification_icon" />
         </config-file>
-        <hook src="scripts/copy_build_extra.js" type="after_prepare" />
         <allow-intent href="market:*" />
         <resource-file src="resources/android/notification/notif-mdpi.png" target="app/src/main/res/drawable-mdpi/notification_icon.png" />
         <resource-file src="resources/android/notification/notif-hdpi.png" target="app/src/main/res/drawable-hdpi/notification_icon.png" />
