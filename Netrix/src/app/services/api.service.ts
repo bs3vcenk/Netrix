@@ -368,9 +368,9 @@ export class ApiService {
   }
 
   private groupTestsByWeek(obj) {
-    let objPeriod = [];
+    const objPeriod = [];
     const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
-    let existingWeeks = [];
+    const existingWeeks = [];
     for (let i = 0; i < obj.length; i++) {
       const d = new Date(obj[i].date * 1000);
       const indx = Math.floor(d.getTime() / (oneDay * 7));
