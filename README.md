@@ -1,8 +1,8 @@
 # Netrix
 Netrix je aplikacija koja unaprjeđuje iskustvo korištenja e-Dnevnika pomoću obavijesti o ocjenama, ispitima i izostancima te modernim izgledom dizajniranim za mobilne uređaje - platforma gdje se e-Dnevnik najviše koristi.
 
-* Backend - [eDAP](https://github.com/btx3/eDnevnik/blob/master/README_edap.md) (eDnevnikAndroidProject) [Python]
-* Frontend - [Netrix](https://github.com/btx3/eDnevnik/blob/master/README_Netrix.md) [JS (Typescript)/Ionic Framework]
+* Backend - [eDAP](https://github.com/btx3/Netrix/blob/master/README_edap.md) (eDnevnikAndroidProject) [Python]
+* Frontend - [Netrix](https://github.com/btx3/Netrix/blob/master/README_Netrix.md) [JS (Typescript)/Ionic Framework]
 
 ![Banner za Netrix](https://i.imgur.com/VkQ7SQX.jpg)
 
