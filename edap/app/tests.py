@@ -62,11 +62,11 @@ def populate_data(obj):
 
 	try:
 		start = timer()
-		absences_overview = obj.getAbsentOverviewForClass(0)
-		absences_full = obj.getAbsentFullListForClass(0)
+		absences_overview = obj.getAbsenceOverview(0)
+		absences_full = obj.getAbsenceList(0)
 		output[0]['absences'] = {'overview':absences_overview, 'full':absences_full}
 		end = timer()
-		print('==> getAbsent*ForClass() => %s' % to_ms(end - start))
+		print('==> getAbsence*() => %s' % to_ms(end - start))
 	except Exception as e:
 		print("Error getting absences for class: %s" % e)
 		output[0]['absences'] = None
@@ -84,10 +84,10 @@ def populate_data(obj):
 	for z in range(len(output[0]['subjects'])):
 		output[0]['subjects'][z]['id'] = z
 		try:
-			output[0]['subjects'][z]['grades'] = obj.getGradesForSubject(0, z)
+			output[0]['subjects'][z]['grades'] = obj.getGrades(0, z)
 			if len(output[0]['subjects'][z]['grades']) == 0:
 				output[0]['subjects'][z]['grades'] = None
-			isconcl, concluded = obj.getConcludedGradeForSubject(0, z)
+			isconcl, concluded = obj.getConcludedGrade(0, z)
 			if isconcl:
 				output[0]['subjects'][z]['average'] = concluded
 				allSubjAverageGrades.append(concluded)
@@ -102,7 +102,7 @@ def populate_data(obj):
 			output[0]['subjects'][z]['grades'] = None
 			continue
 		try:
-			output[0]['subjects'][z]['notes'] = obj.getNotesForSubject(0, z)
+			output[0]['subjects'][z]['notes'] = obj.getNotes(0, z)
 			if len(output[0]['subjects'][z]['notes']) == 0:
 				output[0]['subjects'][z]['notes'] = None
 		except Exception as e:
@@ -115,9 +115,9 @@ def populate_data(obj):
 	dataDict['classes'] = output
 	try:
 		start = timer()
-		dataDict['info'] = obj.getInfoForUser(0)
+		dataDict['info'] = obj.getInfo(0)
 		end = timer()
-		print('==> getInfoForUser() => %s' % to_ms(end - start))
+		print('==> getInfo() => %s' % to_ms(end - start))
 	except Exception as e:
 		print("Error getting info: %s" % (str(e)))
 	end_full = timer()
@@ -174,10 +174,10 @@ def main():
 		end = timer()
 		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
 		sys.exit(1)
-	print("= 5/10 => student.getInfoForUser() => ", end='')
+	print("= 5/10 => student.getInfo() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getInfoForUser(ID)
+		_, x = student.getInfo(ID)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -185,10 +185,10 @@ def main():
 		end = timer()
 		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
 		sys.exit(1)
-	print("= 6/10 => student.getGradesForSubject() => ", end='')
+	print("= 6/10 => student.getGrades() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getGradesForSubject(ID, 0)
+		_, x = student.getGrades(ID, 0)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -196,10 +196,10 @@ def main():
 		end = timer()
 		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
 		sys.exit(1)
-	print("= 7/10 => student.getNotesForSubject() => ", end='')
+	print("= 7/10 => student.getNotes() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getNotesForSubject(ID, 0)
+		_, x = student.getNotes(ID, 0)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -207,10 +207,10 @@ def main():
 		end = timer()
 		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
 		sys.exit(1)
-	print("= 8/10 => student.getAbsentOverviewForClass() => ", end='')
+	print("= 8/10 => student.getAbsenceOverview() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getAbsentOverviewForClass(ID)
+		_, x = student.getAbsenceOverview(ID)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -218,10 +218,10 @@ def main():
 		end = timer()
 		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
 		sys.exit(1)
-	print("= 9/10 => student.getAbsentFullListForClass() => ", end='')
+	print("= 9/10 => student.getAbsenceList() => ", end='')
 	try:
 		start = timer()
-		_, x = student.getAbsentFullListForClass(ID)
+		_, x = student.getAbsenceList(ID)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
@@ -229,10 +229,10 @@ def main():
 		end = timer()
 		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
 		sys.exit(1)
-	print("= 10/10 => student.getConcludedGradeForSubject() => ", end='')
+	print("= 10/10 => student.getConcludedGrade() => ", end='')
 	try:
 		start = timer()
-		_, _, x = student.getConcludedGradeForSubject(ID, 0)
+		_, _, x = student.getConcludedGrade(ID, 0)
 		end = timer()
 		total_processing_time += x
 		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
