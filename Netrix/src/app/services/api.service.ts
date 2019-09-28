@@ -143,6 +143,7 @@ export class ApiService {
   async fetchClass(classId: number) {
     /* Fetch server-side endpoint which tells the server to scrape the data
      * for the selected class ID */
+    this.firebase.startTrace('fetchClass');
     try {
       await this.http.post(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/fetchclass',
@@ -150,18 +151,22 @@ export class ApiService {
         this.httpHeader
       );
     } catch (e) {
+      this.firebase.stopTrace('fetchClass');
       this.handleErr(e);
     }
   }
 
   getClasses() {
     /* Gets a list of classes */
+    this.firebase.startTrace('getClasses');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes',
       {},
       this.httpHeader
     ).then((rx) => {
       const response = JSON.parse(rx.data);
+      this.classes = response.classes;
+      this.firebase.stopTrace('getClasses');
     }, (error) => {
       this.handleErr(error);
     });
