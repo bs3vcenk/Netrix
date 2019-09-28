@@ -403,7 +403,7 @@ class edap:
 				return False, None, timer() - start
 			return False, None
 
-	def getInfoForUser(self, class_id: int):
+	def getInfo(self, class_id: int):
 		"""
 			Return the info on a eDnevnik user.
 
@@ -440,7 +440,7 @@ class edap:
 			return user_data, timer() - start
 		return user_data
 
-	def getAbsentOverviewForClass(self, class_id: int):
+	def getAbsenceOverview(self, class_id: int):
 		"""
 			Return an overview of classes marked absent for a given class
 			ID.
@@ -481,7 +481,7 @@ class edap:
 			return final_returnable, timer() - start
 		return final_returnable
 
-	def getAbsentFullListForClass(self, class_id: int):
+	def getAbsenceList(self, class_id: int):
 		"""
 			Return a full list of all marked absences for a given class ID.
 
