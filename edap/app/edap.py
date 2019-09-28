@@ -132,12 +132,22 @@ class edap:
 		"""
 		if loglevel > 4:
 			print("EDAP/Error: Unknown loglevel %s" % loglevel)
+		# Map numerical levels to strings
 		logl = ["Verbose", "Info", "Warning", "Error", "FATAL"]
+		# Substitute text in "[{}]" with "PRIVATE" (only if hidepriv is True)
 		if "[{" and "}]" in logs and self.hidepriv:
 			logs = re.sub(r'\[\{.+?\}\]', '[PRIVATE]', logs)
+		# Put the log string together
 		log_string = "EDAP/%s/%s: %s" % (logl[loglevel], inspect.stack()[1].function, logs)
+		# Print string if:
+		# 	Debug mode is enabled (debug=True) AND
+		# 	Log level is higher than or equal to minimum loglevel specified in __init__
+		# 	OR Log level is Fatal (numerical: 4)
 		if self.debug and loglevel >= self.loglevel or loglevel == 4:
 			print(log_string)
+		# Append to log buffer if:
+		# 	Dumpable logs are enabled AND
+		# 	Log level is higher than or equal to minimum loglevel specified in __init__
 		if self.dumpable_logs and loglevel >= self.loglevel:
 			self.log += log_string + "\n"
 		if loglevel == 4:
@@ -156,6 +166,10 @@ class edap:
 		print('==========\n%s' % self.log if self.dumpable_logs else 'Dumpable logs not enabled')
 
 	def __fetch(self, url):
+		"""
+			Simple internal function to fetch URL using stored session object
+			and also raise an exception for non 2xx codes.
+		"""
 		o = self.session.get(url)
 		o.raise_for_status()
 		return o.text
