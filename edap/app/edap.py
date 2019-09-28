@@ -287,7 +287,7 @@ class edap:
 			return final_returnable, timer() - start
 		return final_returnable
 
-	def getGradesForSubject(self, class_id: int, subject_id: int):
+	def getGrades(self, class_id: int, subject_id: int):
 		"""
 			Return grade list (dict, values "date", "note" and "grade") for a subject_id
 
@@ -323,7 +323,7 @@ class edap:
 			return final_returnable, timer() - start
 		return final_returnable
 
-	def getNotesForSubject(self, class_id: int, subject_id: int):
+	def getNotes(self, class_id: int, subject_id: int):
 		"""
 			Return note list (dict, values "date", "note") for a subject_id
 
@@ -361,7 +361,7 @@ class edap:
 			return final_returnable, timer() - start
 		return final_returnable
 
-	def getConcludedGradeForSubject(self, class_id: int, subject_id: int):
+	def getConcludedGrade(self, class_id: int, subject_id: int):
 		"""
 			Return true/false if there is a concluded grade or not, and if there is return the grade.
 
