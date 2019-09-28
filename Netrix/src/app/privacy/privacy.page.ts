@@ -13,11 +13,13 @@ export class PrivacyPage implements OnInit {
 
   constructor(
     private http: HTTP
-  ) {
-    this.render();
-  }
+  ) {}
 
   ngOnInit() {
+  }
+
+  ionViewDidEnter() {
+    this.render();
   }
 
   private render() {
