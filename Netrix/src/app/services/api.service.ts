@@ -353,6 +353,15 @@ export class ApiService {
       const currentIndex = existingWeeks.indexOf(indx);
       objPeriod[currentIndex].items.push(obj[i]);
     }
+    for (let i = 0; i < objPeriod.length; i++) {
+      let currentTestCounter = 0;
+      objPeriod[i].items.forEach((exam) => {
+        if (exam.current) {
+          currentTestCounter += 1;
+        }
+      });
+      objPeriod[i].currentTests = currentTestCounter;
+    }
     return objPeriod;
   }
 
