@@ -76,7 +76,6 @@ export class NotificationService {
                 + this.translate.instant('notif.text.inXdays').replace('DAYS', this.settings.notifTime),
               trigger: { at: new Date((test.date * 1000) - (this.settings.notifTime * this.oneDayInMiliseconds)) }
             } as ILocalNotification);
-            this.apiSvc.tests[test.id].scheduled = true;
           }
         });
         /*console.log('NotificationService/scheduleTestNotifications(): toBeScheduled:');
