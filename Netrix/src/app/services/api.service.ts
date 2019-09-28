@@ -143,7 +143,6 @@ export class ApiService {
   async fetchClass(classId: number) {
     /* Fetch server-side endpoint which tells the server to scrape the data
      * for the selected class ID */
-    this.firebase.startTrace('fetchClass');
     try {
       await this.http.post(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/fetchclass',
@@ -151,31 +150,25 @@ export class ApiService {
         this.httpHeader
       );
     } catch (e) {
-      this.firebase.stopTrace('fetchClass');
       this.handleErr(e);
     }
   }
 
   getClasses() {
     /* Gets a list of classes */
-    this.firebase.startTrace('getClasses');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes',
       {},
       this.httpHeader
     ).then((rx) => {
       const response = JSON.parse(rx.data);
-      this.classes = response.classes;
-      this.firebase.stopTrace('getClasses');
     }, (error) => {
-      this.firebase.stopTrace('getClasses');
       this.handleErr(error);
     });
   }
 
   getMaintenanceMode() {
     /* Check if maintenance mode is in progress */
-    this.firebase.startTrace('getMaintenanceMode');
     this.http.get(
       'https://ocjene.skole.hr/',
       {},
@@ -184,9 +177,7 @@ export class ApiService {
       if (rx.data.includes('trenutno u nadogradnji')) {
         this.maintenanceError.next(true);
       }
-      this.firebase.stopTrace('getMaintenanceMode');
     }, (error) => {
-      this.firebase.stopTrace('getMaintenanceMode');
       this.handleErr(error);
     });
   }
@@ -194,15 +185,12 @@ export class ApiService {
   saveFirebaseToken(firebaseToken: string) {
     /* Tell the server to store the device token with the user's
      * profile */
-    this.firebase.startTrace('saveFirebaseToken');
     this.http.post(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/firebase',
       {deviceToken: firebaseToken},
       this.httpHeader
-    ).then(() => {
-      this.firebase.stopTrace('saveFirebaseToken');
-    }, (error) => {
-      this.firebase.stopTrace('saveFirebaseToken');
+    ).then(() => {},
+    (error) => {
       this.handleErr(error);
     });
   }
@@ -210,16 +198,13 @@ export class ApiService {
   receiveNotifType(nType: string) {
     /* Delete a notification type from the ignore list, if it exists */
     if (this.ignoredNotifTypes.includes(nType)) {
-      this.firebase.startTrace('receiveNotifType');
       this.http.post(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.del',
         {parameter: nType},
         this.httpHeader
       ).then(() => {
-        this.firebase.stopTrace('receiveNotifType');
         delete this.ignoredNotifTypes[this.ignoredNotifTypes.indexOf(nType)];
       }, (error) => {
-        this.firebase.stopTrace('receiveNotifType');
         this.handleErr(error);
       });
     }
@@ -227,15 +212,12 @@ export class ApiService {
 
   setNotifDisabled(nState: boolean) {
     /* Toggle master notification switch */
-    this.firebase.startTrace('setNotifState');
     this.http.post(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.disable',
       {parameter: nState},
       this.httpHeader
     ).then(() => {
-      this.firebase.stopTrace('setNotifState');
     }, (error) => {
-      this.firebase.stopTrace('setNotifState');
       this.handleErr(error);
     });
   }
@@ -243,16 +225,13 @@ export class ApiService {
   ignoreNotifType(nType: string) {
     /* Add a notification type to the ignore list, if it does not already exist */
     if (!this.ignoredNotifTypes.includes(nType)) {
-      this.firebase.startTrace('ignoreNotifType');
       this.http.post(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.add',
         {parameter: nType},
         this.httpHeader
       ).then(() => {
-        this.firebase.stopTrace('ignoreNotifType');
         this.ignoredNotifTypes.push(nType);
       }, (error) => {
-        this.firebase.stopTrace('ignoreNotifType');
         this.handleErr(error);
       });
     }
@@ -260,17 +239,14 @@ export class ApiService {
 
   getUserInfo(classId: number) {
     /* Get information about user */
-    this.firebase.startTrace('getUserInfo');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info',
       {},
       this.httpHeader
     ).then((response) => {
       this.info = JSON.parse(response.data);
-      this.firebase.stopTrace('getUserInfo');
       this.loadingFinishedInfo.next(true);
     }, (error) => {
-      this.firebase.stopTrace('getUserInfo');
       this.handleErr(error);
       this.loadingFinishedInfo.next(true);
     });
@@ -278,19 +254,16 @@ export class ApiService {
 
   getNotifConfig() {
     /* Get list of disabled notification types, for display in the Notification management view */
-    this.firebase.startTrace('getNotifConfig');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.all',
       {},
       this.httpHeader
     ).then((response) => {
       this.ignoredNotifTypes = JSON.parse(response.data).value.ignore;
-      this.firebase.stopTrace('getNotifConfig');
       /* Let preCacheData() know we're done */
       this.loadingFinishedNotif.next(true);
       // this.loadingFinishedNotif.complete();
     }, (error) => {
-      this.firebase.stopTrace('getNotifConfig');
       this.handleErr(error);
       /* Let preCacheData() know we're done */
       this.loadingFinishedNotif.next(true);
@@ -300,7 +273,6 @@ export class ApiService {
 
   getSubjects(classId: number) {
     /* Get a stripped list of all subjects (alldata=0), containing no grades or notes */
-    this.firebase.startTrace('getSubjects');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects?alldata=1',
       {},
@@ -326,13 +298,11 @@ export class ApiService {
       // Set for display
       this.subjects = allsubs;
       this.fullAvg = response.class_avg;
-      this.firebase.stopTrace('getSubjects');
       /* Let preCacheData() know we're done */
       this.loadingFinishedSubj.next(true);
       // this.loadingFinishedSubj.complete();
     },
     (error) => {
-      this.firebase.stopTrace('getSubjects');
       this.handleErr(error);
       /* Let preCacheData() know we're done */
       this.loadingFinishedSubj.next(true);
@@ -341,7 +311,6 @@ export class ApiService {
   }
 
   getTests(classId: number) {
-    this.firebase.startTrace('getTests');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/tests',
       {},
@@ -354,12 +323,10 @@ export class ApiService {
       this.countTests();
       /* Sort tests by week */
       this.tests = this.groupTestsByWeek(this.tests);
-      this.firebase.stopTrace('getTests');
       /* Let preCacheData() know we're done */
       this.loadingFinishedTests.next(true);
       // this.loadingFinishedTests.complete();
     }, (error) => {
-      this.firebase.stopTrace('getTests');
       this.handleErr(error);
       /* Let preCacheData() know we're done */
       this.loadingFinishedTests.next(true);
@@ -396,19 +363,16 @@ export class ApiService {
 
   getAbsences(classId: number) {
     /* Get a list of absences, both an overview and a detailed list */
-    this.firebase.startTrace('getAbsences');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/absences',
       {},
       this.httpHeader
     ).then((response) => {
       this.absences = JSON.parse(response.data);
-      this.firebase.stopTrace('getAbsences');
       /* Let preCacheData() know we're done */
       this.loadingFinishedAbsences.next(true);
       // this.loadingFinishedAbsences.complete();
     }, (error) => {
-      this.firebase.stopTrace('getAbsences');
       this.handleErr(error);
       /* Let preCacheData() know we're done */
       this.loadingFinishedAbsences.next(true);
