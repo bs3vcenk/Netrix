@@ -40,8 +40,8 @@ def populate_data(obj):
 
 	try:
 		start_fetch = timer()
-		tests_nowonly = obj.getTests(0, alltests=False)
-		tests_all = obj.getTests(0, alltests=True)
+		tests_nowonly = obj.getTests(ID, alltests=False)
+		tests_all = obj.getTests(ID, alltests=True)
 		end_fetch = timer()
 		start_proc = timer()
 		testId = 0
@@ -62,8 +62,8 @@ def populate_data(obj):
 
 	try:
 		start = timer()
-		absences_overview = obj.getAbsenceOverview(0)
-		absences_full = obj.getAbsenceList(0)
+		absences_overview = obj.getAbsenceOverview(ID)
+		absences_full = obj.getAbsenceList(ID)
 		output[0]['absences'] = {'overview':absences_overview, 'full':absences_full}
 		end = timer()
 		print('==> getAbsence*() => %s' % to_ms(end - start))
@@ -73,7 +73,7 @@ def populate_data(obj):
 
 	try:
 		start = timer()
-		output[0]['subjects'] = obj.getSubjects(0)
+		output[0]['subjects'] = obj.getSubjects(ID)
 		end = timer()
 		print('==> getSubjects() => %s' % to_ms(end - start))
 	except Exception as e:
@@ -84,7 +84,7 @@ def populate_data(obj):
 	for z in range(len(output[0]['subjects'])):
 		output[0]['subjects'][z]['id'] = z
 		try:
-			output[0]['subjects'][z]['grades'] = obj.getGrades(0, z)
+			output[0]['subjects'][z]['grades'] = obj.getGrades(ID, z)
 			if len(output[0]['subjects'][z]['grades']) == 0:
 				output[0]['subjects'][z]['grades'] = None
 			isconcl, concluded = obj.getConcludedGrade(0, z)
@@ -102,7 +102,7 @@ def populate_data(obj):
 			output[0]['subjects'][z]['grades'] = None
 			continue
 		try:
-			output[0]['subjects'][z]['notes'] = obj.getNotes(0, z)
+			output[0]['subjects'][z]['notes'] = obj.getNotes(ID, z)
 			if len(output[0]['subjects'][z]['notes']) == 0:
 				output[0]['subjects'][z]['notes'] = None
 		except Exception as e:
