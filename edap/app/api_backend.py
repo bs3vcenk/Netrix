@@ -715,7 +715,7 @@ def get_class_profile(obj, class_id, class_obj):
 
 	try:
 		# Get an overview of absences (counters)
-		absences_overview = obj.getAbsentOverviewForClass(class_id)
+		absences_overview = obj.getAbsenceOverview(class_id)
 		class_obj['absences'] = {'overview':absences_overview, 'full': []}
 	except Exception as e:
 		log.error("Error getting absence overview for class: %s", e)
@@ -724,7 +724,7 @@ def get_class_profile(obj, class_id, class_obj):
 		# If we have an overview, we can continue with making a full
 		# list of absences, sorted by day.
 		if class_obj['absences']['overview']:
-			absences_full = obj.getAbsentFullListForClass(class_id)
+			absences_full = obj.getAbsenceList(class_id)
 			class_obj['absences']['full'] = absences_full
 	except Exception as e:
 		log.error("Error getting absence full list for class: %s", e)
@@ -742,9 +742,9 @@ def get_class_profile(obj, class_id, class_obj):
 		class_obj['subjects'][z]['id'] = z
 		try:
 			# Get a list of all grades
-			class_obj['subjects'][z]['grades'] = obj.getGradesForSubject(class_id, z)
+			class_obj['subjects'][z]['grades'] = obj.getGrades(class_id, z)
 			# Check if we have a concluded grade
-			isconcl, concluded = obj.getConcludedGradeForSubject(0, z)
+			isconcl, concluded = obj.getConcludedGrade(0, z)
 			# Store the boolean for use in the UI
 			class_obj['subjects'][z]['concluded'] = isconcl
 			if isconcl:
@@ -764,7 +764,7 @@ def get_class_profile(obj, class_id, class_obj):
 			continue
 		try:
 			# Get a list of notes
-			class_obj['subjects'][z]['notes'] = obj.getNotesForSubject(class_id, z)
+			class_obj['subjects'][z]['notes'] = obj.getNotes(class_id, z)
 		except Exception as e:
 			log.error("Error getting notes for subject %s: %s", z, e)
 			class_obj['subjects'][z]['notes'] = []
@@ -777,7 +777,7 @@ def get_class_profile(obj, class_id, class_obj):
 		class_obj['complete_avg'] = 0
 	try:
 		# Finally, get user information
-		class_obj['info'] = obj.getInfoForUser(0)
+		class_obj['info'] = obj.getInfo(0)
 	except Exception as e:
 		log.error("Error getting info: %s", str(e))
 	# Mark it as full/expanded
