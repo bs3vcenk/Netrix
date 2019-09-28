@@ -43,7 +43,8 @@
     "title": "Tests",
     "showall": "Show all tests",
     "notests": "No tests",
-    "search": "Search tests"
+    "test_singular": "test",
+    "test_plural": "tests"
   },
   "tab3": {
     "title": "Absences",

@@ -43,7 +43,8 @@
     "title": "Tentor",
     "showall": "Visa alla tentor",
     "notests": "Inga tentor",
-    "search": "Sök tentor"
+    "test_singular": "test",
+    "test_plural": "tests"
   },
   "tab3": {
     "title": "Frånvaro",

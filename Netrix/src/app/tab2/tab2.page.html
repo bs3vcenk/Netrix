@@ -25,7 +25,7 @@
            1. either the test is current (not yet written), or
            2. the "Show all" switch is enabled -->
       <ion-list-header>
-        <ion-label>{{ convertToReadableWeekSpan(testGroup.week) }} ({{ testGroup.items.length }} ispita)</ion-label>
+        <ion-label>{{ convertToReadableWeekSpan(testGroup.week) }} ({{ testGroup.items.length }} {{ (testGroup.items.length == 1 ? 'tab2.test_singular' : 'tab2.test_plural') | translate }})</ion-label>
       </ion-list-header>
       <ion-item [@fadeInOut] *ngFor="let testObj of testGroup.items">
         <ion-label>

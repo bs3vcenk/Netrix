@@ -43,7 +43,8 @@
     "title": "Ispiti",
     "showall": "Prikaži sve ispite",
     "notests": "Nema ispita",
-    "search": "Pretraži ispite"
+    "test_singular": "ispit",
+    "test_plural": "ispita"
   },
   "tab3": {
     "title": "Izostanci",

@@ -43,7 +43,8 @@
     "title": "Prüfungen",
     "showall": "Zeige alle Prüfungen",
     "notests": "Keine Prüfungen",
-    "search": "Suche Prüfungen"
+    "test_singular": "Prüfung",
+    "test_plural": "Prüfungen"
   },
   "tab3": {
     "title": "Abwesenheiten",
