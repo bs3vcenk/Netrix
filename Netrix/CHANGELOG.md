@@ -1,3 +1,9 @@
+## 1.8.9 (2019-09-28)
+* Novi dizajn za stranicu predmeta – ispiti su grupirani po tjednima, a za svaku grupu piše i broj ispita u tjednu
+* Optimizacija rada na sporijim uređajima
+* Pravila o privatnosti su sada dostupna pod katogorijom "Analitika i reklame"
+* Smanjeno prikupljanje podataka dok je opcija "Šalji podatke o koristenju" uključena
+
 ## 1.8.8 (2019-09-16)
 * Popravljena kriva identifikacija za prijevod prilikom promjene postavke "Obavijesti prije ispita"
 
