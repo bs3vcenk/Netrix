@@ -91,16 +91,17 @@ def populate_data(obj):
 			if isconcl:
 				output[0]['subjects'][z]['average'] = concluded
 				allSubjAverageGrades.append(concluded)
-			else:
+			elif output[0]['subjects'][z]['grades']:
 				lgrades = []
 				for i in output[0]['subjects'][z]['grades']:
 					lgrades.append(i['grade'])
 				output[0]['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
 				allSubjAverageGrades.append(round(sum(lgrades)/len(lgrades), 0))
+			else:
+				print('No grades for sID %s' % z)
 		except Exception as e:
 			print("Error getting grades for subject %s: %s" % (z, e))
 			output[0]['subjects'][z]['grades'] = None
-			continue
 		try:
 			output[0]['subjects'][z]['notes'] = obj.getNotes(ID, z)
 			if len(output[0]['subjects'][z]['notes']) == 0:
@@ -108,7 +109,6 @@ def populate_data(obj):
 		except Exception as e:
 			print("Error getting notes for subject %s: %s" % (z, e))
 			output[0]['subjects'][z]['notes'] = None
-			continue
 	output[0]['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
 	end = timer()
 	print('==> grade, note & average fetch and processing => %s' % to_ms(end - start))
