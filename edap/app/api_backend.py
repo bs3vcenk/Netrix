@@ -325,6 +325,13 @@ def start_sync(token: str):
 		to.start()
 		_threads["sync:" + token] = {"obj":to, "run":True}
 
+def _maintenance():
+	"""
+		Run maintenance tasks
+	"""
+	log.info('Optimizing AOF database file')
+	_redis.bgrewriteaof()
+
 def restore_syncs():
 	"""
 		Restore all sync threads (on startup).
