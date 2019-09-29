@@ -474,8 +474,17 @@ def sendNotification(token: str, title: str, content: str, data=None):
 		}
 	}
 
+	if data:
+		out_json["data"] = data
+
 	try:
-		a = requests.post('https://fcm.googleapis.com/fcm/send', json=out_json, headers={"Authorization":"key=%s" % config["FIREBASE_TOKEN"]})
+		a = requests.post(
+			'https://fcm.googleapis.com/fcm/send',
+			json=out_json,
+			headers={
+				"Authorization": "key=%s" % config["FIREBASE_TOKEN"]
+			}
+		)
 		a.raise_for_status()
 	except requests.exceptions.HTTPError as e:
 		log.error('Non-200 code (Firebase Cloud Messaging) => %s', str(e))
@@ -827,7 +836,10 @@ def hash_password(inp: str):
 	"""
 	return _SHA256HASH(inp.encode()).hexdigest()
 
-def get_counter(counter_id: str):
+def get_counter(counter_id: str) -> int:
+	"""
+		Get a value of a counter by its ID.
+	"""
 	val = _redis.get("counter:"+counter_id)
 	if val is None:
 		_redis.set("counter:"+counter_id, 0)
@@ -835,9 +847,15 @@ def get_counter(counter_id: str):
 	return int(val)
 
 def _set_counter(counter_id: str, value: int):
+	"""
+		Set a counter to an integer value.
+	"""
 	_redis.set("counter:"+counter_id, value)
 
 def update_counter(counter_id: str):
+	"""
+		Increment a counter by 1.
+	"""
 	val = get_counter(counter_id)
 	_set_counter(counter_id, val+1)
 
