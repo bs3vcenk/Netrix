@@ -788,7 +788,7 @@ def get_class_profile(obj, class_id: int, class_obj):
 	try:
 		# Calculate the general average
 		class_obj['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
-	except:
+	except ZeroDivisionError:
 		# Avoid division by zero/no grades
 		class_obj['complete_avg'] = 0
 	try:
