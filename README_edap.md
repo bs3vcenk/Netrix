@@ -161,3 +161,23 @@ SSL certifikat.
 Zadana vrijednost: ništa
 
 SSL private key.
+
+### ADMIN_NOTIFICATIONS
+
+Zadana vrijednost: `N`
+
+Omogućuje slanje obavijesti o kritičnim greškama pomoću Telegrama.
+
+Ako je ova varijabla uključena, potrebno je dopuniti i TELEGRAM_TOKEN i TELEGRAM_TARGET_UID.
+
+### TELEGRAM_TOKEN [R samo ako ADMIN_NOTIFICATIONS == Y]
+
+Zadana vrijednost: ništa
+
+Token za Telegram bota. Za više informacija o tome kako dobiti bot token provjerite [ovdje](https://telegram.org/blog/bot-revolution).
+
+### TELEGRAM_TARGET_UID [R samo ako ADMIN_NOTIFICATIONS == Y]
+
+Zadana vrijednost: ništa.
+
+ID korisnika kojem će se slati poruke. Moguće ga je saznati kontaktiranjem @IDBot porukom `/getid`.

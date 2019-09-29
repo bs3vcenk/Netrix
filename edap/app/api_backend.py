@@ -35,6 +35,28 @@ _threads = {}
 class NonExistentSetting(Exception):
 	"""Specified setting ID is non-existent."""
 
+def _send_telegram_notification(message: str, parse_mode="Markdown"):
+	"""
+		Send a notification through Telegram.
+	"""
+	requests.post(
+		'https://api.telegram.org/bot%s/sendMessage' % config["TELEGRAM_TOKEN"],
+		data={
+			"chat_id": config["TELEGRAM_TARGET_UID"],
+			"text": message,
+			"parse_mode": parse_mode
+		}
+	)
+
+def notify_error(problem_header: str, component: str, stacktrace=None):
+	"""
+		Send a notification about an exception/error.
+	"""
+	message_content = "*%s*\nComponent: `%s`" % (problem_header, component)
+	_send_telegram_notification(message_content)
+	if stacktrace:
+		_send_telegram_notification("```%s```" % stacktrace)
+
 def get_credentials(token: str):
 	"""
 		Call Vault to get the creds for a token.
@@ -566,9 +588,7 @@ def _read_config():
 	ALLOW_DEV_ACCESS = _get_var("DEV_ACCESS", _bool=True)
 	USE_CLOUDFLARE = _get_var("CLOUDFLARE", _bool=True)
 	USE_FIREBASE = _get_var("FIREBASE", _bool=True)
-	print("[eDAP] [INFO] Developer access enabled: %s" % ALLOW_DEV_ACCESS)
-	print("[eDAP] [INFO] Using Cloudflare: %s" % USE_CLOUDFLARE)
-	print("[eDAP] [INFO] Using Firebase: %s" % USE_FIREBASE)
+	USE_NOTIFICATIONS = _get_var("ADMIN_NOTIFICATIONS", _bool=True)
 
 	privUsername = privPassword = None
 	FIREBASE_TOKEN = None
@@ -577,14 +597,25 @@ def _read_config():
 		privUsername = _get_var("DEV_USER")
 		privPassword = _get_var("DEV_PASW")
 		if not privUsername or not privPassword:
-			print("[eDAP] [WARN] Dev access has been disabled; both user & password need to be specified!")
+			print("[eDAP] [WARN] Dev access has been DISABLED; both user & password need to be specified!")
 			ALLOW_DEV_ACCESS = False
 
 	if USE_FIREBASE:
 		FIREBASE_TOKEN = _get_var("FIREBASE_TOKEN")
 		if not FIREBASE_TOKEN:
-			print("[eDAP] [WARN] Firebase has been disabled; no FCM token was specified!")
+			print("[eDAP] [WARN] Firebase has been DISABLED; no FCM token was specified!")
 			USE_FIREBASE = False
+
+	if USE_NOTIFICATIONS:
+		TELEGRAM_TOKEN = _get_var("TELEGRAM_TOKEN")
+		TELEGRAM_TARGET_UID = _get_var("TELEGRAM_TARGET_UID")
+		if not TELEGRAM_TOKEN or not TELEGRAM_TARGET_UID:
+			print("[eDAP] [WARN] Administrative notifications have been disabled; both the bot token and target UID need to be specified!")
+
+	print("[eDAP] [INFO] Developer access enabled: %s" % ALLOW_DEV_ACCESS)
+	print("[eDAP] [INFO] Using Cloudflare: %s" % USE_CLOUDFLARE)
+	print("[eDAP] [INFO] Using Firebase: %s" % USE_FIREBASE)
+	print("[eDAP] [INFO] Send administrative notifications: %s" % USE_NOTIFICATIONS)
 	return {
 		"DATA_FOLDER": DATA_FOLDER,
 		"USE_CLOUDFLARE": USE_CLOUDFLARE,
@@ -595,7 +626,10 @@ def _read_config():
 		"FIREBASE_TOKEN": FIREBASE_TOKEN,
 		"VAULT_SERVER": VAULT_SERVER,
 		"VAULT_TOKEN_READ": VAULT_TOKEN_READ,
-		"VAULT_TOKEN_WRITE": VAULT_TOKEN_WRITE
+		"VAULT_TOKEN_WRITE": VAULT_TOKEN_WRITE,
+		"USE_NOTIFICATIONS": USE_NOTIFICATIONS,
+		"TELEGRAM_TOKEN": TELEGRAM_TOKEN,
+		"TELEGRAM_TARGET_UID": TELEGRAM_TARGET_UID
 	}
 
 def read_log(exclude_syncing=False):
