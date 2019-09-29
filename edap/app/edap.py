@@ -52,7 +52,7 @@ class edap:
 	             redirect_log_to_file=False,
 	             hide_confidential=True,
 	             return_processing_time=False,
-				 dumpable_logs=True):
+	             dumpable_logs=True):
 		"""
 			Authenticates the user to eDnevnik.
 
@@ -325,13 +325,14 @@ class edap:
 			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		x = soup.find("div", class_="grades").find_all("table")[1].find_all("td")
+		grade_table = soup.find("table", id="grade_notes")
+		if not grade_table:
+			self.__edlog(1, "No grades found for this subject")
+			return []
+		x = grade_table.find_all("td")
 		for i, item in enumerate(x):
 			x[i] = item.getText().strip()
 		grades_unfiltered = [x[i:i+3] for i in range(0, len(x), 3)] # Every three items get grouped into a list
-		if grades_unfiltered[0][0] == "Nema ostalih bilježaka":
-			self.__edlog(1, "No grades found for this subject")
-			return []
 		final_returnable = [{"date": _format_to_date(y[0]), "note":y[1], "grade":int(y[2])} for y in grades_unfiltered]
 		if self.return_processing_time:
 			return final_returnable, timer() - start
@@ -361,7 +362,11 @@ class edap:
 			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		x = soup.find("div", class_="grades").find_all("table")[2].find_all("td")
+		note_table = soup.find("table", id="notes")
+		if not note_table:
+			self.__edlog(1, "No notes found for this subject")
+			return []
+		x = note_table.find_all("td")
 		for i, item in enumerate(x):
 			x[i] = item.getText().strip()
 		notes_unfiltered = [x[i:i+2] for i in range(0, len(x), 2)] # Every two items get grouped into a list
