@@ -760,24 +760,24 @@ def get_class_profile(obj, class_id: int, class_obj):
 				# Skip calculating grade if it's already concluded
 				class_obj['subjects'][z]['average'] = concluded
 				allSubjAverageGrades.append(concluded)
-			else:
+			elif class_obj['subjects'][z]['grades']:
 				# Otherwise do the standard calculating (sum(grades)/len(grades))
 				lgrades = []
 				for i in class_obj['subjects'][z]['grades']:
 					lgrades.append(i['grade'])
 				class_obj['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
 				allSubjAverageGrades.append(round(sum(lgrades)/len(lgrades), 0))
+			else:
+				log.debug('No grades for sID %s', z)
 		except Exception as e:
 			log.error("Error getting grades for subject %s: %s", z, e)
 			class_obj['subjects'][z]['grades'] = []
-			continue
 		try:
 			# Get a list of notes
 			class_obj['subjects'][z]['notes'] = obj.getNotes(class_id, z)
 		except Exception as e:
 			log.error("Error getting notes for subject %s: %s", z, e)
 			class_obj['subjects'][z]['notes'] = []
-			continue
 	try:
 		# Calculate the general average
 		class_obj['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
