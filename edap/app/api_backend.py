@@ -1,3 +1,11 @@
+"""
+eDAP-API backend functions
+====
+
+This module contains various functions which interact with the backend
+of the eDAP-API system.
+"""
+
 import logging, redis, edap, requests
 from hashlib import md5 as _MD5HASH
 from hashlib import sha256 as _SHA256HASH
@@ -25,7 +33,7 @@ _redis = None
 _threads = {}
 
 class NonExistentSetting(Exception):
-	pass
+	"""Specified setting ID is non-existent."""
 
 def get_credentials(token: str):
 	"""
@@ -110,6 +118,9 @@ def localize(token: str, notif_type: str):
 	return locs[lang][notif_type]
 
 def random_string(length: int) -> str:
+	"""
+		Return a random string with of specified length.
+	"""
 	return ''.join(_random_choice(ascii_letters) for m in range(length))
 
 def generate_test_user() -> (str, str, str):
@@ -180,7 +191,16 @@ def generate_test_user() -> (str, str, str):
 						"number": 1,
 						"program": "Program"
 					},
-					"absences": {"overview":{"awaiting":0,"justified":0,"sum":0,"sum_leftover":0,"unjustified":0}, "full":[]}
+					"absences": {
+						"overview":{
+							"awaiting": 0,
+							"justified": 0,
+							"sum": 0,
+							"sum_leftover": 0,
+							"unjustified": 0
+						},
+						"full":[]
+					}
 				}
 			]
 		},
@@ -579,6 +599,10 @@ def _read_config():
 	}
 
 def read_log(exclude_syncing=False):
+	"""
+		Read the log file. Setting `exclude_syncing` to True will exclude
+		all lines from the `get_class_profile` function.
+	"""
 	log_lines = []
 	with open(_join_path(config["DATA_FOLDER"], "edap_api.log")) as f:
 		for x in f.readlines():

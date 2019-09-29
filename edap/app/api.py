@@ -394,6 +394,9 @@ def get_user_info_old(token):
 
 @app.route('/api/user/<string:token>/firebase', methods=["POST"])
 def set_firebase_token(token):
+	"""
+		Store a Firebase token into a user's data object.
+	"""
 	if not verify_request(token):
 		abort(401)
 	if not request.json or not "deviceToken" in request.json:
@@ -406,6 +409,9 @@ def set_firebase_token(token):
 
 @app.route('/api/user/<string:token>/fetchclass', methods=["POST"])
 def fill_class(token):
+	"""
+		Expand a class object by class ID (specified in POST JSON).
+	"""
 	if not verify_request(token):
 		abort(401)
 	if not request.json or not "class_id" in request.json:
