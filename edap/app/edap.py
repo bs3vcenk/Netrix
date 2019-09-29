@@ -165,7 +165,7 @@ class edap:
 		print('CLASS IDs: %s' % (', '.join(self.class_ids) if self.class_ids else 'not initialized'))
 		print('==========\n%s' % self.log if self.dumpable_logs else 'Dumpable logs not enabled')
 
-	def __fetch(self, url):
+	def __fetch(self, url: str):
 		"""
 			Simple internal function to fetch URL using stored session object
 			and also raise an exception for non 2xx codes.

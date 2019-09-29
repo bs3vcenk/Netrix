@@ -27,7 +27,7 @@ _threads = {}
 class NonExistentSetting(Exception):
 	pass
 
-def get_credentials(token):
+def get_credentials(token: str):
 	"""
 		Call Vault to get the creds for a token.
 	"""
@@ -38,7 +38,7 @@ def get_credentials(token):
 	data.raise_for_status()
 	return data.json()["data"]["data"]
 
-def set_credentials(token, username, password):
+def set_credentials(token: str, username: str, password: str):
 	"""
 		Call Vault to set a credential pair for a token.
 	"""
@@ -54,7 +54,7 @@ def set_credentials(token, username, password):
 	)
 	data.raise_for_status()
 
-def rm_credentials(token):
+def rm_credentials(token: str):
 	"""
 		Call Vault to remove a credential pair for a token.
 	"""
@@ -64,14 +64,14 @@ def rm_credentials(token):
 	)
 	data.raise_for_status()
 
-def _exit(exitCode):
+def _exit(exitCode: int):
 	"""
 		Present additional information on exit (exit code and instructions).
 	"""
 	print("!!! Exited with code %i\n    Check the log file for more information if possible." % exitCode)
 	_sys_exit(exitCode)
 
-def localize(token, notif_type):
+def localize(token: str, notif_type: str):
 	"""
 		Localize a string according to the language reported by
 		the phone through /api/stats.
@@ -205,7 +205,7 @@ def generate_test_user() -> (str, str, str):
 	set_credentials(token, user, pasw)
 	return user, pasw, token
 
-def get_setting(token, action):
+def get_setting(token: str, action: str):
 	"""
 		Get action data/value for token.
 	"""
@@ -220,7 +220,7 @@ def get_setting(token, action):
 		return o['settings']['notif']
 	raise NonExistentSetting
 
-def process_setting(token, action, val):
+def process_setting(token: str, action: str, val):
 	"""
 		Do an action, with val as the data/arguments on a profile.
 	"""
@@ -241,7 +241,7 @@ def process_setting(token, action, val):
 		raise NonExistentSetting
 	save_data(token, o)
 
-def purge_token(token):
+def purge_token(token: str):
 	"""
 		Remove a token from the DB and terminate its sync thread.
 	"""
@@ -250,7 +250,7 @@ def purge_token(token):
 	_redis.delete('token:' + token)
 	rm_credentials(token)
 
-def _formatAndSendNotification(token, notifData):
+def _formatAndSendNotification(token: str, notifData):
 	"""
 		Format a notification for the user based on data gotten from
 		profileDifference() in sync().
@@ -293,7 +293,7 @@ def _formatAndSendNotification(token, notifData):
 	for i in toSendQueue:
 		sendNotification(token, i['head'], i['content'])
 
-def _subj_id_to_name(token, class_id, subject_id):
+def _subj_id_to_name(token: str, class_id: int, subject_id: int):
 	"""
 		Get the name belonging to a subject ID.
 	"""
@@ -301,7 +301,7 @@ def _subj_id_to_name(token, class_id, subject_id):
 		raise Exception('Bad auth data')
 	return get_data(token)['data']['classes'][class_id]['subjects'][subject_id]['subject']
 
-def _stop_sync(token):
+def _stop_sync(token: str):
 	"""
 		Stop background sync thread for a given token, e.g. if
 		terminated.
@@ -315,7 +315,7 @@ def get_sync_threads():
 	"""
 	return [i.replace("sync:", "") for i in _threads]
 
-def start_sync(token):
+def start_sync(token: str):
 	"""
 		Start a sync thread for a given token.
 	"""
@@ -333,7 +333,7 @@ def restore_syncs():
 		if not 'ignore_updating' in get_data(token):
 			start_sync(token)
 
-def sync_dev(data2, token):
+def sync_dev(data2, token: str):
 	"""
 		DEV: Simulate sync with two objects.
 	"""
@@ -346,7 +346,7 @@ def sync_dev(data2, token):
 		save_data(token, o)
 		_formatAndSendNotification(token, diff)
 
-def sync(token, debug=False):
+def sync(token: str, debug=False):
 	"""
 		Pull remote data, compare with current and replace if needed.
 	"""
@@ -445,7 +445,7 @@ def _profile_difference(dObj1, dObj2):
 	log.debug("==> TIMER => {0:.0f}ms".format(request_time))
 	return _finalReturn
 
-def save_data(token, dataObj):
+def save_data(token: str, dataObj):
 	"""
 		Save data for a token.
 	"""
@@ -457,7 +457,7 @@ def get_db_size():
 	"""
 	return _get_file_size(_join_path(config["DATA_FOLDER"], "appendonly.aof"))
 
-def sendNotification(token, title, content, data=None):
+def sendNotification(token: str, title: str, content: str, data=None):
 	"""
 		Send a notification to a user's device through Firebase.
 	"""
@@ -481,7 +481,7 @@ def sendNotification(token, title, content, data=None):
 		log.error('Non-200 code (Firebase Cloud Messaging) => %s', str(e))
 		raise e
 
-def _sync(token):
+def _sync(token: str):
 	"""
 		Wrapper around sync, for bg execution (random timeout).
 	"""
@@ -494,7 +494,7 @@ def _sync(token):
 			break
 		sync(token)
 
-def _get_var(varname, _bool=False, default=None):
+def _get_var(varname: str, _bool=False, default=None):
 	"""
 		Get environment variable and return it if it exists. If _bool is True,
 		return it as a boolean value. If default is set, return its value if
@@ -582,7 +582,7 @@ def make_html(title="eDAP dev", content=None, bare=False):
 		return '<!DOCTYPE html><html><head><title>%s</title></head><body>%s</body></html>' % (title, content)
 
 # https://stackoverflow.com/a/14822210
-def convert_size(size_bytes):
+def convert_size(size_bytes: int):
 	"""
 		Convert bytes to a human-readable format.
 	"""
@@ -610,7 +610,7 @@ def _init_db(host="localhost", port=6379, db=0):
 		log.critical("Database connection failed!")
 		_exit(1)
 
-def get_data(token):
+def get_data(token: str):
 	"""
 		Retreive JSON from Redis by token, format it from bytes to string,
 		and return it as a dict.
@@ -623,27 +623,27 @@ def get_tokens():
 	"""
 	return [i.decode('utf-8').replace("token:", "") for i in _redis.keys('token:*')]
 
-def _user_in_database(token):
+def _user_in_database(token: str):
 	"""
 		Check if a given token exists in the DB.
 	"""
 	return "token:" + token in [i.decode('utf-8') for i in _redis.keys('token:*')]
 
-def _class_id_exists(token, cid):
+def _class_id_exists(token: str, cid: int):
 	"""
 		Check if a given class ID exists in the DB. Assumes that userInDatabase()
 		was already called and returned True.
 	"""
 	return cid <= len(get_data(token)['data']['classes'])
 
-def _subject_id_exists(token, cid, sid):
+def _subject_id_exists(token: str, cid: int, sid: int):
 	"""
 		Check if a given subject ID exists in the DB. Assumes that userInDatabase()
 		and classIDExists() were both already called and returned True.
 	"""
 	return sid in range(len(get_data(token)['data']['classes'][cid]['subjects']))
 
-def fetch_new_class(token, class_id):
+def fetch_new_class(token: str, class_id: int):
 	"""
 		Fetch a new class. Handles all the background credential collection
 		and other things.
@@ -681,7 +681,7 @@ def populate_data(obj):
 	data_dict['classes'] = output
 	return data_dict
 
-def get_class_profile(obj, class_id, class_obj):
+def get_class_profile(obj, class_id: int, class_obj):
 	"""
 		Add/modify a list of classes from eDAP. `class_id` is the
 		class ID that will be "expanded" (add grades, exams, etc.)
@@ -784,7 +784,7 @@ def get_class_profile(obj, class_id, class_obj):
 	class_obj['full'] = True
 	return class_obj
 
-def verify_dev_request(token):
+def verify_dev_request(token: str):
 	"""
 		Verify if a given dev API token is valid.
 	"""
@@ -798,7 +798,7 @@ def add_dev_token():
 	_redis.set('dev-token:' + token, 'ALLOWED')
 	return token
 
-def verify_request(token, class_id=None, subject_id=None):
+def verify_request(token: str, class_id=None, subject_id=None):
 	"""
 		Verify if a given token, class_id, and/or subject_id exist in the DB.
 	"""
@@ -815,29 +815,29 @@ def verify_request(token, class_id=None, subject_id=None):
 			return False
 	return True
 
-def hash_string(inp):
+def hash_string(inp: str):
 	"""
 		Return the MD5 hash of a string. Used for tokens.
 	"""
 	return _MD5HASH(inp.encode()).hexdigest()
 
-def hash_password(inp):
+def hash_password(inp: str):
 	"""
 		Return the SHA256 hash of a string. Used for the /dev/ password.
 	"""
 	return _SHA256HASH(inp.encode()).hexdigest()
 
-def get_counter(counter_id):
+def get_counter(counter_id: str):
 	val = _redis.get("counter:"+counter_id)
 	if val is None:
 		_redis.set("counter:"+counter_id, 0)
 		return 0
 	return int(val)
 
-def _set_counter(counter_id, value):
+def _set_counter(counter_id: str, value: int):
 	_redis.set("counter:"+counter_id, value)
 
-def update_counter(counter_id):
+def update_counter(counter_id: str):
 	val = get_counter(counter_id)
 	_set_counter(counter_id, val+1)
 
