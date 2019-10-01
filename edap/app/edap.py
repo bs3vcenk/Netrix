@@ -101,8 +101,7 @@ class edap:
 		except KeyError as e:
 			if "u nadogradnji" in r.text:
 				raise ServerInMaintenance
-			else:
-				self.__edlog(4, "Can't get CSRF (%s)" % e)
+			self.__edlog(4, "Can't get CSRF (%s)" % e)
 		self.__edlog(1, "Got CSRF: [{%s}]" % self.csrf)
 		self.__edlog(1, "Trying to authenticate %s" % self.user)
 		try:
@@ -442,11 +441,11 @@ class edap:
 			if self.return_processing_time:
 				return True, int(result), timer() - start
 			return True, int(result)
-		else: # Otherwise we have no concluded grade
-			self.__edlog(0, "No concluded grade found for this subject")
-			if self.return_processing_time:
-				return False, None, timer() - start
-			return False, None
+		# Otherwise we have no concluded grade
+		self.__edlog(0, "No concluded grade found for this subject")
+		if self.return_processing_time:
+			return False, None, timer() - start
+		return False, None
 
 	def getInfo(self, class_id: int):
 		"""
