@@ -329,10 +329,22 @@ class edap:
 		if not grade_table:
 			self.__edlog(1, "No grades found for this subject")
 			return []
+		# Find all table elements
 		x = grade_table.find_all("td")
+		# Get text from all elements and reassign the original element
 		for i, item in enumerate(x):
 			x[i] = item.getText().strip()
+		# We have three elements that describe a grade: date, note and numerical grade
+		# These elements should be in the same position:
+		# 	1 => date DD.MM.YYYY.
+		# 	2 => note
+		# 	3 => num. grade
+		# So what we need to do is turn it into a usable format -
+		# First split the full list of elements into "chunks" of 3 elements
 		grades_unfiltered = [x[i:i+3] for i in range(0, len(x), 3)] # Every three items get grouped into a list
+		# Then assign elements to a dict (still assuming the above order is correct) (date
+		# needs to be converted to UNIX)
+		# Then add that dict to a list (we can do this in one line)
 		final_returnable = [{"date": _format_to_date(y[0]), "note":y[1], "grade":int(y[2])} for y in grades_unfiltered]
 		if self.return_processing_time:
 			return final_returnable, timer() - start
@@ -363,18 +375,29 @@ class edap:
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		note_table = soup.find("table", id="notes")
+		# This might not be needed since the note table might be shown
+		# for every subject (unlike the grade table)
 		if not note_table:
 			self.__edlog(1, "No notes found for this subject")
 			return []
+		# Find all table elements
 		x = note_table.find_all("td")
+		# Get text from all elements and reassign the original element
 		for i, item in enumerate(x):
 			x[i] = item.getText().strip()
+		# Instead of three, notes have only two elements that describe them:
+		# date and note content
+		# So we just group them into chunks of two, assuming this order:
+		# 	1 => date DD.MM.YYYY.
+		# 	2 => note content
 		notes_unfiltered = [x[i:i+2] for i in range(0, len(x), 2)] # Every two items get grouped into a list
+		# This is the more likely "notes empty"-check to occur
 		if notes_unfiltered[0][0] == "Nema ostalih bilježaka":
 			self.__edlog(1, "No notes found for this subject")
 			if self.return_processing_time:
 				return [], timer() - start
 			return []
+		# Do the dict assignment and date conversion in one line
 		final_returnable = [{"date": _format_to_date(y[0]), "note":y[1]} for y in notes_unfiltered]
 		if self.return_processing_time:
 			return final_returnable, timer() - start
@@ -405,18 +428,21 @@ class edap:
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
+			# Search the grade table for the concluded grade
+			# TODO: Refactor this; use new table#grade_notes identifier like in getGrades
 			x = soup.find("div", class_="grades").find("table").find_all("td", class_="t-center bold")[1].getText().strip()
 		except AttributeError as e:
 			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
-		if x:
+		if x: # If not empty/NoneType, means there's text in that table element
 			self.__edlog(0, "Got unformatted string: [{%s}]" % x)
+			# Use some regex to extract the numerical grade between the parentheses
 			result = re.search(r'\((.*)\)', x).group(1)
 			self.__edlog(0, "Formatted string: [{%s}]" % result)
 			self.__edlog(0, "Found concluded grade for this subject")
 			if self.return_processing_time:
 				return True, int(result), timer() - start
 			return True, int(result)
-		else:
+		else: # Otherwise we have no concluded grade
 			self.__edlog(0, "No concluded grade found for this subject")
 			if self.return_processing_time:
 				return False, None, timer() - start
@@ -438,9 +464,11 @@ class edap:
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
+			# Get all elements in the info page
 			x = soup.find("div", class_="student-details").find("table").find_all("td")
 		except AttributeError as e:
 			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
+		# Create an object using the data we have
 		user_data = {
 			"number":int(x[0].getText()),
 			"name":x[1].getText(),
@@ -451,6 +479,7 @@ class edap:
 			"address":x[6].getText(),
 			"program":x[7].getText()
 		}
+		# If hiding confidential data (default), delete 'oib', 'address' & 'matbroj'
 		if self.hide_confidential:
 			del user_data['oib']
 			del user_data['address']
