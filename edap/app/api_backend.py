@@ -593,6 +593,7 @@ def _read_config():
 
 	privUsername = privPassword = None
 	FIREBASE_TOKEN = None
+	TELEGRAM_TOKEN = None
 
 	if ALLOW_DEV_ACCESS:
 		privUsername = _get_var("DEV_USER")
