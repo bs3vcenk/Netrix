@@ -2,7 +2,7 @@ from functools import wraps
 from flask import Flask, jsonify, make_response, request, abort, redirect
 from flask_cors import CORS
 from api_backend import *
-import edap
+import edap, traceback
 
 API_VERSION = "2.7"
 
@@ -147,6 +147,17 @@ def exh_redis_db_fail(e):
 	if config['USE_NOTIFICATIONS']:
 		notify_error('DB CONNECTION FAIL', 'redis')
 	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
+
+@app.errorhandler(MemoryError)
+def exh_memory_error(e):
+	"""
+		Handler in case we run out of memory.
+	"""
+	stacktrace = traceback.format_exc()
+	log.critical("!! Caught MemoryError !!")
+	if config['USE_NOTIFICATIONS']:
+		notify_error('MEMORY ERROR', 'generic', stacktrace)
+	return make_response(jsonify({'error':'E_SERVER_OUT_OF_MEMORY'}), 500)
 
 @app.route('/dev/dbinfo', methods=["GET"])
 @dev_area
