@@ -124,7 +124,11 @@ def e500(err):
 		Default handler in case something generic goes wrong on the server
 		side.
 	"""
-	log.error('HTTP 500 (%s)', err)
+	if config['USE_NOTIFICATIONS']:
+		log.critical('HTTP 500, sending notification')
+		notify_error('HTTP 500 RESPONSE', 'generic')
+	else:
+		log.critical('HTTP 500 error!')
 	return make_response(jsonify({'error':'E_SERVER_ERROR'}), 500)
 
 @app.route('/', methods=["GET"])
@@ -140,6 +144,8 @@ def exh_redis_db_fail(e):
 		Default handler in case the Redis DB connection fails.
 	"""
 	log.critical(" ==> DATBASE ACCESS FAILURE!!!!! <== [%s]", e)
+	if config['USE_NOTIFICATIONS']:
+		notify_error('DB CONNECTION FAIL', 'redis')
 	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
 
 @app.route('/dev/dbinfo', methods=["GET"])
