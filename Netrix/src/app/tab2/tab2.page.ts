@@ -57,4 +57,8 @@ export class Tab2Page {
     return startWeekDay + '.' + startWeekMonth + '. - ' + endWeekDay + '.' + endWeekMonth + '.';
   }
 
+  calculateRemainingDays(): number {
+    return 0; // TODO: Implement
+  }
+
 }

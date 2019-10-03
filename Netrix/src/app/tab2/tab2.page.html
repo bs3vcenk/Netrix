@@ -44,6 +44,9 @@
             <!--<ion-icon item-right name="notifications" *ngIf="testObj.scheduled"></ion-icon>-->
             <!-- Checkmark with *ngIf to show only if not current (already written) -->
             <ion-icon item-right name="checkmark" color="success" *ngIf="!testObj.current"></ion-icon>
+            <ion-text id="remaining" class="ion-text-right">
+              {{ calculateRemainingDays(testObj.date) }}
+            </ion-text>
           </ion-item>
         </ng-container>
       </ng-container>
