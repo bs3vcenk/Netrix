@@ -343,14 +343,22 @@ export class ApiService {
     const objPeriod = [];
     const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
     const existingWeeks = [];
+    /* Main loop */
     for (let i = 0; i < obj.length; i++) {
+      /* Get the date of the test */
       const d = new Date(obj[i].date * 1000);
+      /* Get the week from that */
       const indx = Math.floor(d.getTime() / (oneDay * 7));
+      /* Check if this week exists in objPeriod */
       if (!existingWeeks.includes(indx)) {
+        /* If it does not, create it */
         existingWeeks.push(indx);
+        /* Init empty object in objPeriod list */
         objPeriod.push({week: indx, items: []});
       }
+      /* Map week to object index in objPeriod list */
       const currentIndex = existingWeeks.indexOf(indx);
+      /* Push it to that object's items list */
       objPeriod[currentIndex].items.push(obj[i]);
     }
     for (let i = 0; i < objPeriod.length; i++) {
