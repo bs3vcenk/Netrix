@@ -1,3 +1,8 @@
+## 1.8.10 (2019-10-04)
+* Riješeno krivo računanje tjedana u pregledu ispita
+* Promjena nekih prijevoda za bolje razumijevanje grešaka i drugih poruka
+* Prosjek ocjena se sada na stranici predmeta prikazuje samo ako ima ocjena
+
 ## 1.8.9 (2019-09-28)
 * Novi dizajn za stranicu predmeta – ispiti su grupirani po tjednima, a za svaku grupu piše i broj ispita u tjednu
 * Optimizacija rada na sporijim uređajima
