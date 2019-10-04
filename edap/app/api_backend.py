@@ -65,7 +65,12 @@ def get_credentials(token: str):
 		'%s/v1/secret/data/%s' % (config["VAULT_SERVER"], token),
 		headers={'X-Vault-Token': config["VAULT_TOKEN_READ"]}
 	)
-	data.raise_for_status()
+	try:
+		data.raise_for_status()
+	except requests.exceptions.HTTPError:
+		log.critical('Failed to access credentials!')
+		if config['USE_NOTIFICATIONS']:
+			notify_error('VAULT GET ERROR', 'vault')
 	return data.json()["data"]["data"]
 
 def set_credentials(token: str, username: str, password: str):
@@ -82,7 +87,12 @@ def set_credentials(token: str, username: str, password: str):
 			}
 		}
 	)
-	data.raise_for_status()
+	try:
+		data.raise_for_status()
+	except requests.exceptions.HTTPError:
+		log.critical('Failed to set credentials!')
+		if config['USE_NOTIFICATIONS']:
+			notify_error('VAULT SET ERROR', 'vault')
 
 def rm_credentials(token: str):
 	"""
@@ -92,7 +102,12 @@ def rm_credentials(token: str):
 		'%s/v1/secret/data/%s' % (config["VAULT_SERVER"], token),
 		headers={'X-Vault-Token': config["VAULT_TOKEN_WRITE"]}
 	)
-	data.raise_for_status()
+	try:
+		data.raise_for_status()
+	except requests.exceptions.HTTPError:
+		log.critical('Failed to delete credentials!')
+		if config['USE_NOTIFICATIONS']:
+			notify_error('VAULT DELETE ERROR', 'vault')
 
 def _exit(exitCode: int):
 	"""
@@ -300,7 +315,7 @@ def _formatAndSendNotification(token: str, notifData):
 	gradeNotif = []
 	testNotif = []
 	noteNotif = []
-	absenceNotif = ""
+	absenceNotif = False
 	toSendQueue = []
 	exceptions = get_data(token)['settings']['notif']['ignore']
 	for x in notifData:
@@ -312,7 +327,7 @@ def _formatAndSendNotification(token: str, notifData):
 		elif x['type'] == 'note' and 'note' not in exceptions:
 			noteNotif.append("%s: %s" % (_subj_id_to_name(token, x['classId'], x['subjectId']), x['data']['note']))
 		elif x['type'] == 'absence' and 'absence' not in exceptions:
-			absenceNotif = "ABS"
+			absenceNotif = True
 	if gradeNotif:
 		toSendQueue.append({
 			'head': localize(token, 'grade'),
@@ -331,7 +346,7 @@ def _formatAndSendNotification(token: str, notifData):
 	if absenceNotif:
 		toSendQueue.append({
 			'head': localize(token, 'absence'),
-			'content': absenceNotif
+			'content': None
 		})
 	for i in toSendQueue:
 		sendNotification(token, i['head'], i['content'])

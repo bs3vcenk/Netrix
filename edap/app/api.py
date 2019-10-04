@@ -2,9 +2,9 @@ from functools import wraps
 from flask import Flask, jsonify, make_response, request, abort, redirect
 from flask_cors import CORS
 from api_backend import *
-import edap
+import edap, traceback
 
-API_VERSION = "2.7"
+API_VERSION = "2.8"
 
 log = logging.getLogger('EDAP-API')
 
@@ -124,7 +124,11 @@ def e500(err):
 		Default handler in case something generic goes wrong on the server
 		side.
 	"""
-	log.error('HTTP 500 (%s)', err)
+	if config['USE_NOTIFICATIONS']:
+		log.critical('HTTP 500, sending notification')
+		notify_error('HTTP 500 RESPONSE', 'generic')
+	else:
+		log.critical('HTTP 500 error!')
 	return make_response(jsonify({'error':'E_SERVER_ERROR'}), 500)
 
 @app.route('/', methods=["GET"])
@@ -140,7 +144,20 @@ def exh_redis_db_fail(e):
 		Default handler in case the Redis DB connection fails.
 	"""
 	log.critical(" ==> DATBASE ACCESS FAILURE!!!!! <== [%s]", e)
+	if config['USE_NOTIFICATIONS']:
+		notify_error('DB CONNECTION FAIL', 'redis')
 	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
+
+@app.errorhandler(MemoryError)
+def exh_memory_error(e):
+	"""
+		Handler in case we run out of memory.
+	"""
+	stacktrace = traceback.format_exc()
+	log.critical("!! Caught MemoryError !!")
+	if config['USE_NOTIFICATIONS']:
+		notify_error('MEMORY ERROR', 'generic', stacktrace)
+	return make_response(jsonify({'error':'E_SERVER_OUT_OF_MEMORY'}), 500)
 
 @app.route('/dev/dbinfo', methods=["GET"])
 @dev_area

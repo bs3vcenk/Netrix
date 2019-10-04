@@ -21,7 +21,7 @@
 
 	<!-- SUB-HEADER -->
 	<!-- List containing 1 item -->
-	<ion-list lines="inset">
+	<ion-list lines="inset" *ngIf="subject.grades.length > 0">
 		<ion-item lines="full">
 			<!-- Translated text "Average" -->
 			<ion-label class="ion-text-left">{{ 'overview.text.average' | translate }}</ion-label>

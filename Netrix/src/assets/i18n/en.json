@@ -3,22 +3,22 @@
     "alert": {
       "network": "Network error",
       "expiry": "Your login has expired",
-      "database": "Database connection failed (automatically reported)",
-      "server": "Server error (automatically reported)"
+      "database": "Database connection failed; try again later",
+      "server": "Server error; try again later"
     },
     "back": "Back",
     "text": {
       "nonetwork": {
         "header": "No network",
-        "content": "Check your network connection and try again."
+        "content": "Check your network connection and try again (or server maintenance might be in progress)."
       },
       "nodb": {
         "header": "Server error",
-        "content": "Something went wrong at the server side. We're working quickly to fix it!"
+        "content": "Something went wrong at the server side. We're working on it!"
       },
       "trusterror": {
         "header": "Unsafe connection",
-        "content": "We can't verify the identity of the server we're trying to connect to. This might be because you haven't yet logged in to a public Wi-Fi, or it could be someone trying to steal your data."
+        "content": "We can't verify the identity of the server we're trying to connect to."
       },
       "maintenance": {
         "header": "Maintenance in progress",
@@ -79,8 +79,8 @@
     "title": "Overview",
     "alert": {
       "nogrades": {
-        "header": "No grades",
-        "content": "This subject has no grades."
+        "header": "There's nothing here",
+        "content": "This subject doesn't yet have any grades or notes."
       }
     },
     "text": {

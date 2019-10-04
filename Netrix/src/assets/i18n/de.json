@@ -3,14 +3,14 @@
     "alert": {
       "network": "Netzwerkfehler",
       "expiry": "Deine Einmeldung ist abgelaufen",
-      "database": "Datenbankverbindung fehlgeschlagen (automatisch gemeldet)",
-      "server": "Serverfehler (automatisch gemeldet)"
+      "database": "Datenbankverbindung fehlgeschlagen; versuch es später noch einmal",
+      "server": "Serverfehler; versuch es später noch einmal"
     },
     "back": "Zurück",
     "text": {
       "nonetwork": {
         "header": "Kein Netzwerk",
-        "content": "Prüfe deine Netzwerkverbindung und versuche es erneut."
+        "content": "Prüfe deine Netzwerkverbindung und versuche es erneut (oder die Serverwartung läuft)."
       },
       "nodb": {
         "header": "Serverfehler",
@@ -18,7 +18,7 @@
       },
       "trusterror": {
         "header": "Nicht sichere Verbindung",
-        "content": "Wir können die Identität des Servers, mit dem wir versuchen, eine Verbindung herzustellen, nicht überprüfen. Dies kann daran liegen, dass du dich noch nicht bei einem öffentlichen WLAN angemeldet hast, oder es könnte jemand sein, der versucht, deine Daten zu stehlen."
+        "content": "Wir können die Identität des Servers, mit dem wir versuchen, eine Verbindung herzustellen, nicht überprüfen."
       },
       "maintenance": {
         "header": "Wartung läuft",
@@ -79,8 +79,8 @@
     "title": "Übersicht",
     "alert": {
       "nogrades": {
-        "header": "Kein Noten",
-        "content": "Dieses Fach hat keine Noten."
+        "header": "Hier gibt es nichts",
+        "content": "Dieses Fach hat noch keine Noten oder Notizen."
       }
     },
     "text": {
@@ -98,7 +98,7 @@
       }
     },
     "text": {
-      "login": "Einmelden",
+      "login": "Anmelden",
       "holder_user": "Benutzername",
       "holder_pass": "Kennwort",
       "appdesc": "Eine moderne Schnittstelle für e-Dnevnik",

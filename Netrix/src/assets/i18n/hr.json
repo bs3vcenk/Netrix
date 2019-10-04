@@ -3,22 +3,22 @@
     "alert": {
       "network": "Greška kod povezivanja",
       "expiry": "Tvoja prijava je istekla",
-      "database": "Neuspjelo povezivanje sa bazom podataka (automatski prijavljeno)",
-      "server": "Serverska greška (automatski prijavljena)"
+      "database": "Neuspjelo povezivanje sa bazom podataka; pokušaj ponovno kasnije",
+      "server": "Serverska greška; pokušaj ponovno kasnije"
     },
     "back": "Natrag",
     "text": {
       "nonetwork": {
         "header": "Nema mreže",
-        "content": "Provjeri svoju vezu, pa pokušaj ponovo."
+        "content": "Provjeri svoju vezu, pa pokušaj ponovo (ili je u tijeku održavanje servera)."
       },
       "nodb": {
         "header": "Serverska greška",
-        "content": "Dogodila se greška kod servera. Radimo da ju što prije riješimo!"
+        "content": "Dogodila se greška kod servera. Radimo na tome!"
       },
       "trusterror": {
         "header": "Nesigurna veza",
-        "content": "Ne možemo potvrditi identitet servera na kojeg se spajamo. To može biti jer se još nisi prijavio na javnu Wi-Fi mrežu, ali je moguće i da netko pokušava ukrasti tvoje osobne podatke."
+        "content": "Ne možemo provjeriti identitet servera na kojeg se spajamo."
       },
       "maintenance": {
         "header": "Održavanje u tijeku",
@@ -79,8 +79,8 @@
     "title": "Pregled",
     "alert": {
       "nogrades": {
-        "header": "Nema ocjena",
-        "content": "Ovaj predmet nema ocjena."
+        "header": "Ovdje nema ničega",
+        "content": "Ovaj predmet još nema ocjena niti bilježaka."
       }
     },
     "text": {
