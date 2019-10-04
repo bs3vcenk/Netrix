@@ -315,7 +315,7 @@ def _formatAndSendNotification(token: str, notifData):
 	gradeNotif = []
 	testNotif = []
 	noteNotif = []
-	absenceNotif = ""
+	absenceNotif = False
 	toSendQueue = []
 	exceptions = get_data(token)['settings']['notif']['ignore']
 	for x in notifData:
@@ -327,7 +327,7 @@ def _formatAndSendNotification(token: str, notifData):
 		elif x['type'] == 'note' and 'note' not in exceptions:
 			noteNotif.append("%s: %s" % (_subj_id_to_name(token, x['classId'], x['subjectId']), x['data']['note']))
 		elif x['type'] == 'absence' and 'absence' not in exceptions:
-			absenceNotif = "ABS"
+			absenceNotif = True
 	if gradeNotif:
 		toSendQueue.append({
 			'head': localize(token, 'grade'),
@@ -346,7 +346,7 @@ def _formatAndSendNotification(token: str, notifData):
 	if absenceNotif:
 		toSendQueue.append({
 			'head': localize(token, 'absence'),
-			'content': absenceNotif
+			'content': None
 		})
 	for i in toSendQueue:
 		sendNotification(token, i['head'], i['content'])
