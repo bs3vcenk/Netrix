@@ -22,7 +22,7 @@ class WrongCredentials(Exception):
 class ServerInMaintenance(Exception):
 	"""Host (e-Dnevnik) is in maintenance mode"""
 
-EDAP_VERSION = "D2"
+EDAP_VERSION = "E1"
 
 def _format_to_date(preformat_string: str, date_format="%d.%m.%Y.") -> int:
 	"""
