@@ -48,13 +48,22 @@ export class Tab2Page {
   }
 
   convertToReadableWeekSpan(startingWeekTimestamp: number): string {
-    const startWeek = new Date(startingWeekTimestamp * this.oneWeek);
+    const startUNIXStamp = this.getMonday(startingWeekTimestamp * this.oneWeek).getTime();
+    const startWeek = new Date(startUNIXStamp);
     const startWeekMonth = startWeek.getMonth() + 1; // Months start from 0 in JS
     const startWeekDay = startWeek.getDate();
     const endWeek = new Date(startingWeekTimestamp * this.oneWeek + this.oneWeek);
     const endWeekMonth = endWeek.getMonth() + 1;
     const endWeekDay = endWeek.getDate();
     return startWeekDay + '.' + startWeekMonth + '. - ' + endWeekDay + '.' + endWeekMonth + '.';
+  }
+
+  getMonday(timestamp: number): Date {
+    /* https://stackoverflow.com/a/4156516 */
+    const d = new Date(timestamp);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    return new Date(d.setDate(diff));
   }
 
   calculateRemainingDays(): number {
