@@ -33,6 +33,7 @@ RUN python3 -m pip install -r /req.txt \
 
 # Add eDAP
 COPY app /edap
+WORKDIR /edap
 
 ENTRYPOINT ["sh", "/entrypoint.sh"]
 CMD ["/usr/bin/supervisord"]
