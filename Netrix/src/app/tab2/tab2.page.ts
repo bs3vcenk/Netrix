@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../services/api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { AdmobService } from '../services/admob.service';
 
 @Component({
   selector: 'app-tab2',
@@ -24,7 +25,8 @@ export class Tab2Page {
 
   constructor(
     private apiSvc: ApiService,
-    private firebase: FirebaseX
+    private firebase: FirebaseX,
+    private admob: AdmobService
   ) {
     this.apiSvc.loadingFinishedTests.subscribe((val) => {
       if (val) {
@@ -35,6 +37,7 @@ export class Tab2Page {
 
   ionViewDidEnter() {
     try { this.firebase.setScreenName('Tests'); } catch (e) {}
+    this.admob.showInterstitial();
   }
 
   initInBg() {

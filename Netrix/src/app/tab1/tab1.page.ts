@@ -31,11 +31,12 @@ export class Tab1Page implements OnInit {
   }
 
   ngOnInit() {
-    this.admobSvc.showBanner();
+    // this.admobSvc.showBanner();
   }
 
   ionViewDidEnter() {
     try { this.firebase.setScreenName('Subjects'); } catch (e) {}
+    this.admobSvc.showInterstitial();
   }
 
   initInBg() {
