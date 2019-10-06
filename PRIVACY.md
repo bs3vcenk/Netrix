@@ -28,8 +28,8 @@ Netrix omogućuje brz pregled ocjena, izostanaka, ispita i korisničkih informac
     * **Popis ocjena, bilježaka za pojedini predmet i pripadajuće informacije** (samo sinkronizirani razredi) - datum upisivanja ocjene odnosno bilješke te bilješka uz ocjenu
     * **Popis ispita za pojedini razred i pripadajuće informacije** (samo sinkronizirani razredi) - datum ispita, predmet ispita te školski predmet za koji se taj ispit piše
     * **Popis izostanaka za pojedini razred i pripadajuće informacije** (samo sinkronizirani razredi)
-        * **U načinu pregleda (*overview*)** - broj sati na čekanju, broj opravdanih i neopravdanih sati, zbroj svih neodlučenih sati
-        * **U detaljnom načinu** - datum skupine izostanaka, te za svaku skupinu izostanaka: status (opravdan/neopravdan), redni broj školskog sata, razlog i ime predmeta
+        * **Brzi pregled** - broj sati na čekanju, broj opravdanih i neopravdanih sati, zbroj svih neodlučenih sati
+        * **Detaljno** - datum skupine izostanaka, te za svaku skupinu izostanaka: status (opravdan/neopravdan), redni broj školskog sata, razlog i ime predmeta
     * **Informacije o korisniku** (samo sinkronizirani razredi, trenutno se ne koristi nigdje u aplikaciji) - datum rođenja, rodno mjesto, puno ime, redni broj i školski program
 * **Postavke obavijesti**, što uključuje:
     * **Status obavijesti** - treba li slati korisniku obavijesti ili ne
@@ -70,7 +70,7 @@ Ako korisnik ne stisne gumb "Prijava", aplikacija se neće javiti na server.
 
 ## netrix.io (web-stranica)
 
-Web stranica [netrix.io](https://netrix.io) koristi Cloudflare Workers, koji nam daje samo statističke podatke o korištenju (broj zahtjeva). Ne skupljaju se nikakvi podatci kojima se može identificirati ili pratiti korisnik.
+Web stranica [netrix.io](https://netrix.io) koristi Cloudflare Workers, koji nam daje samo statističke podatke o korištenju (broj zahtjeva). Ne skupljaju se nikakvi podatci kojima se može identificirati ili pratiti korisnika.
 
 ## Sigurnost prijenosa podataka
 
