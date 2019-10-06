@@ -80,7 +80,7 @@ export class ApiService {
         this.getTests(activeClassId);
         this.getAbsences(activeClassId);
         this.getNotifConfig();
-        this.getUserInfo(activeClassId);
+        // this.getUserInfo(activeClassId);
       });
     });
   }
