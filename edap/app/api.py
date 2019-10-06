@@ -124,9 +124,10 @@ def e500(err):
 		Default handler in case something generic goes wrong on the server
 		side.
 	"""
+	exc = traceback.format_exc()
 	if config['USE_NOTIFICATIONS']:
 		log.critical('HTTP 500, sending notification')
-		notify_error('HTTP 500 RESPONSE', 'generic')
+		notify_error('HTTP 500 RESPONSE', 'generic', stacktrace=exc)
 	else:
 		log.critical('HTTP 500 error!')
 	return make_response(jsonify({'error':'E_SERVER_ERROR'}), 500)
@@ -143,9 +144,10 @@ def exh_redis_db_fail(e):
 	"""
 		Default handler in case the Redis DB connection fails.
 	"""
+	exc = traceback.format_exc()
 	log.critical(" ==> DATBASE ACCESS FAILURE!!!!! <== [%s]", e)
 	if config['USE_NOTIFICATIONS']:
-		notify_error('DB CONNECTION FAIL', 'redis')
+		notify_error('DB CONNECTION FAIL', 'redis', stacktrace=exc)
 	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
 
 @app.errorhandler(MemoryError)
