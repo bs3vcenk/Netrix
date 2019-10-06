@@ -157,7 +157,7 @@ export class SettingsService {
 
   setAdShow(val: boolean) {
     /* Change whether the banner ad should be initialized on startup */
-    this.changePreference('ad-preference', val);
+    this.changePreference('ad-time-preference', val);
     this.admobSvc.adPreference = val;
     this.adPreference = val;
   }
