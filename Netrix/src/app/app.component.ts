@@ -56,7 +56,8 @@ export class AppComponent {
           }
         });
     } catch (e) {
-      console.log('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running cordova.');
+      console.warn('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running Cordova.');
+      console.warn('AppComponent/notificationSetup(): This means we won\'t be receiving any Firebase notifications.');
     }
   }
 

@@ -22,6 +22,9 @@ export class AdmobService {
       }
     });
     console.log('AdmobService: repeatFactor is ' + this.repeatFactor);
+    if (this.repeatFactor > 6) {
+      console.warn('AdmobService: repeatFactor too large, may not be triggered in normal session!');
+    }
   }
 
   showBanner() {
