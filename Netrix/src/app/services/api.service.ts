@@ -294,16 +294,7 @@ export class ApiService {
       allsubs.forEach((subj) => {
         const processed = this.processSubjectData(subj);
         this.subjCacheMap[processed.id] = processed;
-        const profs = subj.professors;
-        let profsC = null;
-        if (profs.length > 3) {
-          console.log('tab1/getSubjects(): Hit professor limit');
-          profsC = profs.slice(0, 3);
-          profsC.push(this.translate.instant('tab1.text.other').replace('NUM_PROFS', profs.slice(3, profs.length).length));
-        } else {
-          profsC = profs;
-        }
-        subj.professors = profsC.join(', ');
+        subj.professors = subj.professors.join(', ');
       });
       // Set for display
       this.subjects = allsubs;
