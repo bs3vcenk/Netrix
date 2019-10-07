@@ -80,7 +80,7 @@ export class ApiService {
         this.getTests(activeClassId);
         this.getAbsences(activeClassId);
         this.getNotifConfig();
-        this.getUserInfo(activeClassId);
+        // this.getUserInfo(activeClassId);
       });
     });
   }
@@ -93,22 +93,27 @@ export class ApiService {
       /* User is not authenticated (possibly token purged from server DB, or logged out
        * from another device) */
       this.authServ.logout();
+      console.warn('ApiService/handleErr(): Server doesn\'t have our token stored, logging out');
     } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || errorObj.status === 521 || errorObj.status === 500) {
       /* Server-side issue, such as a failed DB connection (first statement), unreachable
        * origin server (second statement), or a generic server error (third statement) */
       this.dbError.next(true);
+      console.warn('ApiService/handleErr(): Server-side error (DB, origin down, or generic 500)');
     } else if (errorObj.status === -2) {
       /* Certificate not trusted, either MITM or public Wi-Fi login page */
       this.trustError.next(true);
+      console.warn('ApiService/handleErr(): Certificate could not be verified');
     } else if (errorObj.status === -3) {
       /* Network error */
       this.networkError.next(true);
+      console.warn('ApiService/handleErr(): Request failed');
     } else {
       /* Unknown error, probably a network error (e.g. no Internet access)
        *
        * Also could be something unhandled, so we throw the object so that Crashlytics
        * picks it up */
       this.networkError.next(true);
+      console.warn('ApiService/handleErr(): Unknown error');
       throw errorObj;
     }
   }

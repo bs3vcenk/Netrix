@@ -50,26 +50,6 @@ export class LoginPage implements OnInit {
     });
   }
 
-  dataAlert() {
-    // Data collection alert
-    this.alertControl.create({
-      header: this.translate.instant('login.alert.data.header'),
-      message: this.translate.instant('login.alert.data.content'),
-      buttons: [
-        {
-          text: 'OK',
-          handler: () => {
-            // Proceed to login when accepted
-            this.login();
-          }
-        }
-      ]
-    }).then(alert => {
-      // Show the alert
-      alert.present();
-    });
-  }
-
   login() {
     // Show "Logging in..."
     this.isLoading = true;

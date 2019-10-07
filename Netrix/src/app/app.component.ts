@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Platform, Config, ToastController } from '@ionic/angular';
+import { Platform, Config, ToastController, AlertController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './services/authentication.service';
 import { LanguageService } from './services/language.service';
@@ -24,6 +24,7 @@ export class AppComponent {
     private router: Router,
     private languageService: LanguageService,
     private toastController: ToastController,
+    private alertController: AlertController,
     private fcm: FirebaseService,
     private settings: SettingsService,
     private translate: TranslateService,
@@ -55,7 +56,8 @@ export class AppComponent {
           }
         });
     } catch (e) {
-      console.log('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running cordova.');
+      console.warn('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running Cordova.');
+      console.warn('AppComponent/notificationSetup(): This means we won\'t be receiving any Firebase notifications.');
     }
   }
 
@@ -63,6 +65,29 @@ export class AppComponent {
     if (val) {
       this.router.navigate(['error'], {replaceUrl: true});
     }
+  }
+
+  private showGoingAwayAlert() {
+    // Shutdown alert
+    this.alertController.create({
+      header: this.translate.instant('going_away.alert.header'),
+      message: this.translate.instant('going_away.alert.content'),
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel'
+        },
+        {
+          text: this.translate.instant('going_away.choices.read_more'),
+          handler: () => {
+            this.router.navigateByUrl('https://ednevnik.netrix.io');
+          }
+        }
+      ]
+    }).then(alert => {
+      // Show the alert
+      alert.present();
+    });
   }
 
   initializeApp() {
@@ -142,6 +167,9 @@ export class AppComponent {
           this.notifSvc.scheduleTestNotifications(this.settings.notifTime);
         }
       });
+
+      /* Fire off shutdown alert */
+      // this.showGoingAwayAlert();
     });
   }
 }

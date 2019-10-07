@@ -1,3 +1,8 @@
+# 1.9.0 [BETA] (2019-10-07)
+* EKSPERIMENT: Novi sustav reklama - nema više banner reklama, zamijenile su ih interstitial reklame
+* Opcija "Prikazuj reklame" se sada zove "Rjeđe prikazuj reklame"
+* Za sad se ne preuzimaju informacije o učeniku, jer se trenutno ne koriste 
+
 ## 1.8.10 (2019-10-04)
 * Riješeno krivo računanje tjedana u pregledu ispita
 * Promjena nekih prijevoda za bolje razumijevanje grešaka i drugih poruka

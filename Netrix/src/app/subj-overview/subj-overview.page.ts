@@ -4,6 +4,7 @@ import { AlertController, NavController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ApiService, SubjectData } from '../services/api.service';
+import { AdmobService } from '../services/admob.service';
 
 @Component({
   selector: 'app-subj-overview',
@@ -27,7 +28,8 @@ export class SubjOverviewPage implements OnInit {
     private alertControl: AlertController,
     private navCtrl: NavController,
     private firebase: FirebaseX,
-    private apiSvc: ApiService
+    private apiSvc: ApiService,
+    private admob: AdmobService
   ) {}
 
   ngOnInit() {
@@ -56,6 +58,7 @@ export class SubjOverviewPage implements OnInit {
 
   goBack() {
     this.navCtrl.navigateBack('/tabs/tabs/tab1');
+    this.admob.showInterstitial();
   }
 
   convertToReadableDate(unixTimestamp: number): string {
