@@ -1,4 +1,4 @@
-# 1.9.0 [BETA] (2019-10-07)
+# 1.9.0 (2019-10-08)
 * EKSPERIMENT: Novi sustav reklama - nema više banner reklama, zamijenile su ih interstitial reklame
 * Opcija "Prikazuj reklame" se sada zove "Rjeđe prikazuj reklame"
 * Za sad se ne preuzimaju informacije o učeniku, jer se trenutno ne koriste 
