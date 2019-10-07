@@ -22,6 +22,7 @@ export class Tab2Page {
   showAllPreference = false;
   currentTests = [];
   oneWeek = 604800000; // in ms
+  currentDate = Date.now();
 
   constructor(
     private apiSvc: ApiService,
@@ -69,8 +70,8 @@ export class Tab2Page {
     return new Date(d.setDate(diff));
   }
 
-  calculateRemainingDays(): number {
-    return 0; // TODO: Implement
+  calculateRemainingDays(toDate: number): number {
+    return Math.round(((toDate * 1000) - this.currentDate) / 1000 / 60 / 60 / 24);
   }
 
 }
