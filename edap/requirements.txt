@@ -1,5 +1,5 @@
 requests==2.22.0
-BeautifulSoup4==4.8.0
+BeautifulSoup4==4.8.1
 Flask==1.1.1
 Flask-Cors==3.0.8
 redis==3.3.8
