@@ -55,7 +55,7 @@ export class Tab2Page {
     const startWeek = new Date(startUNIXStamp);
     const startWeekMonth = startWeek.getMonth() + 1; // Months start from 0 in JS
     const startWeekDay = startWeek.getDate();
-    const endWeek = new Date(startingWeekTimestamp * this.oneWeek + this.oneWeek);
+    const endWeek = new Date(startUNIXStamp + this.oneWeek);
     const endWeekMonth = endWeek.getMonth() + 1;
     const endWeekDay = endWeek.getDate();
     return startWeekDay + '.' + startWeekMonth + '. - ' + endWeekDay + '.' + endWeekMonth + '.';
