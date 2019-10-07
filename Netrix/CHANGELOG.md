@@ -1,5 +1,10 @@
-# 1.9.0 (2019-10-08)
-* EKSPERIMENT: Novi sustav reklama - nema više banner reklama, zamijenile su ih interstitial reklame
+## 1.9.1 (2019-10-07)
+* Uz ispite se prikazuje i broj dana do ispita
+* (opet :) Popravljeno krivo računanje raspona tjedana za ispite
+* Prikazivanje pune liste profesora ispod predmeta
+
+# 1.9.0 (2019-10-07)
+* Novi sustav reklama - nema više banner reklama, zamijenile su ih interstitial reklame
 * Opcija "Prikazuj reklame" se sada zove "Rjeđe prikazuj reklame"
 * Za sad se ne preuzimaju informacije o učeniku, jer se trenutno ne koriste 
 
