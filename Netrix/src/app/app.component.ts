@@ -69,29 +69,6 @@ export class AppComponent {
     }
   }
 
-  private showGoingAwayAlert() {
-    // Shutdown alert
-    this.alertController.create({
-      header: this.translate.instant('going_away.alert.header'),
-      message: this.translate.instant('going_away.alert.content'),
-      buttons: [
-        {
-          text: 'OK',
-          role: 'cancel'
-        },
-        {
-          text: this.translate.instant('going_away.choices.read_more'),
-          handler: () => {
-            this.router.navigateByUrl('https://ednevnik.netrix.io');
-          }
-        }
-      ]
-    }).then(alert => {
-      // Show the alert
-      alert.present();
-    });
-  }
-
   initializeApp() {
     this.platform.ready().then(() => {
       /* Set status bar color, style for white bg and black icons */
