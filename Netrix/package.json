@@ -1,6 +1,6 @@
 {
   "name": "Netrix",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "author": "btx3",
   "homepage": "https://netrix.io/",
   "scripts": {
@@ -33,7 +33,7 @@
     "@ionic/storage": "^2.2.0",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
-    "cordova-admob-plus": "^0.30.0",
+    "cordova-admob-plus": "^0.31.0",
     "cordova-android": "^8.1.0",
     "cordova-plugin-advanced-http": "^2.2.0",
     "cordova-plugin-androidx": "^1.0.2",
