@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { AdmobService } from '../services/admob.service';
 
 @Component({
   selector: 'app-tab3',
@@ -15,7 +14,6 @@ export class Tab3Page implements OnInit {
   constructor(
     private apiSvc: ApiService,
     private firebase: FirebaseX,
-    private admob: AdmobService
   ) {
     this.apiSvc.loadingFinishedAbsences.subscribe((val) => {
       if (val) {
@@ -34,6 +32,5 @@ export class Tab3Page implements OnInit {
 
   ionViewDidEnter() {
     try { this.firebase.setScreenName('Absences'); } catch (e) {}
-    this.admob.showInterstitial();
   }
 }

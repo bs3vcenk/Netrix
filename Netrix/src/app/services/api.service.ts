@@ -335,6 +335,14 @@ export class ApiService {
     });
   }
 
+  private getMonday(timestamp: number): Date {
+    /* https://stackoverflow.com/a/4156516 */
+    const d = new Date(timestamp);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    return new Date(d.setDate(diff));
+  }
+
   private groupTestsByWeek(obj) {
     const objPeriod = [];
     const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
@@ -342,7 +350,7 @@ export class ApiService {
     /* Main loop */
     for (let i = 0; i < obj.length; i++) {
       /* Get the date of the test */
-      const d = new Date(obj[i].date * 1000);
+      const d = this.getMonday(obj[i].date * 1000);
       /* Get the week from that */
       const indx = Math.floor(d.getTime() / (oneDay * 7));
       /* Check if this week exists in objPeriod */
