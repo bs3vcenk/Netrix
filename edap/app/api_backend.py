@@ -725,7 +725,9 @@ def _class_id_exists(token: str, cid: int):
 		Check if a given class ID exists in the DB. Assumes that userInDatabase()
 		was already called and returned True.
 	"""
-	return cid <= len(get_data(token)['data']['classes'])
+	data = get_data(token)['data']['classes']
+	if cid <= len(data) and cid > 0:
+		return 'full' in data[cid]
 
 def _subject_id_exists(token: str, cid: int, sid: int):
 	"""
