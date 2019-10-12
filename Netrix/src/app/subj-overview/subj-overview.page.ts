@@ -60,7 +60,10 @@ export class SubjOverviewPage implements OnInit {
 
   convertToReadableDate(unixTimestamp: number): string {
     const date = new Date(unixTimestamp * 1000);
-    return date.toLocaleDateString();
+    const day = date.getDay();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    return day + '.' + month + '.' + year + '.';
   }
 
   async getSubjectInfo(subjId: string) {
