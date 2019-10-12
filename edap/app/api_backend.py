@@ -476,9 +476,10 @@ def _profile_difference(dObj1, dObj2):
 	# each class period.
 	t1 = deepcopy(dObj1['classes'][0]['absences']['full'])
 	t2 = deepcopy(dObj2['classes'][0]['absences']['full'])
-	if len(t1) != len(t2):
+	difflist = [x for x in t2 if x not in t1]
+	if difflist:
 		log.info("Found difference in absences")
-		_finalReturn.append({'type':'absence', 'classId':0, 'data':{'diff':len(t2)-len(t1)}})
+		_finalReturn.append({'type':'absence', 'classId':0, 'data':None})
 	## PER-SUBJECT GRADE DIFFERENCE (FIRST CLASS ONLY) ##
 	# https://stackoverflow.com/a/1663826
 	sId = 0
