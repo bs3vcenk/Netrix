@@ -494,7 +494,7 @@ def _profile_difference(dObj1, dObj2):
 				log.info("Found difference in grades")
 				for x in difflist:
 					_finalReturn.append({'type':'grade', 'classId':0, 'subjectId': sId, 'data':x})
-		elif "notes" in j:
+		if "notes" in j:
 			if j["notes"] is None:
 				continue
 			t1 = deepcopy(i['notes'])
@@ -504,8 +504,6 @@ def _profile_difference(dObj1, dObj2):
 				log.info("Found difference in notes")
 				for x in difflist:
 					_finalReturn.append({'type':'note', 'classId':0, 'subjectId': sId, 'data':x})
-		else:
-			continue
 		sId += 1
 	request_time = _clock() - start
 	log.debug("==> TIMER => {0:.0f}ms".format(request_time))
