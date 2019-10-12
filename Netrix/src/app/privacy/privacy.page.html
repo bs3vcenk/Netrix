@@ -10,5 +10,5 @@
 
 <ion-content>
   <!-- <div> containing HTML that will be fetched from the server -->
-  <div [innerHTML]="html" id="intext"></div>
+  <div [innerHTML]="html" id="intext" [@fadeInOut] *ngIf="html"></div>
 </ion-content>

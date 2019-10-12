@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { AdmobService } from '../services/admob.service';
 import { ApiService } from '../services/api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
@@ -16,27 +15,21 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
     ])
   ]
 })
-export class Tab1Page implements OnInit {
+export class Tab1Page {
 
   subjects = null;
   fullAvg = null;
   tempSubjects: Array<any> = new Array(10);
 
   constructor(
-    private admobSvc: AdmobService,
     private apiSvc: ApiService,
     private firebase: FirebaseX
   ) {
     this.initInBg();
   }
 
-  ngOnInit() {
-    // this.admobSvc.showBanner();
-  }
-
   ionViewDidEnter() {
     try { this.firebase.setScreenName('Subjects'); } catch (e) {}
-    this.admobSvc.showInterstitial();
   }
 
   initInBg() {

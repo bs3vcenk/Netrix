@@ -1,3 +1,11 @@
+## 1.9.2 (2019-10-12)
+* Prestanak podrške za Android 5.0 i 5.1
+* Popravljeno krivo sortiranje ispita po tjednima
+* Svi datumi se sada prikazuju u hrvatskom formatu, bez obzira na jezik uređaja
+* Vraćen stari sustav reklama (banner)
+* Popravljeno prikazivanje izostanaka na čekanju
+* Broj neopravdanih izostanaka se sada prikazuje samo ako ih ima
+
 ## 1.9.1 (2019-10-07)
 * Uz ispite se prikazuje i broj dana do ispita
 * (opet :) Popravljeno krivo računanje raspona tjedana za ispite

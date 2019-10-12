@@ -101,7 +101,7 @@ export class SettingsPage {
 
   updAdPreference() {
     if (this.adPreference !== this.settings.adPreference) {
-      this.settings.changePreference('ad-time-preference', this.adPreference);
+      this.settings.changePreference('ad-preference', this.adPreference);
       this.settings.adPreference = this.adPreference;
       this.toastControl.create({
         message: this.translate.instant('settings_page.alert.effect_on_restart'),

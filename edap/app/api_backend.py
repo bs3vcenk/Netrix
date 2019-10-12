@@ -326,8 +326,8 @@ def _formatAndSendNotification(token: str, notifData):
 			gradeNotif.append("%s: %s (%s)" % (_subj_id_to_name(token, x['classId'], x['subjectId']), x['data']['grade'], x['data']['note']))
 		elif x['type'] == 'note' and 'note' not in exceptions:
 			noteNotif.append("%s: %s" % (_subj_id_to_name(token, x['classId'], x['subjectId']), x['data']['note']))
-		elif x['type'] == 'absence' and 'absence' not in exceptions:
-			absenceNotif = True
+		#elif x['type'] == 'absence' and 'absence' not in exceptions:
+		#	absenceNotif = True
 	if gradeNotif:
 		toSendQueue.append({
 			'head': localize(token, 'grade'),
@@ -476,9 +476,10 @@ def _profile_difference(dObj1, dObj2):
 	# each class period.
 	t1 = deepcopy(dObj1['classes'][0]['absences']['full'])
 	t2 = deepcopy(dObj2['classes'][0]['absences']['full'])
-	if len(t1) != len(t2):
+	difflist = [x for x in t2 if x not in t1]
+	if difflist:
 		log.info("Found difference in absences")
-		_finalReturn.append({'type':'absence', 'classId':0, 'data':{'diff':len(t2)-len(t1)}})
+		_finalReturn.append({'type':'absence', 'classId':0, 'data':None})
 	## PER-SUBJECT GRADE DIFFERENCE (FIRST CLASS ONLY) ##
 	# https://stackoverflow.com/a/1663826
 	sId = 0
@@ -493,7 +494,7 @@ def _profile_difference(dObj1, dObj2):
 				log.info("Found difference in grades")
 				for x in difflist:
 					_finalReturn.append({'type':'grade', 'classId':0, 'subjectId': sId, 'data':x})
-		elif "notes" in j:
+		if "notes" in j:
 			if j["notes"] is None:
 				continue
 			t1 = deepcopy(i['notes'])
@@ -503,8 +504,6 @@ def _profile_difference(dObj1, dObj2):
 				log.info("Found difference in notes")
 				for x in difflist:
 					_finalReturn.append({'type':'note', 'classId':0, 'subjectId': sId, 'data':x})
-		else:
-			continue
 		sId += 1
 	request_time = _clock() - start
 	log.debug("==> TIMER => {0:.0f}ms".format(request_time))
@@ -554,6 +553,10 @@ def sendNotification(token: str, title: str, content: str, data=None):
 	except requests.exceptions.HTTPError as e:
 		log.error('Non-200 code (Firebase Cloud Messaging) => %s', str(e))
 		raise e
+	# EXPERIMENT: Checking responses to detect inactive users
+	with open(config["DATA_FOLDER"] + '/firebase.log', 'a') as fb_log:
+		fb_log.write('!! TOKEN:%s; FCM_TOKEN:%s; HTTP_CODE:%s; HTTP_RESPONSE:\n%s\n\n'
+		             % (token, firebase_token, a.status_code, a.text))
 
 def _sync(token: str):
 	"""
@@ -726,7 +729,9 @@ def _class_id_exists(token: str, cid: int):
 		Check if a given class ID exists in the DB. Assumes that userInDatabase()
 		was already called and returned True.
 	"""
-	return cid <= len(get_data(token)['data']['classes'])
+	data = get_data(token)['data']['classes']
+	if cid <= len(data) and cid > 0:
+		return 'full' in data[cid]
 
 def _subject_id_exists(token: str, cid: int, sid: int):
 	"""

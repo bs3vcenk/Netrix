@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from './services/api.service';
 import { NotificationService } from './services/notification.service';
 import { environment } from '../environments/environment';
+import { AdmobService } from './services/admob.service';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +31,8 @@ export class AppComponent {
     private translate: TranslateService,
     private config: Config,
     private apiSvc: ApiService,
-    private notifSvc: NotificationService
+    private notifSvc: NotificationService,
+    private admobSvc: AdmobService
   ) {
     this.initializeApp();
   }
@@ -67,34 +69,12 @@ export class AppComponent {
     }
   }
 
-  private showGoingAwayAlert() {
-    // Shutdown alert
-    this.alertController.create({
-      header: this.translate.instant('going_away.alert.header'),
-      message: this.translate.instant('going_away.alert.content'),
-      buttons: [
-        {
-          text: 'OK',
-          role: 'cancel'
-        },
-        {
-          text: this.translate.instant('going_away.choices.read_more'),
-          handler: () => {
-            this.router.navigateByUrl('https://ednevnik.netrix.io');
-          }
-        }
-      ]
-    }).then(alert => {
-      // Show the alert
-      alert.present();
-    });
-  }
-
   initializeApp() {
     this.platform.ready().then(() => {
       /* Set status bar color, style for white bg and black icons */
       this.statusBar.backgroundColorByHexString('#ffffff');
       this.statusBar.styleDefault();
+      this.admobSvc.showBanner();
 
       /* Set the language */
       this.languageService.setInitialLang();

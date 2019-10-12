@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../services/api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { AdmobService } from '../services/admob.service';
 
 @Component({
   selector: 'app-tab2',
@@ -22,12 +21,12 @@ export class Tab2Page {
   showAllPreference = false;
   currentTests = [];
   oneWeek = 604800000; // in ms
+  oneDay = 86400000;
   currentDate = Date.now();
 
   constructor(
     private apiSvc: ApiService,
-    private firebase: FirebaseX,
-    private admob: AdmobService
+    private firebase: FirebaseX
   ) {
     this.apiSvc.loadingFinishedTests.subscribe((val) => {
       if (val) {
@@ -38,7 +37,6 @@ export class Tab2Page {
 
   ionViewDidEnter() {
     try { this.firebase.setScreenName('Tests'); } catch (e) {}
-    this.admob.showInterstitial();
   }
 
   initInBg() {
@@ -48,15 +46,18 @@ export class Tab2Page {
 
   convertToReadableDate(unixTimestamp: number): string {
     const date = new Date(unixTimestamp * 1000);
-    return date.toLocaleDateString();
+    const day = date.getDay();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    return day + '.' + month + '.' + year + '.';
   }
 
   convertToReadableWeekSpan(startingWeekTimestamp: number): string {
     const startUNIXStamp = this.getMonday(startingWeekTimestamp * this.oneWeek).getTime();
-    const startWeek = new Date(startUNIXStamp);
+    const startWeek = new Date(startUNIXStamp + this.oneWeek);
     const startWeekMonth = startWeek.getMonth() + 1; // Months start from 0 in JS
     const startWeekDay = startWeek.getDate();
-    const endWeek = new Date(startUNIXStamp + this.oneWeek);
+    const endWeek = new Date(startWeek.getTime() + (this.oneWeek - this.oneDay));
     const endWeekMonth = endWeek.getMonth() + 1;
     const endWeekDay = endWeek.getDate();
     return startWeekDay + '.' + startWeekMonth + '. - ' + endWeekDay + '.' + endWeekMonth + '.';

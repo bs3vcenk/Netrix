@@ -114,7 +114,7 @@
   "settings": {
     "analytics": {
       "header": "Analytics and ads",
-      "ads": "Show ads less frequently",
+      "ads": "Show advertisements",
       "usage": "Send usage info"
     },
     "notifs": {
