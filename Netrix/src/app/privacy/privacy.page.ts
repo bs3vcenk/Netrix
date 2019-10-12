@@ -1,11 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import showdown from 'showdown/dist/showdown.js';
 import { HTTP } from '@ionic-native/http/ngx';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-privacy',
   templateUrl: './privacy.page.html',
   styleUrls: ['./privacy.page.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({ opacity: '0' })),
+      state('*', style({ opacity: '1' })),
+      transition('void <=> *', animate('150ms ease-in'))
+    ])
+  ]
 })
 export class PrivacyPage implements OnInit {
 
