@@ -558,7 +558,7 @@ def get_firebase_info(firebase_token: str) -> dict:
 	token_status = True
 	if a.status_code != 200:
 		token_status = False
-	return {'status': token_status, 'response': a.json()}
+	return {'status': token_status, 'data': a.json()}
 
 def sendNotification(token: str, title: str, content: str, data=None):
 	"""
