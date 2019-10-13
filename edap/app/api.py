@@ -4,7 +4,7 @@ from flask_cors import CORS
 from api_backend import *
 import edap, traceback
 
-API_VERSION = "2.9"
+API_VERSION = "2.9.1"
 
 log = logging.getLogger('EDAP-API')
 
@@ -161,13 +161,38 @@ def exh_memory_error(e):
 		notify_error('MEMORY ERROR', 'generic', stacktrace)
 	return make_response(jsonify({'error':'E_SERVER_OUT_OF_MEMORY'}), 500)
 
+@app.route('/dev/dboptimize', methods=["GET"])
+@dev_area
+def dev_db_optimize():
+	"""
+		DEV: Rewrite the AOF file.
+	"""
+	pre_size = convert_size(get_db_size())
+	optimize_db_aof()
+	post_size = convert_size(get_db_size())
+	return make_response(jsonify({
+		'size_prev': pre_size,
+		'size_curr': post_size
+	}))
+
 @app.route('/dev/dbinfo', methods=["GET"])
 @dev_area
 def dev_db_info():
 	"""
 		DEV: Database info page, currently only showing the size of the DB.
 	"""
-	return make_response(jsonify({'size':convert_size(get_db_size())}))
+	redis_info = get_db_info()
+	return make_response(jsonify({
+		'size': convert_size(get_db_size()),
+		'keys': get_db_size(),
+		'redis': {
+			'version': redis_info['redis_version'],
+			'memory': {
+				'used': redis_info['used_memory_human'],
+				'total': redis_info['total_system_memory_human']
+			}
+		}
+	}))
 
 @app.route('/dev/log', methods=["GET"])
 @dev_area
@@ -175,7 +200,18 @@ def dev_log():
 	"""
 		DEV: Simple page to print the log file.
 	"""
-	return make_response(jsonify({'log':read_log()}), 200)
+	filter_sync = request.args.get('filter', type=bool)
+	return make_response(jsonify({'log':read_log(exclude_syncing=filter_sync)}), 200)
+
+@app.route('/dev/firebase', methods=["GET"])
+@dev_area
+def dev_firebase_filter():
+	"""
+		DEV: Check for inactive users, and delete if specified.
+	"""
+	auto_delete = request.args.get('delete', type=bool)
+	out = check_inactive_fb_tokens(auto_delete)
+	return make_response(jsonify(out), 200)
 
 @app.route('/dev/users', methods=["GET"])
 @dev_area
@@ -199,7 +235,8 @@ def dev_token_mgmt(token):
 	if request.method == "GET":
 		data = get_data(token)
 		creds = get_credentials(token)
-		return {
+		fb_info = get_firebase_info(data['firebase_device_token'])
+		ret_object = {
 			'username': creds["username"],
 			'device': {
 				'os': data["device"]["platform"],
@@ -210,8 +247,14 @@ def dev_token_mgmt(token):
 			'cloudflare': None if not config["USE_CLOUDFLARE"] else {
 				'last_ip': data["cloudflare"]["last_ip"],
 				'country': data["cloudflare"]["country"]
+			},
+			'firebase': {
+				'status': fb_info['status']
 			}
 		}
+		if fb_info['status']:
+			ret_object['firebase']['app_version'] = fb_info['data']['applicationVersion']
+			ret_object['firebase']['rooted'] = fb_info['data']['attestStatus'] == 'ROOTED'
 	elif request.method == "DELETE":
 		purge_token(token)
 		return {'status':'success'}

@@ -113,7 +113,7 @@ def _exit(exitCode: int):
 	"""
 		Present additional information on exit (exit code and instructions).
 	"""
-	print("!!! Exited with code %i\n    Check the log file for more information if possible." % exitCode)
+	print("!!! Exited with code %i\n    If possible, check the log file for more information.\n    Make sure you configured eDAP correctly! Read the documentation\n    completely and verify your configuration before reporting an error." % exitCode)
 	_sys_exit(exitCode)
 
 def localize(token: str, notif_type: str):
@@ -520,6 +520,38 @@ def get_db_size():
 		Get the size of Redis' appendonly.aof database in bytes.
 	"""
 	return _get_file_size(_join_path(config["DATA_FOLDER"], "appendonly.aof"))
+
+def check_inactive_fb_tokens(auto_delete=False) -> dict:
+	"""
+		Check for inactive Firebase tokens in DB and delete associated
+		user if specified.
+	"""
+	tokens = get_tokens()
+	log.info('Verifying %i Firebase tokens', len(tokens))
+	returnable = {'inactive_tokens': [], 'deleted_tokens': []}
+	for token in tokens:
+		fb_token = get_data(tokens)['firebase_device_token']
+		out = get_firebase_info(fb_token)
+		if not out['status']:
+			returnable['inactive_tokens'].append(token)
+			if auto_delete:
+				purge_token(token)
+				returnable['deleted_tokens'].append(token)
+	log.info('Verification returned %i inactive Firebase tokens', len(returnable['inactive_tokens']))
+	return returnable
+
+def get_firebase_info(firebase_token: str) -> dict:
+	"""
+		Return information about a Firebase token, if possible.
+	"""
+	a = requests.get(
+		'https://iid.googleapis.com/iid/info/' + firebase_token,
+		params={'details': 'true'}
+	)
+	token_status = True
+	if a.status_code != 200:
+		token_status = False
+	return {'status': token_status, 'response': a.json()}
 
 def sendNotification(token: str, title: str, content: str, data=None):
 	"""
@@ -946,6 +978,24 @@ def update_counter(counter_id: str):
 	"""
 	val = get_counter(counter_id)
 	_set_counter(counter_id, val+1)
+
+def get_db_keys() -> int:
+	"""
+		Get the number of stored keys in the Redis DB.
+	"""
+	return _redis.dbsize()
+
+def get_db_info() -> dict:
+	"""
+		Get info about the Redis DB.
+	"""
+	return _redis.info()
+
+def optimize_db_aof():
+	"""
+		Optimize/rewrite the AOF.
+	"""
+	_redis.bgrewriteaof()
 
 config = _read_config()
 logging.basicConfig(

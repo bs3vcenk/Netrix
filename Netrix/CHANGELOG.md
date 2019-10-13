@@ -1,3 +1,6 @@
+## 1.9.3 (2019-10-12)
+* Popravljeno krivo računanje dana u datumu
+
 ## 1.9.2 (2019-10-12)
 * Prestanak podrške za Android 5.0 i 5.1
 * Popravljeno krivo sortiranje ispita po tjednima

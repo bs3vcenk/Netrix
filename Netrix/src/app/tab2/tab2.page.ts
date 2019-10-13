@@ -46,7 +46,7 @@ export class Tab2Page {
 
   convertToReadableDate(unixTimestamp: number): string {
     const date = new Date(unixTimestamp * 1000);
-    const day = date.getDay();
+    const day = date.getDate();
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
     return day + '.' + month + '.' + year + '.';
