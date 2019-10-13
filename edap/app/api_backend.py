@@ -26,6 +26,7 @@ from time import sleep
 from time import time as _time
 from time import clock as _clock
 from string import ascii_letters
+from typing import List, Dict
 
 log = logging.getLogger(__name__)
 _redis = None
@@ -35,7 +36,7 @@ _threads = {}
 class NonExistentSetting(Exception):
 	"""Specified setting ID is non-existent."""
 
-def _send_telegram_notification(message: str, parse_mode="Markdown"):
+def _send_telegram_notification(message: str, parse_mode: str = "Markdown"):
 	"""
 		Send a notification through Telegram.
 	"""
@@ -116,7 +117,7 @@ def _exit(exitCode: int):
 	print("!!! Exited with code %i\n    If possible, check the log file for more information.\n    Make sure you configured eDAP correctly! Read the documentation\n    completely and verify your configuration before reporting an error." % exitCode)
 	_sys_exit(exitCode)
 
-def localize(token: str, notif_type: str):
+def localize(token: str, notif_type: str) -> str:
 	"""
 		Localize a string according to the language reported by
 		the phone through /api/stats.
@@ -277,7 +278,7 @@ def get_setting(token: str, action: str):
 		return o['settings']['notif']
 	raise NonExistentSetting
 
-def process_setting(token: str, action: str, val):
+def process_setting(token: str, action: str, val: str):
 	"""
 		Do an action, with val as the data/arguments on a profile.
 	"""
@@ -351,7 +352,7 @@ def _formatAndSendNotification(token: str, notifData):
 	for i in toSendQueue:
 		sendNotification(token, i['head'], i['content'])
 
-def _subj_id_to_name(token: str, class_id: int, subject_id: int):
+def _subj_id_to_name(token: str, class_id: int, subject_id: int) -> str:
 	"""
 		Get the name belonging to a subject ID.
 	"""
@@ -367,7 +368,7 @@ def _stop_sync(token: str):
 	if "sync:" + token in _threads:
 		_threads["sync:" + token]["run"] = False
 
-def get_sync_threads():
+def get_sync_threads() -> List[str]:
 	"""
 		Get a list of sync threads.
 	"""
@@ -411,7 +412,7 @@ def sync_dev(data2, token: str):
 		save_data(token, o)
 		_formatAndSendNotification(token, diff)
 
-def sync(token: str, debug=False):
+def sync(token: str, debug: bool = False):
 	"""
 		Pull remote data, compare with current and replace if needed.
 	"""
@@ -446,7 +447,7 @@ def sync(token: str, debug=False):
 	if debug:
 		return log_buffer
 
-def _profile_difference(dObj1, dObj2):
+def _profile_difference(dObj1, dObj2) -> List[dict]:
 	"""
 		Return the difference between two student data dicts.
 	"""
@@ -515,13 +516,13 @@ def save_data(token: str, dataObj):
 	"""
 	_redis.set('token:' + token, _json_convert(dataObj))
 
-def get_db_size():
+def get_db_size() -> int:
 	"""
 		Get the size of Redis' appendonly.aof database in bytes.
 	"""
 	return _get_file_size(_join_path(config["DATA_FOLDER"], "appendonly.aof"))
 
-def check_inactive_fb_tokens(auto_delete=False) -> dict:
+def check_inactive_fb_tokens(auto_delete: bool = False) -> dict:
 	"""
 		Check for inactive Firebase tokens in DB and delete associated
 		user if specified.
@@ -610,7 +611,7 @@ def _sync(token: str):
 			break
 		sync(token)
 
-def _get_var(varname: str, _bool=False, default=None):
+def _get_var(varname: str, _bool: bool = False, default=None):
 	"""
 		Get environment variable and return it if it exists. If _bool is True,
 		return it as a boolean value. If default is set, return its value if
@@ -623,7 +624,7 @@ def _get_var(varname: str, _bool=False, default=None):
 	except KeyError:
 		return default
 
-def _read_config():
+def _read_config() -> Dict[str, str]:
 	"""
 		Read, verify and print the configuration.
 	"""
@@ -692,7 +693,7 @@ def _read_config():
 		"TELEGRAM_TARGET_UID": TELEGRAM_TARGET_UID
 	}
 
-def read_log(exclude_syncing=False):
+def read_log(exclude_syncing=False) -> str:
 	"""
 		Read the log file. Setting `exclude_syncing` to True will exclude
 		all lines from the `get_class_profile` function.
@@ -705,7 +706,7 @@ def read_log(exclude_syncing=False):
 			log_lines.append(x)
 	return ''.join(log_lines)
 
-def make_html(title="eDAP dev", content=None, bare=False):
+def make_html(title="eDAP dev", content=None, bare=False) -> str:
 	"""
 		HTML creator template for the /dev/ dashboard. Allows specifying the title,
 		content, and if the page needs to have no header (e.g. the /dev/log page).
@@ -728,7 +729,7 @@ def convert_size(size_bytes: int):
 	s = round(size_bytes / p, 2)
 	return "%s %s" % (s, size_name[i])
 
-def _init_db(host="localhost", port=6379, db=0):
+def _init_db(host: str = "localhost", port: int = 6379, db: int = 0) -> redis.Redis:
 	"""
 		Initialize the Redis DB.
 	"""
@@ -751,19 +752,19 @@ def get_data(token: str):
 	"""
 	return _json_load(_redis.get("token:" + token).decode("utf-8"))
 
-def get_tokens():
+def get_tokens() -> List[str]:
 	"""
 		Return a list of all tokens in the DB.
 	"""
 	return [i.decode('utf-8').replace("token:", "") for i in _redis.keys('token:*')]
 
-def _user_in_database(token: str):
+def _user_in_database(token: str) -> bool:
 	"""
 		Check if a given token exists in the DB.
 	"""
 	return "token:" + token in [i.decode('utf-8') for i in _redis.keys('token:*')]
 
-def _class_id_exists(token: str, cid: int):
+def _class_id_exists(token: str, cid: int) -> bool:
 	"""
 		Check if a given class ID exists in the DB. Assumes that userInDatabase()
 		was already called and returned True.
@@ -772,7 +773,7 @@ def _class_id_exists(token: str, cid: int):
 	if cid <= len(data) and cid > 0:
 		return 'full' in data[cid]
 
-def _subject_id_exists(token: str, cid: int, sid: int):
+def _subject_id_exists(token: str, cid: int, sid: int) -> bool:
 	"""
 		Check if a given subject ID exists in the DB. Assumes that userInDatabase()
 		and classIDExists() were both already called and returned True.
@@ -799,7 +800,7 @@ def fetch_new_class(token: str, class_id: int):
 		)
 		save_data(token, full_data)
 
-def populate_data(obj):
+def populate_data(obj) -> dict:
 	"""
 		Call get_class_profile() to initialize the data object in
 		a newly-created profile.
@@ -817,7 +818,7 @@ def populate_data(obj):
 	data_dict['classes'] = output
 	return data_dict
 
-def get_class_profile(obj, class_id: int, class_obj):
+def get_class_profile(obj, class_id: int, class_obj) -> dict:
 	"""
 		Add/modify a list of classes from eDAP. `class_id` is the
 		class ID that will be "expanded" (add grades, exams, etc.)
@@ -920,13 +921,13 @@ def get_class_profile(obj, class_id: int, class_obj):
 	class_obj['full'] = True
 	return class_obj
 
-def verify_dev_request(token: str):
+def verify_dev_request(token: str) -> bool:
 	"""
 		Verify if a given dev API token is valid.
 	"""
 	return "dev-token:" + token in [i.decode('utf-8') for i in _redis.keys('dev-token:*')]
 
-def add_dev_token():
+def add_dev_token() -> str:
 	"""
 		Authorizes a dev API token.
 	"""
@@ -934,7 +935,7 @@ def add_dev_token():
 	_redis.set('dev-token:' + token, 'ALLOWED')
 	return token
 
-def verify_request(token: str, class_id=None, subject_id=None):
+def verify_request(token: str, class_id=None, subject_id=None) -> bool:
 	"""
 		Verify if a given token, class_id, and/or subject_id exist in the DB.
 	"""
@@ -951,13 +952,13 @@ def verify_request(token: str, class_id=None, subject_id=None):
 			return False
 	return True
 
-def hash_string(inp: str):
+def hash_string(inp: str) -> str:
 	"""
 		Return the MD5 hash of a string. Used for tokens.
 	"""
 	return _MD5HASH(inp.encode()).hexdigest()
 
-def hash_password(inp: str):
+def hash_password(inp: str) -> str:
 	"""
 		Return the SHA256 hash of a string. Used for the /dev/ password.
 	"""

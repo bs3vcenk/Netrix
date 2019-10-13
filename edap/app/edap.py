@@ -5,6 +5,7 @@ import inspect
 import re
 import requests
 from timeit import default_timer as timer
+from typing import List
 try:
 	from bs4 import BeautifulSoup
 except ModuleNotFoundError:
@@ -24,7 +25,7 @@ class ServerInMaintenance(Exception):
 
 EDAP_VERSION = "E1"
 
-def _format_to_date(preformat_string: str, date_format="%d.%m.%Y.") -> int:
+def _format_to_date(preformat_string: str, date_format: str = "%d.%m.%Y.") -> int:
 	"""
 		Formats a string into a UNIX timestamp.
 
@@ -42,15 +43,15 @@ class edap:
 	def __init__(self,
 	             user: str,
 	             pasw: str,
-	             parser="lxml",
-	             edurl="https://ocjene.skole.hr",
-	             ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/69.0",
-	             debug=False,
-	             loglevel=1,
-	             hidepriv=True,
-	             hide_confidential=True,
-	             return_processing_time=False,
-	             dumpable_logs=True):
+	             parser: str = "lxml",
+	             edurl: str = "https://ocjene.skole.hr",
+	             ua: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/69.0",
+	             debug: bool = False,
+	             loglevel: int = 1,
+	             hidepriv: bool = True,
+	             hide_confidential: bool = True,
+	             return_processing_time: bool = False,
+	             dumpable_logs: bool = True):
 		"""
 			Authenticates the user to eDnevnik.
 
@@ -165,7 +166,7 @@ class edap:
 		o.raise_for_status()
 		return o.text
 
-	def getClasses(self):
+	def getClasses(self) -> List[dict]:
 		"""
 			Returns all classes offered by the post-login screen
 
@@ -213,7 +214,7 @@ class edap:
 			return classlist, timer() - start
 		return classlist
 
-	def getSubjects(self, class_id: int):
+	def getSubjects(self, class_id: int) -> List[dict]:
 		"""
 			Return list of subjects and professors for class ID "class_id"
 
@@ -252,7 +253,7 @@ class edap:
 			return subjinfo, timer() - start
 		return subjinfo
 
-	def getTests(self, class_id: int, alltests=False):
+	def getTests(self, class_id: int, alltests: bool = False) -> List[dict]:
 		"""
 			Return list of tests
 
@@ -292,7 +293,7 @@ class edap:
 			return final_returnable, timer() - start
 		return final_returnable
 
-	def getGrades(self, class_id: int, subject_id: int):
+	def getGrades(self, class_id: int, subject_id: int) -> List[dict]:
 		"""
 			Return grade list (dict, values "date", "note" and "grade") for a subject_id
 
@@ -341,7 +342,7 @@ class edap:
 			return final_returnable, timer() - start
 		return final_returnable
 
-	def getNotes(self, class_id: int, subject_id: int):
+	def getNotes(self, class_id: int, subject_id: int) -> List[dict]:
 		"""
 			Return note list (dict, values "date", "note") for a subject_id
 
@@ -439,7 +440,7 @@ class edap:
 			return False, None, timer() - start
 		return False, None
 
-	def getInfo(self, class_id: int):
+	def getInfo(self, class_id: int) -> dict:
 		"""
 			Return the info on a eDnevnik user.
 
@@ -479,7 +480,7 @@ class edap:
 			return user_data, timer() - start
 		return user_data
 
-	def getAbsenceOverview(self, class_id: int):
+	def getAbsenceOverview(self, class_id: int) -> dict:
 		"""
 			Return an overview of classes marked absent for a given class
 			ID.
@@ -520,7 +521,7 @@ class edap:
 			return final_returnable, timer() - start
 		return final_returnable
 
-	def getAbsenceList(self, class_id: int):
+	def getAbsenceList(self, class_id: int) -> List[dict]:
 		"""
 			Return a full list of all marked absences for a given class ID.
 
