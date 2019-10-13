@@ -255,6 +255,7 @@ def dev_token_mgmt(token):
 		if fb_info['status']:
 			ret_object['firebase']['app_version'] = fb_info['data']['applicationVersion']
 			ret_object['firebase']['rooted'] = fb_info['data']['attestStatus'] == 'ROOTED'
+		return ret_object
 	elif request.method == "DELETE":
 		purge_token(token)
 		return {'status':'success'}
