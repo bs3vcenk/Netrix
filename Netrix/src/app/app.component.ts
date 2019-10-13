@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Platform, Config, ToastController, AlertController } from '@ionic/angular';
+import { Platform, Config, ToastController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './services/authentication.service';
 import { LanguageService } from './services/language.service';
@@ -25,7 +25,6 @@ export class AppComponent {
     private router: Router,
     private languageService: LanguageService,
     private toastController: ToastController,
-    private alertController: AlertController,
     private fcm: FirebaseService,
     private settings: SettingsService,
     private translate: TranslateService,
