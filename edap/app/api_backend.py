@@ -113,7 +113,7 @@ def _exit(exitCode: int):
 	"""
 		Present additional information on exit (exit code and instructions).
 	"""
-	print("!!! Exited with code %i\n    Check the log file for more information if possible." % exitCode)
+	print("!!! Exited with code %i\n    If possible, check the log file for more information.\n    Make sure you configured eDAP correctly! Read the documentation\n    completely and verify your configuration before reporting an error." % exitCode)
 	_sys_exit(exitCode)
 
 def localize(token: str, notif_type: str):
