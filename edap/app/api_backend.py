@@ -550,7 +550,10 @@ def get_firebase_info(firebase_token: str) -> dict:
 	"""
 	a = requests.get(
 		'https://iid.googleapis.com/iid/info/' + firebase_token,
-		params={'details': 'true'}
+		params={'details': 'true'},
+		headers={
+			"Authorization": "key=%s" % config["FIREBASE_TOKEN"]
+		}
 	)
 	token_status = True
 	if a.status_code != 200:
