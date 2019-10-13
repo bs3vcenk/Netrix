@@ -199,7 +199,8 @@ def dev_token_mgmt(token):
 	if request.method == "GET":
 		data = get_data(token)
 		creds = get_credentials(token)
-		return {
+		fb_info = get_firebase_info(data['firebase_device_token'])
+		ret_object = {
 			'username': creds["username"],
 			'device': {
 				'os': data["device"]["platform"],
@@ -210,8 +211,14 @@ def dev_token_mgmt(token):
 			'cloudflare': None if not config["USE_CLOUDFLARE"] else {
 				'last_ip': data["cloudflare"]["last_ip"],
 				'country': data["cloudflare"]["country"]
+			},
+			'firebase': {
+				'status': fb_info['status']
 			}
 		}
+		if fb_info['status']:
+			ret_object['firebase']['app_version'] = fb_info['data']['applicationVersion']
+			ret_object['firebase']['rooted'] = fb_info['data']['attestStatus'] == 'ROOTED'
 	elif request.method == "DELETE":
 		purge_token(token)
 		return {'status':'success'}

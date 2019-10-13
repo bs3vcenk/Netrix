@@ -521,6 +521,19 @@ def get_db_size():
 	"""
 	return _get_file_size(_join_path(config["DATA_FOLDER"], "appendonly.aof"))
 
+def get_firebase_info(firebase_token: str) -> dict:
+	"""
+		Return information about a Firebase token, if possible.
+	"""
+	a = requests.get(
+		'https://iid.googleapis.com/iid/info/' + firebase_token,
+		params={'details': 'true'}
+	)
+	token_status = True
+	if a.status_code != 200:
+		token_status = False
+	return {'status': token_status, 'response': a.json()}
+
 def sendNotification(token: str, title: str, content: str, data=None):
 	"""
 		Send a notification to a user's device through Firebase.
