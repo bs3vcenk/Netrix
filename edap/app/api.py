@@ -167,7 +167,18 @@ def dev_db_info():
 	"""
 		DEV: Database info page, currently only showing the size of the DB.
 	"""
-	return make_response(jsonify({'size':convert_size(get_db_size())}))
+	redis_info = _redis.info()
+	return make_response(jsonify({
+		'size': convert_size(get_db_size()),
+		'keys': _redis.dbsize(),
+		'redis': {
+			'version': redis_info['redis_version'],
+			'memory': {
+				'used': redis_info['used_memory_human']
+				'total': redis_info['total_system_memory_human']
+			}
+		}
+	}))
 
 @app.route('/dev/log', methods=["GET"])
 @dev_area
