@@ -174,7 +174,7 @@ def dev_db_info():
 		'redis': {
 			'version': redis_info['redis_version'],
 			'memory': {
-				'used': redis_info['used_memory_human']
+				'used': redis_info['used_memory_human'],
 				'total': redis_info['total_system_memory_human']
 			}
 		}
