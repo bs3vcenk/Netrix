@@ -539,6 +539,7 @@ def check_inactive_fb_tokens(auto_delete=False) -> dict:
 					purge_token(token)
 					returnable['deleted_tokens'].append(token)
 		else:
+			log.info('FB token is null value for %s', token)
 			returnable['inactive_tokens'].append(token)
 	log.info('Verification returned %i inactive Firebase tokens', len(returnable['inactive_tokens']))
 	return returnable
