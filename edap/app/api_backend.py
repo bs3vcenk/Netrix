@@ -531,12 +531,15 @@ def check_inactive_fb_tokens(auto_delete=False) -> dict:
 	returnable = {'inactive_tokens': [], 'deleted_tokens': []}
 	for token in tokens:
 		fb_token = get_data(token)['firebase_device_token']
-		out = get_firebase_info(fb_token)
-		if not out['status']:
+		if fb_token:
+			out = get_firebase_info(fb_token)
+			if not out['status']:
+				returnable['inactive_tokens'].append(token)
+				if auto_delete:
+					purge_token(token)
+					returnable['deleted_tokens'].append(token)
+		else:
 			returnable['inactive_tokens'].append(token)
-			if auto_delete:
-				purge_token(token)
-				returnable['deleted_tokens'].append(token)
 	log.info('Verification returned %i inactive Firebase tokens', len(returnable['inactive_tokens']))
 	return returnable
 
