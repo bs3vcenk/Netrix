@@ -960,6 +960,18 @@ def update_counter(counter_id: str):
 	val = get_counter(counter_id)
 	_set_counter(counter_id, val+1)
 
+def get_db_keys() -> int:
+	"""
+		Get the number of stored keys in the Redis DB.
+	"""
+	return _redis.dbsize()
+
+def get_db_info() -> dict:
+	"""
+		Get info about the Redis DB.
+	"""
+	return _redis.info()
+
 config = _read_config()
 logging.basicConfig(
 	filename=_join_path(config["DATA_FOLDER"], "edap_api.log"),

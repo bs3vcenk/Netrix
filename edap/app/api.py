@@ -167,10 +167,10 @@ def dev_db_info():
 	"""
 		DEV: Database info page, currently only showing the size of the DB.
 	"""
-	redis_info = _redis.info()
+	redis_info = get_db_info()
 	return make_response(jsonify({
 		'size': convert_size(get_db_size()),
-		'keys': _redis.dbsize(),
+		'keys': get_db_size(),
 		'redis': {
 			'version': redis_info['redis_version'],
 			'memory': {
