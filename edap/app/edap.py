@@ -48,8 +48,6 @@ class edap:
 	             debug=False,
 	             loglevel=1,
 	             hidepriv=True,
-	             log_func_name=True,
-	             redirect_log_to_file=False,
 	             hide_confidential=True,
 	             return_processing_time=False,
 	             dumpable_logs=True):
@@ -64,9 +62,6 @@ class edap:
 			:param bool debug: Enables/disables logging
 			:param int loglevel: Level of logging, can be 0-4, although 4 (fatal) is always shown
 			:param bool hidepriv: Enables/disables hiding identifiable information
-			:param bool log_func_name: Enables/disables logging function names, may increase performance
-			:param redirect_log_to_file: Enables logging to file, if False it is disabled
-			:type redirect_log_to_file: str or False
 			:param bool hide_confidential: Enables/disables returning confidential information, such as OIB
 			:param bool return_processing_time: Returns additional variable containing processing time in s
 
@@ -79,7 +74,6 @@ class edap:
 		self.debug = debug
 		self.loglevel = loglevel
 		self.hidepriv = hidepriv
-		self.log_func_name = log_func_name
 		self.hide_confidential = hide_confidential
 		self.return_processing_time = return_processing_time
 		self.dumpable_logs = dumpable_logs
@@ -88,8 +82,6 @@ class edap:
 		self.subject_ids = []
 		self.subject_cache = {}
 		self.absence_cache = {}
-		if redirect_log_to_file:
-			sys.stdout = open(redirect_log_to_file, "w")
 		self.session = requests.Session()
 		self.session.headers.update({"User-Agent":self.useragent})
 		try:
