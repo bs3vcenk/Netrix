@@ -200,7 +200,8 @@ def dev_log():
 	"""
 		DEV: Simple page to print the log file.
 	"""
-	return make_response(jsonify({'log':read_log()}), 200)
+	filter_sync = request.args.get('filter', type=bool)
+	return make_response(jsonify({'log':read_log(exclude_syncing=filter_sync)}), 200)
 
 @app.route('/dev/users', methods=["GET"])
 @dev_area
