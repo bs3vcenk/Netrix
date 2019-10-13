@@ -423,6 +423,16 @@ def sync(token: str, debug: bool = False):
 		log_buffer += "START_SYNC token:%s\n" % token
 		log_buffer += "FETCH_OLD_DATA\n"
 	fData = get_data(token)
+	fb_token_info = get_firebase_info(fData['firebase_device_token'])
+	if debug:
+		log_buffer += "VERIFY_ACTIVITY status:%s\n" % fb_token_info['status']
+	if not fb_token_info['status']:
+		# Inactive token, stop sync
+		_stop_sync(token)
+		log.warning('Inactive token %s detected, stopping sync', token)
+		if debug:
+			return log_buffer
+		return
 	data = fData["data"] # Old data
 	credentials = get_credentials(token)
 	if debug:
