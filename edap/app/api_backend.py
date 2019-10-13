@@ -521,6 +521,25 @@ def get_db_size():
 	"""
 	return _get_file_size(_join_path(config["DATA_FOLDER"], "appendonly.aof"))
 
+def check_inactive_fb_tokens(auto_delete=False) -> dict:
+	"""
+		Check for inactive Firebase tokens in DB and delete associated
+		user if specified.
+	"""
+	tokens = get_tokens()
+	log.info('Verifying %i Firebase tokens', len(tokens))
+	returnable = {'inactive_tokens': [], 'deleted_tokens': []}
+	for token in tokens:
+		fb_token = get_data(tokens)['firebase_device_token']
+		out = get_firebase_info(fb_token)
+		if not out['status']:
+			returnable['inactive_tokens'].append(token)
+			if auto_delete:
+				purge_token(token)
+				returnable['deleted_tokens'].append(token)
+	log.info('Verification returned %i inactive Firebase tokens', len(returnable['inactive_tokens']))
+	return returnable
+
 def get_firebase_info(firebase_token: str) -> dict:
 	"""
 		Return information about a Firebase token, if possible.

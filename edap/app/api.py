@@ -203,6 +203,16 @@ def dev_log():
 	filter_sync = request.args.get('filter', type=bool)
 	return make_response(jsonify({'log':read_log(exclude_syncing=filter_sync)}), 200)
 
+@app.route('/dev/firebase', methods=["GET"])
+@dev_area
+def dev_firebase_filter():
+	"""
+		DEV: Check for inactive users, and delete if specified.
+	"""
+	auto_delete = request.args.get('delete', type=bool)
+	out = check_inactive_fb_tokens(auto_delete)
+	return make_response(jsonify(out), 200)
+
 @app.route('/dev/users', methods=["GET"])
 @dev_area
 def dev_users():
