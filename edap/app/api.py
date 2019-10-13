@@ -161,6 +161,20 @@ def exh_memory_error(e):
 		notify_error('MEMORY ERROR', 'generic', stacktrace)
 	return make_response(jsonify({'error':'E_SERVER_OUT_OF_MEMORY'}), 500)
 
+@app.route('/dev/dboptimize', methods=["GET"])
+@dev_area
+def dev_db_optimize():
+	"""
+		DEV: Rewrite the AOF file.
+	"""
+	pre_size = convert_size(get_db_size())
+	optimize_db_aof()
+	post_size = convert_size(get_db_size())
+	return make_response(jsonify({
+		'size_prev': pre_size,
+		'size_curr': post_size
+	}))
+
 @app.route('/dev/dbinfo', methods=["GET"])
 @dev_area
 def dev_db_info():

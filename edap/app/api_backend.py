@@ -972,6 +972,12 @@ def get_db_info() -> dict:
 	"""
 	return _redis.info()
 
+def optimize_db_aof():
+	"""
+		Optimize/rewrite the AOF.
+	"""
+	_redis.bgrewriteaof()
+
 config = _read_config()
 logging.basicConfig(
 	filename=_join_path(config["DATA_FOLDER"], "edap_api.log"),
