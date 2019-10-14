@@ -1,6 +1,6 @@
 # Pravila o privatnosti
 
-Zadnje ažuriranje: 10.9.2019.
+Zadnje ažuriranje: 14.10.2019.
 
 Prijašnje inačice ovog dokumenta možete zatražiti upitom na e-mail bs3vcenk@gmail.com.
 
@@ -30,7 +30,7 @@ Netrix omogućuje brz pregled ocjena, izostanaka, ispita i korisničkih informac
     * **Popis izostanaka za pojedini razred i pripadajuće informacije** (samo sinkronizirani razredi)
         * **Brzi pregled** - broj sati na čekanju, broj opravdanih i neopravdanih sati, zbroj svih neodlučenih sati
         * **Detaljno** - datum skupine izostanaka, te za svaku skupinu izostanaka: status (opravdan/neopravdan), redni broj školskog sata, razlog i ime predmeta
-    * **Informacije o korisniku** (samo sinkronizirani razredi, trenutno se ne koristi nigdje u aplikaciji) - datum rođenja, rodno mjesto, puno ime, redni broj i školski program
+    * **Informacije o učeniku** (samo sinkronizirani razredi, trenutno se ne koristi nigdje u aplikaciji) - datum rođenja, rodno mjesto, puno ime, redni broj i školski program
 * **Postavke obavijesti**, što uključuje:
     * **Status obavijesti** - treba li slati korisniku obavijesti ili ne
     * **Isključene kategorije** - koje vrste obavijesti ne treba slati
@@ -41,17 +41,19 @@ Netrix omogućuje brz pregled ocjena, izostanaka, ispita i korisničkih informac
 
 Gore navedene podatke je moguće isbrisati pritiskom na gumb "Odjava" pod tabom "Postavke" u aplikaciji.
 
+Deinstalacija aplikacije deaktivira vezani FCM (Firebase Cloud Messaging) token, što koristimo za detektiranje neaktivnih korisnika, pri čemu s naših servera brišemo vezane podatke kako bi se smanjila upotreba bandwidtha i opterećenje i naših i CARNetovih servera.
+
 Držimo popis svih zahtjeva (log) na eDAP server koji se briše svaka tri dana.
 
 eDAP se spaja na CARNetov servis e-Dnevnik, čija pravila o privatnosti možete pročitati [ovdje](https://www.carnet.hr/obavijest-o-privatnosti/).
 
 ### Netrix (frontend)
 
-Netrix koristi Googleov *Firebase Cloud Messaging* za primanje obavijesti, *Firebase Crashlytics* za izjave o greškama i AdMob za prikazivanje reklama. Za više informacija o podacima koji se šalju, provjerite [Googleova pravila o privatnosti](https://policies.google.com/privacy) i [Kako Google koristi Vaše podatke](https://policies.google.com/technologies/partner-sites).
+Netrix koristi Googleov *Firebase Cloud Messaging* za obavijesti, *Firebase Crashlytics* za izjave o greškama i AdMob za prikazivanje reklama. Za više informacija o podacima koji se šalju, provjerite [Googleova pravila o privatnosti](https://policies.google.com/privacy) i [Kako Google koristi Vaše podatke](https://policies.google.com/technologies/partner-sites).
 
-U slučaju da korisnik uključi opciju "Šalji podatke o korištenju" (koja je isključena sve dok korisnik ne odluči suprotno), uključuje se i Googleov *Firebase Analytics*.
+U slučaju da korisnik uključi opciju "Šalji podatke o korištenju" (koja je po zadanome isključena), uključuje se i Googleov *Firebase Analytics*.
 
-*Firebase Analytics* šalje površne zapise o korištenju aplikacije (npr. prijava, odjava, ime trenutnog ekrana) koji mogu biti korisni u utvrđivanju uzroka greške. Uz to prati trajanje hvatanja i razrade podataka, što služi za optimizaciju tih funkcija.
+*Firebase Analytics* šalje zapise o korištenju aplikacije (npr. prijava, odjava, ime trenutnog ekrana), no nama te informacije nisu potrebne te je opciju najbolje ostaviti isključenu.
 
 *Firebase Crashlytics* šalje informacije o grešci ako se dogodi. U izjavi o grešci sadržane su sljedeće informacije:
 
