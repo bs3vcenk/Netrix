@@ -546,6 +546,9 @@ class edap:
 			x = soup.find_all("table")[1]
 		except AttributeError as e:
 			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
+		except IndexError:
+			self.__edlog(1, "No absences for this class")
+			return []
 		## BLACK FUCKING MAGIC AHEAD ##
 		##    You have been warned   ##
 		o = x.find_all("tr")[1:]
