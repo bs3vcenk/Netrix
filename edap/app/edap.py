@@ -1,27 +1,31 @@
 """A library for parsing CARNet's eDnevnik using BeautifulSoup."""
 from datetime import datetime
-import sys
-import inspect
-import re
-import requests
+import inspect, re, requests
 from timeit import default_timer as timer
 from typing import List
 try:
 	from bs4 import BeautifulSoup
-except ModuleNotFoundError:
+except ModuleNotFoundError as e:
 	print("ERROR: BeautifulSoup isn't installed -- check the instructions and try again.")
-	sys.exit(1)
+	raise e
 
-class FatalLogExit(Exception):
-	"""Level 4 log error (fatal), ex. parsing fail or HTTP != 200
-	TODO: Separate above into different exceptions
-	"""
+class eDAPError(Exception):
+	"""Generic eDAP error."""
 
-class WrongCredentials(Exception):
+class WrongCredentials(eDAPError):
 	"""Incorrect credentials"""
 
-class ServerInMaintenance(Exception):
+class ServerInMaintenance(eDAPError):
 	"""Host (e-Dnevnik) is in maintenance mode"""
+
+class NetworkError(eDAPError):
+	"""Failed to connect to server"""
+
+class InvalidResponse(eDAPError):
+	"""Invalid response from server, e.g. no CSRF"""
+
+class ParseError(eDAPError):
+	"""Failed to parse HTML"""
 
 EDAP_VERSION = "E1"
 
@@ -85,16 +89,17 @@ class edap:
 		self.absence_cache = {}
 		self.session = requests.Session()
 		self.session.headers.update({"User-Agent":self.useragent})
+		self.__edlog(0, "Sending initial request to obtain CSRF")
 		try:
 			r = self.session.get("%s/pocetna/prijava" % self.edurl)
 			r.raise_for_status()
 			self.csrf = self.session.cookies["csrf_cookie"]
-		except requests.exceptions.HTTPError as e:
-			self.__edlog(4, "Failed to connect to eDnevnik [requests.exceptions.HTTPError] (%s)" % e)
-		except KeyError as e:
+		except (requests.exceptions.HTTPError, requests.exceptions.Timeout):
+			raise NetworkError("%s/pocetna/prijava" % self.edurl)
+		except KeyError:
 			if "u nadogradnji" in r.text:
 				raise ServerInMaintenance
-			self.__edlog(4, "Can't get CSRF (%s)" % e)
+			raise InvalidResponse("Can't get CSRF from initial request")
 		self.__edlog(1, "Got CSRF: [{%s}]" % self.csrf)
 		self.__edlog(1, "Trying to authenticate %s" % self.user)
 		try:
@@ -106,8 +111,8 @@ class edap:
 			    "nije pronađen u LDAP imeniku škole" in r.text or
 			    "Neispravno korisničko ime." in r.text):
 				raise WrongCredentials
-		except requests.HTTPError as e:
-			self.__edlog(4, "Failed to connect to eDnevnik (%s)" % e)
+		except (requests.exceptions.HTTPError, requests.exceptions.Timeout):
+			raise NetworkError("%s/pocetna/posalji" % self.edurl)
 		self.__edlog(1, "Authentication successful!")
 
 	def __edlog(self, loglevel: int, logs: str):
@@ -142,8 +147,6 @@ class edap:
 		# 	Log level is higher than or equal to minimum loglevel specified in __init__
 		if self.dumpable_logs and loglevel >= self.loglevel:
 			self.log += log_string + "\n"
-		if loglevel == 4:
-			raise FatalLogExit
 
 	def dump_data(self):
 		"""
@@ -157,14 +160,17 @@ class edap:
 		print('CLASS IDs: %s' % (', '.join(self.class_ids) if self.class_ids else 'not initialized'))
 		print('==========\n%s' % self.log if self.dumpable_logs else 'Dumpable logs not enabled')
 
-	def __fetch(self, url: str):
+	def __fetch(self, url: str) -> str:
 		"""
 			Simple internal function to fetch URL using stored session object
 			and also raise an exception for non 2xx codes.
 		"""
-		o = self.session.get(url)
-		o.raise_for_status()
-		return o.text
+		try:
+			o = self.session.get(url)
+			o.raise_for_status()
+			return o.text
+		except (requests.exceptions.HTTPError, requests.exceptions.Timeout):
+			raise NetworkError(url)
 
 	def getClasses(self) -> List[dict]:
 		"""
@@ -177,10 +183,7 @@ class edap:
 		"""
 		self.__edlog(1, "Listing classes for [{%s}]" % self.user)
 		self.__edlog(0, "Getting class selection HTML")
-		try:
-			response = self.__fetch("%s/razredi/odabir" % self.edurl)
-		except requests.exceptions.HTTPError as e:
-			self.__edlog(4, "Failed getting class selection HTML (%s)" % e)
+		response = self.__fetch("%s/razredi/odabir" % self.edurl)
 		if self.return_processing_time:
 			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -192,8 +195,7 @@ class edap:
 			try:
 				x = i.find("div", class_="class").get_text("\n").split("\n")
 			except AttributeError as e:
-				self.__edlog(3, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, i))
-				continue
+				raise ParseError(e)
 			# x[0] -> class number and letter
 			# x[1] -> school year
 			# x[2] -> institution name, city
@@ -223,10 +225,7 @@ class edap:
 			:rtype: list
 		"""
 		self.__edlog(1, "Getting subject list for class id %s (remote ID [{%s}])" % (class_id, self.class_ids[class_id]))
-		try:
-			response = self.__fetch("%s/pregled/predmeti/%s" % (self.edurl, self.class_ids[class_id]))
-		except requests.exceptions.HTTPError as e:
-			self.__edlog(4, "Failed getting subject list (%s)" % e)
+		response = self.__fetch("%s/pregled/predmeti/%s" % (self.edurl, self.class_ids[class_id]))
 		if self.return_processing_time:
 			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -268,10 +267,7 @@ class edap:
 			addon = "/all"
 		else:
 			addon = ""
-		try:
-			response = self.__fetch("%s/pregled/ispiti/%s" % (self.edurl, str(self.class_ids[class_id]) + addon))
-		except requests.exceptions.HTTPError as e:
-			self.__edlog(4, "Failed getting test list (%s)" % e)
+		response = self.__fetch("%s/pregled/ispiti/%s" % (self.edurl, str(self.class_ids[class_id]) + addon))
 		if self.return_processing_time:
 			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -303,16 +299,13 @@ class edap:
 			:rtype: list
 		"""
 		self.__edlog(0, "Getting grade list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
-		try:
-			if not self.subject_ids[subject_id] in self.subject_cache:
-				self.__edlog(1, "Fetching subject %s from server" % subject_id)
-				response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
-				self.subject_cache[self.subject_ids[subject_id]] = response
-			else:
-				self.__edlog(1, "Fetching subject %s from cache" % subject_id)
-				response = self.subject_cache[self.subject_ids[subject_id]]
-		except requests.exceptions.HTTPError as e:
-			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
+		if not self.subject_ids[subject_id] in self.subject_cache:
+			self.__edlog(1, "Fetching subject %s from server" % subject_id)
+			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			self.subject_cache[self.subject_ids[subject_id]] = response
+		else:
+			self.__edlog(1, "Fetching subject %s from cache" % subject_id)
+			response = self.subject_cache[self.subject_ids[subject_id]]
 		if self.return_processing_time:
 			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -352,16 +345,13 @@ class edap:
 			:rtype: list
 		"""
 		self.__edlog(0, "Getting note list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
-		try:
-			if not self.subject_ids[subject_id] in self.subject_cache:
-				self.__edlog(1, "Fetching subject %s from server" % subject_id)
-				response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
-				self.subject_cache[self.subject_ids[subject_id]] = response
-			else:
-				self.__edlog(1, "Fetching subject %s from cache" % subject_id)
-				response = self.subject_cache[self.subject_ids[subject_id]]
-		except requests.exceptions.HTTPError as e:
-			self.__edlog(4, "Failed getting notes for subject (%s)" % e)
+		if not self.subject_ids[subject_id] in self.subject_cache:
+			self.__edlog(1, "Fetching subject %s from server" % subject_id)
+			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			self.subject_cache[self.subject_ids[subject_id]] = response
+		else:
+			self.__edlog(1, "Fetching subject %s from cache" % subject_id)
+			response = self.subject_cache[self.subject_ids[subject_id]]
 		if self.return_processing_time:
 			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -405,16 +395,13 @@ class edap:
 			:rtype: bool, int
 		"""
 		self.__edlog(0, "Getting concluded grade for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
-		try:
-			if not self.subject_ids[subject_id] in self.subject_cache:
-				self.__edlog(1, "Fetching subject %s from server" % subject_id)
-				response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
-				self.subject_cache[self.subject_ids[subject_id]] = response
-			else:
-				self.__edlog(1, "Fetching subject %s from cache" % subject_id)
-				response = self.subject_cache[self.subject_ids[subject_id]]
-		except requests.exceptions.HTTPError as e:
-			self.__edlog(4, "Failed getting grades for subject (%s)" % e)
+		if not self.subject_ids[subject_id] in self.subject_cache:
+			self.__edlog(1, "Fetching subject %s from server" % subject_id)
+			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			self.subject_cache[self.subject_ids[subject_id]] = response
+		else:
+			self.__edlog(1, "Fetching subject %s from cache" % subject_id)
+			response = self.subject_cache[self.subject_ids[subject_id]]
 		if self.return_processing_time:
 			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -424,16 +411,18 @@ class edap:
 			# TODO: Refactor this; use new table#grade_notes identifier like in getGrades
 			x = soup.find("div", class_="grades").find("table").find_all("td", class_="t-center bold")[1].getText().strip()
 		except AttributeError as e:
-			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
+			raise ParseError(e)
 		if x: # If not empty/NoneType, means there's text in that table element
 			self.__edlog(0, "Got unformatted string: [{%s}]" % x)
 			# Use some regex to extract the numerical grade between the parentheses
-			result = re.search(r'\((.*)\)', x).group(1)
-			self.__edlog(0, "Formatted string: [{%s}]" % result)
+			result = re.search(r'\((.*)\)', x)
+			if not result:
+				raise ParseError('Regex failed to match %s' % x)
+			self.__edlog(0, "Formatted string: [{%s}]" % result.group(1))
 			self.__edlog(0, "Found concluded grade for this subject")
 			if self.return_processing_time:
-				return True, int(result), timer() - start
-			return True, int(result)
+				return True, int(result.group(1)), timer() - start
+			return True, int(result.group(1))
 		# Otherwise we have no concluded grade
 		self.__edlog(0, "No concluded grade found for this subject")
 		if self.return_processing_time:
@@ -447,10 +436,7 @@ class edap:
 			ARGS: class_id [int/required]
 		"""
 		self.__edlog(0, "Getting info for class id %s" % class_id)
-		try:
-			response = self.__fetch("%s/pregled/osobni_podaci/%s" % (self.edurl, self.class_ids[class_id]))
-		except requests.exceptions.HTTPError as e:
-			self.__edlog(4, "Failed to get info for class (%s)" % e)
+		response = self.__fetch("%s/pregled/osobni_podaci/%s" % (self.edurl, self.class_ids[class_id]))
 		if self.return_processing_time:
 			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -459,7 +445,7 @@ class edap:
 			# Get all elements in the info page
 			x = soup.find("div", class_="student-details").find("table").find_all("td")
 		except AttributeError as e:
-			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
+			raise ParseError(e)
 		# Create an object using the data we have
 		user_data = {
 			"number":int(x[0].getText()),
@@ -488,16 +474,13 @@ class edap:
 			ARGS: class_id [int/required]
 		"""
 		self.__edlog(0, "Getting absent overview for class id %s" % class_id)
-		try:
-			if not self.class_ids[class_id] in self.absence_cache:
-				self.__edlog(1, "Fetching absences from server")
-				response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
-				self.absence_cache[self.class_ids[class_id]] = response
-			else:
-				self.__edlog(1, "Fetching absences from cache")
-				response = self.absence_cache[self.class_ids[class_id]]
-		except requests.exceptions.HTTPError as e:
-			self.__edlog(4, "Failed to get absent overview for class (%s)" % e)
+		if not self.class_ids[class_id] in self.absence_cache:
+			self.__edlog(1, "Fetching absences from server")
+			response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
+			self.absence_cache[self.class_ids[class_id]] = response
+		else:
+			self.__edlog(1, "Fetching absences from cache")
+			response = self.absence_cache[self.class_ids[class_id]]
 		if self.return_processing_time:
 			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -505,7 +488,7 @@ class edap:
 		try:
 			x = soup.find("table", class_="legend").find_all("td")
 		except AttributeError as e:
-			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
+			raise ParseError(e)
 		x_fix = []
 		for x in x:
 			if not x.find("img"): # Ignore all <img> tags
@@ -528,16 +511,13 @@ class edap:
 			ARGS: class_id [int/required]
 		"""
 		self.__edlog(0, "Getting absent list for class id %s" % class_id)
-		try:
-			if not self.class_ids[class_id] in self.absence_cache:
-				self.__edlog(1, "Fetching absences from server")
-				response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
-				self.absence_cache[self.class_ids[class_id]] = response
-			else:
-				self.__edlog(1, "Fetching absences from cache")
-				response = self.absence_cache[self.class_ids[class_id]]
-		except requests.exceptions.HTTPError as e:
-			self.__edlog(4, "Failed to get absent list for class (%s)" % e)
+		if not self.class_ids[class_id] in self.absence_cache:
+			self.__edlog(1, "Fetching absences from server")
+			response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
+			self.absence_cache[self.class_ids[class_id]] = response
+		else:
+			self.__edlog(1, "Fetching absences from cache")
+			response = self.absence_cache[self.class_ids[class_id]]
 		if self.return_processing_time:
 			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
@@ -545,7 +525,7 @@ class edap:
 		try:
 			x = soup.find_all("table")[1]
 		except AttributeError as e:
-			self.__edlog(4, "HTML parsing error! [%s] Target data follows:\n\n%s" % (e, soup))
+			raise ParseError(e)
 		except IndexError:
 			self.__edlog(1, "No absences for this class")
 			return []
