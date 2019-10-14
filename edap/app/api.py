@@ -139,6 +139,17 @@ def index():
 	"""
 	return redirect('https://netrix.io/')
 
+@app.errorhandler(Exception)
+def exh_unhandled(e):
+	"""
+		Default exception handler.
+	"""
+	exc = traceback.format_exc()
+	log.warning('Unhandled exception %s', e)
+	if config['USE_NOTIFICATIONS']:
+		notify_error('UNHANDLED EXC', 'generic', stacktrace=exc)
+	abort(500)
+
 @app.errorhandler(redis.exceptions.ConnectionError)
 def exh_redis_db_fail(e):
 	"""
