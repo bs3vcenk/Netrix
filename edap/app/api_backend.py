@@ -49,14 +49,14 @@ def _send_telegram_notification(message: str, parse_mode: str = "Markdown"):
 		}
 	)
 
-def notify_error(problem_header: str, component: str, stacktrace=None, additonal_info=None):
+def notify_error(problem_header: str, component: str, stacktrace=None, additional_info=None):
 	"""
 		Send a notification about an exception/error.
 	"""
 	message_content = "*%s*\nComponent: `%s`" % (problem_header, component)
-	if additonal_info:
-		for key in additonal_info:
-			message_content += "\n%s: `%s`" % (key, additonal_info[key])
+	if additional_info:
+		for key in additional_info:
+			message_content += "\n%s: `%s`" % (key, additional_info[key])
 	_send_telegram_notification(message_content)
 	if stacktrace:
 		_send_telegram_notification("```%s```" % stacktrace)
@@ -74,7 +74,7 @@ def get_credentials(token: str):
 	except requests.exceptions.HTTPError:
 		log.critical('Failed to access credentials!')
 		if config['USE_NOTIFICATIONS']:
-			notify_error('VAULT GET ERROR', 'vault', additonal_info={"token": token})
+			notify_error('VAULT GET ERROR', 'vault', additional_info={"token": token})
 	return data.json()["data"]["data"]
 
 def set_credentials(token: str, username: str, password: str):
@@ -96,7 +96,7 @@ def set_credentials(token: str, username: str, password: str):
 	except requests.exceptions.HTTPError:
 		log.critical('Failed to set credentials!')
 		if config['USE_NOTIFICATIONS']:
-			notify_error('VAULT SET ERROR', 'vault', additonal_info={"token": token})
+			notify_error('VAULT SET ERROR', 'vault', additional_info={"token": token})
 
 def rm_credentials(token: str):
 	"""
@@ -111,7 +111,7 @@ def rm_credentials(token: str):
 	except requests.exceptions.HTTPError:
 		log.critical('Failed to delete credentials!')
 		if config['USE_NOTIFICATIONS']:
-			notify_error('VAULT DELETE ERROR', 'vault', additonal_info={"token": token})
+			notify_error('VAULT DELETE ERROR', 'vault', additional_info={"token": token})
 
 def _exit(exitCode: int):
 	"""
