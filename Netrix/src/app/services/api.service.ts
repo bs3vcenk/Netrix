@@ -184,8 +184,7 @@ export class ApiService {
       if (rx.data.includes('trenutno u nadogradnji')) {
         this.maintenanceError.next(true);
       }
-    }, (error) => {
-      this.handleErr(error);
+    }, () => {
     });
   }
 
