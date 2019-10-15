@@ -9,7 +9,7 @@
     "back": "Natrag",
     "text": {
       "nonetwork": {
-        "header": "Nema mreže",
+        "header": "Mrežna greška",
         "content": "Provjeri svoju vezu, pa pokušaj ponovo (ili je u tijeku održavanje servera)."
       },
       "nodb": {

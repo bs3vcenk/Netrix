@@ -9,7 +9,7 @@
     "back": "Back",
     "text": {
       "nonetwork": {
-        "header": "No network",
+        "header": "Network error",
         "content": "Check your network connection and try again (or server maintenance might be in progress)."
       },
       "nodb": {
