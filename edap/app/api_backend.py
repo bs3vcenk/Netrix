@@ -616,7 +616,7 @@ def _sync(token: str):
 		Wrapper around sync, for bg execution (random timeout).
 	"""
 	while True:
-		val = randint(3600, 5000)
+		val = randint(1800, 3600)
 		log.debug("Waiting %i s for %s", val, token)
 		sleep(val)
 		if not _threads["sync:" + token]["run"]:
