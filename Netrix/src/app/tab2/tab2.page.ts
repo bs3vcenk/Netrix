@@ -72,7 +72,7 @@ export class Tab2Page {
   }
 
   calculateRemainingDays(toDate: number): number {
-    return Math.round(((toDate * 1000) - this.currentDate) / 1000 / 60 / 60 / 24);
+    return Math.ceil(((toDate * 1000) - this.currentDate) / 1000 / 60 / 60 / 24);
   }
 
 }
