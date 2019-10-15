@@ -11,7 +11,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from './services/api.service';
 import { NotificationService } from './services/notification.service';
 import { environment } from '../environments/environment';
-import { AdmobService } from './services/admob.service';
 
 @Component({
   selector: 'app-root',
@@ -30,8 +29,7 @@ export class AppComponent {
     private translate: TranslateService,
     private config: Config,
     private apiSvc: ApiService,
-    private notifSvc: NotificationService,
-    private admobSvc: AdmobService
+    private notifSvc: NotificationService
   ) {
     this.initializeApp();
   }
@@ -73,7 +71,6 @@ export class AppComponent {
       /* Set status bar color, style for white bg and black icons */
       this.statusBar.backgroundColorByHexString('#ffffff');
       this.statusBar.styleDefault();
-      this.admobSvc.showBanner();
 
       /* Set the language */
       this.languageService.setInitialLang();

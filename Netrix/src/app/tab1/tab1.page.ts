@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../services/api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { AdmobService } from '../services/admob.service';
 
 @Component({
   selector: 'app-tab1',
@@ -15,7 +16,7 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
     ])
   ]
 })
-export class Tab1Page {
+export class Tab1Page implements OnInit {
 
   subjects = null;
   fullAvg = null;
@@ -23,9 +24,14 @@ export class Tab1Page {
 
   constructor(
     private apiSvc: ApiService,
-    private firebase: FirebaseX
+    private firebase: FirebaseX,
+    private admobSvc: AdmobService
   ) {
     this.initInBg();
+  }
+
+  ngOnInit() {
+    this.admobSvc.showBanner();
   }
 
   ionViewDidEnter() {
