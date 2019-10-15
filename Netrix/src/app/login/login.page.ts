@@ -13,9 +13,7 @@ export class LoginPage implements OnInit {
 
   loUsername = null;
   loPassword = null;
-  ldController = null;
   isLoading = false;
-  dataAlertShown = false;
 
   constructor(
     private toastCtrl: ToastController,
