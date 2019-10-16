@@ -2,7 +2,7 @@
   "generic": {
     "alert": {
       "network": "Netzwerkfehler",
-      "expiry": "Deine Einmeldung ist abgelaufen",
+      "expiry": "Deine Anmeldung ist abgelaufen",
       "database": "Datenbankverbindung fehlgeschlagen; versuch es später noch einmal",
       "server": "Serverfehler; versuch es später noch einmal"
     },
