@@ -44,7 +44,8 @@
     "showall": "Show all tests",
     "notests": "No tests",
     "test_singular": "test",
-    "test_plural": "tests"
+    "test_plural": "tests",
+    "today": "today"
   },
   "tab3": {
     "title": "Absences",

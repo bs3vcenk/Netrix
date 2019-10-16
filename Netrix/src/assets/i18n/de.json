@@ -44,7 +44,8 @@
     "showall": "Zeige alle Prüfungen",
     "notests": "Keine Prüfungen",
     "test_singular": "Prüfung",
-    "test_plural": "Prüfungen"
+    "test_plural": "Prüfungen",
+    "today": "heute"
   },
   "tab3": {
     "title": "Abwesenheiten",

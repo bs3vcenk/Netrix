@@ -44,7 +44,8 @@
     "showall": "Prikaži sve ispite",
     "notests": "Nema ispita",
     "test_singular": "ispit",
-    "test_plural": "ispita"
+    "test_plural": "ispita",
+    "today": "danas"
   },
   "tab3": {
     "title": "Izostanci",
