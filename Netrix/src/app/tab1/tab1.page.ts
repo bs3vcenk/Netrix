@@ -21,6 +21,8 @@ export class Tab1Page implements OnInit {
   subjects = null;
   fullAvg = null;
   tempSubjects: Array<any> = new Array(10);
+  currentTestsLen = null;
+  remainingTests = null;
 
   constructor(
     private apiSvc: ApiService,
@@ -28,6 +30,7 @@ export class Tab1Page implements OnInit {
     private admobSvc: AdmobService
   ) {
     this.initInBg();
+    this.calculateRemainingTests();
   }
 
   ngOnInit() {
@@ -36,6 +39,22 @@ export class Tab1Page implements OnInit {
 
   ionViewDidEnter() {
     try { this.firebase.setScreenName('Subjects'); } catch (e) {}
+  }
+
+  calculateRemainingTests() {
+    const weekStart = this.apiSvc.getMonday(new Date().getTime());
+    const weekID = Math.floor(weekStart.getTime() / (7 * 24 * 60 * 60 * 1000));
+    this.apiSvc.loadingFinishedTests.subscribe((isLoaded) => {
+      if (isLoaded) {
+        this.currentTestsLen = this.apiSvc.currentTests.length;
+        for (let i = 0; i < this.apiSvc.tests.length; i++) {
+          if (this.apiSvc.tests[i].week === weekID) {
+            console.log('Tab1Page/calculateRemainingTests(): Found matching test group for week ID ' + weekID);
+            this.remainingTests = this.apiSvc.tests[i].currentTests;
+          }
+        }
+      }
+    });
   }
 
   initInBg() {

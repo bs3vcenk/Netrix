@@ -331,7 +331,7 @@ export class ApiService {
     });
   }
 
-  private getMonday(timestamp: number): Date {
+  getMonday(timestamp: number): Date {
     /* https://stackoverflow.com/a/4156516 */
     const d = new Date(timestamp);
     const day = d.getDay();

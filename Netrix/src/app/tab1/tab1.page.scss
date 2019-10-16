@@ -33,3 +33,26 @@
   font-weight: 700 !important;
   margin-top: 0px;
 }
+
+#wrapper {
+  display: flex;
+  /* Fix incorrect padding, causing top bar to be slightly off center */
+  --inner-padding-end: 0px;
+  --padding-start:0px
+}
+
+#flexItem {
+  flex: 1;
+  text-align: center;
+}
+
+#descText {
+  font-size: 12px;
+  padding-top: 8px;
+}
+
+#infoText {
+  font-size: 38px;
+  font-weight: 700 !important;
+  margin-top: 0px;
+}
