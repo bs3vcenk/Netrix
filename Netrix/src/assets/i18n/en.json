@@ -36,7 +36,8 @@
       "other": "and NUM_PROFS more",
       "average": "Average",
       "classes": "Classes",
-      "no_grades": "No grades"
+      "no_grades": "No grades",
+      "tests_remaining": "Tests remaining this week"
     }
   },
   "tab2": {

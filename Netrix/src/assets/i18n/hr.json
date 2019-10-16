@@ -36,7 +36,8 @@
       "other": "i još NUM_PROFS",
       "average": "Prosjek",
       "classes": "Razredi",
-      "no_grades": "Nema ocjena"
+      "no_grades": "Nema ocjena",
+      "tests_remaining": "Preostalo testova ovaj tjedan"
     }
   },
   "tab2": {

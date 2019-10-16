@@ -36,7 +36,8 @@
       "other": "und NUM_PROFS mehr",
       "average": "Durchschnitt",
       "classes": "Klassen",
-      "no_grades": "Keine Noten"
+      "no_grades": "Keine Noten",
+      "tests_remaining": "Verbleibende Prüfungen diese Woche"
     }
   },
   "tab2": {
