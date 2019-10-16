@@ -34,7 +34,7 @@
     "title": "Subjects",
     "text": {
       "other": "and NUM_PROFS more",
-      "average": "Your average is:",
+      "average": "Average",
       "classes": "Classes",
       "no_grades": "No grades"
     }

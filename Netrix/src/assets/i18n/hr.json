@@ -34,7 +34,7 @@
     "title": "Predmeti",
     "text": {
       "other": "i još NUM_PROFS",
-      "average": "Tvoj prosjek je:",
+      "average": "Prosjek",
       "classes": "Razredi",
       "no_grades": "Nema ocjena"
     }

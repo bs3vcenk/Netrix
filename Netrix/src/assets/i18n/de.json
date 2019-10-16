@@ -34,7 +34,7 @@
     "title": "Schulfächer",
     "text": {
       "other": "und NUM_PROFS mehr",
-      "average": "Dein Durchschnitt ist:",
+      "average": "Durchschnitt",
       "classes": "Klassen",
       "no_grades": "Keine Noten"
     }
