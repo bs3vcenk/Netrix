@@ -95,7 +95,7 @@
     "alert": {
       "credentials": {
         "header": "Netočni podaci za prijavu",
-        "content": "Provjeri svoje korisničko ime i lozinu, pa pokušaj ponovo."
+        "content": "Provjeri svoje korisničko ime i lozinku, pa pokušaj ponovo."
       }
     },
     "text": {
