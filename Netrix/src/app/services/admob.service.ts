@@ -7,8 +7,6 @@ declare var admob;
 export class AdmobService {
 
   adPreference = null;
-  interstitialRequestedTimes = 0;
-  repeatFactor = 5; // How many times should showInterstitial be called before showing an ad
 
   constructor(
     private storage: Storage
@@ -21,10 +19,6 @@ export class AdmobService {
         this.adPreference = true;
       }
     });
-    console.log('AdmobService: repeatFactor is ' + this.repeatFactor);
-    if (this.repeatFactor > 6) {
-      console.warn('AdmobService: repeatFactor too large, may not be triggered in normal session!');
-    }
   }
 
   showBanner() {
