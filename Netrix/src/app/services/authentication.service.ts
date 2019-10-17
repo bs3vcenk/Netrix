@@ -64,8 +64,7 @@ export class AuthenticationService {
         token: this.token,
         platform: this.getPlatform(),
         device: this.getDevice(),
-        language: this.getLanguage(),
-        resolution: this.getResolution()
+        language: this.getLanguage()
       },
       this.httpHeader)
     .then(() => {
@@ -81,10 +80,6 @@ export class AuthenticationService {
 
   private getDevice() {
     return this.device.model;
-  }
-
-  private getResolution() {
-    return this.plt.width() + 'x' + this.plt.height();
   }
 
   private getLanguage() {
