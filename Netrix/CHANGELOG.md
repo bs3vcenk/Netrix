@@ -1,3 +1,13 @@
+## 1.9.4 (2019-10-17)
+* Prikaz preostalih ispita u tjednu na početnom ekranu
+* (opet) Dodan splash screen
+* Bolje računanje preostalih dana do ispita (broj mjeseci ako je moguće)
+* Ako je ispit za 0 dana, prikazuje se tekst "Danas"
+* Bolji error handling za serverske i mrežne greške
+* Maknuto slanje rezolucije ekrana na server
+* "Nema mreže" -> "Mrežna greška" za sve podržane jezike
+* Riješene neke greške vezane za Firebase
+
 ## 1.9.3 (2019-10-12)
 * Popravljeno krivo računanje dana u datumu
 

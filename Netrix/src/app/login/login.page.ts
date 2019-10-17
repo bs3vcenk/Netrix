@@ -13,9 +13,7 @@ export class LoginPage implements OnInit {
 
   loUsername = null;
   loPassword = null;
-  ldController = null;
   isLoading = false;
-  dataAlertShown = false;
 
   constructor(
     private toastCtrl: ToastController,
@@ -69,7 +67,7 @@ export class LoginPage implements OnInit {
           this.translate.instant('login.alert.credentials.header'),
           this.translate.instant('login.alert.credentials.content')
         );
-      } else if (err.status === 500 || err.status === 521) {
+      } else if (err.status >= 500 && err.status <= 599) {
         // Server/network error
         this.toastError(this.translate.instant('generic.alert.server'), null, 2500);
         this.firebase.logError('Server error, status ' + err.status, null);

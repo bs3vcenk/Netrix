@@ -4,7 +4,7 @@ from flask_cors import CORS
 from api_backend import *
 import edap, traceback
 
-API_VERSION = "2.9.2"
+API_VERSION = "2.10"
 
 log = logging.getLogger('EDAP-API')
 
@@ -138,6 +138,17 @@ def index():
 		Default page, redirects to the Netrix page.
 	"""
 	return redirect('https://netrix.io/')
+
+@app.errorhandler(Exception)
+def exh_unhandled(e):
+	"""
+		Default exception handler.
+	"""
+	exc = traceback.format_exc()
+	log.warning('Unhandled exception %s', e)
+	if config['USE_NOTIFICATIONS']:
+		notify_error('UNHANDLED EXC', 'generic', stacktrace=exc)
+	abort(500)
 
 @app.errorhandler(redis.exceptions.ConnectionError)
 def exh_redis_db_fail(e):
@@ -407,13 +418,25 @@ def login():
 		log.error("SLOW => WRONG CREDS => %s", username)
 		update_counter("logins:fail:credentials")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
-	except edap.FatalLogExit as e:
-		log.error("SLOW => eDAP FAIL => %s => %s", username, e)
+	except edap.ParseError as e:
+		log.error("SLOW => eDAP PARSE ERROR => %s => %s", username, e)
 		update_counter("logins:fail:generic")
+		notify_error('PARSE ERROR', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
+		abort(500)
+	except edap.InvalidResponse as e:
+		log.error("SLOW => eDAP INVALID RESPONSE => %s => %s", username, e)
+		update_counter("logins:fail:generic")
+		notify_error('INVALID SERVER RESPONSE', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
+		abort(500)
+	except edap.NetworkError as e:
+		log.error("SLOW => eDAP CONNECTION FAIL => %s => %s", username, e)
+		update_counter("logins:fail:generic")
+		notify_error('CONNECTION FAIL', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		abort(500)
 	except edap.ServerInMaintenance as e:
 		log.error("SLOW => MAINTENANCE => %s", username)
 		update_counter("logins:fail:generic")
+		notify_error('SERVER MAINTENANCE', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		return make_response(jsonify({'error':'E_UPSTREAM_MAINTENANCE'}), 500)
 	log.info("SLOW => SUCCESS => %s (%s)", username, token)
 	dataObj = {

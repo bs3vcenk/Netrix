@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../services/api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { AdmobService } from '../services/admob.service';
 
 @Component({
   selector: 'app-tab1',
@@ -15,21 +16,50 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
     ])
   ]
 })
-export class Tab1Page {
+export class Tab1Page implements OnInit {
 
   subjects = null;
   fullAvg = null;
   tempSubjects: Array<any> = new Array(10);
+  currentTestsLen = null;
+  remainingTests = null;
 
   constructor(
     private apiSvc: ApiService,
-    private firebase: FirebaseX
+    private firebase: FirebaseX,
+    private admobSvc: AdmobService
   ) {
     this.initInBg();
+    this.calculateRemainingTests();
+  }
+
+  ngOnInit() {
+    this.admobSvc.showBanner();
   }
 
   ionViewDidEnter() {
     try { this.firebase.setScreenName('Subjects'); } catch (e) {}
+  }
+
+  calculateRemainingTests() {
+    const weekStart = this.apiSvc.getMonday(new Date().getTime());
+    const weekID = Math.floor(weekStart.getTime() / (7 * 24 * 60 * 60 * 1000));
+    this.apiSvc.loadingFinishedTests.subscribe((isLoaded) => {
+      if (isLoaded) {
+        this.currentTestsLen = this.apiSvc.currentTests.length;
+        if (this.currentTestsLen > 0) {
+          for (let i = 0; i < this.apiSvc.tests.length; i++) {
+            if (this.apiSvc.tests[i].week === weekID) {
+              console.log('Tab1Page/calculateRemainingTests(): Found matching test group for week ID ' + weekID);
+              this.remainingTests = this.apiSvc.tests[i].currentTests;
+            }
+          }
+        }
+      } else {
+        this.currentTestsLen = null;
+        this.remainingTests = null;
+      }
+    });
   }
 
   initInBg() {

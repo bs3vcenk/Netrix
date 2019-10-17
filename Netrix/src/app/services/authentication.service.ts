@@ -31,13 +31,13 @@ export class AuthenticationService {
     private settings: SettingsService,
     private firebase: FirebaseX
   ) {
-      this.plt.ready().then(() => {
-        /* Default to JSON as we'll be receiving only JSON from the API */
-        this.http.setDataSerializer('json');
-        /* Check if the user already has a stored token */
-        this.checkToken();
-        /* Enable certificate pinning */
-        this.http.setSSLCertMode('pinned');
+    this.plt.ready().then(() => {
+      /* Default to JSON as we'll be receiving only JSON from the API */
+      this.http.setDataSerializer('json');
+      /* Check if the user already has a stored token */
+      this.checkToken();
+      /* Enable certificate pinning */
+      this.http.setSSLCertMode('pinned');
     });
   }
 
@@ -64,8 +64,7 @@ export class AuthenticationService {
         token: this.token,
         platform: this.getPlatform(),
         device: this.getDevice(),
-        language: this.getLanguage(),
-        resolution: this.getResolution()
+        language: this.getLanguage()
       },
       this.httpHeader)
     .then(() => {
@@ -83,17 +82,12 @@ export class AuthenticationService {
     return this.device.model;
   }
 
-  private getResolution() {
-    return this.plt.width() + 'x' + this.plt.height();
-  }
-
   private getLanguage() {
     return this.settings.language;
   }
 
   login(username, password) {
     /* Called from the login page, sends a POST request to log in which returns back a token */
-    this.firebase.startTrace('login');
     const response: Observable<HTTPResponse> = from(this.http.post(
       this.settings.apiServer + '/api/login',
       {username, password},
@@ -118,14 +112,12 @@ export class AuthenticationService {
       this.sendDeviceInfo();
       /* Log event to Firebase */
       this.firebase.logEvent('login', {});
-      this.firebase.stopTrace('login');
       /* Let app.component know we're logged in */
       this.authenticationState.next(true);
     });
   }
 
   private handleError(error) {
-    this.firebase.stopTrace('login');
     return throwError(error);
   }
 

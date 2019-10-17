@@ -9,7 +9,7 @@
     "back": "Natrag",
     "text": {
       "nonetwork": {
-        "header": "Nema mreže",
+        "header": "Mrežna greška",
         "content": "Provjeri svoju vezu, pa pokušaj ponovo (ili je u tijeku održavanje servera)."
       },
       "nodb": {
@@ -34,9 +34,10 @@
     "title": "Predmeti",
     "text": {
       "other": "i još NUM_PROFS",
-      "average": "Tvoj prosjek je:",
+      "average": "Prosjek",
       "classes": "Razredi",
-      "no_grades": "Nema ocjena"
+      "no_grades": "Nema ocjena",
+      "tests_remaining": "Preostalo testova ovaj tjedan"
     }
   },
   "tab2": {
@@ -44,7 +45,8 @@
     "showall": "Prikaži sve ispite",
     "notests": "Nema ispita",
     "test_singular": "ispit",
-    "test_plural": "ispita"
+    "test_plural": "ispita",
+    "today": "danas"
   },
   "tab3": {
     "title": "Izostanci",
@@ -94,7 +96,7 @@
     "alert": {
       "credentials": {
         "header": "Netočni podaci za prijavu",
-        "content": "Provjeri svoje korisničko ime i lozinu, pa pokušaj ponovo."
+        "content": "Provjeri svoje korisničko ime i lozinku, pa pokušaj ponovo."
       }
     },
     "text": {

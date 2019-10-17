@@ -7,8 +7,6 @@ declare var admob;
 export class AdmobService {
 
   adPreference = null;
-  interstitialRequestedTimes = 0;
-  repeatFactor = 5; // How many times should showInterstitial be called before showing an ad
 
   constructor(
     private storage: Storage
@@ -21,10 +19,6 @@ export class AdmobService {
         this.adPreference = true;
       }
     });
-    console.log('AdmobService: repeatFactor is ' + this.repeatFactor);
-    if (this.repeatFactor > 6) {
-      console.warn('AdmobService: repeatFactor too large, may not be triggered in normal session!');
-    }
   }
 
   showBanner() {
@@ -37,23 +31,6 @@ export class AdmobService {
       });
     } else {
       console.log('AdmobService/showBanner(): Not showing ad because of preference');
-    }
-  }
-
-  showInterstitial() {
-    if (this.adPreference) {
-      if (this.interstitialRequestedTimes % this.repeatFactor === 0 && this.interstitialRequestedTimes !== 0) {
-        /* Show the interstitial ad */
-        console.log('AdmobService/showInterstitial(): Showing interstitial ad');
-        admob.interstitial.load({
-          id: 'ca-app-pub-3536042070948443/9659847570'
-        }).then(() => admob.interstitial.show());
-      } else {
-        console.log('AdmobService/showInterstitial(): Not showing to prevent ad spam');
-      }
-      this.interstitialRequestedTimes += 1;
-    } else {
-      console.log('AdmobService/showInterstitial(): Not showing ad because of preference');
     }
   }
 }

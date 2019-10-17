@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../services/api.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-tab2',
@@ -26,7 +27,8 @@ export class Tab2Page {
 
   constructor(
     private apiSvc: ApiService,
-    private firebase: FirebaseX
+    private firebase: FirebaseX,
+    private translate: TranslateService
   ) {
     this.apiSvc.loadingFinishedTests.subscribe((val) => {
       if (val) {
@@ -71,8 +73,25 @@ export class Tab2Page {
     return new Date(d.setDate(diff));
   }
 
-  calculateRemainingDays(toDate: number): number {
-    return Math.round(((toDate * 1000) - this.currentDate) / 1000 / 60 / 60 / 24);
+  /*calculateRemainingDays(toDate: number): string {
+    const numberOfDays = Math.ceil(((toDate * 1000) - this.currentDate) / 1000 / 60 / 60 / 24);
+    return numberOfDays === 0 ? this.translate.instant('tab2.today') : numberOfDays.toString() + 'd';
+  }*/
+
+  calculateRemainingTime(toDate: number): string {
+    const numberOfDays = Math.ceil(((toDate * 1000) - this.currentDate) / 1000 / 60 / 60 / 24);
+    const months = Math.floor(numberOfDays / 30);
+    let formattedString = '';
+    if (months >= 1) {
+      formattedString = months.toString() + 'm ' + (numberOfDays - (months * 30)).toString() + 'd';
+    } else {
+      if (numberOfDays === 0) {
+        formattedString = this.translate.instant('tab2.today');
+      } else {
+        formattedString = numberOfDays + 'd';
+      }
+    }
+    return formattedString;
   }
 
 }

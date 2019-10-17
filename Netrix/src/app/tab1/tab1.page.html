@@ -17,9 +17,32 @@
 </ion-header>
 
 <ion-content>
+  <ion-item id="wrapper">
+    <!-- Class average -->
+    <div id="flexItem" *ngIf="fullAvg !== null && fullAvg >= 0">
+      <ion-text id="descText">
+        {{ 'tab1.text.average' | translate }}
+      </ion-text><br/>
+      <ion-label id="infoText" *ngIf="fullAvg !== 0">
+        {{ fullAvg }}
+      </ion-label>
+      <ion-label id="infoText" *ngIf="fullAvg === 0">
+        {{ 'tab1.text.no_grades' | translate }}
+      </ion-label>
+    </div>
+    <!-- Remaining tests this week, if available -->
+    <div id="flexItem" *ngIf="currentTestsLen > 0">
+      <ion-text id="descText">
+        {{ 'tab1.text.tests_remaining' | translate }}
+      </ion-text><br/>
+      <ion-label id="infoText">
+        {{ remainingTests }}
+      </ion-label>
+    </div>
+  </ion-item>
   <!-- "Your average is:" text at the top
        Shows only when we have the complete average  -->
-  <ion-item [@fadeInOut] *ngIf="fullAvg >= 0 && fullAvg !== null">
+  <!--<ion-item [@fadeInOut] *ngIf="fullAvg >= 0 && fullAvg !== null">
     <ion-text id="preWholeAvgText" position="stacked">
       {{ 'tab1.text.average' | translate }}
     </ion-text>
@@ -29,16 +52,16 @@
     <ion-label id="wholeAvgText" position="stacked" *ngIf="fullAvg === 0">
       {{ 'tab1.text.no_grades' | translate }}
     </ion-label>
-  </ion-item>
+  </ion-item>-->
   <!-- "Your average is:" skeleton object -->
-  <ion-item *ngIf="fullAvg === null">
+  <!--<ion-item *ngIf="fullAvg === null">
     <ion-text id="preWholeAvgText" position="stacked" style="width: 30%">
       <ion-skeleton-text animated style="width: 100%;line-height: 12px"></ion-skeleton-text>
     </ion-text>
     <ion-label id="wholeAvgText" position="stacked" style="width: 20%">
       <ion-skeleton-text animated style="width: 100%;line-height: 38px"></ion-skeleton-text>
     </ion-label>
-  </ion-item>
+  </ion-item>-->
 
   <!-- List of subjects -->
   <ion-list lines="full" *ngIf="subjects">

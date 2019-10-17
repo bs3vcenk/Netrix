@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SettingsService } from './settings.service';
 import { AuthenticationService } from './authentication.service';
-import { TranslateService } from '@ngx-translate/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { BehaviorSubject } from 'rxjs';
 import { HTTP } from '@ionic-native/http/ngx';
@@ -59,7 +58,6 @@ export class ApiService {
     private http: HTTP,
     private settings: SettingsService,
     private authServ: AuthenticationService,
-    private translate: TranslateService,
     private firebase: FirebaseX,
     private plt: Platform
   ) {
@@ -94,16 +92,15 @@ export class ApiService {
        * from another device) */
       this.authServ.logout();
       console.warn('ApiService/handleErr(): Server doesn\'t have our token stored, logging out');
-    } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || errorObj.status === 521 || errorObj.status === 500) {
-      /* Server-side issue, such as a failed DB connection (first statement), unreachable
-       * origin server (second statement), or a generic server error (third statement) */
+    } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || (errorObj.status >= 500 && errorObj.status <= 599)) {
+      /* Server-side issue */
       this.dbError.next(true);
-      console.warn('ApiService/handleErr(): Server-side error (DB, origin down, or generic 500)');
+      console.warn('ApiService/handleErr(): Server-side error');
     } else if (errorObj.status === -2) {
       /* Certificate not trusted, either MITM or public Wi-Fi login page */
       this.trustError.next(true);
       console.warn('ApiService/handleErr(): Certificate could not be verified');
-    } else if (errorObj.status === -3) {
+    } else if (errorObj.status === -3 || errorObj.status === -4 || errorObj.status === -1) {
       /* Network error */
       this.networkError.next(true);
       console.warn('ApiService/handleErr(): Request failed');
@@ -148,7 +145,6 @@ export class ApiService {
   async fetchClass(classId: number) {
     /* Fetch server-side endpoint which tells the server to scrape the data
      * for the selected class ID */
-    this.firebase.startTrace('fetchClass');
     try {
       await this.http.post(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/fetchclass',
@@ -156,14 +152,12 @@ export class ApiService {
         this.httpHeader
       );
     } catch (e) {
-      this.firebase.stopTrace('fetchClass');
       this.handleErr(e);
     }
   }
 
   getClasses() {
     /* Gets a list of classes */
-    this.firebase.startTrace('getClasses');
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes',
       {},
@@ -171,7 +165,6 @@ export class ApiService {
     ).then((rx) => {
       const response = JSON.parse(rx.data);
       this.classes = response.classes;
-      this.firebase.stopTrace('getClasses');
     }, (error) => {
       this.handleErr(error);
     });
@@ -187,8 +180,7 @@ export class ApiService {
       if (rx.data.includes('trenutno u nadogradnji')) {
         this.maintenanceError.next(true);
       }
-    }, (error) => {
-      this.handleErr(error);
+    }, () => {
     });
   }
 
@@ -335,7 +327,7 @@ export class ApiService {
     });
   }
 
-  private getMonday(timestamp: number): Date {
+  getMonday(timestamp: number): Date {
     /* https://stackoverflow.com/a/4156516 */
     const d = new Date(timestamp);
     const day = d.getDay();

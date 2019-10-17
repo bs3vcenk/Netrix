@@ -45,7 +45,7 @@
             <!-- Checkmark with *ngIf to show only if not current (already written) -->
             <ion-icon item-right name="checkmark" color="success" *ngIf="!testObj.current"></ion-icon>
             <ion-text id="remaining" class="ion-text-right" *ngIf="testObj.current">
-              {{ calculateRemainingDays(testObj.date) }}d
+              {{ calculateRemainingTime(testObj.date) }}
             </ion-text>
           </ion-item>
         </ng-container>

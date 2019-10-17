@@ -9,7 +9,7 @@
     "back": "Back",
     "text": {
       "nonetwork": {
-        "header": "No network",
+        "header": "Network error",
         "content": "Check your network connection and try again (or server maintenance might be in progress)."
       },
       "nodb": {
@@ -34,9 +34,10 @@
     "title": "Subjects",
     "text": {
       "other": "and NUM_PROFS more",
-      "average": "Your average is:",
+      "average": "Average",
       "classes": "Classes",
-      "no_grades": "No grades"
+      "no_grades": "No grades",
+      "tests_remaining": "Tests remaining this week"
     }
   },
   "tab2": {
@@ -44,7 +45,8 @@
     "showall": "Show all tests",
     "notests": "No tests",
     "test_singular": "test",
-    "test_plural": "tests"
+    "test_plural": "tests",
+    "today": "today"
   },
   "tab3": {
     "title": "Absences",

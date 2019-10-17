@@ -15,7 +15,7 @@ export class LanguageService {
   setInitialLang() {
     /* Get device language */
     const language = this.translate.getBrowserLang();
-    /* Set the default language to the device one */
+    /* Set the default language to HR */
     this.translate.setDefaultLang('hr');
     /* Set the app language to the device lang, if available */
     this.setLanguage(language);

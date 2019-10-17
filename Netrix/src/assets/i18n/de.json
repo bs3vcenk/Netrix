@@ -2,14 +2,14 @@
   "generic": {
     "alert": {
       "network": "Netzwerkfehler",
-      "expiry": "Deine Einmeldung ist abgelaufen",
+      "expiry": "Deine Anmeldung ist abgelaufen",
       "database": "Datenbankverbindung fehlgeschlagen; versuch es später noch einmal",
       "server": "Serverfehler; versuch es später noch einmal"
     },
     "back": "Zurück",
     "text": {
       "nonetwork": {
-        "header": "Kein Netzwerk",
+        "header": "Netzwerkfehler",
         "content": "Prüfe deine Netzwerkverbindung und versuche es erneut (oder die Serverwartung läuft)."
       },
       "nodb": {
@@ -34,9 +34,10 @@
     "title": "Schulfächer",
     "text": {
       "other": "und NUM_PROFS mehr",
-      "average": "Dein Durchschnitt ist:",
+      "average": "Durchschnitt",
       "classes": "Klassen",
-      "no_grades": "Keine Noten"
+      "no_grades": "Keine Noten",
+      "tests_remaining": "Verbleibende Prüfungen diese Woche"
     }
   },
   "tab2": {
@@ -44,7 +45,8 @@
     "showall": "Zeige alle Prüfungen",
     "notests": "Keine Prüfungen",
     "test_singular": "Prüfung",
-    "test_plural": "Prüfungen"
+    "test_plural": "Prüfungen",
+    "today": "heute"
   },
   "tab3": {
     "title": "Abwesenheiten",
