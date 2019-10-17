@@ -53,6 +53,9 @@ export class Tab1Page implements OnInit {
             this.remainingTests = this.apiSvc.tests[i].currentTests;
           }
         }
+      } else {
+        this.currentTestsLen = null;
+        this.remainingTests = null;
       }
     });
   }
