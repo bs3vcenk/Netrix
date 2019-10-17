@@ -27,7 +27,7 @@ class InvalidResponse(eDAPError):
 class ParseError(eDAPError):
 	"""Failed to parse HTML"""
 
-EDAP_VERSION = "E1"
+EDAP_VERSION = "F1"
 
 def _format_to_date(preformat_string: str, date_format: str = "%d.%m.%Y.") -> int:
 	"""
