@@ -100,7 +100,7 @@ export class ApiService {
       /* Certificate not trusted, either MITM or public Wi-Fi login page */
       this.trustError.next(true);
       console.warn('ApiService/handleErr(): Certificate could not be verified');
-    } else if (errorObj.status === -3) {
+    } else if (errorObj.status === -3 || errorObj.status === -4 || errorObj.status === -1) {
       /* Network error */
       this.networkError.next(true);
       console.warn('ApiService/handleErr(): Request failed');
