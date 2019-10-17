@@ -18,17 +18,19 @@
 
 <ion-content>
   <ion-item id="wrapper">
-    <!-- Justified absences -->
-    <div id="flexItem">
+    <!-- Class average -->
+    <div id="flexItem" *ngIf="fullAvg !== null && fullAvg >= 0">
       <ion-text id="descText">
         {{ 'tab1.text.average' | translate }}
       </ion-text><br/>
-      <ion-label id="infoText">
+      <ion-label id="infoText" *ngIf="fullAvg !== 0">
         {{ fullAvg }}
       </ion-label>
+      <ion-label id="infoText" *ngIf="fullAvg === 0">
+        {{ 'tab1.text.no_grades' | translate }}
+      </ion-label>
     </div>
-    <!-- Absences on wait, with *ngIf to show only if the user has
-         waiting absences -->
+    <!-- Remaining tests this week, if available -->
     <div id="flexItem" *ngIf="currentTestsLen > 0">
       <ion-text id="descText">
         {{ 'tab1.text.tests_remaining' | translate }}
