@@ -39,21 +39,4 @@ export class AdmobService {
       console.log('AdmobService/showBanner(): Not showing ad because of preference');
     }
   }
-
-  showInterstitial() {
-    if (this.adPreference) {
-      if (this.interstitialRequestedTimes % this.repeatFactor === 0 && this.interstitialRequestedTimes !== 0) {
-        /* Show the interstitial ad */
-        console.log('AdmobService/showInterstitial(): Showing interstitial ad');
-        admob.interstitial.load({
-          id: 'ca-app-pub-3536042070948443/9659847570'
-        }).then(() => admob.interstitial.show());
-      } else {
-        console.log('AdmobService/showInterstitial(): Not showing to prevent ad spam');
-      }
-      this.interstitialRequestedTimes += 1;
-    } else {
-      console.log('AdmobService/showInterstitial(): Not showing ad because of preference');
-    }
-  }
 }
