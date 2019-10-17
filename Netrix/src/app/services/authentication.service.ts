@@ -31,13 +31,13 @@ export class AuthenticationService {
     private settings: SettingsService,
     private firebase: FirebaseX
   ) {
-      this.plt.ready().then(() => {
-        /* Default to JSON as we'll be receiving only JSON from the API */
-        this.http.setDataSerializer('json');
-        /* Check if the user already has a stored token */
-        this.checkToken();
-        /* Enable certificate pinning */
-        this.http.setSSLCertMode('pinned');
+    this.plt.ready().then(() => {
+      /* Default to JSON as we'll be receiving only JSON from the API */
+      this.http.setDataSerializer('json');
+      /* Check if the user already has a stored token */
+      this.checkToken();
+      /* Enable certificate pinning */
+      this.http.setSSLCertMode('pinned');
     });
   }
 
