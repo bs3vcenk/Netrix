@@ -93,7 +93,6 @@ export class AuthenticationService {
 
   login(username, password) {
     /* Called from the login page, sends a POST request to log in which returns back a token */
-    this.firebase.startTrace('login');
     const response: Observable<HTTPResponse> = from(this.http.post(
       this.settings.apiServer + '/api/login',
       {username, password},
@@ -118,14 +117,12 @@ export class AuthenticationService {
       this.sendDeviceInfo();
       /* Log event to Firebase */
       this.firebase.logEvent('login', {});
-      this.firebase.stopTrace('login');
       /* Let app.component know we're logged in */
       this.authenticationState.next(true);
     });
   }
 
   private handleError(error) {
-    this.firebase.stopTrace('login');
     return throwError(error);
   }
 
