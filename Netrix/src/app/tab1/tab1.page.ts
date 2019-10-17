@@ -47,10 +47,12 @@ export class Tab1Page implements OnInit {
     this.apiSvc.loadingFinishedTests.subscribe((isLoaded) => {
       if (isLoaded) {
         this.currentTestsLen = this.apiSvc.currentTests.length;
-        for (let i = 0; i < this.apiSvc.tests.length; i++) {
-          if (this.apiSvc.tests[i].week === weekID) {
-            console.log('Tab1Page/calculateRemainingTests(): Found matching test group for week ID ' + weekID);
-            this.remainingTests = this.apiSvc.tests[i].currentTests;
+        if (this.currentTestsLen > 0) {
+          for (let i = 0; i < this.apiSvc.tests.length; i++) {
+            if (this.apiSvc.tests[i].week === weekID) {
+              console.log('Tab1Page/calculateRemainingTests(): Found matching test group for week ID ' + weekID);
+              this.remainingTests = this.apiSvc.tests[i].currentTests;
+            }
           }
         }
       } else {
