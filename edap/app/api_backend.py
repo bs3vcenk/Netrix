@@ -941,6 +941,7 @@ def get_class_profile(obj, class_id: int, class_obj) -> dict:
 		class_obj['info'] = obj.getInfo(0)
 	except Exception as e:
 		log.error("Error getting info: %s", str(e))
+		class_obj['info'] = None
 	# Mark it as full/expanded
 	class_obj['full'] = True
 	return class_obj
