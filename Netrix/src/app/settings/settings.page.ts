@@ -31,6 +31,7 @@ export class SettingsPage {
   notifPreference = null;
   errorPreference = null;
   adPreference = null;
+  forceCroatianPreference = null;
   testNotifTime = null;
   darkModePreference = null;
   dayString = this.timePlural;
@@ -52,6 +53,7 @@ export class SettingsPage {
     this.notifPreference = this.settings.notifPreference;
     this.testNotifTime = this.settings.notifTime;
     this.adPreference = this.settings.adPreference;
+    this.forceCroatianPreference = this.settings.forceCroatianPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
     if (this.testNotifTime === 1) {
       this.dayString = this.timeSingular;
@@ -93,6 +95,16 @@ export class SettingsPage {
     });
   }
 
+  effectOnRestart() {
+    this.toastControl.create({
+      message: this.translate.instant('settings_page.alert.effect_on_restart'),
+      duration: 3000,
+      color: 'dark'
+    }).then((toast) => {
+      toast.present();
+    });
+  }
+
   updDeviceInfoPreference() {
     if (this.dataPreference !== this.settings.dataPreference) {
       this.settings.setDataCollection(this.dataPreference);
@@ -103,13 +115,7 @@ export class SettingsPage {
     if (this.adPreference !== this.settings.adPreference) {
       this.settings.changePreference('ad-preference', this.adPreference);
       this.settings.adPreference = this.adPreference;
-      this.toastControl.create({
-        message: this.translate.instant('settings_page.alert.effect_on_restart'),
-        duration: 3000,
-        color: 'dark'
-      }).then((toast) => {
-        toast.present();
-      });
+      this.effectOnRestart();
     }
   }
 
@@ -125,6 +131,14 @@ export class SettingsPage {
     this.settings.changePreference('global-theme', this.darkModePreference ? 'dark' : 'light');
     this.settings.globalTheme = this.darkModePreference ? 'dark' : 'light';
     this.settings.setGlobalTheme(this.settings.globalTheme);
+  }
+
+  updHRForcePreference() {
+    if (this.forceCroatianPreference !== this.settings.forceCroatianPreference) {
+      this.settings.changePreference('force-croatian-preference', this.forceCroatianPreference);
+      this.settings.forceCroatianPreference = this.forceCroatianPreference;
+      this.effectOnRestart();
+    }
   }
 
   resetNotif() {
