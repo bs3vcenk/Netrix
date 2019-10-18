@@ -16,6 +16,7 @@ from random import randint
 from random import choice as _random_choice
 from sys import exit as _sys_exit
 from math import floor as _math_floor
+from math import ceil as _math_ceil
 from math import log as _math_log
 from math import pow as _math_pow
 from os import environ
@@ -35,6 +36,16 @@ _threads = {}
 
 class NonExistentSetting(Exception):
 	"""Specified setting ID is non-existent."""
+
+def _round(n, decimals=0):
+	"""
+		Improved round function. Rounds .5 upwards instead of builtin
+		round()'s downwards rounding.
+	"""
+	expoN = n * 10 ** decimals
+	if abs(expoN) - abs(_math_floor(expoN)) < 0.5:
+		return _math_floor(expoN) / 10 ** decimals
+	return _math_ceil(expoN) / 10 ** decimals
 
 def _send_telegram_notification(message: str, parse_mode: str = "Markdown"):
 	"""
@@ -906,8 +917,8 @@ def get_class_profile(obj, class_id: int, class_obj) -> dict:
 				lgrades = []
 				for i in class_obj['subjects'][z]['grades']:
 					lgrades.append(i['grade'])
-				class_obj['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
-				allSubjAverageGrades.append(round(sum(lgrades)/len(lgrades), 0))
+				class_obj['subjects'][z]['average'] = _round(sum(lgrades)/len(lgrades), 2)
+				allSubjAverageGrades.append(_round(sum(lgrades)/len(lgrades), 0))
 			else:
 				log.debug('No grades for sID %s', z)
 		except Exception as e:
@@ -921,7 +932,7 @@ def get_class_profile(obj, class_id: int, class_obj) -> dict:
 			class_obj['subjects'][z]['notes'] = []
 	try:
 		# Calculate the general average
-		class_obj['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
+		class_obj['complete_avg'] = _round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
 	except ZeroDivisionError:
 		# Avoid division by zero/no grades
 		class_obj['complete_avg'] = 0
