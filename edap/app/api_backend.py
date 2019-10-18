@@ -157,13 +157,6 @@ def localize(token: str, notif_type: str) -> str:
 			"absence": "New absence",
 			"test": "New test",
 			"class": "New class"
-		},
-		"sv": {
-			"note": "New note",
-			"grade": "New grade",
-			"absence": "New absence",
-			"test": "New test",
-			"class": "New class"
 		}
 	}
 	lang = get_data(token)['lang']
