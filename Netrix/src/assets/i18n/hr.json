@@ -14,7 +14,7 @@
       },
       "nodb": {
         "header": "Serverska greška",
-        "content": "Dogodila se greška kod servera. Radimo na tome!"
+        "content": "Dogodila se greška na serveru. Radimo na tome!"
       },
       "trusterror": {
         "header": "Nesigurna veza",
