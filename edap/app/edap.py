@@ -27,6 +27,12 @@ class InvalidResponse(eDAPError):
 class ParseError(eDAPError):
 	"""Failed to parse HTML"""
 
+class InvalidClassID(eDAPError):
+	"""Non-existent class ID"""
+
+class InvalidSubjectID(eDAPError):
+	"""Non-existent subject ID"""
+
 EDAP_VERSION = "F2"
 __version__ = EDAP_VERSION
 
@@ -173,6 +179,23 @@ class edap:
 		except (requests.exceptions.HTTPError, requests.exceptions.Timeout):
 			raise NetworkError(url)
 
+	def __verify(self, class_id: int, subject_id: int = None):
+		"""
+			Check if given `class_id` (and `subject_id`, if provided) exist.
+		"""
+		self.__edlog(0, 'Verifying class_id:%s, subject_id:%s' % (class_id, subject_id))
+		try:
+			self.class_ids[class_id]
+		except IndexError:
+			self.__edlog(3, 'Class ID %s invalid' % class_id)
+			raise InvalidClassID("Class ID %s not found; did you forget to run getClasses()?" % class_id)
+		if subject_id:
+			try:
+				self.subject_ids[subject_id]
+			except IndexError:
+				self.__edlog(3, 'Subject ID %s invalid' % subject_id)
+				raise InvalidSubjectID("Subject ID %s not found for class ID %s; did you forget to run getSubjects(%s)?" % (subject_id, class_id, class_id))
+
 	def getClasses(self) -> List[dict]:
 		"""
 			Returns all classes offered by the post-login screen
@@ -225,6 +248,7 @@ class edap:
 			:return: List of subjects with their information
 			:rtype: list
 		"""
+		self.__verify(class_id)
 		self.__edlog(1, "Getting subject list for class id %s (remote ID [{%s}])" % (class_id, self.class_ids[class_id]))
 		response = self.__fetch("%s/pregled/predmeti/%s" % (self.edurl, self.class_ids[class_id]))
 		if self.return_processing_time:
@@ -262,6 +286,7 @@ class edap:
 			:returns: List of tests, formatted as {subject, test name, date (Unix timestamp)}
 			:rtype: list
 		"""
+		self.__verify(class_id)
 		self.__edlog(1, "Getting test list for class id %s (corresponding to actual ID [{%s}])" % (class_id, self.class_ids[class_id]))
 		if alltests:
 			self.__edlog(1, "Full test list requested")
@@ -299,6 +324,7 @@ class edap:
 			:returns: List of grades, formatted {date, note, grade}
 			:rtype: list
 		"""
+		self.__verify(class_id, subject_id)
 		self.__edlog(0, "Getting grade list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		if not self.subject_ids[subject_id] in self.subject_cache:
 			self.__edlog(1, "Fetching subject %s from server" % subject_id)
@@ -345,6 +371,7 @@ class edap:
 			:returns: List of grades, formatted {date, note}
 			:rtype: list
 		"""
+		self.__verify(class_id, subject_id)
 		self.__edlog(0, "Getting note list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		if not self.subject_ids[subject_id] in self.subject_cache:
 			self.__edlog(1, "Fetching subject %s from server" % subject_id)
@@ -395,6 +422,7 @@ class edap:
 			:returns: Boolean indicating if there is a concluded grade for this subject, and concluded grade if exists
 			:rtype: bool, int
 		"""
+		self.__verify(class_id, subject_id)
 		self.__edlog(0, "Getting concluded grade for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		if not self.subject_ids[subject_id] in self.subject_cache:
 			self.__edlog(1, "Fetching subject %s from server" % subject_id)
@@ -436,6 +464,7 @@ class edap:
 
 			ARGS: class_id [int/required]
 		"""
+		self.__verify(class_id)
 		self.__edlog(0, "Getting info for class id %s" % class_id)
 		response = self.__fetch("%s/pregled/osobni_podaci/%s" % (self.edurl, self.class_ids[class_id]))
 		if self.return_processing_time:
@@ -474,6 +503,7 @@ class edap:
 
 			ARGS: class_id [int/required]
 		"""
+		self.__verify(class_id)
 		self.__edlog(0, "Getting absent overview for class id %s" % class_id)
 		if not self.class_ids[class_id] in self.absence_cache:
 			self.__edlog(1, "Fetching absences from server")
@@ -511,6 +541,7 @@ class edap:
 
 			ARGS: class_id [int/required]
 		"""
+		self.__verify(class_id)
 		self.__edlog(0, "Getting absent list for class id %s" % class_id)
 		if not self.class_ids[class_id] in self.absence_cache:
 			self.__edlog(1, "Fetching absences from server")
