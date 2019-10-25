@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Platform, Config, ToastController } from '@ionic/angular';
+import { Platform, ToastController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './services/authentication.service';
 import { LanguageService } from './services/language.service';
 import { FirebaseService } from './services/firebase.service';
 import { SettingsService } from './services/settings.service';
-import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from './services/api.service';
 import { NotificationService } from './services/notification.service';
 import { environment } from '../environments/environment';
@@ -26,8 +25,6 @@ export class AppComponent {
     private toastController: ToastController,
     private fcm: FirebaseService,
     private settings: SettingsService,
-    private translate: TranslateService,
-    private config: Config,
     private apiSvc: ApiService,
     private notifSvc: NotificationService
   ) {
@@ -72,14 +69,10 @@ export class AppComponent {
       this.statusBar.backgroundColorByHexString('#ffffff');
       this.statusBar.styleDefault();
 
-      /* Set the language */
-      this.languageService.setInitialLang();
       /* Initialize preferences */
       this.settings.readPrefs();
-      /* Localize back button text */
-      this.translate.get('generic.back').subscribe((res: string) => {
-        this.config.set('backButtonText', res);
-      });
+      /* Set the language */
+      this.languageService.setInitialLang();
       this.apiSvc.getMaintenanceMode();
       /* Subscribe to the authenticationState object, and check if the user is
        * logged in or not. */

@@ -67,7 +67,7 @@
       <ion-toggle slot="end" [(ngModel)]="darkModePreference" (ionChange)="updDarkModePreference()"></ion-toggle>
     </ion-item>
     <!-- SWITCH: Force Croatian language -->
-    <ion-item>
+    <ion-item *ngIf="currentLanguage !== 'hr' || forceCroatianPreference === true">
       <ion-label>{{ 'settings.design.force_hr' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="forceCroatianPreference" (ionChange)="updHRForcePreference()"></ion-toggle>
     </ion-item>
