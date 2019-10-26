@@ -569,17 +569,19 @@ def get_firebase_info(firebase_token: str) -> dict:
 	"""
 		Return information about a Firebase token, if possible.
 	"""
-	a = requests.get(
-		'https://iid.googleapis.com/iid/info/' + firebase_token,
-		params={'details': 'true'},
-		headers={
-			"Authorization": "key=%s" % config["FIREBASE_TOKEN"]
-		}
-	)
-	token_status = True
-	if a.status_code != 200:
-		token_status = False
-	return {'status': token_status, 'data': a.json()}
+	if firebase_token:
+		a = requests.get(
+			'https://iid.googleapis.com/iid/info/' + firebase_token,
+			params={'details': 'true'},
+			headers={
+				"Authorization": "key=%s" % config["FIREBASE_TOKEN"]
+			}
+		)
+		token_status = True
+		if a.status_code != 200:
+			token_status = False
+		return {'status': token_status, 'data': a.json()}
+	return {'status': False, 'data': {'error': 'E_FB_TOKEN_NULL'}}
 
 def sendNotification(token: str, title: str, content: str, data=None):
 	"""
