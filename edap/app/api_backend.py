@@ -438,8 +438,8 @@ def sync(token: str, debug: bool = False):
 		log_buffer += "VERIFY_ACTIVITY status:%s\n" % fb_token_info['status']
 	if not fb_token_info['status']:
 		# Inactive token, stop sync
-		_stop_sync(token)
 		log.warning('Inactive token %s detected, stopping sync', token)
+		purge_token(token)
 		if debug:
 			return log_buffer
 		return
