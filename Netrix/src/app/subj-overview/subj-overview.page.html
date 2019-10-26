@@ -4,7 +4,7 @@
   		<ion-buttons slot="start">
   			<ion-back-button></ion-back-button>
   		</ion-buttons>
-    	<ion-title>{{ 'overview.title' | translate }}</ion-title>
+		<ion-title>{{ 'overview.title' | translate }}</ion-title>
 	</ion-toolbar>
 </ion-header>
 
@@ -71,6 +71,27 @@
 					{{ noteObj.note }}
 				</div>
 			</ion-label>
+		</ion-item>
+	</ion-list>
+
+	<!-- TEST LIST (if tests are available for this subject) -->
+	<ion-list lines="full" *ngIf="tests.length > 0">
+		<!-- HEADER: Notes -->
+		<ion-list-header>
+			<ion-label>{{ 'overview.text.tests' | translate }}</ion-label>
+		</ion-list-header>
+		<ion-item *ngFor="let testObj of tests">
+			<ion-label>
+				<!-- Test name -->
+				<h2 id="testName" class="ion-text-wrap">{{ testObj.test }}</h2>
+				<!-- Test date -->
+				<h3 id="testDate">{{ convertToReadableDate(testObj.date) }}</h3>
+				<!-- School subject for which the test is for -->
+				<ion-note id="testSubject">{{ testObj.subject }}</ion-note>
+			</ion-label>
+			<ion-text id="remaining" class="ion-text-right" *ngIf="testObj.current">
+				{{ calculateRemainingTime(testObj.date) }}
+			</ion-text>
 		</ion-item>
 	</ion-list>
 </ion-content>

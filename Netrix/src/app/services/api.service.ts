@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SettingsService } from './settings.service';
 import { AuthenticationService } from './authentication.service';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { BehaviorSubject } from 'rxjs';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Platform } from '@ionic/angular';
@@ -58,14 +57,13 @@ export class ApiService {
     private http: HTTP,
     private settings: SettingsService,
     private authServ: AuthenticationService,
-    private firebase: FirebaseX,
     private plt: Platform
   ) {
     this.plt.ready().then(() => {
       /* Default to JSON as we'll be receiving only JSON from the API */
       this.http.setDataSerializer('json');
-      /* Enable certificate pinning */
-      this.http.setSSLCertMode('pinned');
+      /* Force 'legacy' mode; trust only system certs */
+      this.http.setSSLCertMode('legacy');
     });
   }
 
@@ -325,6 +323,17 @@ export class ApiService {
       this.loadingFinishedTests.next(true);
       // this.loadingFinishedTests.complete();
     });
+  }
+
+  getTestsForSubject(subjectName: string) {
+    // tslint:disable-next-line: prefer-const
+    let matchingTests = [];
+    for (const test of this.currentTests) {
+      if (test.subject === subjectName) {
+        matchingTests.push(test);
+      }
+    }
+    return matchingTests;
   }
 
   getMonday(timestamp: number): Date {

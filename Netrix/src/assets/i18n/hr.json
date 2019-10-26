@@ -14,7 +14,7 @@
       },
       "nodb": {
         "header": "Serverska greška",
-        "content": "Dogodila se greška kod servera. Radimo na tome!"
+        "content": "Dogodila se greška na serveru. Radimo na tome!"
       },
       "trusterror": {
         "header": "Nesigurna veza",
@@ -82,13 +82,14 @@
     "alert": {
       "nogrades": {
         "header": "Ovdje nema ničega",
-        "content": "Ovaj predmet još nema ocjena niti bilježaka."
+        "content": "Ovaj predmet još nema ocjena, bilježaka ni ispita."
       }
     },
     "text": {
       "average": "Prosjek",
       "grades": "Ocjene",
-      "notes": "Bilješke"
+      "notes": "Bilješke",
+      "tests": "Ispiti"
     }
   },
   "login": {

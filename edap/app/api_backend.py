@@ -141,7 +141,7 @@ def localize(token: str, notif_type: str) -> str:
 			"note": "New note",
 			"grade": "New grade",
 			"absence": "New absence",
-			"test": "New test",
+			"test": "New exam",
 			"class": "New class"
 		},
 		"hr": {
@@ -152,21 +152,17 @@ def localize(token: str, notif_type: str) -> str:
 			"class": "Novi razred"
 		},
 		"de": {
-			"note": "New note",
-			"grade": "New grade",
-			"absence": "New absence",
-			"test": "New test",
-			"class": "New class"
-		},
-		"sv": {
-			"note": "New note",
-			"grade": "New grade",
-			"absence": "New absence",
-			"test": "New test",
-			"class": "New class"
+			"note": "Neue Notiz",
+			"grade": "Neue Note",
+			"absence": "Neue Abwesenheit",
+			"test": "Neue Prüfung",
+			"class": "Neue Klasse"
 		}
 	}
 	lang = get_data(token)['lang']
+	if not lang:
+		log.warning('%s => Detected null language value, forcing Croatian', token)
+		lang = 'hr'
 	return locs[lang][notif_type]
 
 def random_string(length: int) -> str:
@@ -442,8 +438,8 @@ def sync(token: str, debug: bool = False):
 		log_buffer += "VERIFY_ACTIVITY status:%s\n" % fb_token_info['status']
 	if not fb_token_info['status']:
 		# Inactive token, stop sync
-		_stop_sync(token)
 		log.warning('Inactive token %s detected, stopping sync', token)
+		purge_token(token)
 		if debug:
 			return log_buffer
 		return
@@ -573,17 +569,19 @@ def get_firebase_info(firebase_token: str) -> dict:
 	"""
 		Return information about a Firebase token, if possible.
 	"""
-	a = requests.get(
-		'https://iid.googleapis.com/iid/info/' + firebase_token,
-		params={'details': 'true'},
-		headers={
-			"Authorization": "key=%s" % config["FIREBASE_TOKEN"]
-		}
-	)
-	token_status = True
-	if a.status_code != 200:
-		token_status = False
-	return {'status': token_status, 'data': a.json()}
+	if firebase_token:
+		a = requests.get(
+			'https://iid.googleapis.com/iid/info/' + firebase_token,
+			params={'details': 'true'},
+			headers={
+				"Authorization": "key=%s" % config["FIREBASE_TOKEN"]
+			}
+		)
+		token_status = True
+		if a.status_code != 200:
+			token_status = False
+		return {'status': token_status, 'data': a.json()}
+	return {'status': False, 'data': {'error': 'E_FB_TOKEN_NULL'}}
 
 def sendNotification(token: str, title: str, content: str, data=None):
 	"""
@@ -617,10 +615,6 @@ def sendNotification(token: str, title: str, content: str, data=None):
 	except requests.exceptions.HTTPError as e:
 		log.error('Non-200 code (Firebase Cloud Messaging) => %s', str(e))
 		raise e
-	# EXPERIMENT: Checking responses to detect inactive users
-	with open(config["DATA_FOLDER"] + '/firebase.log', 'a') as fb_log:
-		fb_log.write('!! TOKEN:%s; FCM_TOKEN:%s; HTTP_CODE:%s; HTTP_RESPONSE:\n%s\n\n'
-		             % (token, firebase_token, a.status_code, a.text))
 
 def _sync(token: str):
 	"""
@@ -701,6 +695,7 @@ def _read_config() -> Dict[str, str]:
 	print("[eDAP] [INFO] Using Cloudflare: %s" % USE_CLOUDFLARE)
 	print("[eDAP] [INFO] Using Firebase: %s" % USE_FIREBASE)
 	print("[eDAP] [INFO] Send administrative notifications: %s" % USE_NOTIFICATIONS)
+	print("[eDAP] [INFO] Further logging is in %s/edap_api.log" % DATA_FOLDER)
 	return {
 		"DATA_FOLDER": DATA_FOLDER,
 		"USE_CLOUDFLARE": USE_CLOUDFLARE,
@@ -1034,6 +1029,6 @@ config = _read_config()
 logging.basicConfig(
 	filename=_join_path(config["DATA_FOLDER"], "edap_api.log"),
 	level=logging.INFO,
-	format="%(asctime)s || %(funcName)-16s || %(levelname)-8s || %(message)s"
+	format="%(asctime)s > %(funcName)s(%(levelname)s) => %(message)s"
 )
 _redis = _init_db()

@@ -1,3 +1,9 @@
+## 1.9.5 (2019-10-26)
+* Prikazivanje ispita za predmet uz bilješke i ocjene
+* Broj preostalih ispita u danu se ne prikazuje ako ih više nema
+* Eng. prijevod: "test(s)" -> "exam(s)"
+* Promijenjen način potvrđivanja poslužitelja
+
 ## 1.9.4 (2019-10-17)
 * Prikaz preostalih ispita u tjednu na početnom ekranu
 * (opet) Dodan splash screen

@@ -14,6 +14,7 @@ export class SettingsService {
   dataPreference = null;
   notifPreference = null;
   adPreference = null;
+  forceCroatianPreference = null;
   language = null;
   notifTime = null;
   apiServer = 'https://api.netrix.io';

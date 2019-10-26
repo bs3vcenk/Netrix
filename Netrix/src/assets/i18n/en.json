@@ -37,15 +37,15 @@
       "average": "Average",
       "classes": "Classes",
       "no_grades": "No grades",
-      "tests_remaining": "Tests remaining this week"
+      "tests_remaining": "Exams remaining this week"
     }
   },
   "tab2": {
-    "title": "Tests",
-    "showall": "Show all tests",
-    "notests": "No tests",
-    "test_singular": "test",
-    "test_plural": "tests",
+    "title": "Exams",
+    "showall": "Show all exams",
+    "notests": "No exams",
+    "test_singular": "exam",
+    "test_plural": "exams",
     "today": "today"
   },
   "tab3": {
@@ -82,13 +82,14 @@
     "alert": {
       "nogrades": {
         "header": "There's nothing here",
-        "content": "This subject doesn't yet have any grades or notes."
+        "content": "This subject doesn't yet have any grades, notes or exams."
       }
     },
     "text": {
       "average": "Average",
       "grades": "Grades",
-      "notes": "Notes"
+      "notes": "Notes",
+      "tests": "Exams"
     }
   },
   "login": {
@@ -109,7 +110,7 @@
   },
   "tabs": {
     "subjects": "Subjects",
-    "tests": "Tests",
+    "tests": "Exams",
     "settings": "Settings",
     "absences": "Absences"
   },
@@ -134,7 +135,7 @@
   },
   "notifSettings": {
     "title": "Notification management",
-    "tests": "Tests",
+    "tests": "Exams",
     "grades": "Grades",
     "classes": "Classes",
     "notes": "Notes",
