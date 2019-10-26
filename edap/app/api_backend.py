@@ -695,6 +695,7 @@ def _read_config() -> Dict[str, str]:
 	print("[eDAP] [INFO] Using Cloudflare: %s" % USE_CLOUDFLARE)
 	print("[eDAP] [INFO] Using Firebase: %s" % USE_FIREBASE)
 	print("[eDAP] [INFO] Send administrative notifications: %s" % USE_NOTIFICATIONS)
+	print("[eDAP] [INFO] Further logging is in %s/edap_api.log" % DATA_FOLDER)
 	return {
 		"DATA_FOLDER": DATA_FOLDER,
 		"USE_CLOUDFLARE": USE_CLOUDFLARE,
