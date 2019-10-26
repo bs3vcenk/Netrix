@@ -82,13 +82,14 @@
     "alert": {
       "nogrades": {
         "header": "Hier gibt es nichts",
-        "content": "Dieses Fach hat noch keine Noten oder Notizen."
+        "content": "Dieses Fach hat noch keine Noten, Notizen oder Prüfungen."
       }
     },
     "text": {
       "average": "Durchschnitt",
       "grades": "Noten",
-      "notes": "Notizen"
+      "notes": "Notizen",
+      "tests": "Prüfungen"
     }
   },
   "login": {

@@ -325,6 +325,17 @@ export class ApiService {
     });
   }
 
+  getTestsForSubject(subjectName: string) {
+    // tslint:disable-next-line: prefer-const
+    let matchingTests = [];
+    for (const test of this.currentTests) {
+      if (test.subject === subjectName) {
+        matchingTests.push(test);
+      }
+    }
+    return matchingTests;
+  }
+
   getMonday(timestamp: number): Date {
     /* https://stackoverflow.com/a/4156516 */
     const d = new Date(timestamp);

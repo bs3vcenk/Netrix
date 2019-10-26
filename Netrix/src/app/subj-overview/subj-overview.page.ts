@@ -20,6 +20,8 @@ export class SubjOverviewPage implements OnInit {
     professors: null,
     id: 0
   };
+  tests = [];
+  currentDate = Date.now();
 
   constructor(
     private translate: TranslateService,
@@ -33,7 +35,31 @@ export class SubjOverviewPage implements OnInit {
   ngOnInit() {
     try { this.firebase.setScreenName('SubjOverview'); } catch (e) {}
     const subjId = this.activatedRoute.snapshot.paramMap.get('subjid');
-    this.getSubjectInfo(subjId);
+    this.getSubjectInfo(subjId).then(() => {
+      this.tests = this.apiSvc.getTestsForSubject(this.subject.name);
+      if (this.subject.notes.length === 0 && this.subject.grades.length === 0 && this.tests.length === 0) {
+        this.alertError(
+          this.translate.instant('overview.alert.nogrades.header'),
+          this.translate.instant('overview.alert.nogrades.content')
+        );
+      }
+    });
+  }
+
+  calculateRemainingTime(toDate: number): string {
+    const numberOfDays = Math.ceil(((toDate * 1000) - this.currentDate) / 1000 / 60 / 60 / 24);
+    const months = Math.floor(numberOfDays / 30);
+    let formattedString = '';
+    if (months >= 1) {
+      formattedString = months.toString() + 'm ' + (numberOfDays - (months * 30)).toString() + 'd';
+    } else {
+      if (numberOfDays === 0) {
+        formattedString = this.translate.instant('tab2.today');
+      } else {
+        formattedString = numberOfDays + 'd';
+      }
+    }
+    return formattedString;
   }
 
   async alertError(header, msg) {
@@ -67,16 +93,7 @@ export class SubjOverviewPage implements OnInit {
   }
 
   async getSubjectInfo(subjId: string) {
-    this.apiSvc.getSubject(subjId, this.apiSvc.classId.value).then((subject) => {
-      if (subject.notes.length === 0 && subject.grades.length === 0) {
-        this.alertError(
-          this.translate.instant('overview.alert.nogrades.header'),
-          this.translate.instant('overview.alert.nogrades.content')
-        );
-      }
-      this.subject = subject;
-    }, (err) => {
-      this.apiSvc.handleErr(err);
-    });
+    const subject = await this.apiSvc.getSubject(subjId, this.apiSvc.classId.value)
+    this.subject = subject;
   }
 }

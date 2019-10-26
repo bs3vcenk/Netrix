@@ -82,13 +82,14 @@
     "alert": {
       "nogrades": {
         "header": "Ovdje nema ničega",
-        "content": "Ovaj predmet još nema ocjena niti bilježaka."
+        "content": "Ovaj predmet još nema ocjena, bilježaka ni ispita."
       }
     },
     "text": {
       "average": "Prosjek",
       "grades": "Ocjene",
-      "notes": "Bilješke"
+      "notes": "Bilješke",
+      "tests": "Ispiti"
     }
   },
   "login": {

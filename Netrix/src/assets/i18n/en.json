@@ -82,13 +82,14 @@
     "alert": {
       "nogrades": {
         "header": "There's nothing here",
-        "content": "This subject doesn't yet have any grades or notes."
+        "content": "This subject doesn't yet have any grades, notes or exams."
       }
     },
     "text": {
       "average": "Average",
       "grades": "Grades",
-      "notes": "Notes"
+      "notes": "Notes",
+      "tests": "Exams"
     }
   },
   "login": {
