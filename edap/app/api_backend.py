@@ -615,10 +615,6 @@ def sendNotification(token: str, title: str, content: str, data=None):
 	except requests.exceptions.HTTPError as e:
 		log.error('Non-200 code (Firebase Cloud Messaging) => %s', str(e))
 		raise e
-	# EXPERIMENT: Checking responses to detect inactive users
-	with open(config["DATA_FOLDER"] + '/firebase.log', 'a') as fb_log:
-		fb_log.write('!! TOKEN:%s; FCM_TOKEN:%s; HTTP_CODE:%s; HTTP_RESPONSE:\n%s\n\n'
-		             % (token, firebase_token, a.status_code, a.text))
 
 def _sync(token: str):
 	"""
