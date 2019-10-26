@@ -64,8 +64,8 @@ export class ApiService {
     this.plt.ready().then(() => {
       /* Default to JSON as we'll be receiving only JSON from the API */
       this.http.setDataSerializer('json');
-      /* Enable certificate pinning */
-      this.http.setSSLCertMode('pinned');
+      /* Force 'legacy' mode; trust only system certs */
+      this.http.setSSLCertMode('legacy');
     });
   }
 
