@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SettingsService } from './settings.service';
 import { AuthenticationService } from './authentication.service';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { BehaviorSubject } from 'rxjs';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Platform } from '@ionic/angular';
@@ -58,7 +57,6 @@ export class ApiService {
     private http: HTTP,
     private settings: SettingsService,
     private authServ: AuthenticationService,
-    private firebase: FirebaseX,
     private plt: Platform
   ) {
     this.plt.ready().then(() => {
