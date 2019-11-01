@@ -4,6 +4,7 @@ import { AuthenticationService } from './authentication.service';
 import { BehaviorSubject } from 'rxjs';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Platform } from '@ionic/angular';
+import { Storage } from '@ionic/storage';
 
 export interface SubjectData {
   name: string;
@@ -12,6 +13,11 @@ export interface SubjectData {
   average: 0.00;
   professors: string;
   id: 0;
+}
+
+interface CachedObject {
+  date: number;
+  data: any;
 }
 
 @Injectable({
@@ -57,7 +63,8 @@ export class ApiService {
     private http: HTTP,
     private settings: SettingsService,
     private authServ: AuthenticationService,
-    private plt: Platform
+    private plt: Platform,
+    private storage: Storage
   ) {
     this.plt.ready().then(() => {
       /* Default to JSON as we'll be receiving only JSON from the API */
@@ -79,6 +86,24 @@ export class ApiService {
         // this.getUserInfo(activeClassId);
       });
     });
+  }
+
+  private async fetchFromCache(classId: number, dataType: 'subjects' | 'tests' | 'absences') {
+    const accessId = 'cache:' + classId + ':' + dataType;
+    const result: CachedObject = await this.storage.get(accessId);
+    if (result === null) {
+      return null;
+    }
+    return result;
+  }
+
+  private async storeInCache(classId: number, dataType: 'subjects' | 'tests' | 'absences', date: number, data: any) {
+    const accessId = 'cache:' + classId + ':' + dataType;
+    const cObject: CachedObject = {
+      date,
+      data
+    };
+    await this.storage.set(accessId, cObject);
   }
 
   handleErr(errorObj) {
