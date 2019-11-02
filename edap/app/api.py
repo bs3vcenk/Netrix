@@ -193,6 +193,7 @@ def dev_db_info():
 		DEV: Database info page, currently only showing the size of the DB.
 	"""
 	redis_info = get_db_info()
+	vault_info = get_vault_info()
 	return make_response(jsonify({
 		'size': convert_size(get_db_size()),
 		'keys': get_db_keys(),
@@ -202,7 +203,8 @@ def dev_db_info():
 				'used': redis_info['used_memory_human'],
 				'total': redis_info['total_system_memory_human']
 			}
-		}
+		},
+		'vault': vault_info
 	}))
 
 @app.route('/dev/log', methods=["GET"])
