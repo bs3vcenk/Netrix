@@ -37,6 +37,24 @@ _threads = {}
 class NonExistentSetting(Exception):
 	"""Specified setting ID is non-existent."""
 
+def get_vault_info() -> dict:
+	"""
+		Get info about Hashicorp Vault.
+	"""
+	if not config["USE_VAULT"]:
+		return {'enabled': False}
+	session = requests.Session()
+	session.headers = {'X-Vault-Token': config["VAULT_TOKEN_READ"]}
+	returnable = {'enabled': True}
+	health = session.get('%s/v1/sys/health' % config["VAULT_SERVER"]).json()
+	returnable['sealed'] = health['sealed']
+	returnable['version'] = health['version']
+	read_token_status = session.get('%s/v1/auth/token/lookup-self' % config["VAULT_SERVER"]).json()
+	returnable['read_token_ttl'] = read_token_status['data']['ttl']
+	write_token_status = session.get('%s/v1/auth/token/lookup-self', headers={'X-Vault-Token': config["VAULT_TOKEN_WRITE"]}).json()
+	returnable['write_token_ttl'] = read_token_status['data']['ttl']
+	return returnable
+
 def _round(n, decimals=0):
 	"""
 		Improved round function. Rounds .5 upwards instead of builtin
