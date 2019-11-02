@@ -73,6 +73,36 @@ def notify_error(problem_header: str, component: str, stacktrace=None, additiona
 		_send_telegram_notification("```%s```" % stacktrace)
 
 def get_credentials(token: str):
+	if config["USE_VAULT"]:
+		return _get_credentials_vault(token)
+	else:
+		return _get_credentials_redis(token)
+
+def set_credentials(token: str, username: str, password: str):
+	if config["USE_VAULT"]:
+		return _set_credentials_vault(token, username, password)
+	else:
+		return _set_credentials_redis(token, username, password)
+
+def _get_credentials_redis(token: str):
+	"""
+		Get credential object from Redis (insecure).
+	"""
+	c_object = _redis.get('creds:%s' % token)
+	if c_object:
+		return _json_load(c_object)
+
+def _set_credentials_redis(token: str, username: str, password: str):
+	"""
+		Write credentials into Redis (insecure).
+	"""
+	c_object = {
+		"username": username,
+		"password": password
+	}
+	_redis.set('creds:%s' % token, _json_convert(c_object))
+
+def _get_credentials_vault(token: str):
 	"""
 		Call Vault to get the creds for a token.
 	"""
@@ -88,7 +118,7 @@ def get_credentials(token: str):
 			notify_error('VAULT GET ERROR', 'vault', additional_info={"token": token})
 	return data.json()["data"]["data"]
 
-def set_credentials(token: str, username: str, password: str):
+def _set_credentials_vault(token: str, username: str, password: str):
 	"""
 		Call Vault to set a credential pair for a token.
 	"""
@@ -649,18 +679,26 @@ def _read_config() -> Dict[str, str]:
 	DATA_FOLDER = _get_var("DATA_FOLDER", default="/data")
 	print("[eDAP] [INFO] Storing data in: %s" % DATA_FOLDER)
 
-	VAULT_SERVER = _get_var("VAULT_SERVER")
-	VAULT_TOKEN_READ = _get_var("VAULT_TOKEN_READ")
-	VAULT_TOKEN_WRITE = _get_var("VAULT_TOKEN_WRITE")
+	USE_VAULT = _get_var("VAULT", _bool=True, default=True)
+	print("[eDAP] [INFO] Using Hashicorp Vault: %s" % USE_VAULT)
 
-	if not VAULT_TOKEN_READ or not VAULT_TOKEN_WRITE:
-		print("[eDAP] [ERROR] Vault read and/or write tokens not specified!")
-		_exit(1)
-	elif not VAULT_SERVER:
-		print("[eDAP] [ERROR] Vault server not specified!")
-		_exit(1)
+	VAULT_SERVER = None
+	VAULT_TOKEN_READ = None
+	VAULT_TOKEN_WRITE = None
 
-	print("[eDAP] [INFO] Hashicorp Vault server at: %s" % VAULT_SERVER)
+	if USE_VAULT:
+		VAULT_SERVER = _get_var("VAULT_SERVER")
+		VAULT_TOKEN_READ = _get_var("VAULT_TOKEN_READ")
+		VAULT_TOKEN_WRITE = _get_var("VAULT_TOKEN_WRITE")
+		if not VAULT_TOKEN_READ or not VAULT_TOKEN_WRITE:
+			print("[eDAP] [ERROR] Vault read and/or write tokens not specified!")
+			_exit(1)
+		elif not VAULT_SERVER:
+			print("[eDAP] [ERROR] Vault server not specified!")
+			_exit(1)
+		print("[eDAP] [INFO] Hashicorp Vault server at: %s" % VAULT_SERVER)
+	else:
+		print("[eDAP] [WARN] Not using Vault for credential storage -- storing data insecurely in Redis!")
 
 	ALLOW_DEV_ACCESS = _get_var("DEV_ACCESS", _bool=True)
 	USE_CLOUDFLARE = _get_var("CLOUDFLARE", _bool=True)
@@ -704,6 +742,7 @@ def _read_config() -> Dict[str, str]:
 		"privPassword": privPassword,
 		"USE_FIREBASE": USE_FIREBASE,
 		"FIREBASE_TOKEN": FIREBASE_TOKEN,
+		"USE_VAULT": USE_VAULT,
 		"VAULT_SERVER": VAULT_SERVER,
 		"VAULT_TOKEN_READ": VAULT_TOKEN_READ,
 		"VAULT_TOKEN_WRITE": VAULT_TOKEN_WRITE,
