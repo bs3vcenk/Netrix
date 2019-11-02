@@ -195,7 +195,7 @@ def dev_db_info():
 	redis_info = get_db_info()
 	return make_response(jsonify({
 		'size': convert_size(get_db_size()),
-		'keys': get_db_size(),
+		'keys': get_db_keys(),
 		'redis': {
 			'version': redis_info['redis_version'],
 			'memory': {
