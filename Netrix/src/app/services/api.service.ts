@@ -262,19 +262,17 @@ export class ApiService {
     }
   }
 
-  getUserInfo(classId: number) {
+  async getUserInfo(classId: number) {
     /* Get information about user */
-    this.http.get(
+    const response = await this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info',
       {},
       this.httpHeader
-    ).then((response) => {
-      this.info = JSON.parse(response.data);
-      this.loadingFinishedInfo.next(true);
-    }, (error) => {
-      this.handleErr(error);
-      this.loadingFinishedInfo.next(true);
-    });
+    );
+    this.info = JSON.parse(response.data);
+    this.loadingFinishedInfo.next(true);
+    // this.handleErr(error);
+    this.loadingFinishedInfo.next(true);
   }
 
   getNotifConfig() {
@@ -296,58 +294,53 @@ export class ApiService {
     });
   }
 
-  getSubjects(classId: number) {
+  async getSubjects(classId: number) {
     /* Get a stripped list of all subjects (alldata=0), containing no grades or notes */
-    this.http.get(
+    const rx = await this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects?alldata=1',
       {},
       this.httpHeader
-    ).then((rx) => {
-      const response = JSON.parse(rx.data);
-      const allsubs = response.subjects;
-      // Iterate over professors list and join it into a comma-separated string
-      allsubs.forEach((subj) => {
-        const processed = this.processSubjectData(subj);
-        this.subjCacheMap[processed.id] = processed;
-        subj.professors = subj.professors.join(', ');
-      });
-      // Set for display
-      this.subjects = allsubs;
-      this.fullAvg = response.class_avg;
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedSubj.next(true);
-      // this.loadingFinishedSubj.complete();
-    },
-    (error) => {
-      this.handleErr(error);
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedSubj.next(true);
-      // this.loadingFinishedSubj.complete();
+    );
+    const response = JSON.parse(rx.data);
+    const allsubs = response.subjects;
+    // Iterate over professors list and join it into a comma-separated string
+    allsubs.forEach((subj) => {
+      const processed = this.processSubjectData(subj);
+      this.subjCacheMap[processed.id] = processed;
+      subj.professors = subj.professors.join(', ');
     });
+    // Set for display
+    this.subjects = allsubs;
+    this.fullAvg = response.class_avg;
+    /* Let preCacheData() know we're done */
+    this.loadingFinishedSubj.next(true);
+    // this.loadingFinishedSubj.complete();
+    // this.handleErr(error);
+    /* Let preCacheData() know we're done */
+    this.loadingFinishedSubj.next(true);
+    // this.loadingFinishedSubj.complete();
   }
 
-  getTests(classId: number) {
-    this.http.get(
+  async getTests(classId: number) {
+    const rx = await this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/tests',
       {},
       this.httpHeader
-    ).then((rx) => {
-      const response = JSON.parse(rx.data);
-      this.tests = response.tests;
-      /* Count the number of "current" tests, so that we know if we need to show the
-       * "No tests" message or not */
-      this.countTests();
-      /* Sort tests by week */
-      this.tests = this.groupTestsByWeek(this.tests);
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedTests.next(true);
-      // this.loadingFinishedTests.complete();
-    }, (error) => {
-      this.handleErr(error);
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedTests.next(true);
-      // this.loadingFinishedTests.complete();
-    });
+    );
+    const response = JSON.parse(rx.data);
+    this.tests = response.tests;
+    /* Count the number of "current" tests, so that we know if we need to show the
+     * "No tests" message or not */
+    this.countTests();
+    /* Sort tests by week */
+    this.tests = this.groupTestsByWeek(this.tests);
+    /* Let preCacheData() know we're done */
+    this.loadingFinishedTests.next(true);
+    // this.loadingFinishedTests.complete();
+    // this.handleErr(error);
+    /* Let preCacheData() know we're done */
+    this.loadingFinishedTests.next(true);
+    // this.loadingFinishedTests.complete();
   }
 
   getTestsForSubject(subjectName: string) {
@@ -413,23 +406,21 @@ export class ApiService {
     });
   }
 
-  getAbsences(classId: number) {
+  async getAbsences(classId: number) {
     /* Get a list of absences, both an overview and a detailed list */
-    this.http.get(
+    const response = await this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/absences',
       {},
       this.httpHeader
-    ).then((response) => {
-      this.absences = JSON.parse(response.data);
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedAbsences.next(true);
-      // this.loadingFinishedAbsences.complete();
-    }, (error) => {
-      this.handleErr(error);
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedAbsences.next(true);
-      // this.loadingFinishedAbsences.complete();
-    });
+    );
+    this.absences = JSON.parse(response.data);
+    /* Let preCacheData() know we're done */
+    this.loadingFinishedAbsences.next(true);
+    // this.loadingFinishedAbsences.complete();
+    // this.handleErr(error);
+    /* Let preCacheData() know we're done */
+    this.loadingFinishedAbsences.next(true);
+    // this.loadingFinishedAbsences.complete();
   }
 
   private processSubjectData(subjObject): SubjectData {
@@ -459,30 +450,25 @@ export class ApiService {
     return subject;
   }
 
-  getSubject(subjId: string, classId: number) {
-    return new Promise<SubjectData>((resolve, reject) => {
-      /* Check if we have the subject ID cached already */
-      if (this.subjCacheMap[subjId]) {
-        /* If we do, return the cached object */
-        console.log('ApiService/getSubjectNativeHTTP(): Have subject ID ' + subjId + ' cached, returning that');
-        resolve(this.subjCacheMap[subjId]);
-      } else {
-        /* If we don't, fetch the data from the server, process it, and store it
-         * into the cache */
-        console.log('ApiService/getSubjectNativeHTTP(): Subject ID ' + subjId + ' not cached, fetching remote');
-        this.http.get(
-          this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects/' + subjId,
-          {},
-          this.httpHeader
-        ).then((rx) => {
-          const response = JSON.parse(rx.data);
-          const subject = this.processSubjectData(response);
-          this.subjCacheMap[subjId] = subject;
-          resolve(subject);
-        }, (err) => {
-          reject(err);
-        });
-      }
-    });
+  async getSubject(subjId: string, classId: number) {
+    /* Check if we have the subject ID cached already */
+    if (this.subjCacheMap[subjId]) {
+      /* If we do, return the cached object */
+      console.log('ApiService/getSubject(): Have subject ID ' + subjId + ' cached, returning that');
+      return this.subjCacheMap[subjId];
+    } else {
+      /* If we don't, fetch the data from the server, process it, and store it
+       * into the cache */
+      console.log('ApiService/getSubject(): Subject ID ' + subjId + ' not cached, fetching remote');
+      const rx = await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects/' + subjId,
+        {},
+        this.httpHeader
+      );
+      const response = JSON.parse(rx.data);
+      const subject = this.processSubjectData(response);
+      this.subjCacheMap[subjId] = subject;
+      return subject;
+    }
   }
 }
