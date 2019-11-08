@@ -30,6 +30,8 @@ export class ApiService {
     'User-Agent': 'Netrix'
   };
 
+  usingCachedContent = false;
+
   subjCacheMap = {};
 
   loadingFinishedSubj = new BehaviorSubject(false);
@@ -94,7 +96,9 @@ export class ApiService {
     if (result === null) {
       return null;
     }
-    console.log(result.data);
+    if (this.usingCachedContent === false) {
+      this.usingCachedContent = true;
+    }
     return result.data;
   }
 
