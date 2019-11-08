@@ -34,6 +34,7 @@ export class SettingsPage {
   forceCroatianPreference = null;
   testNotifTime = null;
   darkModePreference = null;
+  usingCache = null;
   dayString = this.timePlural;
   developer = !environment.production;
 
@@ -55,6 +56,7 @@ export class SettingsPage {
     this.adPreference = this.settings.adPreference;
     this.forceCroatianPreference = this.settings.forceCroatianPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
+    this.usingCache = this.apiSvc.usingCachedContent;
     if (this.testNotifTime === 1) {
       this.dayString = this.timeSingular;
     }

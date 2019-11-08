@@ -27,7 +27,7 @@
       <ion-label>{{ 'settings.analytics.ads' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="adPreference" (ionChange)="updAdPreference()" disabled="true"></ion-toggle>
     </ion-item>
-    <ion-item button routerLink="/privacy" routerDirection="forward">
+    <ion-item button routerLink="/privacy" routerDirection="forward" disabled="{{usingCache}}">
       <ion-label>{{ 'login.text.privacy' | translate }}</ion-label>
     </ion-item>
     <!-- SWITCH (disabled): Error reporting -->
@@ -44,16 +44,16 @@
     <!-- SWITCH: Master notification switch -->
     <ion-item>
       <ion-label>{{ 'settings.notifs.master' | translate }}</ion-label>
-      <ion-toggle slot="end" [(ngModel)]="notifPreference" (ionChange)="updMainNotificationPreference()"></ion-toggle>
+      <ion-toggle slot="end" [(ngModel)]="notifPreference" (ionChange)="updMainNotificationPreference()" disabled="{{usingCache}}"></ion-toggle>
     </ion-item>
 
     <!-- Only if master enabled -->
     <!-- PAGE: Exclusions -->
-    <ion-item [@fadeInOut] routerLink="/notif-settings" routerDirection="forward" *ngIf="notifPreference">
+    <ion-item [@fadeInOut] routerLink="/notif-settings" routerDirection="forward" *ngIf="notifPreference" disabled="{{usingCache}}">
       <ion-label>{{ 'settings.notifs.management' | translate }}</ion-label>
     </ion-item>
     <!-- BUTTON: Test notification time -->
-    <ion-item [@fadeInOut] detail="false" button (click)="openNotifTimePicker()" *ngIf="notifPreference">
+    <ion-item [@fadeInOut] detail="false" button (click)="openNotifTimePicker()" *ngIf="notifPreference" disabled="{{usingCache}}">
       <ion-label>{{ 'settings.notifs.time' | translate}}</ion-label>
       <ion-text class="ion-text-right">{{ testNotifTime }} {{ dayString }}</ion-text>
     </ion-item>

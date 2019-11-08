@@ -23,6 +23,7 @@ export class Tab1Page implements OnInit {
   tempSubjects: Array<any> = new Array(10);
   currentTestsLen = null;
   remainingTests = null;
+  usingCache = null;
 
   constructor(
     private apiSvc: ApiService,
@@ -69,6 +70,7 @@ export class Tab1Page implements OnInit {
         this.fullAvg = this.fullAvg.toFixed(2);
       }
       this.subjects = this.apiSvc.subjects;
+      this.usingCache = this.apiSvc.usingCachedContent;
     });
   }
 }
