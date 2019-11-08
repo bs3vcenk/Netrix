@@ -217,10 +217,7 @@ export class ApiService {
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/firebase',
       {deviceToken: firebaseToken},
       this.httpHeader
-    ).then(() => {},
-    (error) => {
-      this.handleErr(error);
-    });
+    );
   }
 
   receiveNotifType(nType: string) {
@@ -283,6 +280,7 @@ export class ApiService {
         fetchedFromCache = true;
         info = cachedResponse;
       } else {
+        console.warn('ApiService/getUserInfo(): No cached data');
         this.handleErr(error);
       }
       this.loadingFinishedInfo.next(true);
@@ -332,6 +330,7 @@ export class ApiService {
         fetchedFromCache = true;
         response = cachedResponse;
       } else {
+        console.warn('ApiService/getSubjects(): No cached data');
         this.handleErr(error);
         return;
       }
@@ -344,7 +343,7 @@ export class ApiService {
     allsubs.forEach((subj) => {
       const processed = this.processSubjectData(subj);
       this.subjCacheMap[processed.id] = processed;
-      subj.professors = subj.professors.join(', ');
+      // subj.professors = subj.professors.join(', ');
     });
     // Set for display
     this.subjects = allsubs;
@@ -370,6 +369,7 @@ export class ApiService {
         fetchedFromCache = true;
         response = cachedResponse;
       } else {
+        console.warn('ApiService/getTests(): No cached data');
         this.handleErr(error);
         return;
       }
@@ -463,11 +463,12 @@ export class ApiService {
       );
       absences = JSON.parse(response.data);
     } catch (error) {
-      const cachedResponse = this.fetchFromCache(classId, 'absences');
+      const cachedResponse = await this.fetchFromCache(classId, 'absences');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
         absences = cachedResponse;
       } else {
+        console.warn('ApiService/getAbsences(): No cached data');
         this.handleErr(error);
         return;
       }
@@ -486,9 +487,8 @@ export class ApiService {
     let subjGrades = [];
     let subjAvg;
     let subjNotes = [];
-    console.log(subjObject);
     const subjName = subjObject.subject;
-    const subjProfs = subjObject.professors.join(', ');
+    const subjProfs = subjObject.professors;
     const subjId = subjObject.id;
     if (subjObject.grades) {
       subjAvg = subjObject.average;
