@@ -191,7 +191,8 @@ export class ApiService {
       const response = JSON.parse(rx.data);
       this.classes = response.classes;
     }, (error) => {
-      this.handleErr(error);
+      console.warn('ApiService/getClasses(): Request failed, but not calling handleErr');
+      console.log(error);
     });
   }
 
@@ -305,7 +306,8 @@ export class ApiService {
       this.loadingFinishedNotif.next(true);
       // this.loadingFinishedNotif.complete();
     }, (error) => {
-      this.handleErr(error);
+      console.warn('ApiService/getNotifConfig(): Request failed, but not calling handleErr');
+      console.log(error);
       /* Let preCacheData() know we're done */
       this.loadingFinishedNotif.next(true);
       // this.loadingFinishedNotif.complete();
