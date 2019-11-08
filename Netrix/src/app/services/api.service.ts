@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SettingsService } from './settings.service';
 import { AuthenticationService } from './authentication.service';
 import { BehaviorSubject } from 'rxjs';
-import { HTTP } from '@ionic-native/http/ngx';
+import { HTTP, HTTPResponse } from '@ionic-native/http/ngx';
 import { Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 
@@ -88,17 +88,19 @@ export class ApiService {
     });
   }
 
-  private async fetchFromCache(classId: number, dataType: 'subjects' | 'tests' | 'absences') {
+  private async fetchFromCache(classId: number, dataType: 'subjects' | 'tests' | 'absences' | 'info') {
     const accessId = 'cache:' + classId + ':' + dataType;
     const result: CachedObject = await this.storage.get(accessId);
     if (result === null) {
       return null;
     }
-    return result;
+    console.log(result.data);
+    return result.data;
   }
 
-  private async storeInCache(classId: number, dataType: 'subjects' | 'tests' | 'absences', date: number, data: any) {
+  private async storeInCache(classId: number, dataType: 'subjects' | 'tests' | 'absences' | 'info', data: any) {
     const accessId = 'cache:' + classId + ':' + dataType;
+    const date = Date.now();
     const cObject: CachedObject = {
       date,
       data
@@ -264,14 +266,30 @@ export class ApiService {
 
   async getUserInfo(classId: number) {
     /* Get information about user */
-    const response = await this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info',
-      {},
-      this.httpHeader
-    );
-    this.info = JSON.parse(response.data);
-    this.loadingFinishedInfo.next(true);
-    // this.handleErr(error);
+    let response: HTTPResponse;
+    let info;
+    let fetchedFromCache = false;
+    try {
+      response = await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info',
+        {},
+        this.httpHeader
+      );
+      info = JSON.parse(response.data);
+    } catch (error) {
+      const cachedResponse = await this.fetchFromCache(classId, 'info');
+      if (cachedResponse !== null) {
+        fetchedFromCache = true;
+        info = cachedResponse;
+      } else {
+        this.handleErr(error);
+      }
+      this.loadingFinishedInfo.next(true);
+    }
+    this.info = info;
+    if (!fetchedFromCache) {
+      this.storeInCache(classId, 'info', info);
+    }
     this.loadingFinishedInfo.next(true);
   }
 
@@ -296,12 +314,29 @@ export class ApiService {
 
   async getSubjects(classId: number) {
     /* Get a stripped list of all subjects (alldata=0), containing no grades or notes */
-    const rx = await this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects?alldata=1',
-      {},
-      this.httpHeader
-    );
-    const response = JSON.parse(rx.data);
+    let rx: HTTPResponse;
+    let response;
+    let fetchedFromCache = false;
+    try {
+      rx = await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects',
+        {},
+        this.httpHeader
+      );
+      response = JSON.parse(rx.data);
+    } catch (error) {
+      const cachedResponse = await this.fetchFromCache(classId, 'subjects');
+      if (cachedResponse !== null) {
+        fetchedFromCache = true;
+        response = cachedResponse;
+      } else {
+        this.handleErr(error);
+        return;
+      }
+    }
+    if (!fetchedFromCache) {
+      this.storeInCache(classId, 'subjects', response);
+    }
     const allsubs = response.subjects;
     // Iterate over professors list and join it into a comma-separated string
     allsubs.forEach((subj) => {
@@ -314,33 +349,40 @@ export class ApiService {
     this.fullAvg = response.class_avg;
     /* Let preCacheData() know we're done */
     this.loadingFinishedSubj.next(true);
-    // this.loadingFinishedSubj.complete();
-    // this.handleErr(error);
-    /* Let preCacheData() know we're done */
-    this.loadingFinishedSubj.next(true);
-    // this.loadingFinishedSubj.complete();
   }
 
   async getTests(classId: number) {
-    const rx = await this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/tests',
-      {},
-      this.httpHeader
-    );
-    const response = JSON.parse(rx.data);
+    let rx: HTTPResponse;
+    let response;
+    let fetchedFromCache = false;
+    try {
+      rx = await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/tests',
+        {},
+        this.httpHeader
+      );
+      response = JSON.parse(rx.data);
+    } catch (error) {
+      const cachedResponse = await this.fetchFromCache(classId, 'tests');
+      if (cachedResponse !== null) {
+        fetchedFromCache = true;
+        response = cachedResponse;
+      } else {
+        this.handleErr(error);
+        return;
+      }
+    }
     this.tests = response.tests;
     /* Count the number of "current" tests, so that we know if we need to show the
      * "No tests" message or not */
     this.countTests();
     /* Sort tests by week */
     this.tests = this.groupTestsByWeek(this.tests);
+    if (!fetchedFromCache) {
+      this.storeInCache(classId, 'tests', response);
+    }
     /* Let preCacheData() know we're done */
     this.loadingFinishedTests.next(true);
-    // this.loadingFinishedTests.complete();
-    // this.handleErr(error);
-    /* Let preCacheData() know we're done */
-    this.loadingFinishedTests.next(true);
-    // this.loadingFinishedTests.complete();
   }
 
   getTestsForSubject(subjectName: string) {
@@ -408,19 +450,32 @@ export class ApiService {
 
   async getAbsences(classId: number) {
     /* Get a list of absences, both an overview and a detailed list */
-    const response = await this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/absences',
-      {},
-      this.httpHeader
-    );
-    this.absences = JSON.parse(response.data);
+    let response: HTTPResponse;
+    let absences;
+    let fetchedFromCache = false;
+    try {
+      response = await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/absences',
+        {},
+        this.httpHeader
+      );
+      absences = JSON.parse(response.data);
+    } catch (error) {
+      const cachedResponse = this.fetchFromCache(classId, 'absences');
+      if (cachedResponse !== null) {
+        fetchedFromCache = true;
+        absences = cachedResponse;
+      } else {
+        this.handleErr(error);
+        return;
+      }
+    }
+    this.absences = absences;
+    if (!fetchedFromCache) {
+      this.storeInCache(classId, 'absences', absences);
+    }
     /* Let preCacheData() know we're done */
     this.loadingFinishedAbsences.next(true);
-    // this.loadingFinishedAbsences.complete();
-    // this.handleErr(error);
-    /* Let preCacheData() know we're done */
-    this.loadingFinishedAbsences.next(true);
-    // this.loadingFinishedAbsences.complete();
   }
 
   private processSubjectData(subjObject): SubjectData {
@@ -429,6 +484,7 @@ export class ApiService {
     let subjGrades = [];
     let subjAvg;
     let subjNotes = [];
+    console.log(subjObject);
     const subjName = subjObject.subject;
     const subjProfs = subjObject.professors.join(', ');
     const subjId = subjObject.id;
