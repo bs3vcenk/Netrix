@@ -17,6 +17,10 @@
 </ion-header>
 
 <ion-content>
+  <ion-item id="warning" lines="full" *ngIf="usingCache">
+    <ion-icon name="alert" id="warning-icon"></ion-icon>
+    <ion-label class="ion-text-wrap">{{ 'generic.text.cache' | translate }}</ion-label>
+  </ion-item>
   <ion-item id="wrapper">
     <!-- Class average -->
     <div id="flexItem" *ngIf="fullAvg !== null && fullAvg >= 0">
