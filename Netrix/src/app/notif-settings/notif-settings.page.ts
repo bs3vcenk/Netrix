@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ApiService } from '../services/api.service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -20,7 +19,6 @@ export class NotifSettingsPage implements OnInit {
   ];
 
   constructor(
-    private firebase: FirebaseX,
     private apiSvc: ApiService,
     private translate: TranslateService
   ) {}
@@ -31,10 +29,6 @@ export class NotifSettingsPage implements OnInit {
         fType.checked = false;
       }
     });
-  }
-
-  ionViewDidEnter() {
-    try { this.firebase.setScreenName('NotificationSettings'); } catch (e) {}
   }
 
   addToIgnoreList(ignId: string) {

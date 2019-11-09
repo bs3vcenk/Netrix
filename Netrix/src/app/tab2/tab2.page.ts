@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../services/api.service';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -27,7 +26,6 @@ export class Tab2Page {
 
   constructor(
     private apiSvc: ApiService,
-    private firebase: FirebaseX,
     private translate: TranslateService
   ) {
     this.apiSvc.loadingFinishedTests.subscribe((val) => {
@@ -35,10 +33,6 @@ export class Tab2Page {
         this.initInBg();
       }
     });
-  }
-
-  ionViewDidEnter() {
-    try { this.firebase.setScreenName('Tests'); } catch (e) {}
   }
 
   initInBg() {

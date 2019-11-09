@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AlertController, NavController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ApiService, SubjectData } from '../services/api.service';
 
 @Component({
@@ -28,12 +27,10 @@ export class SubjOverviewPage implements OnInit {
     private activatedRoute: ActivatedRoute,
     private alertControl: AlertController,
     private navCtrl: NavController,
-    private firebase: FirebaseX,
     private apiSvc: ApiService
   ) {}
 
   ngOnInit() {
-    try { this.firebase.setScreenName('SubjOverview'); } catch (e) {}
     const subjId = this.activatedRoute.snapshot.paramMap.get('subjid');
     this.getSubjectInfo(subjId).then(() => {
       this.tests = this.apiSvc.getTestsForSubject(this.subject.name);
@@ -93,7 +90,7 @@ export class SubjOverviewPage implements OnInit {
   }
 
   async getSubjectInfo(subjId: string) {
-    const subject = await this.apiSvc.getSubject(subjId, this.apiSvc.classId.value)
+    const subject = await this.apiSvc.getSubject(subjId, this.apiSvc.classId.value);
     this.subject = subject;
   }
 }

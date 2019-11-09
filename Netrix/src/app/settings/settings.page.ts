@@ -5,7 +5,6 @@ import { SettingsService } from '../services/settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { PickerOptions } from '@ionic/core';
 import { TranslateService } from '@ngx-translate/core';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ApiService } from '../services/api.service';
 import { NotificationService } from '../services/notification.service';
 import { environment } from '../../environments/environment';
@@ -43,7 +42,6 @@ export class SettingsPage {
     private settings: SettingsService,
     private pickerCtrl: PickerController,
     private translate: TranslateService,
-    private firebase: FirebaseX,
     private apiSvc: ApiService,
     private alertControl: AlertController,
     private toastControl: ToastController,
@@ -62,10 +60,6 @@ export class SettingsPage {
     }
   }
 
-  ionViewDidEnter() {
-    try { this.firebase.setScreenName('Settings'); } catch (e) {}
-  }
-
   _logout() {
     this.authServ.logout();
   }
@@ -78,10 +72,7 @@ export class SettingsPage {
       buttons: [
         {
           text: this.translate.instant('generic.choice.no'),
-          role: 'cancel',
-          handler: () => {
-            this.firebase.logEvent('logout_returned', {});
-          }
+          role: 'cancel'
         },
         {
           text: this.translate.instant('generic.choice.yes'),

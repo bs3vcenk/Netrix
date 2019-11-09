@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../services/api.service';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { AdmobService } from '../services/admob.service';
 
 @Component({
@@ -27,7 +26,6 @@ export class Tab1Page implements OnInit {
 
   constructor(
     private apiSvc: ApiService,
-    private firebase: FirebaseX,
     private admobSvc: AdmobService
   ) {
     this.initInBg();
@@ -36,10 +34,6 @@ export class Tab1Page implements OnInit {
 
   ngOnInit() {
     this.admobSvc.showBanner();
-  }
-
-  ionViewDidEnter() {
-    try { this.firebase.setScreenName('Subjects'); } catch (e) {}
   }
 
   calculateRemainingTests() {

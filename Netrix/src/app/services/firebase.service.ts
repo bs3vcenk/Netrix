@@ -33,12 +33,6 @@ export class FirebaseService {
     this.apiSvc.saveFirebaseToken(firebaseToken);
   }
 
-  setAnalytics(val) {
-    /* Control if Firebase Analytics sends data */
-    if (!this.platform.is('cordova')) { return; }
-    this.firebase.setAnalyticsCollectionEnabled(val);
-  }
-
   onNotifications() {
     /* Return notification handler */
     if (!this.platform.is('cordova')) { return; }
