@@ -57,6 +57,13 @@ export class NotificationService {
     this.syncLocalLists();
   }
 
+  formatDate(origDate: number): Date {
+    /* Get notification date from test date, and set it to 7 AM */
+    const notifDate = new Date(origDate - (this.settings.notifTime * this.oneDayInMiliseconds));
+    notifDate.setHours(7, 0); // Make sure it triggers at 7 instead of midnight
+    return notifDate;
+  }
+
   scheduleTestNotifications(days: number) {
     /* Wait until notif.getAll() is done */
     this.notifInitFinished.subscribe(val => {
@@ -74,7 +81,7 @@ export class NotificationService {
               title: this.translate.instant('notif.text.test'),
               text: test.subject + ': ' + test.test + ' '
                 + this.translate.instant('notif.text.inXdays').replace('DAYS', this.settings.notifTime),
-              trigger: { at: new Date((test.date * 1000) - (this.settings.notifTime * this.oneDayInMiliseconds)) }
+              trigger: { at: this.formatDate(test.date * 1000) }
             } as ILocalNotification);
           }
         });
