@@ -221,7 +221,11 @@ export class ApiService {
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/firebase',
       {deviceToken: firebaseToken},
       this.httpHeader
-    );
+    ).then(() => {},
+    (error) => {
+      console.warn('ApiService/saveFirebaseToken(): Request failed, but not calling handleErr');
+      console.log(error);
+    });
   }
 
   receiveNotifType(nType: string) {
