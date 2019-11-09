@@ -179,12 +179,6 @@ export class SettingsPage {
     picker.present();
   }
 
-  fakeCrash() {
-    if (this.developer) {
-      throw new Error('Fake exception by development options');
-    }
-  }
-
   forceCroatian() {
     this.translate.use('hr');
   }
