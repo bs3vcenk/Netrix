@@ -419,9 +419,9 @@ export class ApiService {
     const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
     const existingWeeks = [];
     /* Main loop */
-    for (let i = 0; i < obj.length; i++) {
+    for (const test of obj) {
       /* Get the date of the test */
-      const d = this.getMonday(obj[i].date * 1000);
+      const d = this.getMonday(test.date * 1000);
       /* Get the week from that */
       const indx = Math.floor(d.getTime() / (oneDay * 7));
       /* Check if this week exists in objPeriod */
@@ -434,16 +434,16 @@ export class ApiService {
       /* Map week to object index in objPeriod list */
       const currentIndex = existingWeeks.indexOf(indx);
       /* Push it to that object's items list */
-      objPeriod[currentIndex].items.push(obj[i]);
+      objPeriod[currentIndex].items.push(test);
     }
-    for (let i = 0; i < objPeriod.length; i++) {
+    for (const group of objPeriod) {
       let currentTestCounter = 0;
-      objPeriod[i].items.forEach((exam) => {
+      group.items.forEach((exam) => {
         if (exam.current) {
           currentTestCounter += 1;
         }
       });
-      objPeriod[i].currentTests = currentTestCounter;
+      group.currentTests = currentTestCounter;
     }
     return objPeriod;
   }

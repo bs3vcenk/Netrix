@@ -43,10 +43,10 @@ export class Tab1Page implements OnInit {
       if (isLoaded) {
         this.currentTestsLen = this.apiSvc.currentTests.length;
         if (this.currentTestsLen > 0) {
-          for (let i = 0; i < this.apiSvc.tests.length; i++) {
-            if (this.apiSvc.tests[i].week === weekID) {
+          for (const testGroup of this.apiSvc.tests) {
+            if (testGroup.week === weekID) {
               console.log('Tab1Page/calculateRemainingTests(): Found matching test group for week ID ' + weekID);
-              this.remainingTests = this.apiSvc.tests[i].currentTests;
+              this.remainingTests = testGroup.currentTests;
             }
           }
         }
