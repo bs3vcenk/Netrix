@@ -164,7 +164,7 @@ export class SettingsPage {
         {
           name: 'time',
           options: [
-            {text: '10 ' + this.timePlural, value: 10},
+            {text: '14 ' + this.timePlural, value: 14},
             {text: '7 ' + this.timePlural, value: 7},
             {text: '5 ' + this.timePlural, value: 5},
             {text: '4 ' + this.timePlural, value: 4},
