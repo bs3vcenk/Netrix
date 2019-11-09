@@ -100,9 +100,9 @@ export class ApiService {
     });
   }
 
-  private async fetchFromCache(classId: number, dataType: 'subjects' | 'tests' | 'absences' | 'info') {
+  private async fetchFromCache(classId: number, token: string, dataType: 'subjects' | 'tests' | 'absences' | 'info') {
     /* Fetch an object from the cache. Will set `usingCachedContent` to `true` if called. */
-    const accessId = 'cache:' + classId + ':' + dataType;
+    const accessId = 'cache:' + token + ':' + classId + ':' + dataType; // ex. 'cache:a1b2c3...:0:subjects'
     const result: CachedObject = await this.storage.get(accessId);
     if (result === null) {
       return null;
@@ -113,9 +113,9 @@ export class ApiService {
     return result.data;
   }
 
-  private async storeInCache(classId: number, dataType: 'subjects' | 'tests' | 'absences' | 'info', data: any) {
+  private async storeInCache(classId: number, token: string, dataType: 'subjects' | 'tests' | 'absences' | 'info', data: any) {
     /* Put an object into the cache. */
-    const accessId = 'cache:' + classId + ':' + dataType;
+    const accessId = 'cache:' + token + ':' + classId + ':' + dataType; // ex. 'cache:a1b2c3...:0:subjects'
     const date = Date.now();
     const cObject: CachedObject = {
       date,
@@ -295,7 +295,7 @@ export class ApiService {
       );
       info = JSON.parse(response.data);
     } catch (error) {
-      const cachedResponse = await this.fetchFromCache(classId, 'info');
+      const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'info');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
         info = cachedResponse;
@@ -307,7 +307,7 @@ export class ApiService {
     }
     this.info = info;
     if (!fetchedFromCache) {
-      this.storeInCache(classId, 'info', info);
+      this.storeInCache(classId, this.authServ.token, 'info', info);
     }
     this.loadingFinishedInfo.next(true);
   }
@@ -345,7 +345,7 @@ export class ApiService {
       );
       response = JSON.parse(rx.data);
     } catch (error) {
-      const cachedResponse = await this.fetchFromCache(classId, 'subjects');
+      const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'subjects');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
         response = cachedResponse;
@@ -356,7 +356,7 @@ export class ApiService {
       }
     }
     if (!fetchedFromCache) {
-      this.storeInCache(classId, 'subjects', response);
+      this.storeInCache(classId, this.authServ.token, 'subjects', response);
     }
     const allsubs = response.subjects;
     // Iterate over professors list and join it into a comma-separated string
@@ -384,7 +384,7 @@ export class ApiService {
       );
       response = JSON.parse(rx.data);
     } catch (error) {
-      const cachedResponse = await this.fetchFromCache(classId, 'tests');
+      const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'tests');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
         response = cachedResponse;
@@ -401,7 +401,7 @@ export class ApiService {
     /* Sort tests by week */
     this.tests = this.groupTestsByWeek(this.tests);
     if (!fetchedFromCache) {
-      this.storeInCache(classId, 'tests', response);
+      this.storeInCache(classId, this.authServ.token, 'tests', response);
     }
     /* Let preCacheData() know we're done */
     this.loadingFinishedTests.next(true);
@@ -483,7 +483,7 @@ export class ApiService {
       );
       absences = JSON.parse(response.data);
     } catch (error) {
-      const cachedResponse = await this.fetchFromCache(classId, 'absences');
+      const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'absences');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
         absences = cachedResponse;
@@ -495,7 +495,7 @@ export class ApiService {
     }
     this.absences = absences;
     if (!fetchedFromCache) {
-      this.storeInCache(classId, 'absences', absences);
+      this.storeInCache(classId, this.authServ.token, 'absences', absences);
     }
     /* Let preCacheData() know we're done */
     this.loadingFinishedAbsences.next(true);
