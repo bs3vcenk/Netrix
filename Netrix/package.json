@@ -9,7 +9,10 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "build:android:release": "ionic cordova build android --prod --release",
+    "run:android": "ionic cordova run android",
+    "run-live:android": "ionic cordova run android -l --ssl"
   },
   "private": true,
   "dependencies": {
