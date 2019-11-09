@@ -23,7 +23,8 @@
       "maintenance": {
         "header": "Održavanje u tijeku",
         "content": "e-Dnevnik je trenutno u nadogradnji (nemamo kontrolu nad time). Provjeri web-stranicu za više informacija."
-      }
+      },
+      "cache": "Pošto trenutno nemaš vezu s internetom, prikazujemo ti podatke od zadnjeg otvaranja aplikacije."
     },
     "choice": {
       "yes": "Da",
