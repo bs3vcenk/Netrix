@@ -74,7 +74,7 @@
 
     <!-- SEP: Experimental -->
     <ion-list-header *ngIf="developer">
-      <ion-label>{{ 'settings.experimental.header' | translate }}</ion-label>
+      <ion-label>Experimental</ion-label>
     </ion-list-header>
 
     <!-- Developer -->
@@ -89,6 +89,10 @@
     <!-- BUTTON: Force language to hr -->
     <ion-item button (click)="forceCroatian()" *ngIf="developer">
       <ion-label>Force switch to HR locale</ion-label>
+    </ion-item>
+    <!-- BUTTON: Invert usingCache setting -->
+    <ion-item button (click)="invertCacheIndicator()" *ngIf="developer">
+      <ion-label>Invert usingCache setting</ion-label>
     </ion-item>
   </ion-list>
 

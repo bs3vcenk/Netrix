@@ -198,4 +198,9 @@ export class SettingsPage {
     this.translate.use('hr');
   }
 
+  invertCacheIndicator() {
+    this.usingCache = !this.usingCache;
+    this.apiSvc.usingCachedContent = this.usingCache;
+  }
+
 }
