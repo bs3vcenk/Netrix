@@ -90,6 +90,15 @@ export class ApiService {
     });
   }
 
+  clearCache() {
+    this.storage.forEach((val, keyId) => {
+      if (keyId.startsWith('cache:')) {
+        console.log('ApiService/clearCache(): Deleting ' + keyId);
+        this.storage.remove(keyId);
+      }
+    });
+  }
+
   private async fetchFromCache(classId: number, dataType: 'subjects' | 'tests' | 'absences' | 'info') {
     const accessId = 'cache:' + classId + ':' + dataType;
     const result: CachedObject = await this.storage.get(accessId);
