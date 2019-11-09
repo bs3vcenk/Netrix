@@ -90,8 +90,9 @@ export class ApiService {
     });
   }
 
-  clearCache() {
-    this.storage.forEach((val, keyId) => {
+  async clearCache() {
+    /* Remove all key-value pairs that are part of the cache. */
+    await this.storage.forEach((val, keyId) => {
       if (keyId.startsWith('cache:')) {
         console.log('ApiService/clearCache(): Deleting ' + keyId);
         this.storage.remove(keyId);
@@ -100,6 +101,7 @@ export class ApiService {
   }
 
   private async fetchFromCache(classId: number, dataType: 'subjects' | 'tests' | 'absences' | 'info') {
+    /* Fetch an object from the cache. Will set `usingCachedContent` to `true` if called. */
     const accessId = 'cache:' + classId + ':' + dataType;
     const result: CachedObject = await this.storage.get(accessId);
     if (result === null) {
@@ -112,6 +114,7 @@ export class ApiService {
   }
 
   private async storeInCache(classId: number, dataType: 'subjects' | 'tests' | 'absences' | 'info', data: any) {
+    /* Put an object into the cache. */
     const accessId = 'cache:' + classId + ':' + dataType;
     const date = Date.now();
     const cObject: CachedObject = {
