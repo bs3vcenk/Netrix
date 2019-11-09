@@ -11,4 +11,5 @@
 <ion-content>
   <!-- <div> containing HTML that will be fetched from the server -->
   <div [innerHTML]="html" id="intext" [@fadeInOut] *ngIf="html"></div>
+  <div id="spinner" *ngIf="!html"><ion-spinner></ion-spinner></div>
 </ion-content>
