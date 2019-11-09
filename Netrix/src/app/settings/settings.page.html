@@ -90,6 +90,10 @@
     <ion-item button (click)="invertCacheIndicator()" *ngIf="developer">
       <ion-label>Invert usingCache setting</ion-label>
     </ion-item>
+    <!-- BUTTON: Clear cache -->
+    <ion-item button (click)="clearCache()" *ngIf="developer">
+      <ion-label>Clear cache</ion-label>
+    </ion-item>
   </ion-list>
 
 	<ion-list>

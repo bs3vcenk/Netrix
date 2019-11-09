@@ -188,4 +188,8 @@ export class SettingsPage {
     this.apiSvc.usingCachedContent = this.usingCache;
   }
 
+  clearCache() {
+    this.apiSvc.clearCache();
+  }
+
 }
