@@ -49,11 +49,11 @@
 
     <!-- Only if master enabled -->
     <!-- PAGE: Exclusions -->
-    <ion-item [@fadeInOut] routerLink="/notif-settings" routerDirection="forward" *ngIf="notifPreference" disabled="{{usingCache}}">
+    <ion-item [@fadeInOut] routerLink="/notif-settings" routerDirection="forward" *ngIf="notifPreference && !usingCache" disabled="{{usingCache}}">
       <ion-label>{{ 'settings.notifs.management' | translate }}</ion-label>
     </ion-item>
     <!-- BUTTON: Test notification time -->
-    <ion-item [@fadeInOut] detail="false" button (click)="openNotifTimePicker()" *ngIf="notifPreference" disabled="{{usingCache}}">
+    <ion-item [@fadeInOut] detail="false" button (click)="openNotifTimePicker()" *ngIf="notifPreference && !usingCache" disabled="{{usingCache}}">
       <ion-label>{{ 'settings.notifs.time' | translate}}</ion-label>
       <ion-text class="ion-text-right">{{ testNotifTime }} {{ dayString }}</ion-text>
     </ion-item>
