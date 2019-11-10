@@ -92,10 +92,6 @@ export class SettingsService {
 
   changePreference(pref, prefValue) {
     /* Set `pref` to `prefValue` */
-    this.firebase.logEvent('changed_preference', {
-      preference: pref,
-      value: prefValue
-    });
     this.storage.set(pref, prefValue).then(() => {
       console.log('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
     });
