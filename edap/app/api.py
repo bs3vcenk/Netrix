@@ -83,43 +83,49 @@ def dev_area(f):
 	return decorated
 
 @app.errorhandler(404)
-def e404(err):
+def e404(_):
 	"""
 		Default handler in case a nonexistent API endpoint is accessed.
 	"""
-	log.debug('HTTP 404 (%s)', err)
 	return make_response(jsonify({'error':'E_UNKNOWN_ENDPOINT'}), 404)
 
 @app.errorhandler(401)
-def e401(err):
+def e401(_):
 	"""
 		Default handler in case a given token does not exist in the DB.
 		This error is also returned if a given class ID or subject ID don't
 		exist in the DB.
 	"""
-	log.info('HTTP 401 (%s)', err)
+	log.warning('Nonexistent token/cID/sID')
 	return make_response(jsonify({'error':'E_TOKEN_NONEXISTENT'}), 401)
 
 @app.errorhandler(400)
-def e400(err):
+def e400(_):
 	"""
 		Default handler in case the user sends an invalid JSON (bad format,
 		missing keys/values, etc.)
 	"""
-	log.info('HTTP 400 (%s)', err)
 	return make_response(jsonify({'error':'E_INVALID_DATA'}), 400)
 
+@app.errorhandler(403)
+def e403(_):
+	"""
+		Default handler for error 403 (Forbidden) responses. These are used
+		for example in /dev/* endpoints when an invalid or no token is
+		specified.
+	"""
+	return make_response(jsonify({'error':'E_FORBIDDEN'}), 403)
+
 @app.errorhandler(405)
-def e405(err):
+def e405(_):
 	"""
 		Default handler in case the request method with which the endpoint
 		is called isn't in the specified methods list in the decorator.
 	"""
-	log.info('HTTP 405 (%s)', err)
 	return make_response(jsonify({'error':'E_INVALID_METHOD'}), 405)
 
 @app.errorhandler(500)
-def e500(err):
+def e500(_):
 	"""
 		Default handler in case something generic goes wrong on the server
 		side.
@@ -156,13 +162,13 @@ def exh_redis_db_fail(e):
 		Default handler in case the Redis DB connection fails.
 	"""
 	exc = traceback.format_exc()
-	log.critical(" ==> DATBASE ACCESS FAILURE!!!!! <== [%s]", e)
+	log.critical("DATBASE ACCESS FAILURE!!!!! [%s]", e)
 	if config['USE_NOTIFICATIONS']:
 		notify_error('DB CONNECTION FAIL', 'redis', stacktrace=exc)
 	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
 
 @app.errorhandler(MemoryError)
-def exh_memory_error(e):
+def exh_memory_error(_):
 	"""
 		Handler in case we run out of memory.
 	"""
