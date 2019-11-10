@@ -496,6 +496,48 @@ class edap:
 			return user_data, timer() - start
 		return user_data
 
+	def getStudentNotes(self, class_id: int) -> dict:
+		"""
+			Return "Classmaster's notes"
+		"""
+		self.__verify(class_id)
+		self.__edlog(0, "Getting CM notes for class id %s" % class_id)
+		response = self.__fetch("%s/pregled/biljeske/%s" % (self.edurl, self.class_ids[class_id]))
+		self.__edlog(0, "Initializing BeautifulSoup with response")
+		soup = BeautifulSoup(response, self.parser)
+		try:
+			# Get all content elements
+			x = soup.find_all("div", class_="sectionText")
+		except AttributeError as e:
+			raise ParseError(e)
+		# x[0] => informacije
+		# x[1] => biljeske razrednika
+		# x[2] => izvannastavne skolske aktivnosti
+		# x[3] => izvanskolske aktivnosti
+		# x[4] => vladanje
+		# x[5] => pedagoske mjere
+		data_object = {
+			'measures': []
+		}
+		measure_table = x[5].find('table')
+		if measure_table:
+			self.__edlog(1, "Found pedagogic measures table, processing")
+			measures_unproc = [x.getText() for x in measure_table.find_all('td')]
+			measures_chunks = [measures_unproc[i:i+3] for i in range(0, len(measures_unproc), 3)] # Every three items get grouped into a list
+			self.__edlog(1, "Processed %i measures" % len(measures_chunks))
+			measures = []
+			for chunk in measures_chunks:
+				# chunk[0] => type of measure taken
+				# chunk[1] => description or reason
+				# chunk[2] => date in format YYYY-MM-DD
+				measures.append({
+					'type': chunk[0],
+					'description': chunk[1],
+					'date': _format_to_date(chunk[2], "%Y-%m-%d")
+				})
+			data_object['measures'] = measures
+		return data_object
+
 	def getAbsenceOverview(self, class_id: int) -> dict:
 		"""
 			Return an overview of classes marked absent for a given class
