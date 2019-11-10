@@ -68,6 +68,9 @@ export class NotificationService {
     if (this.apiSvc.usingCachedContent) {
       console.log('NotificationService/scheduleTestNotifications(): Running in offline mode, not scheduling notifications');
       return;
+    } else if (this.apiSvc.classId.value !== 0) {
+      console.log('NotificationService/scheduleTestNotifications(): Class ID not 0, not scheduling notifications');
+      return;
     }
     /* Wait until notif.getAll() is done */
     this.notifInitFinished.subscribe(val => {
