@@ -53,6 +53,7 @@ def dev_pw_area(f):
 		else:
 			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
 			abort(404)
+		log.info('DEV => Successful access from %s using password auth', ip)
 		return f(*args, **kwargs)
 	return decorated
 
@@ -79,6 +80,7 @@ def dev_area(f):
 		else:
 			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
 			abort(404)
+		log.info('DEV => Successful access from %s using token auth', ip)
 		return f(*args, **kwargs)
 	return decorated
 
