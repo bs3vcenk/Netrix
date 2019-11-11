@@ -23,7 +23,8 @@
       "maintenance": {
         "header": "Maintenance in progress",
         "content": "e-Dnevnik is currently undergoing maintenance (we have no control over this). Check the website for more information."
-      }
+      },
+      "cache": "Because you aren't currently connected to the Internet, you're viewing data from your last session."
     },
     "choice": {
       "yes": "Yes",

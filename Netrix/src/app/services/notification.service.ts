@@ -57,7 +57,21 @@ export class NotificationService {
     this.syncLocalLists();
   }
 
+  formatDate(origDate: number): Date {
+    /* Get notification date from test date, and set it to 7 AM */
+    const notifDate = new Date(origDate - (this.settings.notifTime * this.oneDayInMiliseconds));
+    notifDate.setHours(7, 0); // Make sure it triggers at 7 instead of midnight
+    return notifDate;
+  }
+
   scheduleTestNotifications(days: number) {
+    if (this.apiSvc.usingCachedContent) {
+      console.log('NotificationService/scheduleTestNotifications(): Running in offline mode, not scheduling notifications');
+      return;
+    } else if (this.apiSvc.classId.value !== 0) {
+      console.log('NotificationService/scheduleTestNotifications(): Class ID not 0, not scheduling notifications');
+      return;
+    }
     /* Wait until notif.getAll() is done */
     this.notifInitFinished.subscribe(val => {
       if (val) {
@@ -74,7 +88,7 @@ export class NotificationService {
               title: this.translate.instant('notif.text.test'),
               text: test.subject + ': ' + test.test + ' '
                 + this.translate.instant('notif.text.inXdays').replace('DAYS', this.settings.notifTime),
-              trigger: { at: new Date((test.date * 1000) - (this.settings.notifTime * this.oneDayInMiliseconds)) }
+              trigger: { at: this.formatDate(test.date * 1000) }
             } as ILocalNotification);
           }
         });

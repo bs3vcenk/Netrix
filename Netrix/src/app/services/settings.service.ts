@@ -70,73 +70,10 @@ export class SettingsService {
 
   setGlobalTheme(nThemeName: 'dark' | 'light') {
     /* Set/unset dark mode */
-    /* CSS variables for theming the app */
-    const themeVars = {
-      dark: {
-        css: {
-          '--ion-background-color': '#000000',
-          '--ion-background-color-rgb': '0,0,0',
-          '--ion-text-color': '#ffffff',
-          '--ion-text-color-rgb': '255,255,255',
-          '--ion-color-step-50': '#000000',
-          '--ion-color-step-100': '#1a1a1a',
-          '--ion-color-step-150': '#262626',
-          '--ion-color-step-200': '#333333',
-          '--ion-color-step-250': '#404040',
-          '--ion-color-step-300': '#4d4d4d',
-          '--ion-color-step-350': '#595959',
-          '--ion-color-step-400': '#666666',
-          '--ion-color-step-450': '#737373',
-          '--ion-color-step-500': '#808080',
-          '--ion-color-step-550': '#8c8c8c',
-          '--ion-color-step-600': '#999999',
-          '--ion-color-step-650': '#a6a6a6',
-          '--ion-color-step-700': '#b3b3b3',
-          '--ion-color-step-750': '#bfbfbf',
-          '--ion-color-step-800': '#cccccc',
-          '--ion-color-step-850': '#d9d9d9',
-          '--ion-color-step-900': '#e6e6e6',
-          '--ion-color-step-950': '#f2f2f2'
-        },
-        statusbar: '#000000'
-      },
-      light: {
-        css: {
-          '--ion-background-color': '#ffffff',
-          '--ion-background-color-rgb': '255,255,255',
-          '--ion-text-color': '#000000',
-          '--ion-text-color-rgb': '0,0,0',
-          '--ion-color-step-50': '#ffffff',
-          '--ion-color-step-100': '#e6e6e6',
-          '--ion-color-step-150': '#d9d9d9',
-          '--ion-color-step-200': '#cccccc',
-          '--ion-color-step-250': '#bfbfbf',
-          '--ion-color-step-300': '#b3b3b3',
-          '--ion-color-step-350': '#a6a6a6',
-          '--ion-color-step-400': '#999999',
-          '--ion-color-step-450': '#8c8c8c',
-          '--ion-color-step-500': '#808080',
-          '--ion-color-step-550': '#737373',
-          '--ion-color-step-600': '#666666',
-          '--ion-color-step-650': '#595959',
-          '--ion-color-step-700': '#4d4d4d',
-          '--ion-color-step-750': '#404040',
-          '--ion-color-step-800': '#333333',
-          '--ion-color-step-850': '#262626',
-          '--ion-color-step-900': '#191919',
-          '--ion-color-step-950': '#0d0d0d'
-        },
-        statusbar: '#ffffff'
-      }
-    };
     console.log('SettingsService/setGlobalTheme(): Setting ' + nThemeName + ' theme');
-    const root = document.documentElement;
-    // tslint:disable-next-line: forin
-    for (const varName in themeVars[nThemeName].css) {
-      root.style.setProperty(varName, themeVars[nThemeName].css[varName]);
-    }
+    document.body.classList.toggle('dark', nThemeName === 'dark');
     nThemeName === 'dark' ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
-    this.statusBar.backgroundColorByHexString(themeVars[nThemeName].statusbar);
+    this.statusBar.backgroundColorByHexString(nThemeName === 'dark' ? '#000000' : '#ffffff');
   }
 
   setDataCollection(val: boolean) {
@@ -155,10 +92,6 @@ export class SettingsService {
 
   changePreference(pref, prefValue) {
     /* Set `pref` to `prefValue` */
-    this.firebase.logEvent('changed_preference', {
-      preference: pref,
-      value: prefValue
-    });
     this.storage.set(pref, prefValue).then(() => {
       console.log('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
     });

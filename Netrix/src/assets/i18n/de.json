@@ -23,7 +23,8 @@
       "maintenance": {
         "header": "Wartung läuft",
         "content": "e-Dnevnik befindet sich derzeit in der Wartung (wir haben keine Kontrolle darüber). Weitere Informationen findest du auf der Website."
-      }
+      },
+      "cache": "Da du derzeit nicht mit dem Internet verbunden bist, werden die Daten deiner letzten Sitzung angezeigt."
     },
     "choice": {
       "yes": "Ja",

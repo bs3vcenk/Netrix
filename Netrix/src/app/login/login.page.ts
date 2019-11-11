@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
 import { AlertController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
   selector: 'app-login',
@@ -19,8 +18,7 @@ export class LoginPage implements OnInit {
     private toastCtrl: ToastController,
     private translate: TranslateService,
     private authServ: AuthenticationService,
-    private alertControl: AlertController,
-    private firebase: FirebaseX
+    private alertControl: AlertController
   ) { }
 
   ngOnInit() {
@@ -70,7 +68,6 @@ export class LoginPage implements OnInit {
       } else if (err.status >= 500 && err.status <= 599) {
         // Server/network error
         this.toastError(this.translate.instant('generic.alert.server'), null, 2500);
-        this.firebase.logError('Server error, status ' + err.status, null);
       } else {
         this.toastError(this.translate.instant('generic.alert.network'), null, 2500);
       }

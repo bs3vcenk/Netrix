@@ -5,7 +5,6 @@ import { SettingsService } from '../services/settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { PickerOptions } from '@ionic/core';
 import { TranslateService } from '@ngx-translate/core';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ApiService } from '../services/api.service';
 import { NotificationService } from '../services/notification.service';
 import { environment } from '../../environments/environment';
@@ -34,6 +33,7 @@ export class SettingsPage {
   forceCroatianPreference = null;
   testNotifTime = null;
   darkModePreference = null;
+  usingCache = null;
   dayString = this.timePlural;
   developer = !environment.production;
 
@@ -42,7 +42,6 @@ export class SettingsPage {
     private settings: SettingsService,
     private pickerCtrl: PickerController,
     private translate: TranslateService,
-    private firebase: FirebaseX,
     private apiSvc: ApiService,
     private alertControl: AlertController,
     private toastControl: ToastController,
@@ -55,13 +54,10 @@ export class SettingsPage {
     this.adPreference = this.settings.adPreference;
     this.forceCroatianPreference = this.settings.forceCroatianPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
+    this.usingCache = this.apiSvc.usingCachedContent;
     if (this.testNotifTime === 1) {
       this.dayString = this.timeSingular;
     }
-  }
-
-  ionViewDidEnter() {
-    try { this.firebase.setScreenName('Settings'); } catch (e) {}
   }
 
   _logout() {
@@ -76,10 +72,7 @@ export class SettingsPage {
       buttons: [
         {
           text: this.translate.instant('generic.choice.no'),
-          role: 'cancel',
-          handler: () => {
-            this.firebase.logEvent('logout_returned', {});
-          }
+          role: 'cancel'
         },
         {
           text: this.translate.instant('generic.choice.yes'),
@@ -171,7 +164,7 @@ export class SettingsPage {
         {
           name: 'time',
           options: [
-            {text: '10 ' + this.timePlural, value: 10},
+            {text: '14 ' + this.timePlural, value: 14},
             {text: '7 ' + this.timePlural, value: 7},
             {text: '5 ' + this.timePlural, value: 5},
             {text: '4 ' + this.timePlural, value: 4},
@@ -186,14 +179,17 @@ export class SettingsPage {
     picker.present();
   }
 
-  fakeCrash() {
-    if (this.developer) {
-      throw new Error('Fake exception by development options');
-    }
-  }
-
   forceCroatian() {
     this.translate.use('hr');
+  }
+
+  invertCacheIndicator() {
+    this.usingCache = !this.usingCache;
+    this.apiSvc.usingCachedContent = this.usingCache;
+  }
+
+  clearCache() {
+    this.apiSvc.clearCache();
   }
 
 }

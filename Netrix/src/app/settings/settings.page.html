@@ -22,12 +22,12 @@
       <ion-label>{{ 'settings.analytics.usage' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="dataPreference" (ionChange)="updDeviceInfoPreference()"></ion-toggle>
     </ion-item>
-    <!-- SWITCH: Advertisements -->
+    <!-- SWITCH (disabled): Advertisements -->
     <ion-item>
       <ion-label>{{ 'settings.analytics.ads' | translate }}</ion-label>
-      <ion-toggle slot="end" [(ngModel)]="adPreference" (ionChange)="updAdPreference()"></ion-toggle>
+      <ion-toggle slot="end" [(ngModel)]="adPreference" (ionChange)="updAdPreference()" disabled="true"></ion-toggle>
     </ion-item>
-    <ion-item button routerLink="/privacy" routerDirection="forward">
+    <ion-item button routerLink="/privacy" routerDirection="forward" disabled="{{usingCache}}">
       <ion-label>{{ 'login.text.privacy' | translate }}</ion-label>
     </ion-item>
     <!-- SWITCH (disabled): Error reporting -->
@@ -44,16 +44,16 @@
     <!-- SWITCH: Master notification switch -->
     <ion-item>
       <ion-label>{{ 'settings.notifs.master' | translate }}</ion-label>
-      <ion-toggle slot="end" [(ngModel)]="notifPreference" (ionChange)="updMainNotificationPreference()"></ion-toggle>
+      <ion-toggle slot="end" [(ngModel)]="notifPreference" (ionChange)="updMainNotificationPreference()" disabled="{{usingCache}}"></ion-toggle>
     </ion-item>
 
     <!-- Only if master enabled -->
     <!-- PAGE: Exclusions -->
-    <ion-item [@fadeInOut] routerLink="/notif-settings" routerDirection="forward" *ngIf="notifPreference">
+    <ion-item [@fadeInOut] routerLink="/notif-settings" routerDirection="forward" *ngIf="notifPreference && !usingCache" disabled="{{usingCache}}">
       <ion-label>{{ 'settings.notifs.management' | translate }}</ion-label>
     </ion-item>
     <!-- BUTTON: Test notification time -->
-    <ion-item [@fadeInOut] detail="false" button (click)="openNotifTimePicker()" *ngIf="notifPreference">
+    <ion-item [@fadeInOut] detail="false" button (click)="openNotifTimePicker()" *ngIf="notifPreference && !usingCache" disabled="{{usingCache}}">
       <ion-label>{{ 'settings.notifs.time' | translate}}</ion-label>
       <ion-text class="ion-text-right">{{ testNotifTime }} {{ dayString }}</ion-text>
     </ion-item>
@@ -74,7 +74,7 @@
 
     <!-- SEP: Experimental -->
     <ion-list-header *ngIf="developer">
-      <ion-label>{{ 'settings.experimental.header' | translate }}</ion-label>
+      <ion-label>Experimental</ion-label>
     </ion-list-header>
 
     <!-- Developer -->
@@ -82,13 +82,17 @@
     <ion-item button (click)="resetNotif()" *ngIf="developer">
       <ion-label>Reset notifications</ion-label>
     </ion-item>
-    <!-- BUTTON: Fake exception -->
-    <ion-item button (click)="fakeCrash()" *ngIf="developer">
-      <ion-label>Fake unhandled exception</ion-label>
-    </ion-item>
     <!-- BUTTON: Force language to hr -->
     <ion-item button (click)="forceCroatian()" *ngIf="developer">
       <ion-label>Force switch to HR locale</ion-label>
+    </ion-item>
+    <!-- BUTTON: Invert usingCache setting -->
+    <ion-item button (click)="invertCacheIndicator()" *ngIf="developer">
+      <ion-label>Invert usingCache setting</ion-label>
+    </ion-item>
+    <!-- BUTTON: Clear cache -->
+    <ion-item button (click)="clearCache()" *ngIf="developer">
+      <ion-label>Clear cache</ion-label>
     </ion-item>
   </ion-list>
 
