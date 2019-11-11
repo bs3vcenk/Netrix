@@ -1,3 +1,17 @@
+## 1.9.6 (2019-11-11)
+* **NOVO**: Izvanmrežni način – provjeri ocjene čak i kada nemaš interneta
+* **FIX**: Obavijesti za ispite se sada zakazuju u 7 ujutro umjesto u ponoć
+* **FIX**: Smanjena veličina reklame na uređajima s većim ekranima
+* **FIX**: Stil na stranici izostanaka
+* **FIX**: Animacije na nekim stranicama
+* **FIX**: Ponovno zakazivanje obavijesti pri promjeni razreda
+* **PROMJENA**: Privremeno isključena opcija za kontroliranje reklama
+* **PROMJENA**: 14 dana umjesto 10 za vrijeme obavještavanja o ispitu
+* **PROMJENA**: Drugačije margine za ocjenu na pregledu predmeta
+* **MISC**: Smanjena veličina aplikacije
+* **MISC**: Smanjena količina podataka koja se šalje na Firebase
+* **MISC**: Ažurirani libraryi za obavijesti i reklame
+
 ## 1.9.5 (2019-10-26)
 * Prikazivanje ispita za predmet uz bilješke i ocjene
 * Broj preostalih ispita u danu se ne prikazuje ako ih više nema
