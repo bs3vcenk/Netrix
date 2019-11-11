@@ -33,7 +33,7 @@ class InvalidClassID(eDAPError):
 class InvalidSubjectID(eDAPError):
 	"""Non-existent subject ID"""
 
-EDAP_VERSION = "F2"
+EDAP_VERSION = "G1"
 __version__ = EDAP_VERSION
 
 def _format_to_date(preformat_string: str, date_format: str = "%d.%m.%Y.") -> int:
