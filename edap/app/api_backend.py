@@ -211,6 +211,9 @@ def localize(token: str, notif_type: str) -> str:
 	if not lang:
 		log.warning('%s => Detected null language value, forcing Croatian', token)
 		lang = 'hr'
+	if lang not in locs:
+		log.warning('%s => Detected unsupported language value, forcing Croatian', token)
+		lang = 'hr'
 	return locs[lang][notif_type]
 
 def random_string(length: int) -> str:
