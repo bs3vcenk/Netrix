@@ -33,7 +33,7 @@ class InvalidClassID(eDAPError):
 class InvalidSubjectID(eDAPError):
 	"""Non-existent subject ID"""
 
-EDAP_VERSION = "G1"
+EDAP_VERSION = "G2"
 __version__ = EDAP_VERSION
 
 def _format_to_date(preformat_string: str, date_format: str = "%d.%m.%Y.") -> int:
@@ -56,7 +56,7 @@ class edap:
 	             pasw: str,
 	             parser: str = "lxml",
 	             edurl: str = "https://ocjene.skole.hr",
-	             ua: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/69.0",
+	             ua: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/70.0 (https://netrix.io)",
 	             debug: bool = False,
 	             loglevel: int = 1,
 	             hidepriv: bool = True,

@@ -51,8 +51,8 @@ def get_vault_info() -> dict:
 	returnable['version'] = health['version']
 	read_token_status = session.get('%s/v1/auth/token/lookup-self' % config["VAULT_SERVER"]).json()
 	returnable['read_token_ttl'] = read_token_status['data']['ttl']
-	write_token_status = session.get('%s/v1/auth/token/lookup-self', headers={'X-Vault-Token': config["VAULT_TOKEN_WRITE"]}).json()
-	returnable['write_token_ttl'] = read_token_status['data']['ttl']
+	write_token_status = session.get('%s/v1/auth/token/lookup-self' % config["VAULT_SERVER"], headers={'X-Vault-Token': config["VAULT_TOKEN_WRITE"]}).json()
+	returnable['write_token_ttl'] = write_token_status['data']['ttl']
 	return returnable
 
 def _round(n, decimals=0):
@@ -210,6 +210,9 @@ def localize(token: str, notif_type: str) -> str:
 	lang = get_data(token)['lang']
 	if not lang:
 		log.warning('%s => Detected null language value, forcing Croatian', token)
+		lang = 'hr'
+	if lang not in locs:
+		log.warning('%s => Detected unsupported language value, forcing Croatian', token)
 		lang = 'hr'
 	return locs[lang][notif_type]
 
