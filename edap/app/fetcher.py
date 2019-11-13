@@ -1,5 +1,6 @@
-import requests, edap, logging, configparser
+import requests, edap, logging, configparser, os
 from os.path import exists as file_exists
+from apscheduler.schedulers.background import BackgroundScheduler
 
 ## Init logging
 logging.basicConfig(
@@ -8,15 +9,16 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-CONFIG_FILE = '/opt/fetcher.config'
+CONFIG_FILE = os.environ.get('FETCHER_CONFIG', '/opt/fetcher.config')
 
 ## These values will be read from the config file
 SERVER = None
 TOKEN = None
 NAME = None
 
-## These values will be further configured by initialize()
+## These values will be further configured in the code
 session = requests.Session()
+scheduler = BackgroundScheduler()
 
 ## Exceptions
 class eDAPFetcherError(Exception):
@@ -37,6 +39,11 @@ class NoConfiguration(eDAPFetcherError):
 class ServerUnreachable(eDAPFetcherError):
 	"""
 		Master server is unreachable.
+	"""
+
+class RegistrationDenied(eDAPFetcherError):
+	"""
+		Registration failed
 	"""
 
 def get_jobs():
@@ -78,7 +85,10 @@ def register():
 	register_data = {
 		'name': NAME
 	}
-	session.post('%s/remote/nodes/%s' % (SERVER, NAME), data=register_data)
+	req = session.post('%s/remote/nodes/%s' % (SERVER, NAME), data=register_data)
+	if req.status_code != 200:
+		log.critical('Non-200 response: %s', req.status_code)
+		raise RegistrationDenied('Server HTTP response: %s' % req.status_code)
 
 def ask_and_run_jobs():
 	"""
@@ -107,7 +117,7 @@ def initialize():
 	}
 	# Verify server is reachable
 	try:
-		req = session.get('%s/remote/check')
+		req = session.get('%s/remote/check' % SERVER)
 	except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.SSLError) as e:
 		log.critical('Failed to reach master server: %s', e)
 		raise ServerUnreachable(e)
@@ -116,7 +126,16 @@ def initialize():
 		raise ServerUnreachable('Server responded with non-200 status code: %s' % req.status_code)
 
 	# All checks have been passed
-	log.info('Configuration verified')
+	log.info('Configuration verified, registering')
+	register()
+	log.info('Registered successfully')
+
+def schedule():
+	"""
+		Schedule and start background job search.
+	"""
+	scheduler.add_job(func=ask_and_run_jobs, trigger='interval', seconds=10)
+	scheduler.start()
 
 def main():
 	"""
@@ -138,7 +157,7 @@ def main():
 	TOKEN = config['fetcher']['server_token']
 	NAME = config['fetcher']['name']
 	log.info('Connecting with ID %s', NAME)
-	register()
+	initialize()
 
 if __name__ == "__main__":
 	main()
