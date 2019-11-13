@@ -5,3 +5,4 @@ Flask-Cors==3.0.8
 redis==3.3.11
 lxml==4.4.1
 hiredis==1.0.0
+apscheduler==3.6.1
