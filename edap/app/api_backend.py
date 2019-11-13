@@ -34,8 +34,24 @@ _redis = None
 
 _threads = {}
 
+_fetcher_clients = []
+_fetcher_jobs = {}
+
 class NonExistentSetting(Exception):
 	"""Specified setting ID is non-existent."""
+
+def fetcher_backend_get_clients() -> list:
+	"""
+		Get list of eDAP-Fetcher servers.
+	"""
+	return _fetcher_clients
+
+def fetcher_backend_add_client(fetcher_data_object: dict):
+	"""
+		Add a server to list of fetchers.
+	"""
+	# TODO: Implementation
+	_fetcher_clients.append(fetcher_data_object)
 
 def get_vault_info() -> dict:
 	"""
@@ -700,6 +716,9 @@ def _read_config() -> Dict[str, str]:
 	USE_VAULT = _get_var("VAULT", _bool=True, default=True)
 	print("[eDAP] [INFO] Using Hashicorp Vault: %s" % USE_VAULT)
 
+	FETCHER_TOKEN = _get_var("FETCHER_TOKEN", default=random_string(10))
+	print("[eDAP] [INFO] Fetcher token is: %s" % FETCHER_TOKEN)
+
 	VAULT_SERVER = None
 	VAULT_TOKEN_READ = None
 	VAULT_TOKEN_WRITE = None
@@ -766,7 +785,8 @@ def _read_config() -> Dict[str, str]:
 		"VAULT_TOKEN_WRITE": VAULT_TOKEN_WRITE,
 		"USE_NOTIFICATIONS": USE_NOTIFICATIONS,
 		"TELEGRAM_TOKEN": TELEGRAM_TOKEN,
-		"TELEGRAM_TARGET_UID": TELEGRAM_TARGET_UID
+		"TELEGRAM_TARGET_UID": TELEGRAM_TARGET_UID,
+		"FETCHER_TOKEN": FETCHER_TOKEN
 	}
 
 def read_log(exclude_syncing=False) -> str:
