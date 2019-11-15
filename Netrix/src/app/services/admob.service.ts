@@ -27,7 +27,10 @@ export class AdmobService {
       /* Show the ad banner */
       console.log('AdmobService/showBanner(): Showing ad banner');
       admob.banner.show({
-        id: 'ca-app-pub-3536042070948443/8284474155',
+        id: {
+          android: 'ca-app-pub-3536042070948443/8284474155',
+          ios: 'ca-app-pub-3536042070948443/1411268336'
+        },
         size: 0, // BANNER
       });
     } else {
