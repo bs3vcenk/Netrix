@@ -416,6 +416,17 @@ def login():
 	password = request.json["password"]
 	if "@skole.hr" in username:
 		username = username.replace("@skole.hr", "")
+	# Detect some invalid usernames
+	pattern_detected = None
+	if "@skolers.org" in username:
+		pattern_detected = "еСервиси (Srbija)"
+	elif "@gmail.com" in username:
+		pattern_detected = "Google account"
+	elif username.startswith("@"):
+		pattern_detected = "Instagram/Twitter username"
+	if pattern_detected:
+		log.warning("Detected invalid username %s (matched against %s)", username, pattern_detected)
+		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	token = hash_string(username + ":" + password)
 	if verify_request(token):
 		log.info("FAST => %s", username)
