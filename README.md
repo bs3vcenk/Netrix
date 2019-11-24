@@ -1,4 +1,10 @@
+## ⚠️ NA DRUGOJ LOKACIJI
+
+Izvorni kod Netrixa je sada na https://gitlab.sh.netrix.io/btx3/Netrix. Ovdje se nalazi 1.9.5 i starije verzije.
+
+---
 # Netrix
+
 Netrix je aplikacija koja unaprjeđuje iskustvo korištenja e-Dnevnika pomoću obavijesti o ocjenama, ispitima i izostancima te modernim izgledom dizajniranim za mobilne uređaje - platforma gdje se e-Dnevnik najviše koristi.
 
 * Backend - [eDAP](https://github.com/btx3/Netrix/blob/master/README_edap.md) (eDnevnikAndroidProject) [Python]
