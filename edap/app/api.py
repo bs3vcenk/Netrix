@@ -429,33 +429,33 @@ def login():
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	token = hash_string(username + ":" + password)
 	if verify_request(token):
-		log.info("FAST => %s", username)
+		log.info("Returning cached data for %s", username)
 		update_counter("logins:success:fast")
 		return make_response(jsonify({'token':token}), 200)
-	log.info("SLOW => %s", username)
+	log.debug("Starting login for %s", username)
 	try:
 		obj = edap.edap(username, password)
 	except edap.WrongCredentials:
-		log.error("SLOW => WRONG CREDS => %s", username)
+		log.warning("Failed logging %s in: invalid credentials", username)
 		update_counter("logins:fail:credentials")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	except edap.ParseError as e:
-		log.error("SLOW => eDAP PARSE ERROR => %s => %s", username, e)
+		log.error("Failed logging %s in: eDAP library error - ParseError: %s", username, e)
 		update_counter("logins:fail:generic")
 		notify_error('PARSE ERROR', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		abort(500)
 	except edap.InvalidResponse as e:
-		log.error("SLOW => eDAP INVALID RESPONSE => %s => %s", username, e)
+		log.error("Failed logging %s in: eDAP library error - InvalidResponse: %s", username, e)
 		update_counter("logins:fail:generic")
 		notify_error('INVALID SERVER RESPONSE', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		abort(500)
 	except edap.NetworkError as e:
-		log.error("SLOW => eDAP CONNECTION FAIL => %s => %s", username, e)
+		log.error("Failed logging %s in: eDAP library error - NetworkError: %s", username, e)
 		update_counter("logins:fail:generic")
 		notify_error('CONNECTION FAIL', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		abort(500)
 	except edap.ServerInMaintenance as e:
-		log.error("SLOW => MAINTENANCE => %s", username)
+		log.error("Failed logging %s in: upstream server maintenance in progress", username)
 		update_counter("logins:fail:generic")
 		notify_error('SERVER MAINTENANCE', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		return make_response(jsonify({'error':'E_UPSTREAM_MAINTENANCE'}), 500)
@@ -483,7 +483,7 @@ def login():
 	if config["USE_CLOUDFLARE"]:
 		dataObj["cloudflare"] = {"last_ip": None, "country": None}
 	save_data(token, dataObj)
-	log.debug("SLOW => Starting sync for %s", username)
+	log.debug("Starting sync for %s", username)
 	start_sync(token)
 	update_counter("logins:success:slow")
 	return make_response(jsonify({'token':token}), 200)
@@ -508,7 +508,7 @@ def set_firebase_token(token):
 		abort(401)
 	if not request.json or not "deviceToken" in request.json:
 		abort(400)
-	log.info("FIREBASE => %s", token)
+	log.debug("%s: Saving Firebase Cloud Messaging token", token)
 	user_data = get_data(token)
 	user_data['firebase_device_token'] = request.json['deviceToken']
 	save_data(token, user_data)
@@ -523,7 +523,7 @@ def fill_class(token):
 		abort(401)
 	if not request.json or not "class_id" in request.json:
 		abort(400)
-	log.info("FETCH => %s => %s", token, request.json["class_id"])
+	log.info("%s: Fetching class ID %s", token, request.json["class_id"])
 	fetch_new_class(token, request.json["class_id"])
 	return make_response('', 200)
 
@@ -537,14 +537,14 @@ def setting(token, action):
 	if request.method == "POST":
 		if not request.json or not "parameter" in request.json:
 			abort(400)
-		log.info("SET => %s => %s => %s", token, action, request.json["parameter"])
+		log.info("%s: Processing action SET %s with parameter %s", token, action, request.json["parameter"])
 		try:
 			process_setting(token, action, request.json["parameter"])
 		except NonExistentSetting:
 			return make_response(jsonify({'error':'E_SETTING_NONEXISTENT'}), 400)
 		return make_response(jsonify({'status':'ok'}), 200)
 	elif request.method == "GET":
-		log.info("GET => %s => %s", token, action)
+		log.info("%s: Processing action GET %s", token, action)
 		try:
 			val = get_setting(token, action)
 		except NonExistentSetting:
@@ -630,7 +630,7 @@ def get_absences(token, class_id):
 	"""
 	if not verify_request(token, class_id):
 		abort(401)
-	log.info("%s => Class %s", token, class_id)
+	log.info("%s: List absences for class %s", token, class_id)
 	return make_response(jsonify(get_data(token)['data']['classes'][class_id]['absences']), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects', methods=["GET"])
@@ -640,7 +640,7 @@ def get_subjects(token, class_id):
 	"""
 	if not verify_request(token, class_id):
 		abort(401)
-	log.info("%s => Class %s", token, class_id)
+	log.info("%s: List subjects for class %s", token, class_id)
 	o = get_data(token)['data']['classes'][class_id]
 	return make_response(jsonify({'subjects': o['subjects'], 'class_avg':o['complete_avg']}), 200)
 
@@ -651,7 +651,7 @@ def get_tests(token, class_id):
 	"""
 	if not verify_request(token, class_id):
 		abort(401)
-	log.info("%s => Class %s", token, class_id)
+	log.info("%s: List tests for class %s", token, class_id)
 	o = get_data(token)['data']['classes'][class_id]['tests']
 	return make_response(jsonify({'tests': o}), 200)
 
@@ -662,7 +662,7 @@ def get_subject(token, class_id, subject_id):
 	"""
 	if not verify_request(token, class_id, subject_id):
 		abort(401)
-	log.info("%s => Class %s => Subject %s", token, class_id, subject_id)
+	log.info("%s: Get subject data for class %s, subject %s", token, class_id, subject_id)
 	o = get_data(token)['data']['classes'][class_id]['subjects'][subject_id]
 	return make_response(jsonify(o), 200)
 
@@ -681,7 +681,7 @@ def log_stats():
 	if not verify_request(token):
 		abort(401)
 	log.info(
-		"STATS => %s => %s, %s, %s",
+		"%s: Save device info: platform::%s, model::%s, language::%s",
 		token,
 		request.json["platform"],
 		request.json["device"],
