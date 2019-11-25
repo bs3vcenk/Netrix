@@ -686,8 +686,6 @@ def _get_var(varname: str, _bool: bool = False, default=None):
 		return it as a boolean value. If default is set, return its value if
 		the given variable does not exist.
 	"""
-	if _bool:
-		default = default if default != None else False
 	try:
 		return environ[varname] if not _bool else environ[varname] == "Y"
 	except KeyError:
