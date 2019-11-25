@@ -488,17 +488,6 @@ def login():
 	update_counter("logins:success:slow")
 	return make_response(jsonify({'token':token}), 200)
 
-@app.route('/api/user/<string:token>/info', methods=["GET"])
-def get_user_info_old(token):
-	"""
-		Get the user's personal information.
-	"""
-	if not verify_request(token):
-		abort(401)
-	log.warning('DEPRECATED METHOD')
-	log.info(token)
-	return make_response(jsonify({'name':'Upgrade time'}), 200)
-
 @app.route('/api/user/<string:token>/firebase', methods=["POST"])
 def set_firebase_token(token):
 	"""
