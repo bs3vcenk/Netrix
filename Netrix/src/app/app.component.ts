@@ -50,11 +50,7 @@ export class AppComponent {
     this.fcm.getToken(token);
     try {
       this.fcm.onNotifications().subscribe(
-        (notifObject) => {
-          if (notifObject.body) {
-            this.presentToast(notifObject.title, notifObject.body);
-          }
-        });
+        () => this.apiSvc.switchActiveClass(0));
     } catch (e) {
       console.warn('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running Cordova.');
       console.warn('AppComponent/notificationSetup(): This means we won\'t be receiving any Firebase notifications.');
