@@ -100,6 +100,35 @@ try:
 		assert request.status_code == 200, "Token save was not successful"
 		user_data = get_data()
 		assert user_data['firebase_device_token'] == 'ovo_je_neki_firebase_token1234567890', "Token was not saved to Redis"
+		### ACCESS
+		## ACCESS: Token check
+		log('TEST', 'access:token')
+		request = client.get('/api/user/rANdOMtOKeN123456/classes')
+		assert request.status_code == 401, "Non-existent token access did not return 'Unauthorized'"
+		## DATA: Classes
+		log('TEST', 'data:classes')
+		request = client.get('/api/user/%s/classes' % token)
+		assert request.status_code == 200, "Classes fetch was not successful"
+		_r = request.json()
+		assert 'classes' in _r, "No 'classes' field in response"
+		for i, class_obj in enumerate(_r['classes']):
+			assert 'class' in class_obj, "No 'class' field in class ID %s" % i
+			assert 'classmaster' in class_obj, "No 'classmaster' field in class ID %s" % i
+			assert 'school_city' in class_obj, "No 'school_city' field in class ID %s" % i
+			assert 'school_name' in class_obj, "No 'school_name' field in class ID %s" % i
+			assert 'year' in class_obj, "No 'year' field in class ID %s" % i
+		## DATA: Info
+		log('TEST', 'data:user_info')
+		request = client.get('/api/user/%s/classes/0/info' % token)
+		assert request.status_code == 200, "Info fetch was not successful"
+		_r = request.json()
+		assert 'birthdate' in _r, "No 'birthdate' field in info"
+		assert 'birthplace' in _r, "No 'birthplace' field in info"
+		assert 'name' in _r, "No 'name' field in info"
+		assert 'number' in _r, "No 'number' field in info"
+		assert isinstance(_r['number'], int), "'number' field in info is not an integer"
+		assert 'program' in _r, "No 'program' field in info"
+
 finally:
 	print()
 	log('INFO', 'TEST FINISHED')
