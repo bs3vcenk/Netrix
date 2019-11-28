@@ -166,13 +166,6 @@ def e500(_):
 		log.critical('HTTP 500 error!')
 	return make_response(jsonify({'error':'E_SERVER_ERROR'}), 500)
 
-@app.route('/', methods=["GET"])
-def index():
-	"""
-		Default page, redirects to the Netrix page.
-	"""
-	return redirect('https://netrix.io/')
-
 @app.errorhandler(Exception)
 def exh_unhandled(e):
 	"""
