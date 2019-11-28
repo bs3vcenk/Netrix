@@ -8,11 +8,15 @@ API_VERSION = "2.12.1"
 
 log = logging.getLogger('EDAP-API')
 
-log.info("eDAP-API v%s starting up...", API_VERSION)
+log.info("eDAP-API version %s starting up", API_VERSION)
 
+# Initialize Flask application
 app = Flask("EDAP-API")
+# Set up CORS (Cross-Origin Resource Sharing)
+# More info about what this does at https://flask-cors.readthedocs.io/en/latest/
 CORS(app)
 
+# Restore sync threads for all active tokens in DB
 restore_syncs()
 
 def check_auth(username, password):
@@ -38,21 +42,30 @@ def dev_pw_area(f):
 	"""
 	@wraps(f)
 	def decorated(*args, **kwargs):
+		# Gather info about accessing IP
 		if config["USE_CLOUDFLARE"]:
 			ip = request.headers["CF-Connecting-IP"]
 			country = request.headers["CF-IPCountry"]
 		else:
 			ip = request.remote_addr
 			country = "Unknown"
+		# Check whether we allow this type of access
 		if config["ALLOW_DEV_ACCESS"]:
+			# If we do, verify the supplied HTTP Basic Auth credentials
 			auth = request.authorization
+			# If no credentials were provided, or the credential pair is incorrect,
+			# present an auth prompt
 			if not auth or not check_auth(auth.username, auth.password):
+				# If credentials were provided and we landed in this if-block, that
+				# means this was a failed login attempt, so we log it
 				if auth:
 					log.warning("FAIL => %s (%s) => Bad auth", ip, country)
 				return authenticate()
 		else:
+			# If we do not, log this access and simply return a 404
 			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
 			abort(404)
+		# If the credential pair was correct, log access and return
 		log.info('DEV => Successful access from %s using password auth', ip)
 		return f(*args, **kwargs)
 	return decorated
@@ -64,22 +77,30 @@ def dev_area(f):
 	"""
 	@wraps(f)
 	def decorated(*args, **kwargs):
+		# Gather info about accessing IP
 		if config["USE_CLOUDFLARE"]:
 			ip = request.headers["CF-Connecting-IP"]
 			country = request.headers["CF-IPCountry"]
 		else:
 			ip = request.remote_addr
 			country = "Unknown"
+		# Check whether we allow this type of access
 		if config["ALLOW_DEV_ACCESS"]:
+			# If we do, check if request contains an X-API-Token header
 			if "X-API-Token" not in request.headers:
+				# If not, log failed request and return
 				log.warning("FAIL => %s (%s) => No API token supplied", ip, country)
 				abort(403)
+			# If it cointains such a header, check if it's a valid one
 			elif not verify_dev_request(request.headers["X-API-Token"]):
+				# If it is not, log failed request and return
 				log.warning("FAIL => %s (%s) => Bad API token %s", ip, country, request.headers["X-API-Token"])
 				abort(403)
 		else:
+			# If we do not, log this access and simply return a 404
 			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
 			abort(404)
+		# If the token verification was successful, log access and return
 		log.info('DEV => Successful access from %s using token auth', ip)
 		return f(*args, **kwargs)
 	return decorated
@@ -132,11 +153,16 @@ def e500(_):
 		Default handler in case something generic goes wrong on the server
 		side.
 	"""
-	exc = traceback.format_exc()
+	# Check if we need to send server error notifications
 	if config['USE_NOTIFICATIONS']:
+		# If we do, get a stacktrace
+		exc = traceback.format_exc()
+		# Log error
 		log.critical('HTTP 500, sending notification')
+		# Send message
 		notify_error('HTTP 500 RESPONSE', 'generic', stacktrace=exc)
 	else:
+		# If we don't, just log it
 		log.critical('HTTP 500 error!')
 	return make_response(jsonify({'error':'E_SERVER_ERROR'}), 500)
 
@@ -427,7 +453,7 @@ def login():
 	if pattern_detected:
 		log.warning("Detected invalid username %s (matched against %s)", username, pattern_detected)
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
-	token = hash_string(username + ":" + password)
+	token = hash_string(username + ":" + password) # Create the token, this is an MD5 hash of username:password
 	if verify_request(token):
 		log.info("Returning cached data for %s", username)
 		update_counter("logins:success:fast")
