@@ -456,7 +456,9 @@ def restore_syncs():
 	"""
 		Restore all sync threads (on startup).
 	"""
-	for token in get_tokens():
+	tokens = get_tokens()
+	log.info('Starting sync threads for %s tokens', len(tokens))
+	for token in tokens:
 		if not 'ignore_updating' in get_data(token):
 			start_sync(token)
 
