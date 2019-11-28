@@ -171,11 +171,15 @@ def exh_unhandled(e):
 	"""
 		Default exception handler.
 	"""
-	exc = traceback.format_exc()
-	log.warning('Unhandled exception %s', e)
+	# Check if we need to send a notification
 	if config['USE_NOTIFICATIONS']:
+		# If we do, get a stacktrace
+		exc = traceback.format_exc()
+		# Send message
 		notify_error('UNHANDLED EXC', 'generic', stacktrace=exc)
-	abort(500)
+	# Log exception
+	log.warning('Unhandled exception %s', e)
+	#abort(500)
 
 @app.errorhandler(redis.exceptions.ConnectionError)
 def exh_redis_db_fail(e):
