@@ -3,5 +3,5 @@ BeautifulSoup4==4.8.1
 Flask==1.1.1
 Flask-Cors==3.0.8
 redis==3.3.11
-lxml==4.4.1
-hiredis==1.0.0
+lxml==4.4.2
+hiredis==1.0.1
