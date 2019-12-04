@@ -2,8 +2,6 @@
   "generic": {
     "alert": {
       "network": "Netzwerkfehler",
-      "expiry": "Deine Anmeldung ist abgelaufen",
-      "database": "Datenbankverbindung fehlgeschlagen; versuch es später noch einmal",
       "server": "Serverfehler; versuch es später noch einmal"
     },
     "back": "Zurück",
@@ -14,7 +12,7 @@
       },
       "nodb": {
         "header": "Serverfehler",
-        "content": "Auf der Serverseite ist etwas schief gelaufen. Wir arbeiten schnell daran, es zu reparieren!"
+        "content": "Auf der Serverseite ist etwas schief gelaufen. Wir arbeiten daran!"
       },
       "trusterror": {
         "header": "Nicht sichere Verbindung",
@@ -24,7 +22,7 @@
         "header": "Wartung läuft",
         "content": "e-Dnevnik befindet sich derzeit in der Wartung (wir haben keine Kontrolle darüber). Weitere Informationen findest du auf der Website."
       },
-      "cache": "Da du derzeit nicht mit dem Internet verbunden bist, werden die Daten deiner letzten Sitzung angezeigt."
+      "cache": "Da wir uns derzeit nicht mit dem Server verbinden können, werden die Daten deiner letzten Sitzung angezeigt."
     },
     "choice": {
       "yes": "Ja",
@@ -98,7 +96,7 @@
     "alert": {
       "credentials": {
         "header": "Falsche Zugangsdaten",
-        "content": "Prüfe deinen Benutzernamen und dein Passwort und versuche es erneut."
+        "content": "Prüfe deine Benutzername und dein Passwort und versuche es erneut."
       }
     },
     "text": {
@@ -106,7 +104,7 @@
       "holder_user": "Benutzername",
       "holder_pass": "Kennwort",
       "appdesc": "Eine moderne Schnittstelle für e-Dnevnik",
-      "privacy": "Datenschutzerklärung"
+      "privacy": "Datenschutz"
     }
   },
   "tabs": {
@@ -117,8 +115,8 @@
   },
   "settings": {
     "analytics": {
-      "header": "Analytics und Werbungen",
-      "ads": "Werbungen anzeigen",
+      "header": "Analytics und Anzeigen",
+      "ads": "Anzeigen einblenden",
       "usage": "Nutzungsinformationen senden"
     },
     "notifs": {
