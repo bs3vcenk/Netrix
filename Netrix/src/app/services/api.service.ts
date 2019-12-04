@@ -121,7 +121,17 @@ export class ApiService {
       date,
       data
     };
-    await this.storage.set(accessId, cObject);
+    try {
+      await this.storage.set(accessId, cObject);
+    } catch (e) {
+      if (e.code === 22) {
+        // TODO: Handle this
+        console.warn('ApiService/storeInCache(): Failed to store data in cache, no space. Handling TBD.');
+      } else {
+        console.warn('ApiService/storeInCache(): Failed to store data in cache, some other error. Sending to handler.');
+        throw e;
+      }
+    }
   }
 
   handleErr(errorObj) {
