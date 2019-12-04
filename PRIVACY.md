@@ -1,4 +1,4 @@
-# Pravila o privatnosti
+# Zaštita podataka
 
 Zadnje ažuriranje: 14.10.2019.
 
