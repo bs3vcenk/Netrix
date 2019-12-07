@@ -65,6 +65,7 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(() => {
+      this.settings.migrateData();
       /* Set status bar color, style for white bg and black icons, hide splash screen */
       this.statusBar.backgroundColorByHexString('#ffffff');
       this.statusBar.styleDefault();
