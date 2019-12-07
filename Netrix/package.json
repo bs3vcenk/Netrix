@@ -98,7 +98,7 @@
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-advanced-http": {
-        "OKHTTP_VERSION": "3.10.0"
+        "OKHTTP_VERSION": "3.13.1"
       },
       "cordova-plugin-local-notification": {},
       "cordova-plugin-firebasex": {
