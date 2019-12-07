@@ -4,8 +4,16 @@ from hashlib import md5
 
 directory = tempfile.mkdtemp()
 
+REMOTE = False
+REMOTE_URL = None	
+
 def log(level: str, lstr: str):
 	print('[test] [%s] %s' % (level, lstr))
+
+if "--remote" in sys.argv:
+	REMOTE = True
+	REMOTE_URL = sys.argv[sys.argv.index("--remote")+1]
+	log('INFO', 'Targeting remote server @ %s instead of locally' % REMOTE_URL)
 
 username = os.environ.get('ED_USERNAME')
 password = os.environ.get('ED_PASSWORD')
@@ -22,28 +30,30 @@ def run_redis(datadir):
 	                         '--appendonly', 'yes',
 	                         '--dir', datadir])
 
-# Start redis
-redis_thread = threading.Thread(target=run_redis, args=(directory,))
-redis_thread.start()
-log('INFO', 'Started Redis in the background, waiting 2 seconds...')
-sleep(2)
-r = redis.Redis()
-if r.ping():
-	log('INFO', 'Successfully established connection to Redis')
-else:
-	log('ERROR', 'Failed to connect to Redis')
-	sys.exit(1)
+if not REMOTE:
+	# Start redis
+	redis_thread = threading.Thread(target=run_redis, args=(directory,))
+	redis_thread.start()
+	log('INFO', 'Started Redis in the background, waiting 2 seconds...')
+	sleep(2)
+	r = redis.Redis()
+	if r.ping():
+		log('INFO', 'Successfully established connection to Redis')
+	else:
+		log('ERROR', 'Failed to connect to Redis')
+		sys.exit(1)
 
 def get_data():
 	return json.loads(r.get('token:%s' % token))
 
-# Configure eDAP-API
-os.environ["VAULT"] = "N"
-os.environ["DATA_FOLDER"] = directory
-from api import app
+if not REMOTE:
+	# Configure eDAP-API
+	os.environ["VAULT"] = "N"
+	os.environ["DATA_FOLDER"] = directory
+	from api import app
 
 try:
-	with httpx.Client(base_url='http://app/', app=app) as client:
+	with httpx.Client(base_url='http://app/' if not REMOTE else REMOTE_URL, app=app if not REMOTE else None) as client:
 		### LOGIN
 		## LOGIN: Pre-fetch checks
 		log('TEST', 'login:bad_json')
@@ -98,8 +108,9 @@ try:
 			'deviceToken': 'ovo_je_neki_firebase_token1234567890'
 		})
 		assert request.status_code == 200, "Token save was not successful"
-		user_data = get_data()
-		assert user_data['firebase_device_token'] == 'ovo_je_neki_firebase_token1234567890', "Token was not saved to Redis"
+		if not REMOTE:
+			user_data = get_data()
+			assert user_data['firebase_device_token'] == 'ovo_je_neki_firebase_token1234567890', "Token was not saved to Redis"
 		### ACCESS
 		## ACCESS: Token check
 		log('TEST', 'access:token')
@@ -132,8 +143,9 @@ try:
 finally:
 	print()
 	log('INFO', 'TEST FINISHED')
-	redis_info = r.info()
-	log('INFO', '[Redis] Total commands processed: %s' % redis_info['total_commands_processed'])
-	log('INFO', '[Redis] Peak used memory: %s' % redis_info['used_memory_peak_human'])
-	log('INFO', 'Shutting down Redis')
-	r.shutdown()
+	if not REMOTE:
+		redis_info = r.info()
+		log('INFO', '[Redis] Total commands processed: %s' % redis_info['total_commands_processed'])
+		log('INFO', '[Redis] Peak used memory: %s' % redis_info['used_memory_peak_human'])
+		log('INFO', 'Shutting down Redis')
+		r.shutdown()
