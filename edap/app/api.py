@@ -1,6 +1,5 @@
 from functools import wraps
 from flask import Flask, jsonify, make_response, request, abort, redirect
-from flask_cors import CORS
 from api_backend import *
 import edap, traceback
 
@@ -12,9 +11,6 @@ log.info("eDAP-API version %s starting up", API_VERSION)
 
 # Initialize Flask application
 app = Flask("EDAP-API")
-# Set up CORS (Cross-Origin Resource Sharing)
-# More info about what this does at https://flask-cors.readthedocs.io/en/latest/
-CORS(app)
 
 # Restore sync threads for all active tokens in DB
 restore_syncs()
