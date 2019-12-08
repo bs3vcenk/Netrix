@@ -1,3 +1,12 @@
+## 1.9.7 (2019-12-08)
+* **FIX**: Izvanmrežni način na uređajima s manje od 1GB prostora
+* **FIX**: Izvanmrežni način nije detektirao nevažeći token
+* **FIX**: Crash ako je aplikacija otvorena u vodoravnom načinu
+* **PROMJENA**: Stabilniji storage backend
+* **PROMJENA**: Izmjena nekih prijevoda
+* **MISC**: Bolji izgled tamne teme i izbornika razreda
+* **MISC**: Ažurirani libraryi (native i JS)
+
 ## 1.9.6 (2019-11-11)
 * **NOVO**: Izvanmrežni način – provjeri ocjene čak i kada nemaš interneta
 * **FIX**: Obavijesti za ispite se sada zakazuju u 7 ujutro umjesto u ponoć
