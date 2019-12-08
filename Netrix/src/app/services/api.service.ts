@@ -174,6 +174,7 @@ export class ApiService {
     this.subjects = null;
     this.fullAvg = null;
     this.info = null;
+    this.usingCachedContent = false;
     this.loadingFinishedAbsences.next(false);
     this.loadingFinishedInfo.next(false);
     this.loadingFinishedNotif.next(false);
