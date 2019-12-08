@@ -74,7 +74,7 @@ export class SettingsService {
     console.log('SettingsService/setGlobalTheme(): Setting ' + nThemeName + ' theme');
     document.body.classList.toggle('dark', nThemeName === 'dark');
     nThemeName === 'dark' ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
-    this.statusBar.backgroundColorByHexString(nThemeName === 'dark' ? '#000000' : '#ffffff');
+    this.statusBar.backgroundColorByHexString(nThemeName === 'dark' ? '#0d0d0d' : '#ffffff');
   }
 
   setDataCollection(val: boolean) {
