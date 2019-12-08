@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { SettingsService } from './settings.service';
 import { AuthenticationService } from './authentication.service';
 import { BehaviorSubject } from 'rxjs';
-import { HTTP } from '@ionic-native/http/ngx';
+import { HTTP, HTTPResponse } from '@ionic-native/http/ngx';
 import { Platform } from '@ionic/angular';
+import { Storage } from '@ionic/storage';
 
 export interface SubjectData {
   name: string;
@@ -12,6 +13,11 @@ export interface SubjectData {
   average: 0.00;
   professors: string;
   id: 0;
+}
+
+interface CachedObject {
+  date: number;
+  data: any;
 }
 
 @Injectable({
@@ -23,6 +29,8 @@ export class ApiService {
     'Content-Type': 'application/json',
     'User-Agent': 'Netrix'
   };
+
+  usingCachedContent = false;
 
   subjCacheMap = {};
 
@@ -57,7 +65,8 @@ export class ApiService {
     private http: HTTP,
     private settings: SettingsService,
     private authServ: AuthenticationService,
-    private plt: Platform
+    private plt: Platform,
+    private storage: Storage
   ) {
     this.plt.ready().then(() => {
       /* Default to JSON as we'll be receiving only JSON from the API */
@@ -79,6 +88,50 @@ export class ApiService {
         // this.getUserInfo(activeClassId);
       });
     });
+  }
+
+  async clearCache() {
+    /* Remove all key-value pairs that are part of the cache. */
+    await this.storage.forEach((val, keyId) => {
+      if (keyId.startsWith('cache:')) {
+        console.log('ApiService/clearCache(): Deleting ' + keyId);
+        this.storage.remove(keyId);
+      }
+    });
+  }
+
+  private async fetchFromCache(classId: number, token: string, dataType: 'subjects' | 'tests' | 'absences' | 'info') {
+    /* Fetch an object from the cache. Will set `usingCachedContent` to `true` if called. */
+    const accessId = 'cache:' + token + ':' + classId + ':' + dataType; // ex. 'cache:a1b2c3...:0:subjects'
+    const result: CachedObject = await this.storage.get(accessId);
+    if (result === null) {
+      return null;
+    }
+    if (this.usingCachedContent === false) {
+      this.usingCachedContent = true;
+    }
+    return result.data;
+  }
+
+  private async storeInCache(classId: number, token: string, dataType: 'subjects' | 'tests' | 'absences' | 'info', data: any) {
+    /* Put an object into the cache. */
+    const accessId = 'cache:' + token + ':' + classId + ':' + dataType; // ex. 'cache:a1b2c3...:0:subjects'
+    const date = Date.now();
+    const cObject: CachedObject = {
+      date,
+      data
+    };
+    try {
+      await this.storage.set(accessId, cObject);
+    } catch (e) {
+      if (e.code === 22) {
+        // TODO: Handle this
+        console.warn('ApiService/storeInCache(): Failed to store data in cache, no space. Handling TBD.');
+      } else {
+        console.warn('ApiService/storeInCache(): Failed to store data in cache, some other error. Sending to handler.');
+        throw e;
+      }
+    }
   }
 
   handleErr(errorObj) {
@@ -121,6 +174,7 @@ export class ApiService {
     this.subjects = null;
     this.fullAvg = null;
     this.info = null;
+    this.usingCachedContent = false;
     this.loadingFinishedAbsences.next(false);
     this.loadingFinishedInfo.next(false);
     this.loadingFinishedNotif.next(false);
@@ -164,7 +218,8 @@ export class ApiService {
       const response = JSON.parse(rx.data);
       this.classes = response.classes;
     }, (error) => {
-      this.handleErr(error);
+      console.warn('ApiService/getClasses(): Request failed, but not calling handleErr');
+      console.log(error);
     });
   }
 
@@ -191,7 +246,8 @@ export class ApiService {
       this.httpHeader
     ).then(() => {},
     (error) => {
-      this.handleErr(error);
+      console.warn('ApiService/saveFirebaseToken(): Request failed, but not calling handleErr');
+      console.log(error);
     });
   }
 
@@ -237,19 +293,38 @@ export class ApiService {
     }
   }
 
-  getUserInfo(classId: number) {
+  async getUserInfo(classId: number) {
     /* Get information about user */
-    this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info',
-      {},
-      this.httpHeader
-    ).then((response) => {
-      this.info = JSON.parse(response.data);
+    let response: HTTPResponse;
+    let info;
+    let fetchedFromCache = false;
+    try {
+      response = await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info',
+        {},
+        this.httpHeader
+      );
+      info = JSON.parse(response.data);
+    } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
+      const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'info');
+      if (cachedResponse !== null) {
+        fetchedFromCache = true;
+        info = cachedResponse;
+      } else {
+        console.warn('ApiService/getUserInfo(): No cached data');
+        this.handleErr(error);
+      }
       this.loadingFinishedInfo.next(true);
-    }, (error) => {
-      this.handleErr(error);
-      this.loadingFinishedInfo.next(true);
-    });
+    }
+    this.info = info;
+    if (!fetchedFromCache) {
+      this.storeInCache(classId, this.authServ.token, 'info', info);
+    }
+    this.loadingFinishedInfo.next(true);
   }
 
   getNotifConfig() {
@@ -264,65 +339,95 @@ export class ApiService {
       this.loadingFinishedNotif.next(true);
       // this.loadingFinishedNotif.complete();
     }, (error) => {
-      this.handleErr(error);
+      console.warn('ApiService/getNotifConfig(): Request failed, but not calling handleErr');
+      console.log(error);
       /* Let preCacheData() know we're done */
       this.loadingFinishedNotif.next(true);
       // this.loadingFinishedNotif.complete();
     });
   }
 
-  getSubjects(classId: number) {
+  async getSubjects(classId: number) {
     /* Get a stripped list of all subjects (alldata=0), containing no grades or notes */
-    this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects?alldata=1',
-      {},
-      this.httpHeader
-    ).then((rx) => {
-      const response = JSON.parse(rx.data);
-      const allsubs = response.subjects;
-      // Iterate over professors list and join it into a comma-separated string
-      allsubs.forEach((subj) => {
-        const processed = this.processSubjectData(subj);
-        this.subjCacheMap[processed.id] = processed;
-        subj.professors = subj.professors.join(', ');
-      });
-      // Set for display
-      this.subjects = allsubs;
-      this.fullAvg = response.class_avg;
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedSubj.next(true);
-      // this.loadingFinishedSubj.complete();
-    },
-    (error) => {
-      this.handleErr(error);
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedSubj.next(true);
-      // this.loadingFinishedSubj.complete();
+    let rx: HTTPResponse;
+    let response;
+    let fetchedFromCache = false;
+    try {
+      rx = await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects',
+        {},
+        this.httpHeader
+      );
+      response = JSON.parse(rx.data);
+    } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
+      const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'subjects');
+      if (cachedResponse !== null) {
+        fetchedFromCache = true;
+        response = cachedResponse;
+      } else {
+        console.warn('ApiService/getSubjects(): No cached data');
+        this.handleErr(error);
+        return;
+      }
+    }
+    if (!fetchedFromCache) {
+      this.storeInCache(classId, this.authServ.token, 'subjects', response);
+    }
+    const allsubs = response.subjects;
+    // Iterate over professors list and join it into a comma-separated string
+    allsubs.forEach((subj) => {
+      const processed = this.processSubjectData(subj);
+      this.subjCacheMap[processed.id] = processed;
+      // subj.professors = subj.professors.join(', ');
     });
+    // Set for display
+    this.subjects = allsubs;
+    this.fullAvg = response.class_avg;
+    /* Let preCacheData() know we're done */
+    this.loadingFinishedSubj.next(true);
   }
 
-  getTests(classId: number) {
-    this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/tests',
-      {},
-      this.httpHeader
-    ).then((rx) => {
-      const response = JSON.parse(rx.data);
-      this.tests = response.tests;
-      /* Count the number of "current" tests, so that we know if we need to show the
-       * "No tests" message or not */
-      this.countTests();
-      /* Sort tests by week */
-      this.tests = this.groupTestsByWeek(this.tests);
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedTests.next(true);
-      // this.loadingFinishedTests.complete();
-    }, (error) => {
-      this.handleErr(error);
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedTests.next(true);
-      // this.loadingFinishedTests.complete();
-    });
+  async getTests(classId: number) {
+    let rx: HTTPResponse;
+    let response;
+    let fetchedFromCache = false;
+    try {
+      rx = await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/tests',
+        {},
+        this.httpHeader
+      );
+      response = JSON.parse(rx.data);
+    } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
+      const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'tests');
+      if (cachedResponse !== null) {
+        fetchedFromCache = true;
+        response = cachedResponse;
+      } else {
+        console.warn('ApiService/getTests(): No cached data');
+        this.handleErr(error);
+        return;
+      }
+    }
+    this.tests = response.tests;
+    /* Count the number of "current" tests, so that we know if we need to show the
+     * "No tests" message or not */
+    this.countTests();
+    /* Sort tests by week */
+    this.tests = this.groupTestsByWeek(this.tests);
+    if (!fetchedFromCache) {
+      this.storeInCache(classId, this.authServ.token, 'tests', response);
+    }
+    /* Let preCacheData() know we're done */
+    this.loadingFinishedTests.next(true);
   }
 
   getTestsForSubject(subjectName: string) {
@@ -349,9 +454,9 @@ export class ApiService {
     const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
     const existingWeeks = [];
     /* Main loop */
-    for (let i = 0; i < obj.length; i++) {
+    for (const test of obj) {
       /* Get the date of the test */
-      const d = this.getMonday(obj[i].date * 1000);
+      const d = this.getMonday(test.date * 1000);
       /* Get the week from that */
       const indx = Math.floor(d.getTime() / (oneDay * 7));
       /* Check if this week exists in objPeriod */
@@ -364,16 +469,16 @@ export class ApiService {
       /* Map week to object index in objPeriod list */
       const currentIndex = existingWeeks.indexOf(indx);
       /* Push it to that object's items list */
-      objPeriod[currentIndex].items.push(obj[i]);
+      objPeriod[currentIndex].items.push(test);
     }
-    for (let i = 0; i < objPeriod.length; i++) {
+    for (const group of objPeriod) {
       let currentTestCounter = 0;
-      objPeriod[i].items.forEach((exam) => {
+      group.items.forEach((exam) => {
         if (exam.current) {
           currentTestCounter += 1;
         }
       });
-      objPeriod[i].currentTests = currentTestCounter;
+      group.currentTests = currentTestCounter;
     }
     return objPeriod;
   }
@@ -388,23 +493,39 @@ export class ApiService {
     });
   }
 
-  getAbsences(classId: number) {
+  async getAbsences(classId: number) {
     /* Get a list of absences, both an overview and a detailed list */
-    this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/absences',
-      {},
-      this.httpHeader
-    ).then((response) => {
-      this.absences = JSON.parse(response.data);
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedAbsences.next(true);
-      // this.loadingFinishedAbsences.complete();
-    }, (error) => {
-      this.handleErr(error);
-      /* Let preCacheData() know we're done */
-      this.loadingFinishedAbsences.next(true);
-      // this.loadingFinishedAbsences.complete();
-    });
+    let response: HTTPResponse;
+    let absences;
+    let fetchedFromCache = false;
+    try {
+      response = await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/absences',
+        {},
+        this.httpHeader
+      );
+      absences = JSON.parse(response.data);
+    } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
+      const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'absences');
+      if (cachedResponse !== null) {
+        fetchedFromCache = true;
+        absences = cachedResponse;
+      } else {
+        console.warn('ApiService/getAbsences(): No cached data');
+        this.handleErr(error);
+        return;
+      }
+    }
+    this.absences = absences;
+    if (!fetchedFromCache) {
+      this.storeInCache(classId, this.authServ.token, 'absences', absences);
+    }
+    /* Let preCacheData() know we're done */
+    this.loadingFinishedAbsences.next(true);
   }
 
   private processSubjectData(subjObject): SubjectData {
@@ -414,7 +535,7 @@ export class ApiService {
     let subjAvg;
     let subjNotes = [];
     const subjName = subjObject.subject;
-    const subjProfs = subjObject.professors.join(', ');
+    const subjProfs = subjObject.professors;
     const subjId = subjObject.id;
     if (subjObject.grades) {
       subjAvg = subjObject.average;
@@ -434,30 +555,25 @@ export class ApiService {
     return subject;
   }
 
-  getSubject(subjId: string, classId: number) {
-    return new Promise<SubjectData>((resolve, reject) => {
-      /* Check if we have the subject ID cached already */
-      if (this.subjCacheMap[subjId]) {
-        /* If we do, return the cached object */
-        console.log('ApiService/getSubjectNativeHTTP(): Have subject ID ' + subjId + ' cached, returning that');
-        resolve(this.subjCacheMap[subjId]);
-      } else {
-        /* If we don't, fetch the data from the server, process it, and store it
-         * into the cache */
-        console.log('ApiService/getSubjectNativeHTTP(): Subject ID ' + subjId + ' not cached, fetching remote');
-        this.http.get(
-          this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects/' + subjId,
-          {},
-          this.httpHeader
-        ).then((rx) => {
-          const response = JSON.parse(rx.data);
-          const subject = this.processSubjectData(response);
-          this.subjCacheMap[subjId] = subject;
-          resolve(subject);
-        }, (err) => {
-          reject(err);
-        });
-      }
-    });
+  async getSubject(subjId: string, classId: number) {
+    /* Check if we have the subject ID cached already */
+    if (this.subjCacheMap[subjId]) {
+      /* If we do, return the cached object */
+      console.log('ApiService/getSubject(): Have subject ID ' + subjId + ' cached, returning that');
+      return this.subjCacheMap[subjId];
+    } else {
+      /* If we don't, fetch the data from the server, process it, and store it
+       * into the cache */
+      console.log('ApiService/getSubject(): Subject ID ' + subjId + ' not cached, fetching remote');
+      const rx = await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects/' + subjId,
+        {},
+        this.httpHeader
+      );
+      const response = JSON.parse(rx.data);
+      const subject = this.processSubjectData(response);
+      this.subjCacheMap[subjId] = subject;
+      return subject;
+    }
   }
 }

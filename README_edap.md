@@ -84,19 +84,25 @@ Zadana vrijednost: `N`
 
 Omogućuje integraciju s Cloudflareom. Uključivanjem dobivaju se dodatne informacije za klijent (npr. država) te se iz headera izvlači prava IP adresa korisnika.
 
-### VAULT_SERVER [R]
+### VAULT
+
+Zadana vrijedost: `Y`
+
+Omogućuje integraciju s Hashicorp Vaultom (preporučeno). Ako je postavljeno na `N`, podaci za prijavu se spremaju u bazu podataka (Redis).
+
+### VAULT_SERVER [R ako VAULT == Y]
 
 Zadana vrijednost: ništa
 
-HTTPS adresa Hashicorp Vault servera. Koristi se u daljnjim zahtjevima za spremanje, modificiranje i brisanje podataka za prijavu na servis e-Dnevnik.
+HTTP(S) adresa Hashicorp Vault servera. Koristi se u daljnjim zahtjevima za spremanje, modificiranje i brisanje podataka za prijavu na servis e-Dnevnik.
 
-### VAULT_TOKEN_READ [R]
+### VAULT_TOKEN_READ [R ako VAULT == Y]
 
 Zadana vrijednost: ništa
 
 Token za Hashicorp Vault server s dopuštenjem čitanja.
 
-### VAULT_TOKEN_WRITE [R]
+### VAULT_TOKEN_WRITE [R ako VAULT == Y]
 
 Zadana vrijednost: ništa
 
@@ -110,7 +116,7 @@ Omogućuje Firebase Cloud Messaging integraciju. Koristi se za slanje obavijesti
 
 Ako je ova varijabla uključena, potrebno je dopuniti i FIREBASE_TOKEN, inače će se automatski isključiti.
 
-### FIREBASE_TOKEN [R samo ako FIREBASE == Y]
+### FIREBASE_TOKEN [R ako FIREBASE == Y]
 
 Zadana vrijednost: ništa
 
@@ -124,13 +130,13 @@ Omogućuje pristup statistikama, popisima i zapisima na serveru te ograničenu k
 
 Ako je ova varijabla uključena, potrebno je dopuniti i DEV_USER i DEV_PASW, inače će se automatski isključiti.
 
-### DEV_USER [R samo ako DEV_ACCESS == Y]
+### DEV_USER [R ako DEV_ACCESS == Y]
 
 Zadana vrijednost: ništa
 
 Korisničko ime za dio dev sučelja koji podržava pristup pomoću preglednika.
 
-### DEV_PASW [R samo ako DEV_ACCESS == Y]
+### DEV_PASW [R ako DEV_ACCESS == Y]
 
 Zadana vrijednost: ništa
 
@@ -150,13 +156,13 @@ Omogućuje HTTPS konfiguraciju s podrškom za moderne klijente (ocjena A+ na ssl
 
 Ako je ova varijabla uključena, potrebno je dopuniti i SSL_CERT i SSL_KEY te osigurati da su te datoteke dostupne i certifikati važeći za domenu navedenu pod SERVER_NAME.
 
-### SSL_CERT [R samo ako SSL == Y]
+### SSL_CERT [R ako SSL == Y]
 
 Zadana vrijednost: ništa
 
 SSL certifikat.
 
-### SSL_KEY [R samo ako SSL == Y]
+### SSL_KEY [R ako SSL == Y]
 
 Zadana vrijednost: ništa
 
@@ -170,13 +176,13 @@ Omogućuje slanje obavijesti o kritičnim greškama pomoću Telegrama.
 
 Ako je ova varijabla uključena, potrebno je dopuniti i TELEGRAM_TOKEN i TELEGRAM_TARGET_UID.
 
-### TELEGRAM_TOKEN [R samo ako ADMIN_NOTIFICATIONS == Y]
+### TELEGRAM_TOKEN [R ako ADMIN_NOTIFICATIONS == Y]
 
 Zadana vrijednost: ništa
 
 Token za Telegram bota. Za više informacija o tome kako dobiti bot token provjerite [ovdje](https://telegram.org/blog/bot-revolution).
 
-### TELEGRAM_TARGET_UID [R samo ako ADMIN_NOTIFICATIONS == Y]
+### TELEGRAM_TARGET_UID [R ako ADMIN_NOTIFICATIONS == Y]
 
 Zadana vrijednost: ništa.
 

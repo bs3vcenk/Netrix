@@ -1,4 +1,4 @@
-# Pravila o privatnosti
+# Zaštita podataka
 
 Zadnje ažuriranje: 14.10.2019.
 
@@ -18,7 +18,7 @@ Netrix omogućuje brz pregled ocjena, izostanaka, ispita i korisničkih informac
 
 **eDAP** sprema sljedeće podatke nakon prijave:
 
-* **Korisničko ime (kriptirano)** - koristi se za identifikaciju korisnika u zahtjevima podršci, te za pozadinsku sinkronizaciju i uspoređivanje podataka (za obavijesti o novostima)
+* **Korisničko ime (kriptirano)** - koristi se za pozadinsku sinkronizaciju i uspoređivanje podataka (za obavijesti o novostima)
 * **Lozinka (kriptirana)** - koristi se za pozadinsku sinkronizaciju i uspoređivanje podataka (za obavijesti o novostima)
 * **Token** - MD5 hash korisničkog imena i lozinke, koji se koristi za daljnju upotrebu API-a i identifikaciju u zapisima na strani servera
 * **Jezik uređaja** - npr. hr/de/en, služi za lokaliziranje odnosno prevođenje sadržaja kao npr. obavijesti

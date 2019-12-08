@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { Platform, Config, ToastController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './services/authentication.service';
@@ -11,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from './services/api.service';
 import { NotificationService } from './services/notification.service';
 import { environment } from '../environments/environment';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 
 @Component({
   selector: 'app-root',
@@ -29,7 +29,8 @@ export class AppComponent {
     private translate: TranslateService,
     private config: Config,
     private apiSvc: ApiService,
-    private notifSvc: NotificationService
+    private notifSvc: NotificationService,
+    private splash: SplashScreen
   ) {
     this.initializeApp();
   }
@@ -49,11 +50,7 @@ export class AppComponent {
     this.fcm.getToken(token);
     try {
       this.fcm.onNotifications().subscribe(
-        (notifObject) => {
-          if (notifObject.body) {
-            this.presentToast(notifObject.title, notifObject.body);
-          }
-        });
+        () => this.apiSvc.switchActiveClass(0));
     } catch (e) {
       console.warn('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running Cordova.');
       console.warn('AppComponent/notificationSetup(): This means we won\'t be receiving any Firebase notifications.');
@@ -68,9 +65,11 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      /* Set status bar color, style for white bg and black icons */
+      this.settings.migrateData();
+      /* Set status bar color, style for white bg and black icons, hide splash screen */
       this.statusBar.backgroundColorByHexString('#ffffff');
       this.statusBar.styleDefault();
+      this.splash.hide();
 
       /* Set the language */
       this.languageService.setInitialLang();
@@ -143,9 +142,6 @@ export class AppComponent {
           this.notifSvc.scheduleTestNotifications(this.settings.notifTime);
         }
       });
-
-      /* Fire off shutdown alert */
-      // this.showGoingAwayAlert();
     });
   }
 }

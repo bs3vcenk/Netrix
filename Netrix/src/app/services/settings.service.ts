@@ -3,13 +3,14 @@ import { Storage } from '@ionic/storage';
 import { AdmobService } from './admob.service';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SettingsService {
 
-  // hasLoadedDataPref = new BehaviorSubject(false);
+  migrationFinished = new BehaviorSubject(false);
 
   dataPreference = null;
   notifPreference = null;
@@ -70,73 +71,10 @@ export class SettingsService {
 
   setGlobalTheme(nThemeName: 'dark' | 'light') {
     /* Set/unset dark mode */
-    /* CSS variables for theming the app */
-    const themeVars = {
-      dark: {
-        css: {
-          '--ion-background-color': '#000000',
-          '--ion-background-color-rgb': '0,0,0',
-          '--ion-text-color': '#ffffff',
-          '--ion-text-color-rgb': '255,255,255',
-          '--ion-color-step-50': '#000000',
-          '--ion-color-step-100': '#1a1a1a',
-          '--ion-color-step-150': '#262626',
-          '--ion-color-step-200': '#333333',
-          '--ion-color-step-250': '#404040',
-          '--ion-color-step-300': '#4d4d4d',
-          '--ion-color-step-350': '#595959',
-          '--ion-color-step-400': '#666666',
-          '--ion-color-step-450': '#737373',
-          '--ion-color-step-500': '#808080',
-          '--ion-color-step-550': '#8c8c8c',
-          '--ion-color-step-600': '#999999',
-          '--ion-color-step-650': '#a6a6a6',
-          '--ion-color-step-700': '#b3b3b3',
-          '--ion-color-step-750': '#bfbfbf',
-          '--ion-color-step-800': '#cccccc',
-          '--ion-color-step-850': '#d9d9d9',
-          '--ion-color-step-900': '#e6e6e6',
-          '--ion-color-step-950': '#f2f2f2'
-        },
-        statusbar: '#000000'
-      },
-      light: {
-        css: {
-          '--ion-background-color': '#ffffff',
-          '--ion-background-color-rgb': '255,255,255',
-          '--ion-text-color': '#000000',
-          '--ion-text-color-rgb': '0,0,0',
-          '--ion-color-step-50': '#ffffff',
-          '--ion-color-step-100': '#e6e6e6',
-          '--ion-color-step-150': '#d9d9d9',
-          '--ion-color-step-200': '#cccccc',
-          '--ion-color-step-250': '#bfbfbf',
-          '--ion-color-step-300': '#b3b3b3',
-          '--ion-color-step-350': '#a6a6a6',
-          '--ion-color-step-400': '#999999',
-          '--ion-color-step-450': '#8c8c8c',
-          '--ion-color-step-500': '#808080',
-          '--ion-color-step-550': '#737373',
-          '--ion-color-step-600': '#666666',
-          '--ion-color-step-650': '#595959',
-          '--ion-color-step-700': '#4d4d4d',
-          '--ion-color-step-750': '#404040',
-          '--ion-color-step-800': '#333333',
-          '--ion-color-step-850': '#262626',
-          '--ion-color-step-900': '#191919',
-          '--ion-color-step-950': '#0d0d0d'
-        },
-        statusbar: '#ffffff'
-      }
-    };
     console.log('SettingsService/setGlobalTheme(): Setting ' + nThemeName + ' theme');
-    const root = document.documentElement;
-    // tslint:disable-next-line: forin
-    for (const varName in themeVars[nThemeName].css) {
-      root.style.setProperty(varName, themeVars[nThemeName].css[varName]);
-    }
+    document.body.classList.toggle('dark', nThemeName === 'dark');
     nThemeName === 'dark' ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
-    this.statusBar.backgroundColorByHexString(themeVars[nThemeName].statusbar);
+    this.statusBar.backgroundColorByHexString(nThemeName === 'dark' ? '#0d0d0d' : '#ffffff');
   }
 
   setDataCollection(val: boolean) {
@@ -155,12 +93,38 @@ export class SettingsService {
 
   changePreference(pref, prefValue) {
     /* Set `pref` to `prefValue` */
-    this.firebase.logEvent('changed_preference', {
-      preference: pref,
-      value: prefValue
-    });
     this.storage.set(pref, prefValue).then(() => {
       console.log('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
     });
+  }
+
+  async migrateData() {
+    /* Migrate DB from Chrome's IndexedDB to SQLite */
+    // Check if we are running SQLite
+    const res = await this.storage.get('_migration_finished');
+    if (res) {
+      console.log('SettingsService/migrateData(): Don\'t need to migrate data, migration already finished.');
+      this.migrationFinished.next(true);
+      return;
+    }
+    // Open the default Ionic database, named "_ionicstorage"
+    const idb = window.indexedDB.open('_ionicstorage');
+    idb.onsuccess = (_) => {
+      console.log('SettingsService/migrateData(): Opened IndexedDB');
+      const database = idb.result;
+      // Now open the "_ionickv" store
+      const objStore = database.transaction('_ionickv', 'readonly').objectStore('_ionickv');
+      objStore.openCursor().onsuccess = (event: any) => { // Need to append ": any" because TS thinks there's no result on event.target
+        const cursor = event.target.result;
+        if (cursor) {
+          this.storage.set(cursor.key, cursor.value); // Write into the SQLite DB
+          cursor.continue();
+        } else {
+          this.migrationFinished.next(true);
+          this.storage.set('_migration_finished', 'This is a dummy key to let migrateData() know migration has been completed.');
+          console.log('SettingsService/migrateData(): No more keys left');
+        }
+      }
+    };
   }
 }

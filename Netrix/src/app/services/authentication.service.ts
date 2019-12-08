@@ -35,7 +35,9 @@ export class AuthenticationService {
       /* Default to JSON as we'll be receiving only JSON from the API */
       this.http.setDataSerializer('json');
       /* Check if the user already has a stored token */
-      this.checkToken();
+      this.settings.migrationFinished.subscribe(status => {
+        if (status) { this.checkToken(); }
+      });
       /* Force 'legacy' mode; trust only system certs */
       this.http.setSSLCertMode('legacy');
     });
@@ -48,8 +50,6 @@ export class AuthenticationService {
         this.token = res;
         /* Send analytics to API */
         this.sendDeviceInfo();
-        /* Log the login event to Firebase */
-        this.firebase.logEvent('login', {});
         /* Let app.component know we're logged in */
         this.authenticationState.next(true);
       }
@@ -108,10 +108,8 @@ export class AuthenticationService {
     /* Store the token so we don't have to log in every time */
     this.storage.set('auth-token', token).then(() => {
       this.token = token;
-      /* Send analytics to Firebase */
+      /* Send analytics to API */
       this.sendDeviceInfo();
-      /* Log event to Firebase */
-      this.firebase.logEvent('login', {});
       /* Let app.component know we're logged in */
       this.authenticationState.next(true);
     });
@@ -124,8 +122,6 @@ export class AuthenticationService {
   logout() {
     /* Remove the authentication token from storage */
     return this.storage.remove('auth-token').then(() => {
-      /* Log event to Firebase */
-      this.firebase.logEvent('logout', {});
       /* Let the API know the user has logged out, so it knows it can discard the user's data */
       this.http.get(
         this.settings.apiServer + '/api/user/' + this.token + '/logout',

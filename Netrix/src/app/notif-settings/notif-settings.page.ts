@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ApiService } from '../services/api.service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -12,15 +11,14 @@ export class NotifSettingsPage implements OnInit {
 
   excludes = [];
   fullTypes = [
-    {name: this.translate.instant('notifSettings.tests'), checked: true, id: 'test'},
+    // {name: this.translate.instant('notifSettings.tests'), checked: true, id: 'test'},
     {name: this.translate.instant('notifSettings.grades'), checked: true, id: 'grade'},
     {name: this.translate.instant('notifSettings.classes'), checked: true, id: 'class'},
     {name: this.translate.instant('notifSettings.notes'), checked: true, id: 'note'},
-    {name: this.translate.instant('notifSettings.absences'), checked: true, id: 'absence'}
+    // {name: this.translate.instant('notifSettings.absences'), checked: true, id: 'absence'}
   ];
 
   constructor(
-    private firebase: FirebaseX,
     private apiSvc: ApiService,
     private translate: TranslateService
   ) {}
@@ -31,10 +29,6 @@ export class NotifSettingsPage implements OnInit {
         fType.checked = false;
       }
     });
-  }
-
-  ionViewDidEnter() {
-    try { this.firebase.setScreenName('NotificationSettings'); } catch (e) {}
   }
 
   addToIgnoreList(ignId: string) {

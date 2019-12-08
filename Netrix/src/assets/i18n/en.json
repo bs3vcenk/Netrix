@@ -2,8 +2,6 @@
   "generic": {
     "alert": {
       "network": "Network error",
-      "expiry": "Your login has expired",
-      "database": "Database connection failed; try again later",
       "server": "Server error; try again later"
     },
     "back": "Back",
@@ -23,7 +21,8 @@
       "maintenance": {
         "header": "Maintenance in progress",
         "content": "e-Dnevnik is currently undergoing maintenance (we have no control over this). Check the website for more information."
-      }
+      },
+      "cache": "Because we can't currently connect to the server, you're being shown data from your last session."
     },
     "choice": {
       "yes": "Yes",
@@ -66,7 +65,7 @@
     "alert": {
       "logout": {
         "header": "Log out?",
-        "content": "This will delete your data from Netrix's servers, and will disable all notifications."
+        "content": "This will delete your data from Netrix's servers and disable all notifications."
       },
       "time": {
         "choice": {
@@ -105,7 +104,7 @@
       "holder_user": "Username",
       "holder_pass": "Password",
       "appdesc": "A modern interface for e-Dnevnik",
-      "privacy": "Privacy policy"
+      "privacy": "Data protection"
     }
   },
   "tabs": {

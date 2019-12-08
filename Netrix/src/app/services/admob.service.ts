@@ -12,13 +12,14 @@ export class AdmobService {
     private storage: Storage
   ) {
     /* Check if the user wants to see ads */
-    this.storage.get('ad-preference').then(res => {
+    /*this.storage.get('ad-preference').then(res => {
       if (res != null) {
         this.adPreference = res;
       } else {
         this.adPreference = true;
       }
-    });
+    });*/
+    this.adPreference = true; // TODO: Decide if this stays
   }
 
   showBanner() {
@@ -26,7 +27,10 @@ export class AdmobService {
       /* Show the ad banner */
       console.log('AdmobService/showBanner(): Showing ad banner');
       admob.banner.show({
-        id: 'ca-app-pub-3536042070948443/8284474155',
+        id: {
+          android: 'ca-app-pub-3536042070948443/8284474155',
+          ios: 'ca-app-pub-3536042070948443/1411268336'
+        },
         size: 0, // BANNER
       });
     } else {
