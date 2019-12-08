@@ -121,7 +121,17 @@ export class ApiService {
       date,
       data
     };
-    await this.storage.set(accessId, cObject);
+    try {
+      await this.storage.set(accessId, cObject);
+    } catch (e) {
+      if (e.code === 22) {
+        // TODO: Handle this
+        console.warn('ApiService/storeInCache(): Failed to store data in cache, no space. Handling TBD.');
+      } else {
+        console.warn('ApiService/storeInCache(): Failed to store data in cache, some other error. Sending to handler.');
+        throw e;
+      }
+    }
   }
 
   handleErr(errorObj) {
@@ -164,6 +174,7 @@ export class ApiService {
     this.subjects = null;
     this.fullAvg = null;
     this.info = null;
+    this.usingCachedContent = false;
     this.loadingFinishedAbsences.next(false);
     this.loadingFinishedInfo.next(false);
     this.loadingFinishedNotif.next(false);
@@ -295,6 +306,10 @@ export class ApiService {
       );
       info = JSON.parse(response.data);
     } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
       const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'info');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
@@ -345,6 +360,10 @@ export class ApiService {
       );
       response = JSON.parse(rx.data);
     } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
       const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'subjects');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
@@ -384,6 +403,10 @@ export class ApiService {
       );
       response = JSON.parse(rx.data);
     } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
       const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'tests');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
@@ -483,6 +506,10 @@ export class ApiService {
       );
       absences = JSON.parse(response.data);
     } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
       const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'absences');
       if (cachedResponse !== null) {
         fetchedFromCache = true;

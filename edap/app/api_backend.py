@@ -456,7 +456,9 @@ def restore_syncs():
 	"""
 		Restore all sync threads (on startup).
 	"""
-	for token in get_tokens():
+	tokens = get_tokens()
+	log.info('Starting sync threads for %s tokens', len(tokens))
+	for token in tokens:
 		if not 'ignore_updating' in get_data(token):
 			start_sync(token)
 
@@ -686,8 +688,6 @@ def _get_var(varname: str, _bool: bool = False, default=None):
 		return it as a boolean value. If default is set, return its value if
 		the given variable does not exist.
 	"""
-	if _bool:
-		default = default if default != None else False
 	try:
 		return environ[varname] if not _bool else environ[varname] == "Y"
 	except KeyError:

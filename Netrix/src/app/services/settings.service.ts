@@ -3,13 +3,14 @@ import { Storage } from '@ionic/storage';
 import { AdmobService } from './admob.service';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SettingsService {
 
-  // hasLoadedDataPref = new BehaviorSubject(false);
+  migrationFinished = new BehaviorSubject(false);
 
   dataPreference = null;
   notifPreference = null;
@@ -73,7 +74,7 @@ export class SettingsService {
     console.log('SettingsService/setGlobalTheme(): Setting ' + nThemeName + ' theme');
     document.body.classList.toggle('dark', nThemeName === 'dark');
     nThemeName === 'dark' ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
-    this.statusBar.backgroundColorByHexString(nThemeName === 'dark' ? '#000000' : '#ffffff');
+    this.statusBar.backgroundColorByHexString(nThemeName === 'dark' ? '#0d0d0d' : '#ffffff');
   }
 
   setDataCollection(val: boolean) {
@@ -95,5 +96,35 @@ export class SettingsService {
     this.storage.set(pref, prefValue).then(() => {
       console.log('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
     });
+  }
+
+  async migrateData() {
+    /* Migrate DB from Chrome's IndexedDB to SQLite */
+    // Check if we are running SQLite
+    const res = await this.storage.get('_migration_finished');
+    if (res) {
+      console.log('SettingsService/migrateData(): Don\'t need to migrate data, migration already finished.');
+      this.migrationFinished.next(true);
+      return;
+    }
+    // Open the default Ionic database, named "_ionicstorage"
+    const idb = window.indexedDB.open('_ionicstorage');
+    idb.onsuccess = (_) => {
+      console.log('SettingsService/migrateData(): Opened IndexedDB');
+      const database = idb.result;
+      // Now open the "_ionickv" store
+      const objStore = database.transaction('_ionickv', 'readonly').objectStore('_ionickv');
+      objStore.openCursor().onsuccess = (event: any) => { // Need to append ": any" because TS thinks there's no result on event.target
+        const cursor = event.target.result;
+        if (cursor) {
+          this.storage.set(cursor.key, cursor.value); // Write into the SQLite DB
+          cursor.continue();
+        } else {
+          this.migrationFinished.next(true);
+          this.storage.set('_migration_finished', 'This is a dummy key to let migrateData() know migration has been completed.');
+          console.log('SettingsService/migrateData(): No more keys left');
+        }
+      }
+    };
   }
 }
