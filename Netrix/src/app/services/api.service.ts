@@ -306,6 +306,10 @@ export class ApiService {
       );
       info = JSON.parse(response.data);
     } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
       const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'info');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
@@ -356,6 +360,10 @@ export class ApiService {
       );
       response = JSON.parse(rx.data);
     } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
       const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'subjects');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
@@ -395,6 +403,10 @@ export class ApiService {
       );
       response = JSON.parse(rx.data);
     } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
       const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'tests');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
@@ -494,6 +506,10 @@ export class ApiService {
       );
       absences = JSON.parse(response.data);
     } catch (error) {
+      if (error.status === 401) {
+        this.authServ.logout();
+        return;
+      }
       const cachedResponse = await this.fetchFromCache(classId, this.authServ.token, 'absences');
       if (cachedResponse !== null) {
         fetchedFromCache = true;
