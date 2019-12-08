@@ -21,6 +21,7 @@
     <preference name="SplashScreenDelay" value="3200" />
     <preference name="ShowSplashScreenSpinner" value="false" />
     <preference name="SplashMaintainAspectRatio" value="true" />
+    <preference name="orientation" value="portrait" />
     <platform name="android">
         <config-file parent="application" target="AndroidManifest.xml">
             <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/notification_icon" />
