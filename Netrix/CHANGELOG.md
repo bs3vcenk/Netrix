@@ -1,3 +1,6 @@
+## 1.9.8 (2019-12-09)
+* **FIX**: Migracija podataka nije detektirala da starija verzija ne postoji
+
 ## 1.9.7 (2019-12-08)
 * **FIX**: Izvanmrežni način na uređajima s manje od 1GB prostora
 * **FIX**: Izvanmrežni način nije detektirao nevažeći token
