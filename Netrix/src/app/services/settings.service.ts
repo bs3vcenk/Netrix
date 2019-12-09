@@ -113,7 +113,15 @@ export class SettingsService {
       console.log('SettingsService/migrateData(): Opened IndexedDB');
       const database = idb.result;
       // Now open the "_ionickv" store
-      const objStore = database.transaction('_ionickv', 'readonly').objectStore('_ionickv');
+      let objStore: IDBObjectStore;
+      try {
+        objStore = database.transaction('_ionickv', 'readonly').objectStore('_ionickv');4
+      } catch (e) {
+        console.warn('SettingsService/migrateData(): Failed to open db transaction:');
+        console.warn(e);
+        console.warn('SettingsService/migrateData(): Assuming this is a new install and does not need migrating');
+        return;
+      }
       objStore.openCursor().onsuccess = (event: any) => { // Need to append ": any" because TS thinks there's no result on event.target
         const cursor = event.target.result;
         if (cursor) {
@@ -124,7 +132,7 @@ export class SettingsService {
           this.storage.set('_migration_finished', 'This is a dummy key to let migrateData() know migration has been completed.');
           console.log('SettingsService/migrateData(): No more keys left');
         }
-      }
+      };
     };
   }
 }
