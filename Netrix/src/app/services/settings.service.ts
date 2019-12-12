@@ -122,6 +122,7 @@ export class SettingsService {
         console.warn('SettingsService/migrateData(): Failed to open db transaction:');
         console.warn(e);
         console.warn('SettingsService/migrateData(): Assuming this is a new install and does not need migrating');
+        this.storage.set(dummyKeyTitle, dummyKeyContent);
         this.migrationFinished.next(true);
         return;
       }
