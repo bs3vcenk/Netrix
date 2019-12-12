@@ -1,3 +1,7 @@
+## 1.9.9 (2019-12-12)
+* **FIX**: Automatska prijava nije radila na novim instalacijama
+* **MISC**: Mala poboljšanja dizajna
+
 ## 1.9.8 (2019-12-09)
 * **FIX**: Migracija podataka nije detektirala da starija verzija ne postoji
 

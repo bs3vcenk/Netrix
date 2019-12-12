@@ -37,4 +37,15 @@ export class AdmobService {
       console.log('AdmobService/showBanner(): Not showing ad because of preference');
     }
   }
+
+  hideBanner() {
+    /* Hide the ad banner, used by dev settings */
+    console.log('AdmobService/hideBanner(): Hiding ad banner');
+    admob.banner.hide({
+      id: {
+        android: 'ca-app-pub-3536042070948443/8284474155',
+        ios: 'ca-app-pub-3536042070948443/1411268336'
+      }
+    });
+  }
 }
