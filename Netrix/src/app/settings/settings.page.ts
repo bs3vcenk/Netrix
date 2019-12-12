@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../services/api.service';
 import { NotificationService } from '../services/notification.service';
 import { environment } from '../../environments/environment';
+import { AdmobService } from '../services/admob.service';
 
 @Component({
   selector: 'app-settings',
@@ -45,7 +46,8 @@ export class SettingsPage {
     private apiSvc: ApiService,
     private alertControl: AlertController,
     private toastControl: ToastController,
-    private notifSvc: NotificationService
+    private notifSvc: NotificationService,
+    private admobSvc: AdmobService
   ) {
     this.dataPreference = this.settings.dataPreference;
     // this.errorPreference = this.settings.errorPreference;
@@ -190,6 +192,10 @@ export class SettingsPage {
 
   clearCache() {
     this.apiSvc.clearCache();
+  }
+
+  disableBanner() {
+    this.admobSvc.hideBanner();
   }
 
 }
