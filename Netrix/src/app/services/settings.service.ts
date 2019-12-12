@@ -100,8 +100,10 @@ export class SettingsService {
 
   async migrateData() {
     /* Migrate DB from Chrome's IndexedDB to SQLite */
+    const dummyKeyTitle = '_migration_finished';
+    const dummyKeyContent = 'This is a dummy key to let migrateData() know migration has been completed.';
     // Check if we are running SQLite
-    const res = await this.storage.get('_migration_finished');
+    const res = await this.storage.get(dummyKeyTitle);
     if (res) {
       console.log('SettingsService/migrateData(): Don\'t need to migrate data, migration already finished.');
       this.migrationFinished.next(true);
@@ -130,7 +132,7 @@ export class SettingsService {
           cursor.continue();
         } else {
           this.migrationFinished.next(true);
-          this.storage.set('_migration_finished', 'This is a dummy key to let migrateData() know migration has been completed.');
+          this.storage.set(dummyKeyTitle, dummyKeyContent);
           console.log('SettingsService/migrateData(): No more keys left');
         }
       };
