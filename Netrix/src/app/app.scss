@@ -56,7 +56,14 @@ ion-label, ion-text {
   margin-right: 20px;
 }
 
- body.dark {
+body {
+  --ion-toolbar-background: #f8f8f8;
+  ion-tab-bar {
+    --background: #f8f8f8;
+  }
+}
+
+body.dark {
   --ion-color-primary: #428cff;
   --ion-color-primary-rgb: 66,140,255;
   --ion-color-primary-contrast: #ffffff;
@@ -149,6 +156,9 @@ ion-label, ion-text {
   --ion-color-step-950: #f2f2f2;
 
   --ion-toolbar-background: #0d0d0d;
+  ion-tab-bar {
+    --background: #0d0d0d;
+  }
 
   --ion-item-background: #000000;
   --ion-item-background-activated: #313131;
