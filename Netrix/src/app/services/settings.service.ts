@@ -120,6 +120,7 @@ export class SettingsService {
         console.warn('SettingsService/migrateData(): Failed to open db transaction:');
         console.warn(e);
         console.warn('SettingsService/migrateData(): Assuming this is a new install and does not need migrating');
+        this.migrationFinished.next(true);
         return;
       }
       objStore.openCursor().onsuccess = (event: any) => { // Need to append ": any" because TS thinks there's no result on event.target
