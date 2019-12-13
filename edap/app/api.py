@@ -3,7 +3,7 @@ from flask import Flask, jsonify, make_response, request, abort, redirect
 from api_backend import *
 import edap, traceback
 
-API_VERSION = "2.13"
+API_VERSION = "2.13.1"
 
 log = logging.getLogger('EDAP-API')
 
@@ -294,7 +294,7 @@ def dev_token_mgmt(token):
 		}
 		if fb_info['status']:
 			ret_object['firebase']['app_version'] = fb_info['data']['applicationVersion']
-			ret_object['firebase']['rooted'] = fb_info['data']['attestStatus'] == 'ROOTED'
+			ret_object['firebase']['rooted'] = False
 		return ret_object
 	elif request.method == "DELETE":
 		purge_token(token)
