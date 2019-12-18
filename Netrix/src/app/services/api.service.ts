@@ -317,8 +317,8 @@ export class ApiService {
       } else {
         console.warn('ApiService/getUserInfo(): No cached data');
         this.handleErr(error);
+        return;
       }
-      this.loadingFinishedInfo.next(true);
     }
     this.info = info;
     if (!fetchedFromCache) {
