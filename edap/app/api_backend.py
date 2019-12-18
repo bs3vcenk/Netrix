@@ -37,6 +37,37 @@ _threads = {}
 class NonExistentSetting(Exception):
 	"""Specified setting ID is non-existent."""
 
+def do_startup_checks():
+	"""
+		Verify we've got a correctly configured server.
+	"""
+	# Check if we're using Vault
+	if not config["USE_VAULT"]:
+		log.warning('Vault not being used - passwords will be stored insecurely!')
+	else:
+		log.info('Vault used for credential storage')
+	# Check Vault server scheme
+	if "https://" not in config["VAULT_SERVER"]:
+		log.warning('Vault will not be accessed through HTTPS; this is only a problem if Vault is on a different server than localhost.')
+	# Check if we can reach Vault
+	try:
+		reqst = requests.get('%s/v1/sys/health', config["VAULT_SERVER"])
+		reqst.raise_for_status()
+	except requests.exceptions.MissingSchema:
+		log.critical('Configuration error - incorrect address specified as Vault server (%s)', config["VAULT_SERVER"])
+		log.critical('Perhaps missing http:// or https:// ?')
+		_exit(1)
+	except requests.exceptions.ConnectionError:
+		log.critical('Connection error - failed while connecting to the Vault server')
+		_exit(1)
+	except requests.exceptions.HTTPError:
+		log.critical('Vault error - server is up but responded with non-200 code')
+		_exit(1)
+	health = reqst.json()
+	if health['sealed']:
+		log.critical('Vault error - vault is sealed')
+		_exit(1)
+
 def get_vault_info() -> dict:
 	"""
 		Get info about Hashicorp Vault.

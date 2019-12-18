@@ -12,6 +12,9 @@ log.info("eDAP-API version %s starting up", API_VERSION)
 # Initialize Flask application
 app = Flask("EDAP-API")
 
+# Perform startup checks
+do_startup_checks()
+
 # Restore sync threads for all active tokens in DB
 restore_syncs()
 
