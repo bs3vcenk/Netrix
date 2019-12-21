@@ -85,23 +85,23 @@
 
     <!-- Developer -->
     <!-- BUTTON: Reset notifications -->
-    <ion-item button (click)="resetNotif()" *ngIf="developer">
+    <ion-item button (click)="resetNotif()">
       <ion-label>Reset notifications</ion-label>
     </ion-item>
     <!-- BUTTON: Force language to hr -->
-    <ion-item button (click)="forceCroatian()" *ngIf="developer">
+    <ion-item button (click)="forceCroatian()">
       <ion-label>Force switch to HR locale</ion-label>
     </ion-item>
     <!-- BUTTON: Invert usingCache setting -->
-    <ion-item button (click)="invertCacheIndicator()" *ngIf="developer">
+    <ion-item button (click)="invertCacheIndicator()">
       <ion-label>Invert usingCache setting</ion-label>
     </ion-item>
     <!-- BUTTON: Clear cache -->
-    <ion-item button (click)="clearCache()" *ngIf="developer">
+    <ion-item button (click)="clearCache()">
       <ion-label>Clear cache</ion-label>
     </ion-item>
     <!-- BUTTON: Disable advertisement banner -->
-    <ion-item button (click)="disableBanner()" *ngIf="developer">
+    <ion-item button (click)="disableBanner()">
       <ion-label>Hide banner ad</ion-label>
     </ion-item>
   </ion-list>
