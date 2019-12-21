@@ -705,7 +705,7 @@ def _sync(token: str):
 		Wrapper around sync, for bg execution (random timeout).
 	"""
 	while True:
-		val = randint(1800, 6000)
+		val = randint(config["SYNC_TIME_MIN"], config["SYNC_TIME_MAX"])
 		log.debug("Waiting %i s for %s", val, token)
 		sleep(val)
 		if not _threads["sync:" + token]["run"]:
@@ -756,6 +756,9 @@ def _read_config() -> Dict[str, str]:
 	USE_CLOUDFLARE = _get_var("CLOUDFLARE", _bool=True)
 	USE_FIREBASE = _get_var("FIREBASE", _bool=True)
 	USE_NOTIFICATIONS = _get_var("ADMIN_NOTIFICATIONS", _bool=True)
+	SYNC_TIME_MIN = _get_var("SYNC_TIME_MIN", default=1800)
+	SYNC_TIME_MAX = _get_var("SYNC_TIME_MAX", default=6000)
+	SYNC_TIME_AUTOADJUST = _get_var("SYNC_TIME_AUTOADJUST", _bool=True)
 
 	privUsername = privPassword = None
 	FIREBASE_TOKEN = None
@@ -785,6 +788,8 @@ def _read_config() -> Dict[str, str]:
 	print("[eDAP] [INFO] Using Cloudflare: %s" % USE_CLOUDFLARE)
 	print("[eDAP] [INFO] Using Firebase: %s" % USE_FIREBASE)
 	print("[eDAP] [INFO] Send administrative notifications: %s" % USE_NOTIFICATIONS)
+	print("[eDAP] [INFO] Waiting between %s and %s seconds before syncing for each user" % (SYNC_TIME_MIN, SYNC_TIME_MAX))
+	print("[eDAP] [INFO] Automatically adjusting sync times: %s" % SYNC_TIME_AUTOADJUST)
 	print("[eDAP] [INFO] Further logging is in %s/edap_api.log" % DATA_FOLDER)
 	return {
 		"DATA_FOLDER": DATA_FOLDER,
@@ -800,7 +805,10 @@ def _read_config() -> Dict[str, str]:
 		"VAULT_TOKEN_WRITE": VAULT_TOKEN_WRITE,
 		"USE_NOTIFICATIONS": USE_NOTIFICATIONS,
 		"TELEGRAM_TOKEN": TELEGRAM_TOKEN,
-		"TELEGRAM_TARGET_UID": TELEGRAM_TARGET_UID
+		"TELEGRAM_TARGET_UID": TELEGRAM_TARGET_UID,
+		"SYNC_TIME_MAX": SYNC_TIME_MAX,
+		"SYNC_TIME_MIN": SYNC_TIME_MIN,
+		"SYNC_TIME_AUTOADJUST": SYNC_TIME_AUTOADJUST
 	}
 
 def read_log(exclude_syncing=False) -> str:
