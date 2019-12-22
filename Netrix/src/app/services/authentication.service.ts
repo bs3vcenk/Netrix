@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
 import { Platform } from '@ionic/angular';
-import { HTTP, HTTPResponse } from '@ionic-native/http/ngx';
-import { map, catchError } from 'rxjs/operators';
-import { Observable, throwError, from } from 'rxjs';
+import { HTTP } from '@ionic-native/http/ngx';
 import { Device } from '@ionic-native/device/ngx';
 import { SettingsService } from './settings.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
@@ -62,9 +60,9 @@ export class AuthenticationService {
       this.settings.apiServer + '/api/stats',
       {
         token: this.token,
-        platform: this.getPlatform(),
-        device: this.getDevice(),
-        language: this.getLanguage()
+        platform: this.device.platform,
+        device: this.device.model,
+        language: this.settings.language
       },
       this.httpHeader)
     .then(() => {
@@ -74,33 +72,20 @@ export class AuthenticationService {
     });
   }
 
-  private getPlatform() {
-    return this.device.platform;
-  }
-
-  private getDevice() {
-    return this.device.model;
-  }
-
-  private getLanguage() {
-    return this.settings.language;
-  }
-
-  login(username, password) {
+  async login(username, password) {
     /* Called from the login page, sends a POST request to log in which returns back a token */
-    const response: Observable<HTTPResponse> = from(this.http.post(
+    /*const response: Observable<HTTPResponse> = from(this.http.post(
       this.settings.apiServer + '/api/login',
       {username, password},
       this.httpHeader
-    ));
-
-    const jsonResponse = response.pipe(catchError(err => this.handleError(err)));
-
-    const userResponse = jsonResponse.pipe(map(
-      data => this.handleLogin(data)
-    ));
-
-    return userResponse;
+    ));*/
+    const response = await this.http.post(
+      this.settings.apiServer + '/api/login',
+      {username, password},
+      this.httpHeader
+    );
+    this.handleLogin(response);
+    return response;
   }
 
   private handleLogin(data) {
@@ -113,10 +98,6 @@ export class AuthenticationService {
       /* Let app.component know we're logged in */
       this.authenticationState.next(true);
     });
-  }
-
-  private handleError(error) {
-    return throwError(error);
   }
 
   logout() {
@@ -137,9 +118,5 @@ export class AuthenticationService {
       /* Let app.component know we're logged out */
       this.authenticationState.next(false);
     });
-  }
-
-  isAuthenticated() {
-    return this.authenticationState.value;
   }
 }

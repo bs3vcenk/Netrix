@@ -51,7 +51,7 @@ export class LoginPage implements OnInit {
     this.isLoading = true;
 
     // Send the request
-    this.authServ.login(this.loUsername, this.loPassword).subscribe(() => {
+    this.authServ.login(this.loUsername, this.loPassword).then(() => {
       // Everything fine
       console.log('login/login(): Successful login');
       this.isLoading = false; // Stop the "Logging in..." alert
