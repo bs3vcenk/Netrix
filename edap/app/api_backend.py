@@ -37,6 +37,17 @@ _threads = {}
 class NonExistentSetting(Exception):
 	"""Specified setting ID is non-existent."""
 
+def memory_summary():
+	"""
+		Use Pympler to get a summary of used memory. This is used for
+		debugging memory leaks in live environments (with /dev/ endpoints
+		enabled).
+	"""
+	from pympler import summary, muppy
+	mem_summary = summary.summarize(muppy.get_objects())
+	rows = summary.format_(mem_summary)
+	return '\n'.join(rows)
+
 def do_startup_checks():
 	"""
 		Verify we've got a correctly configured server.
@@ -122,12 +133,18 @@ def notify_error(problem_header: str, component: str, stacktrace=None, additiona
 		_send_telegram_notification("```%s```" % stacktrace)
 
 def get_credentials(token: str):
+	"""
+		Decide which method to use to get credentials based on config.
+	"""
 	if config.vault.enabled:
 		return _get_credentials_vault(token)
 	else:
 		return _get_credentials_redis(token)
 
 def set_credentials(token: str, username: str, password: str):
+	"""
+		Decide which method to use to set credentials based on config.
+	"""
 	if config.vault.enabled:
 		return _set_credentials_vault(token, username, password)
 	else:
@@ -659,7 +676,7 @@ def _read_config() -> Config:
 	if cfg_obj.dev.enabled:
 		cfg_obj.dev.username = _get_var("DEV_USER")
 		cfg_obj.dev.password = _get_var("DEV_PASW")
-		if not cfg_obj.dev.username or not cfg_obj.dev.password :
+		if not cfg_obj.dev.username or not cfg_obj.dev.password:
 			print("[eDAP] [WARN] Dev access has been DISABLED; both user & password need to be specified!")
 			cfg_obj.dev.enabled = False
 
