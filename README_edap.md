@@ -187,3 +187,15 @@ Token za Telegram bota. Za više informacija o tome kako dobiti bot token provje
 Zadana vrijednost: ništa.
 
 ID korisnika kojem će se slati poruke. Moguće ga je saznati kontaktiranjem @IDBot porukom `/getid`.
+
+### SYNC_TIME_MIN
+
+Zadana vrijednost: `1800` (sekundi)
+
+Minimalna vrijednost u sekundama koju će program čekati prije nego što ponovno hvata i uspoređuje korisnikove podatke.
+
+### SYNC_TIME_MAX
+
+Zadana vrijednost: `6000` (sekundi)
+
+Maksimalna vrijednost u sekundama koju će program čekati prije nego što ponovno hvata i uspoređuje korisnikove podatke.
