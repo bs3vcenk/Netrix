@@ -337,19 +337,6 @@ def dev_thread_list():
 	"""
 	return make_response(jsonify({'threads': get_sync_threads()}), 200)
 
-@app.route('/dev/info/testuser', methods=["GET"])
-@dev_pw_area
-def devAddTestUser():
-	"""
-		DEV: Add a test user. Contains a test dataset; more info
-		in api_backend/generate_test_user().
-	"""
-	testUser, testPasw, testToken = generate_test_user()
-	html = "<p>Username: <code>%s</code></p>" % testUser
-	html += "<p>Password: <code>%s</code></p>" % testPasw
-	html += "<p>Token: <code>%s</code></p>" % testToken
-	return make_html(title="Test user creation", content=html)
-
 @app.route('/dev/recreate', methods=["GET"])
 @dev_area
 def dev_reload_info():
