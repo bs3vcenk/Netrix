@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import Flask, jsonify, make_response, request, abort, redirect
+from flask import Flask, jsonify, make_response, request, abort
 from api_backend import *
 import edap, traceback
 
@@ -22,7 +22,7 @@ def check_auth(username, password):
 	"""
 		Check if the specified username and password hash match the set ones.
 	"""
-	return username == config["privUsername"] and hash_password(password) == config["privPassword"]
+	return username == config.dev.username and hash_password(password) == config.dev.password
 
 def authenticate():
 	"""
@@ -42,14 +42,14 @@ def dev_pw_area(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
 		# Gather info about accessing IP
-		if config["USE_CLOUDFLARE"]:
+		if config.cloudflare.enabled:
 			ip = request.headers["CF-Connecting-IP"]
 			country = request.headers["CF-IPCountry"]
 		else:
 			ip = request.remote_addr
 			country = "Unknown"
 		# Check whether we allow this type of access
-		if config["ALLOW_DEV_ACCESS"]:
+		if config.dev.enabled:
 			# If we do, verify the supplied HTTP Basic Auth credentials
 			auth = request.authorization
 			# If no credentials were provided, or the credential pair is incorrect,
@@ -77,14 +77,14 @@ def dev_area(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
 		# Gather info about accessing IP
-		if config["USE_CLOUDFLARE"]:
+		if config.cloudflare.enabled:
 			ip = request.headers["CF-Connecting-IP"]
 			country = request.headers["CF-IPCountry"]
 		else:
 			ip = request.remote_addr
 			country = "Unknown"
 		# Check whether we allow this type of access
-		if config["ALLOW_DEV_ACCESS"]:
+		if config.dev.enabled:
 			# If we do, check if request contains an X-API-Token header
 			if "X-API-Token" not in request.headers:
 				# If not, log failed request and return
@@ -153,7 +153,7 @@ def e500(_):
 		side.
 	"""
 	# Check if we need to send server error notifications
-	if config['USE_NOTIFICATIONS']:
+	if config.error_notifications.enabled:
 		# If we do, get a stacktrace
 		exc = traceback.format_exc()
 		# Log error
@@ -171,7 +171,7 @@ def exh_unhandled(e):
 		Default exception handler.
 	"""
 	# Check if we need to send a notification
-	if config['USE_NOTIFICATIONS']:
+	if config.error_notifications.enabled:
 		# If we do, get a stacktrace
 		exc = traceback.format_exc()
 		# Send message
@@ -187,7 +187,7 @@ def exh_redis_db_fail(e):
 	"""
 	exc = traceback.format_exc()
 	log.critical("DATBASE ACCESS FAILURE!!!!! [%s]", e)
-	if config['USE_NOTIFICATIONS']:
+	if config.error_notifications.enabled:
 		notify_error('DB CONNECTION FAIL', 'redis', stacktrace=exc)
 	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
 
@@ -198,7 +198,7 @@ def exh_memory_error(_):
 	"""
 	stacktrace = traceback.format_exc()
 	log.critical("!! Caught MemoryError !!")
-	if config['USE_NOTIFICATIONS']:
+	if config.error_notifications.enabled:
 		notify_error('MEMORY ERROR', 'generic', stacktrace)
 	return make_response(jsonify({'error':'E_SERVER_OUT_OF_MEMORY'}), 500)
 
@@ -287,7 +287,7 @@ def dev_token_mgmt(token):
 				'language': data["lang"]
 			},
 			'ip': data["last_ip"],
-			'cloudflare': None if not config["USE_CLOUDFLARE"] else {
+			'cloudflare': None if not config.cloudflare.enabled else {
 				'last_ip': data["cloudflare"]["last_ip"],
 				'country': data["cloudflare"]["country"]
 			},
@@ -502,7 +502,7 @@ def login():
 		'messages': []
 	}
 	set_credentials(token, username, password)
-	if config["USE_CLOUDFLARE"]:
+	if config.cloudflare.enabled:
 		dataObj["cloudflare"] = {"last_ip": None, "country": None}
 	save_data(token, dataObj)
 	log.debug("Starting sync for %s", username)
@@ -703,7 +703,7 @@ def log_stats():
 	dataObj['device']['platform'] = request.json["platform"]
 	dataObj['device']['model'] = request.json["device"]
 	dataObj['lang'] = request.json["language"]
-	if config["USE_CLOUDFLARE"]:
+	if config.cloudflare.enabled:
 		dataObj['cloudflare']['country'] = request.headers["CF-IPCountry"]
 		dataObj['cloudflare']['last_ip'] = request.headers["CF-Connecting-IP"]
 	save_data(token, dataObj)

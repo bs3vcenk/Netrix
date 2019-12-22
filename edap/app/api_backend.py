@@ -27,7 +27,8 @@ from time import sleep
 from time import time as _time
 from time import clock as _clock
 from string import ascii_letters
-from typing import List, Dict
+from typing import List
+from api_backend_config import Config
 
 log = logging.getLogger(__name__)
 _redis = None
@@ -42,19 +43,19 @@ def do_startup_checks():
 		Verify we've got a correctly configured server.
 	"""
 	# Check if we're using Vault
-	if not config["USE_VAULT"]:
+	if not config.vault.enabled:
 		log.warning('Vault not being used - passwords will be stored insecurely!')
 	else:
 		log.info('Vault used for credential storage')
 		# Check Vault server scheme
-		if "https://" not in config["VAULT_SERVER"]:
+		if "https://" not in config.vault.server:
 			log.warning('Vault will not be accessed through HTTPS; this is only a problem if Vault is on a different server than localhost.')
 		# Check if we can reach Vault
 		try:
-			reqst = requests.get('%s/v1/sys/health', config["VAULT_SERVER"])
+			reqst = requests.get('%s/v1/sys/health', config.vault.server)
 			reqst.raise_for_status()
 		except requests.exceptions.MissingSchema:
-			log.critical('Configuration error - incorrect address specified as Vault server (%s)', config["VAULT_SERVER"])
+			log.critical('Configuration error - incorrect address specified as Vault server (%s)', config.vault.server)
 			log.critical('Perhaps missing http:// or https:// ?')
 			_exit(1)
 		except requests.exceptions.ConnectionError:
@@ -72,17 +73,17 @@ def get_vault_info() -> dict:
 	"""
 		Get info about Hashicorp Vault.
 	"""
-	if not config["USE_VAULT"]:
+	if not config.vault.enabled:
 		return {'enabled': False}
 	session = requests.Session()
-	session.headers = {'X-Vault-Token': config["VAULT_TOKEN_READ"]}
+	session.headers = {'X-Vault-Token': config.vault.read_token}
 	returnable = {'enabled': True}
-	health = session.get('%s/v1/sys/health' % config["VAULT_SERVER"]).json()
+	health = session.get('%s/v1/sys/health' % config.vault.server).json()
 	returnable['sealed'] = health['sealed']
 	returnable['version'] = health['version']
-	read_token_status = session.get('%s/v1/auth/token/lookup-self' % config["VAULT_SERVER"]).json()
+	read_token_status = session.get('%s/v1/auth/token/lookup-self' % config.vault.server).json()
 	returnable['read_token_ttl'] = read_token_status['data']['ttl']
-	write_token_status = session.get('%s/v1/auth/token/lookup-self' % config["VAULT_SERVER"], headers={'X-Vault-Token': config["VAULT_TOKEN_WRITE"]}).json()
+	write_token_status = session.get('%s/v1/auth/token/lookup-self' % config.vault.server, headers={'X-Vault-Token': config.vault.write_token}).json()
 	returnable['write_token_ttl'] = write_token_status['data']['ttl']
 	return returnable
 
@@ -101,9 +102,9 @@ def _send_telegram_notification(message: str, parse_mode: str = "Markdown"):
 		Send a notification through Telegram.
 	"""
 	requests.post(
-		'https://api.telegram.org/bot%s/sendMessage' % config["TELEGRAM_TOKEN"],
+		'https://api.telegram.org/bot%s/sendMessage' % config.error_notifications.telegram_token,
 		data={
-			"chat_id": config["TELEGRAM_TARGET_UID"],
+			"chat_id": config.error_notifications.telegram_uid,
 			"text": message,
 			"parse_mode": parse_mode
 		}
@@ -122,13 +123,13 @@ def notify_error(problem_header: str, component: str, stacktrace=None, additiona
 		_send_telegram_notification("```%s```" % stacktrace)
 
 def get_credentials(token: str):
-	if config["USE_VAULT"]:
+	if config.vault.enabled:
 		return _get_credentials_vault(token)
 	else:
 		return _get_credentials_redis(token)
 
 def set_credentials(token: str, username: str, password: str):
-	if config["USE_VAULT"]:
+	if config.vault.enabled:
 		return _set_credentials_vault(token, username, password)
 	else:
 		return _set_credentials_redis(token, username, password)
@@ -156,14 +157,14 @@ def _get_credentials_vault(token: str):
 		Call Vault to get the creds for a token.
 	"""
 	data = requests.get(
-		'%s/v1/secret/data/%s' % (config["VAULT_SERVER"], token),
-		headers={'X-Vault-Token': config["VAULT_TOKEN_READ"]}
+		'%s/v1/secret/data/%s' % (config.vault.server, token),
+		headers={'X-Vault-Token': config.vault.read_token}
 	)
 	try:
 		data.raise_for_status()
 	except requests.exceptions.HTTPError:
 		log.critical('Failed to access credentials!')
-		if config['USE_NOTIFICATIONS']:
+		if config.error_notifications.enabled:
 			notify_error('VAULT GET ERROR', 'vault', additional_info={"token": token})
 	return data.json()["data"]["data"]
 
@@ -172,8 +173,8 @@ def _set_credentials_vault(token: str, username: str, password: str):
 		Call Vault to set a credential pair for a token.
 	"""
 	data = requests.post(
-		'%s/v1/secret/data/%s' % (config["VAULT_SERVER"], token),
-		headers={'X-Vault-Token': config["VAULT_TOKEN_WRITE"]},
+		'%s/v1/secret/data/%s' % (config.vault.server, token),
+		headers={'X-Vault-Token': config.vault.write_token},
 		json={
 			"data": {
 				"username": username,
@@ -185,7 +186,7 @@ def _set_credentials_vault(token: str, username: str, password: str):
 		data.raise_for_status()
 	except requests.exceptions.HTTPError:
 		log.critical('Failed to set credentials!')
-		if config['USE_NOTIFICATIONS']:
+		if config.error_notifications.enabled:
 			notify_error('VAULT SET ERROR', 'vault', additional_info={"token": token})
 
 def rm_credentials(token: str):
@@ -193,14 +194,14 @@ def rm_credentials(token: str):
 		Call Vault to remove a credential pair for a token.
 	"""
 	data = requests.delete(
-		'%s/v1/secret/data/%s' % (config["VAULT_SERVER"], token),
-		headers={'X-Vault-Token': config["VAULT_TOKEN_WRITE"]}
+		'%s/v1/secret/data/%s' % (config.vault.server, token),
+		headers={'X-Vault-Token': config.vault.write_token}
 	)
 	try:
 		data.raise_for_status()
 	except requests.exceptions.HTTPError:
 		log.critical('Failed to delete credentials!')
-		if config['USE_NOTIFICATIONS']:
+		if config.error_notifications.enabled:
 			notify_error('VAULT DELETE ERROR', 'vault', additional_info={"token": token})
 
 def _exit(exitCode: int):
@@ -624,7 +625,7 @@ def get_db_size() -> int:
 	"""
 		Get the size of Redis' appendonly.aof database in bytes.
 	"""
-	return _get_file_size(_join_path(config["DATA_FOLDER"], "appendonly.aof"))
+	return _get_file_size(_join_path(config.storage, "appendonly.aof"))
 
 def check_inactive_fb_tokens(auto_delete: bool = False) -> dict:
 	"""
@@ -658,7 +659,7 @@ def get_firebase_info(firebase_token: str) -> dict:
 			'https://iid.googleapis.com/iid/info/' + firebase_token,
 			params={'details': 'true'},
 			headers={
-				"Authorization": "key=%s" % config["FIREBASE_TOKEN"]
+				"Authorization": "key=%s" % config.firebase.token
 			}
 		)
 		token_status = True
@@ -692,7 +693,7 @@ def sendNotification(token: str, title: str, content: str, data=None):
 			'https://fcm.googleapis.com/fcm/send',
 			json=out_json,
 			headers={
-				"Authorization": "key=%s" % config["FIREBASE_TOKEN"]
+				"Authorization": "key=%s" % config.firebase.token
 			}
 		)
 		a.raise_for_status()
@@ -705,7 +706,7 @@ def _sync(token: str):
 		Wrapper around sync, for bg execution (random timeout).
 	"""
 	while True:
-		val = randint(config["SYNC_TIME_MIN"], config["SYNC_TIME_MAX"])
+		val = randint(config.sync.min_delay, config.sync.max_delay)
 		log.debug("Waiting %i s for %s", val, token)
 		sleep(val)
 		if not _threads["sync:" + token]["run"]:
@@ -724,92 +725,68 @@ def _get_var(varname: str, _bool: bool = False, default=None):
 	except KeyError:
 		return default
 
-def _read_config() -> Dict[str, str]:
+def _read_config() -> Config:
 	"""
 		Read, verify and print the configuration.
 	"""
-	DATA_FOLDER = _get_var("DATA_FOLDER", default="/data")
-	print("[eDAP] [INFO] Storing data in: %s" % DATA_FOLDER)
+	cfg_obj = Config()
 
-	USE_VAULT = _get_var("VAULT", _bool=True, default=True)
-	print("[eDAP] [INFO] Using Hashicorp Vault: %s" % USE_VAULT)
+	cfg_obj.storage = _get_var("DATA_FOLDER", default="/data")
+	print("[eDAP] [INFO] Storing data in: %s" % cfg_obj.storage)
 
-	VAULT_SERVER = None
-	VAULT_TOKEN_READ = None
-	VAULT_TOKEN_WRITE = None
+	cfg_obj.vault.enabled = _get_var("VAULT", _bool=True, default=True)
+	print("[eDAP] [INFO] Using Hashicorp Vault: %s" % cfg_obj.vault.enabled)
 
-	if USE_VAULT:
-		VAULT_SERVER = _get_var("VAULT_SERVER")
-		VAULT_TOKEN_READ = _get_var("VAULT_TOKEN_READ")
-		VAULT_TOKEN_WRITE = _get_var("VAULT_TOKEN_WRITE")
-		if not VAULT_TOKEN_READ or not VAULT_TOKEN_WRITE:
+	if cfg_obj.vault.enabled:
+		cfg_obj.vault.server = _get_var("VAULT_SERVER")
+		cfg_obj.vault.read_token = _get_var("VAULT_TOKEN_READ")
+		cfg_obj.vault.write_token = _get_var("VAULT_TOKEN_WRITE")
+		if not cfg_obj.vault.read_token or not cfg_obj.vault.write_token:
 			print("[eDAP] [ERROR] Vault read and/or write tokens not specified!")
 			_exit(1)
-		elif not VAULT_SERVER:
+		elif not cfg_obj.vault.server:
 			print("[eDAP] [ERROR] Vault server not specified!")
 			_exit(1)
-		print("[eDAP] [INFO] Hashicorp Vault server at: %s" % VAULT_SERVER)
+		print("[eDAP] [INFO] Hashicorp Vault server at: %s" % cfg_obj.vault.server)
 	else:
 		print("[eDAP] [WARN] Not using Vault for credential storage -- storing data insecurely in Redis!")
 
-	ALLOW_DEV_ACCESS = _get_var("DEV_ACCESS", _bool=True)
-	USE_CLOUDFLARE = _get_var("CLOUDFLARE", _bool=True)
-	USE_FIREBASE = _get_var("FIREBASE", _bool=True)
-	USE_NOTIFICATIONS = _get_var("ADMIN_NOTIFICATIONS", _bool=True)
-	SYNC_TIME_MIN = _get_var("SYNC_TIME_MIN", default=1800)
-	SYNC_TIME_MAX = _get_var("SYNC_TIME_MAX", default=6000)
-	SYNC_TIME_AUTOADJUST = _get_var("SYNC_TIME_AUTOADJUST", _bool=True)
+	cfg_obj.dev.enabled = _get_var("DEV_ACCESS", _bool=True)
+	cfg_obj.cloudflare.enabled = _get_var("CLOUDFLARE", _bool=True)
+	cfg_obj.firebase.enabled = _get_var("FIREBASE", _bool=True)
+	cfg_obj.error_notifications.enabled = _get_var("ADMIN_NOTIFICATIONS", _bool=True)
+	cfg_obj.sync.min_delay = _get_var("SYNC_TIME_MIN", default=1800)
+	cfg_obj.sync.max_delay = _get_var("SYNC_TIME_MAX", default=6000)
+	cfg_obj.sync.auto_adjust = _get_var("SYNC_TIME_AUTOADJUST", _bool=True)
 
-	privUsername = privPassword = None
-	FIREBASE_TOKEN = None
-	TELEGRAM_TOKEN = None
-	TELEGRAM_TARGET_UID = None
-
-	if ALLOW_DEV_ACCESS:
-		privUsername = _get_var("DEV_USER")
-		privPassword = _get_var("DEV_PASW")
-		if not privUsername or not privPassword:
+	if cfg_obj.dev.enabled:
+		cfg_obj.dev.username = _get_var("DEV_USER")
+		cfg_obj.dev.password = _get_var("DEV_PASW")
+		if not cfg_obj.dev.username or not cfg_obj.dev.password :
 			print("[eDAP] [WARN] Dev access has been DISABLED; both user & password need to be specified!")
-			ALLOW_DEV_ACCESS = False
+			cfg_obj.dev.enabled = False
 
-	if USE_FIREBASE:
-		FIREBASE_TOKEN = _get_var("FIREBASE_TOKEN")
-		if not FIREBASE_TOKEN:
+	if cfg_obj.firebase.enabled:
+		cfg_obj.firebase.token = _get_var("FIREBASE_TOKEN")
+		if not cfg_obj.firebase.token:
 			print("[eDAP] [WARN] Firebase has been DISABLED; no FCM token was specified!")
-			USE_FIREBASE = False
+			cfg_obj.firebase.enabled = False
 
-	if USE_NOTIFICATIONS:
-		TELEGRAM_TOKEN = _get_var("TELEGRAM_TOKEN")
-		TELEGRAM_TARGET_UID = _get_var("TELEGRAM_TARGET_UID")
-		if not TELEGRAM_TOKEN or not TELEGRAM_TARGET_UID:
+	if cfg_obj.error_notifications.enabled:
+		cfg_obj.error_notifications.telegram_token = _get_var("TELEGRAM_TOKEN")
+		cfg_obj.error_notifications.telegram_uid = _get_var("TELEGRAM_TARGET_UID")
+		if not cfg_obj.error_notifications.telegram_token or not cfg_obj.error_notifications.telegram_uid:
 			print("[eDAP] [WARN] Administrative notifications have been disabled; both the bot token and target UID need to be specified!")
+			cfg_obj.error_notifications.enabled = False
 
-	print("[eDAP] [INFO] Developer access enabled: %s" % ALLOW_DEV_ACCESS)
-	print("[eDAP] [INFO] Using Cloudflare: %s" % USE_CLOUDFLARE)
-	print("[eDAP] [INFO] Using Firebase: %s" % USE_FIREBASE)
-	print("[eDAP] [INFO] Send administrative notifications: %s" % USE_NOTIFICATIONS)
-	print("[eDAP] [INFO] Waiting between %s and %s seconds before syncing for each user" % (SYNC_TIME_MIN, SYNC_TIME_MAX))
-	print("[eDAP] [INFO] Automatically adjusting sync times: %s" % SYNC_TIME_AUTOADJUST)
-	print("[eDAP] [INFO] Further logging is in %s/edap_api.log" % DATA_FOLDER)
-	return {
-		"DATA_FOLDER": DATA_FOLDER,
-		"USE_CLOUDFLARE": USE_CLOUDFLARE,
-		"ALLOW_DEV_ACCESS": ALLOW_DEV_ACCESS,
-		"privUsername": privUsername,
-		"privPassword": privPassword,
-		"USE_FIREBASE": USE_FIREBASE,
-		"FIREBASE_TOKEN": FIREBASE_TOKEN,
-		"USE_VAULT": USE_VAULT,
-		"VAULT_SERVER": VAULT_SERVER,
-		"VAULT_TOKEN_READ": VAULT_TOKEN_READ,
-		"VAULT_TOKEN_WRITE": VAULT_TOKEN_WRITE,
-		"USE_NOTIFICATIONS": USE_NOTIFICATIONS,
-		"TELEGRAM_TOKEN": TELEGRAM_TOKEN,
-		"TELEGRAM_TARGET_UID": TELEGRAM_TARGET_UID,
-		"SYNC_TIME_MAX": SYNC_TIME_MAX,
-		"SYNC_TIME_MIN": SYNC_TIME_MIN,
-		"SYNC_TIME_AUTOADJUST": SYNC_TIME_AUTOADJUST
-	}
+	print("[eDAP] [INFO] Developer access enabled: %s" % cfg_obj.dev.enabled)
+	print("[eDAP] [INFO] Using Cloudflare: %s" % cfg_obj.cloudflare.enabled)
+	print("[eDAP] [INFO] Using Firebase: %s" % cfg_obj.firebase.enabled)
+	print("[eDAP] [INFO] Send administrative notifications: %s" % cfg_obj.error_notifications.enabled)
+	print("[eDAP] [INFO] Waiting between %s and %s seconds before syncing for each user" % (cfg_obj.sync.min_delay, cfg_obj.sync.max_delay))
+	print("[eDAP] [INFO] Automatically adjusting sync times: %s" % cfg_obj.sync.auto_adjust)
+	print("[eDAP] [INFO] Further logging is in %s/edap_api.log" % cfg_obj.storage)
+	return cfg_obj
 
 def read_log(exclude_syncing=False) -> str:
 	"""
@@ -817,7 +794,7 @@ def read_log(exclude_syncing=False) -> str:
 		all lines from the `get_class_profile` function.
 	"""
 	log_lines = []
-	with open(_join_path(config["DATA_FOLDER"], "edap_api.log")) as f:
+	with open(_join_path(config.storage, "edap_api.log")) as f:
 		for x in f.readlines():
 			if exclude_syncing and 'get_class_profile' in x:
 				continue
@@ -1126,7 +1103,7 @@ def optimize_db_aof():
 
 config = _read_config()
 logging.basicConfig(
-	filename=_join_path(config["DATA_FOLDER"], "edap_api.log"),
+	filename=_join_path(config.storage, "edap_api.log"),
 	level=logging.INFO,
 	format="%(asctime)s > %(funcName)s(%(levelname)s) => %(message)s"
 )
