@@ -101,6 +101,11 @@ try:
 		_r = request.json()
 		assert 'token' in _r, "No 'token' field in response from login request"
 		assert _r['token'] == token, "Token in response is not equal to locally calculated token"
+		### ACCESS
+		## ACCESS: Token check
+		log('TEST', 'access:token')
+		request = client.get('/api/user/rANdOMtOKeN123456/classes')
+		assert request.status_code == 401, "Non-existent token access did not return 'Unauthorized'"
 		### DATA
 		## DATA: Save Firebase token
 		log('TEST', 'data:firebase')
@@ -111,11 +116,6 @@ try:
 		if not REMOTE:
 			user_data = get_data()
 			assert user_data['firebase_device_token'] == 'ovo_je_neki_firebase_token1234567890', "Token was not saved to Redis"
-		### ACCESS
-		## ACCESS: Token check
-		log('TEST', 'access:token')
-		request = client.get('/api/user/rANdOMtOKeN123456/classes')
-		assert request.status_code == 401, "Non-existent token access did not return 'Unauthorized'"
 		## DATA: Classes
 		log('TEST', 'data:classes')
 		request = client.get('/api/user/%s/classes' % token)
