@@ -202,6 +202,14 @@ def exh_memory_error(_):
 		notify_error('MEMORY ERROR', 'generic', stacktrace)
 	return make_response(jsonify({'error':'E_SERVER_OUT_OF_MEMORY'}), 500)
 
+@app.route('/dev/memory', methods=["GET"])
+@dev_pw_area
+def dev_memory_usage():
+	"""
+		DEV: Output used memory using Pympler.
+	"""
+	return memory_summary()
+
 @app.route('/dev/dboptimize', methods=["GET"])
 @dev_area
 def dev_db_optimize():
