@@ -62,7 +62,7 @@ def do_startup_checks():
 			log.warning('Vault will not be accessed through HTTPS; this is only a problem if Vault is on a different server than localhost.')
 		# Check if we can reach Vault
 		try:
-			reqst = requests.get('%s/v1/sys/health', config.vault.server)
+			reqst = requests.get('%s/v1/sys/health' % config.vault.server)
 			reqst.raise_for_status()
 		except requests.exceptions.MissingSchema:
 			log.critical('Configuration error - incorrect address specified as Vault server (%s)', config.vault.server)
