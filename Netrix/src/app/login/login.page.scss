@@ -14,30 +14,12 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  -webkit-animation: flow 10s infinite linear;
-}
-
-#loginButton {
-  transition: width 1s;
-}
-
-@-webkit-keyframes flow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
 }
 
 #loginButton {
   padding-left: 10px;
   padding-right: 10px;
   float: right;
-  --box-shadow: 3px 3.5px 6px -4px rgba(0, 0, 0, 0.75);
 }
 	
 #loginPage {
