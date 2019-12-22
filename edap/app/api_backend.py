@@ -24,7 +24,6 @@ from os.path import join as _join_path
 from os.path import getsize as _get_file_size
 from threading import Thread
 from time import sleep
-from time import time as _time
 from time import clock as _clock
 from string import ascii_letters
 from typing import List
@@ -253,108 +252,6 @@ def random_string(length: int) -> str:
 		Return a random string with of specified length.
 	"""
 	return ''.join(_random_choice(ascii_letters) for m in range(length))
-
-def generate_test_user() -> (str, str, str):
-	"""
-		Generate a user for testing purposes.
-	"""
-	user = random_string(6)
-	pasw = random_string(10)
-	token = hash_string(user + ":" + pasw)
-	data = {
-		'ignore_updating': True,
-		'data': {
-			'classes': [
-				{
-					"class": "1.a",
-					"classmaster": "Razrednik",
-					"complete_avg": 4.20,
-					"school_city": "Grad",
-					"school_name": "Ime škole",
-					"year": "2018./2019.",
-					"subjects": [
-						{
-							"average": 4.58,
-							"id": 0,
-							"professors": ["Netko Netkić", "Nitko Nitkić"],
-							"subject": "Hrvatski jezik"
-						},
-						{
-							"average": 5.00,
-							"id": 1,
-							"professors": ["Netko Netkić"],
-							"subject": "Engleski jezik"
-						},
-						{
-							"average": 3.89,
-							"id": 1,
-							"professors": ["Nitko Nitkić"],
-							"subject": "Latinski jezik"
-						},
-						{
-							"average": 4.96,
-							"id": 1,
-							"professors": ["Ivan Ivanović"],
-							"subject": "Fizika"
-						}
-					],
-					"tests": [
-						{
-							"current": False,
-							"date": _time() - 120,
-							"id": 0,
-							"subject": "Hrvatski",
-							"test": "Prvi ispit znanja"
-						},
-						{
-							"current": True,
-							"date": _time() + 259200 + 120,
-							"id": 1,
-							"subject": "Hrvatski",
-							"test": "Drugi ispit znanja"
-						}
-					],
-					'info': {
-						"address": "Ulica, Mjesto",
-						"birthdate": "1. 1. 2000.",
-						"birthplace": "Grad, Država",
-						"name": "Netko Netkić",
-						"number": 1,
-						"program": "Program"
-					},
-					"absences": {
-						"overview":{
-							"awaiting": 0,
-							"justified": 0,
-							"sum": 0,
-							"sum_leftover": 0,
-							"unjustified": 0
-						},
-						"full":[]
-					}
-				}
-			]
-		},
-		'last_ip': '0.0.0.0',
-		'device': {
-			'platform': None,
-			'model': None
-		},
-		'lang': None,
-		'resolution': None,
-		'new': None,
-		'generated_with': 'testUser',
-		'settings': {
-			'notif': {
-				'disable': False,
-				'ignore': []
-			}
-		},
-		'messages': []
-	}
-	save_data(token, data)
-	set_credentials(token, user, pasw)
-	return user, pasw, token
 
 def get_setting(token: str, action: str):
 	"""
