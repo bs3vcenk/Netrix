@@ -210,6 +210,7 @@ def dev_db_optimize():
 	"""
 	pre_size = convert_size(get_db_size())
 	optimize_db_aof()
+	sleep(1)
 	post_size = convert_size(get_db_size())
 	return make_response(jsonify({
 		'size_prev': pre_size,
