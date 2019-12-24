@@ -32,14 +32,14 @@ export class SettingsService {
   readPrefs() {
     this.storage.get('data-preference').then(res => {
       if (res != null) {
-        console.log('SettingsService/readPrefs(): Firebase Analytics preference set to ' + res);
+        this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference set to ' + res);
         this.firebase.setAnalyticsCollectionEnabled(res);
         this.dataPreference = res;
       } else { // If it isn't stored, store it and set default (false)
         this.storage.set('data-preference', false).then(() => {
           this.dataPreference = false;
           this.firebase.setAnalyticsCollectionEnabled(false);
-          console.log('SettingsService/readPrefs(): Firebase Analytics preference defaulted to off');
+          this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference defaulted to off');
         });
       }
       // this.hasLoadedDataPref.next(true);
@@ -71,7 +71,7 @@ export class SettingsService {
 
   setGlobalTheme(nThemeName: 'dark' | 'light') {
     /* Set/unset dark mode */
-    console.log('SettingsService/setGlobalTheme(): Setting ' + nThemeName + ' theme');
+    this.firebase.logMessage('SettingsService/setGlobalTheme(): Setting ' + nThemeName + ' theme');
     document.body.classList.toggle('dark', nThemeName === 'dark');
     nThemeName === 'dark' ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
     this.statusBar.backgroundColorByHexString(nThemeName === 'dark' ? '#0d0d0d' : '#f8f8f8');
@@ -94,7 +94,7 @@ export class SettingsService {
   changePreference(pref, prefValue) {
     /* Set `pref` to `prefValue` */
     this.storage.set(pref, prefValue).then(() => {
-      console.log('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
+      this.firebase.logMessage('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
     });
   }
 
@@ -105,23 +105,22 @@ export class SettingsService {
     // Check if we are running SQLite
     const res = await this.storage.get(dummyKeyTitle);
     if (res) {
-      console.log('SettingsService/migrateData(): Don\'t need to migrate data, migration already finished.');
+      this.firebase.logMessage('SettingsService/migrateData(): Don\'t need to migrate data, migration already finished.');
       this.migrationFinished.next(true);
       return;
     }
     // Open the default Ionic database, named "_ionicstorage"
     const idb = window.indexedDB.open('_ionicstorage');
     idb.onsuccess = (_) => {
-      console.log('SettingsService/migrateData(): Opened IndexedDB');
+      this.firebase.logMessage('SettingsService/migrateData(): Opened IndexedDB');
       const database = idb.result;
       // Now open the "_ionickv" store
       let objStore: IDBObjectStore;
       try {
         objStore = database.transaction('_ionickv', 'readonly').objectStore('_ionickv');4
       } catch (e) {
-        console.warn('SettingsService/migrateData(): Failed to open db transaction:');
-        console.warn(e);
-        console.warn('SettingsService/migrateData(): Assuming this is a new install and does not need migrating');
+        this.firebase.logMessage('SettingsService/migrateData(): Failed to open db transaction');
+        this.firebase.logMessage('SettingsService/migrateData(): Assuming this is a new install and does not need migrating');
         this.storage.set(dummyKeyTitle, dummyKeyContent);
         this.migrationFinished.next(true);
         return;
@@ -134,7 +133,7 @@ export class SettingsService {
         } else {
           this.migrationFinished.next(true);
           this.storage.set(dummyKeyTitle, dummyKeyContent);
-          console.log('SettingsService/migrateData(): No more keys left');
+          this.firebase.logMessage('SettingsService/migrateData(): No more keys left');
         }
       };
     };

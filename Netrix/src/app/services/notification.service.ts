@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from './settings.service';
 import { Platform } from '@ionic/angular';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,8 @@ export class NotificationService {
     private apiSvc: ApiService,
     private translate: TranslateService,
     private settings: SettingsService,
-    private plt: Platform
+    private plt: Platform,
+    private firebase: FirebaseX
   ) {
     /* Get all scheduled notifications and let scheduleTestNotifications
      * know we're done */
@@ -103,7 +105,7 @@ export class NotificationService {
 
   private scheduleNotifications(notifications: ILocalNotification[]) {
     /* Schedules a list of notifications. Time is in miliseconds */
-    console.log(
+    this.firebase.logMessage(
       'NotificationService/scheduleNotifications(): Scheduling ' + notifications.length + ' notifications'
     );
     this.notif.schedule(notifications);

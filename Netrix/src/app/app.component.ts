@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from './services/api.service';
 import { NotificationService } from './services/notification.service';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +29,8 @@ export class AppComponent {
     private config: Config,
     private apiSvc: ApiService,
     private notifSvc: NotificationService,
-    private splash: SplashScreen
+    private splash: SplashScreen,
+    private firebase: FirebaseX
   ) {
     this.initializeApp();
   }
@@ -39,8 +41,7 @@ export class AppComponent {
       this.fcm.onNotifications().subscribe(
         () => this.apiSvc.switchActiveClass(0));
     } catch (e) {
-      console.warn('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running Cordova.');
-      console.warn('AppComponent/notificationSetup(): This means we won\'t be receiving any Firebase notifications.');
+      this.firebase.logMessage('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running Cordova.');
     }
   }
 
@@ -114,7 +115,7 @@ export class AppComponent {
       /* Check and schedule exam notifications when ready */
       this.apiSvc.loadingFinishedTests.subscribe(val => {
         if (val) {
-          console.log('AppComponent/initializeApp(): Test loading finished');
+          this.firebase.logMessage('AppComponent/initializeApp(): Test loading finished');
           this.notifSvc.scheduleTestNotifications(this.settings.notifTime);
         }
       });

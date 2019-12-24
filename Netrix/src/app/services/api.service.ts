@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { HTTP, HTTPResponse } from '@ionic-native/http/ngx';
 import { Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 export interface SubjectData {
   name: string;
@@ -66,7 +67,8 @@ export class ApiService {
     private settings: SettingsService,
     private authServ: AuthenticationService,
     private plt: Platform,
-    private storage: Storage
+    private storage: Storage,
+    private firebase: FirebaseX
   ) {
     this.plt.ready().then(() => {
       /* Default to JSON as we'll be receiving only JSON from the API */
@@ -94,7 +96,7 @@ export class ApiService {
     /* Remove all key-value pairs that are part of the cache. */
     await this.storage.forEach((val, keyId) => {
       if (keyId.startsWith('cache:')) {
-        console.log('ApiService/clearCache(): Deleting ' + keyId);
+        this.firebase.logMessage('ApiService/clearCache(): Deleting ' + keyId);
         this.storage.remove(keyId);
       }
     });
@@ -126,9 +128,9 @@ export class ApiService {
     } catch (e) {
       if (e.code === 22) {
         // TODO: Handle this
-        console.warn('ApiService/storeInCache(): Failed to store data in cache, no space. Handling TBD.');
+        this.firebase.logMessage('ApiService/storeInCache(): Failed to store data in cache, no space. Handling TBD.');
       } else {
-        console.warn('ApiService/storeInCache(): Failed to store data in cache, some other error. Sending to handler.');
+        this.firebase.logMessage('ApiService/storeInCache(): Failed to store data in cache, some other error. Sending to handler.');
         throw e;
       }
     }
@@ -142,26 +144,26 @@ export class ApiService {
       /* User is not authenticated (possibly token purged from server DB, or logged out
        * from another device) */
       this.authServ.logout();
-      console.warn('ApiService/handleErr(): Server doesn\'t have our token stored, logging out');
+      this.firebase.logMessage('ApiService/handleErr(): Server doesn\'t have our token stored, logging out');
     } else if (e.error === 'E_DATABASE_CONNECTION_FAILED' || (errorObj.status >= 500 && errorObj.status <= 599)) {
       /* Server-side issue */
       this.dbError.next(true);
-      console.warn('ApiService/handleErr(): Server-side error');
+      this.firebase.logMessage('ApiService/handleErr(): Server-side error');
     } else if (errorObj.status === -2) {
       /* Certificate not trusted, either MITM or public Wi-Fi login page */
       this.trustError.next(true);
-      console.warn('ApiService/handleErr(): Certificate could not be verified');
+      this.firebase.logMessage('ApiService/handleErr(): Certificate could not be verified');
     } else if (errorObj.status === -3 || errorObj.status === -4 || errorObj.status === -1) {
       /* Network error */
       this.networkError.next(true);
-      console.warn('ApiService/handleErr(): Request failed');
+      this.firebase.logMessage('ApiService/handleErr(): Request failed');
     } else {
       /* Unknown error, probably a network error (e.g. no Internet access)
        *
        * Also could be something unhandled, so we throw the object so that Crashlytics
        * picks it up */
       this.networkError.next(true);
-      console.warn('ApiService/handleErr(): Unknown error');
+      this.firebase.logMessage('ApiService/handleErr(): Unknown error');
       throw errorObj;
     }
   }
@@ -217,9 +219,8 @@ export class ApiService {
     ).then((rx) => {
       const response = JSON.parse(rx.data);
       this.classes = response.classes;
-    }, (error) => {
-      console.warn('ApiService/getClasses(): Request failed, but not calling handleErr');
-      console.log(error);
+    }, () => {
+      this.firebase.logMessage('ApiService/getClasses(): Request failed, but not calling handleErr');
     });
   }
 
@@ -245,9 +246,8 @@ export class ApiService {
       {deviceToken: firebaseToken},
       this.httpHeader
     ).then(() => {},
-    (error) => {
-      console.warn('ApiService/saveFirebaseToken(): Request failed, but not calling handleErr');
-      console.log(error);
+    () => {
+      this.firebase.logMessage('ApiService/saveFirebaseToken(): Request failed, but not calling handleErr');
     });
   }
 
@@ -315,7 +315,7 @@ export class ApiService {
         fetchedFromCache = true;
         info = cachedResponse;
       } else {
-        console.warn('ApiService/getUserInfo(): No cached data');
+        this.firebase.logMessage('ApiService/getUserInfo(): No cached data');
         this.handleErr(error);
         return;
       }
@@ -339,8 +339,7 @@ export class ApiService {
       this.loadingFinishedNotif.next(true);
       // this.loadingFinishedNotif.complete();
     }, (error) => {
-      console.warn('ApiService/getNotifConfig(): Request failed, but not calling handleErr');
-      console.log(error);
+      this.firebase.logMessage('ApiService/getNotifConfig(): Request failed, but not calling handleErr');
       /* Let preCacheData() know we're done */
       this.loadingFinishedNotif.next(true);
       // this.loadingFinishedNotif.complete();
@@ -369,7 +368,7 @@ export class ApiService {
         fetchedFromCache = true;
         response = cachedResponse;
       } else {
-        console.warn('ApiService/getSubjects(): No cached data');
+        this.firebase.logMessage('ApiService/getSubjects(): No cached data');
         this.handleErr(error);
         return;
       }
@@ -412,7 +411,7 @@ export class ApiService {
         fetchedFromCache = true;
         response = cachedResponse;
       } else {
-        console.warn('ApiService/getTests(): No cached data');
+        this.firebase.logMessage('ApiService/getTests(): No cached data');
         this.handleErr(error);
         return;
       }
@@ -515,7 +514,7 @@ export class ApiService {
         fetchedFromCache = true;
         absences = cachedResponse;
       } else {
-        console.warn('ApiService/getAbsences(): No cached data');
+        this.firebase.logMessage('ApiService/getAbsences(): No cached data');
         this.handleErr(error);
         return;
       }
@@ -559,12 +558,12 @@ export class ApiService {
     /* Check if we have the subject ID cached already */
     if (this.subjCacheMap[subjId]) {
       /* If we do, return the cached object */
-      console.log('ApiService/getSubject(): Have subject ID ' + subjId + ' cached, returning that');
+      this.firebase.logMessage('ApiService/getSubject(): Have subject ID ' + subjId + ' cached, returning that');
       return this.subjCacheMap[subjId];
     } else {
       /* If we don't, fetch the data from the server, process it, and store it
        * into the cache */
-      console.log('ApiService/getSubject(): Subject ID ' + subjId + ' not cached, fetching remote');
+      this.firebase.logMessage('ApiService/getSubject(): Subject ID ' + subjId + ' not cached, fetching remote');
       const rx = await this.http.get(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects/' + subjId,
         {},

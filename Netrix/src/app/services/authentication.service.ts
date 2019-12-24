@@ -66,9 +66,9 @@ export class AuthenticationService {
       },
       this.httpHeader)
     .then(() => {
-      console.log('AuthenticationService/sendDeviceInfo(): Successfully sent device info');
+      this.firebase.logMessage('AuthenticationService/sendDeviceInfo(): Successfully sent device info');
     }, () => {
-      console.log('AuthenticationService/sendDeviceInfo(): Failed to send device info');
+      this.firebase.logMessage('AuthenticationService/sendDeviceInfo(): Failed to send device info');
     });
   }
 

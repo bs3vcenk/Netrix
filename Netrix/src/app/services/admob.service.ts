@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 declare var admob;
 
@@ -9,7 +9,7 @@ export class AdmobService {
   adPreference = null;
 
   constructor(
-    private storage: Storage
+    private firebase: FirebaseX
   ) {
     /* Check if the user wants to see ads */
     /*this.storage.get('ad-preference').then(res => {
@@ -25,7 +25,7 @@ export class AdmobService {
   showBanner() {
     if (this.adPreference) {
       /* Show the ad banner */
-      console.log('AdmobService/showBanner(): Showing ad banner');
+      this.firebase.logMessage('AdmobService/showBanner(): Showing ad banner');
       admob.banner.show({
         id: {
           android: 'ca-app-pub-3536042070948443/8284474155',
@@ -34,13 +34,13 @@ export class AdmobService {
         size: 0, // BANNER
       });
     } else {
-      console.log('AdmobService/showBanner(): Not showing ad because of preference');
+      this.firebase.logMessage('AdmobService/showBanner(): Not showing ad because of preference');
     }
   }
 
   hideBanner() {
     /* Hide the ad banner, used by dev settings */
-    console.log('AdmobService/hideBanner(): Hiding ad banner');
+    this.firebase.logMessage('AdmobService/hideBanner(): Hiding ad banner');
     admob.banner.hide({
       id: {
         android: 'ca-app-pub-3536042070948443/8284474155',
