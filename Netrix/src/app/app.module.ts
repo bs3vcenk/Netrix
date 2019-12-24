@@ -16,7 +16,6 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { CrashlyticsErrorHandler } from './services/firebase.service';
 import { AdMob } from '@ionic-native/admob-plus/ngx';
 import { AdmobService } from './services/admob.service';
-import { CountUpModule } from 'countup.js-angular2';
 import { HTTP } from '@ionic-native/http/ngx';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 
@@ -43,7 +42,6 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    CountUpModule,
     HttpClientModule
   ],
   providers: [
