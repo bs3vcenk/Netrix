@@ -27,7 +27,6 @@ export class FirebaseService {
     /* Store device token (for FCM) and API token (for server-side identification) */
     if (!this.platform.is('cordova')) { return; }
     /* Add the token to crash reports */
-    this.firebase.setUserId(serviceToken);
     this.firebase.setCrashlyticsUserId(serviceToken);
     /* Push the device token to the API */
     this.apiSvc.saveFirebaseToken(firebaseToken);
