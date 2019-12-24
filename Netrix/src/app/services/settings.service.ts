@@ -117,7 +117,7 @@ export class SettingsService {
       // Now open the "_ionickv" store
       let objStore: IDBObjectStore;
       try {
-        objStore = database.transaction('_ionickv', 'readonly').objectStore('_ionickv');4
+        objStore = database.transaction('_ionickv', 'readonly').objectStore('_ionickv');
       } catch (e) {
         this.firebase.logMessage('SettingsService/migrateData(): Failed to open db transaction');
         this.firebase.logMessage('SettingsService/migrateData(): Assuming this is a new install and does not need migrating');
