@@ -22,11 +22,11 @@
       <ion-label>{{ 'settings.analytics.usage' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="dataPreference" (ionChange)="updDeviceInfoPreference()"></ion-toggle>
     </ion-item>
-    <!-- SWITCH (disabled): Advertisements -->
-    <!--<ion-item>
+    <!-- SWITCH: Advertisements -->
+    <ion-item>
       <ion-label>{{ 'settings.analytics.ads' | translate }}</ion-label>
-      <ion-toggle slot="end" [(ngModel)]="adPreference" (ionChange)="updAdPreference()" disabled="true"></ion-toggle>
-    </ion-item>-->
+      <ion-toggle slot="end" [(ngModel)]="adPreference" (ionChange)="updAdPreference()"></ion-toggle>
+    </ion-item>
     <ion-item button routerLink="/privacy" routerDirection="forward" disabled="{{usingCache}}">
       <ion-label>{{ 'login.text.privacy' | translate }}</ion-label>
     </ion-item>
