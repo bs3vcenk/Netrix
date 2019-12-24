@@ -30,14 +30,9 @@ export class AuthenticationService {
     private firebase: FirebaseX
   ) {
     this.plt.ready().then(() => {
-      /* Default to JSON as we'll be receiving only JSON from the API */
-      this.http.setDataSerializer('json');
-      /* Check if the user already has a stored token */
       this.settings.migrationFinished.subscribe(status => {
         if (status) { this.checkToken(); }
       });
-      /* Force 'legacy' mode; trust only system certs */
-      this.http.setSSLCertMode('legacy');
     });
   }
 

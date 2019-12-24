@@ -11,6 +11,7 @@ import { ApiService } from './services/api.service';
 import { NotificationService } from './services/notification.service';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { HTTP } from '@ionic-native/http/ngx';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +31,8 @@ export class AppComponent {
     private apiSvc: ApiService,
     private notifSvc: NotificationService,
     private splash: SplashScreen,
-    private firebase: FirebaseX
+    private firebase: FirebaseX,
+    private http: HTTP
   ) {
     this.initializeApp();
   }
@@ -119,6 +121,11 @@ export class AppComponent {
           this.notifSvc.scheduleTestNotifications(this.settings.notifTime);
         }
       });
+
+      /* Default to JSON as we'll be receiving only JSON from the API */
+      this.http.setDataSerializer('json');
+      /* Force 'legacy' mode; trust only system certs */
+      this.http.setServerTrustMode('legacy');
     });
   }
 }

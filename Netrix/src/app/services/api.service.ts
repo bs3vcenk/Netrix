@@ -69,14 +69,7 @@ export class ApiService {
     private plt: Platform,
     private storage: Storage,
     private firebase: FirebaseX
-  ) {
-    this.plt.ready().then(() => {
-      /* Default to JSON as we'll be receiving only JSON from the API */
-      this.http.setDataSerializer('json');
-      /* Force 'legacy' mode; trust only system certs */
-      this.http.setSSLCertMode('legacy');
-    });
-  }
+  ) { }
 
   async preCacheData() {
     this.plt.ready().then(() => {
