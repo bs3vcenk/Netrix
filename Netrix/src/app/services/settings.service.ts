@@ -27,7 +27,11 @@ export class SettingsService {
     private admobSvc: AdmobService,
     private statusBar: StatusBar,
     private firebase: FirebaseX
-  ) {}
+  ) {
+    this.storage.ready().then(() => {
+      this.firebase.logMessage('SettingsService: Storage is ready');
+    });
+  }
 
   readPrefs() {
     this.storage.get('data-preference').then(res => {
