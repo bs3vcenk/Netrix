@@ -104,9 +104,9 @@ export class AuthenticationService {
         {},
         this.httpHeader
       ).then(() => {
-        console.log('AuthenticationService/logout(): Server-side data successfully deleted');
+        this.firebase.logMessage('AuthenticationService/logout(): Server-side data successfully deleted');
       }, () => {
-        console.log('AuthenticationService/logout(): Failed to delete server-side data');
+        this.firebase.logMessage('AuthenticationService/logout(): Failed to delete server-side data');
       });
       /* Unregister from FCM */
       this.firebase.unregister();
