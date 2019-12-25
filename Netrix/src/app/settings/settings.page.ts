@@ -27,12 +27,6 @@ export class SettingsPage {
   timeSingular = this.translate.instant('settings.time_singular');
   timePlural = this.translate.instant('settings.time_plural');
 
-  dataPreference = null;
-  notifPreference = null;
-  errorPreference = null;
-  adPreference = null;
-  forceCroatianPreference = null;
-  testNotifTime = null;
   darkModePreference = null;
   usingCache = null;
   dayString = this.timePlural;
@@ -40,7 +34,7 @@ export class SettingsPage {
 
   constructor(
     private authServ: AuthenticationService,
-    private settings: SettingsService,
+    public settings: SettingsService,
     private pickerCtrl: PickerController,
     private translate: TranslateService,
     private apiSvc: ApiService,
@@ -49,15 +43,9 @@ export class SettingsPage {
     private notifSvc: NotificationService,
     private admobSvc: AdmobService
   ) {
-    this.dataPreference = this.settings.dataPreference;
-    // this.errorPreference = this.settings.errorPreference;
-    this.notifPreference = this.settings.notifPreference;
-    this.testNotifTime = this.settings.notifTime;
-    this.adPreference = this.settings.adPreference;
-    this.forceCroatianPreference = this.settings.forceCroatianPreference;
-    this.darkModePreference = this.settings.globalTheme === 'dark';
+    this.darkModePreference = this.settings.preferences.theme === 'dark';
     this.usingCache = this.apiSvc.usingCachedContent;
-    if (this.testNotifTime === 1) {
+    if (this.settings.preferences.testNotifTime === 1) {
       this.dayString = this.timeSingular;
     }
   }
@@ -100,41 +88,27 @@ export class SettingsPage {
     });
   }
 
-  updDeviceInfoPreference() {
+  /*updDeviceInfoPreference() {
     if (this.dataPreference !== this.settings.dataPreference) {
       this.settings.setDataCollection(this.dataPreference);
     }
-  }
+  }*/
 
   updAdPreference() {
-    if (this.adPreference !== this.settings.adPreference) {
-      this.settings.changePreference('ad-preference', this.adPreference);
-      this.settings.adPreference = this.adPreference;
-      this.effectOnRestart();
-    }
+    this.settings.syncPreferences();
+    this.effectOnRestart();
   }
 
   updMainNotificationPreference() {
-    if (this.notifPreference !== this.settings.notifPreference) {
-      this.settings.changePreference('notif-preference', this.notifPreference);
-      this.settings.notifPreference = this.notifPreference;
-      this.apiSvc.setNotifDisabled(!this.notifPreference);
-    }
+    this.apiSvc.setNotifDisabled(!this.settings.preferences.enableNotifications);
+    this.settings.syncPreferences();
   }
 
   updDarkModePreference() {
-    if (this.darkModePreference ? 'dark' : 'light' === this.settings.globalTheme) {
-      this.settings.changePreference('global-theme', this.darkModePreference ? 'dark' : 'light');
-      this.settings.globalTheme = this.darkModePreference ? 'dark' : 'light';
-      this.settings.setGlobalTheme(this.settings.globalTheme);
-    }
-  }
-
-  updHRForcePreference() {
-    if (this.forceCroatianPreference !== this.settings.forceCroatianPreference) {
-      this.settings.changePreference('force-croatian-preference', this.forceCroatianPreference);
-      this.settings.forceCroatianPreference = this.forceCroatianPreference;
-      this.effectOnRestart();
+    if (this.darkModePreference ? 'dark' : 'light' !== this.settings.preferences.theme) {
+      this.settings.preferences.theme = this.darkModePreference ? 'dark' : 'light';
+      this.settings.setGlobalTheme(this.settings.preferences.theme);
+      this.settings.syncPreferences();
     }
   }
 
@@ -152,14 +126,13 @@ export class SettingsPage {
         {
           text: this.translate.instant('settings_page.alert.time.choice.done'),
           handler: (choice: any) => {
-            this.testNotifTime = choice.time.value;
-            this.settings.changePreference('notif-time', this.testNotifTime);
-            this.settings.notifTime = this.testNotifTime;
-            if (this.testNotifTime === 1) {
+            this.settings.preferences.testNotifTime = choice.time.value;
+            if (this.settings.preferences.testNotifTime === 1) {
               this.dayString = this.timeSingular;
             } else {
               this.dayString = this.timePlural;
             }
+            this.settings.syncPreferences();
             this.resetNotif();
           },
         }
