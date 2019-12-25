@@ -669,8 +669,8 @@ def _read_config() -> Config:
 	cfg_obj.cloudflare.enabled = _get_var("CLOUDFLARE", _bool=True)
 	cfg_obj.firebase.enabled = _get_var("FIREBASE", _bool=True)
 	cfg_obj.error_notifications.enabled = _get_var("ADMIN_NOTIFICATIONS", _bool=True)
-	cfg_obj.sync.min_delay = _get_var("SYNC_TIME_MIN", default=1800)
-	cfg_obj.sync.max_delay = _get_var("SYNC_TIME_MAX", default=6000)
+	cfg_obj.sync.min_delay = int(_get_var("SYNC_TIME_MIN", default=1800))
+	cfg_obj.sync.max_delay = int(_get_var("SYNC_TIME_MAX", default=6000))
 	cfg_obj.sync.auto_adjust = _get_var("SYNC_TIME_AUTOADJUST", _bool=True)
 
 	if cfg_obj.dev.enabled:
