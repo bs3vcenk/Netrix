@@ -759,7 +759,10 @@ def get_data(token: str):
 		Retreive JSON from Redis by token, format it from bytes to string,
 		and return it as a dict.
 	"""
-	return _json_load(_redis.get("token:" + token).decode("utf-8"))
+	try:
+		return _json_load(_redis.get("token:" + token).decode("utf-8"))
+	except AttributeError:
+		notify_error('DATA GET ERROR', 'get_data', additional_info={'token':token})
 
 def get_tokens() -> List[str]:
 	"""
