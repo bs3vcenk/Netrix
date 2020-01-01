@@ -63,6 +63,12 @@ export class CrashlyticsErrorHandler extends ErrorHandler {
           this.firebase.logError(error.message, st);
         });
       } catch (e) {
+        console.log(
+          'CrashlyticsErrorHandler/handleError(): Failed to send error to Crashlytics; assuming Firebase is unavailable on this device'
+        );
+        console.log('CrashlyticsErrorHandler/handleError(): Originally encountered exception:');
+        console.error(error);
+        console.log('CrashlyticsErrorHandler/handleError(): Exception encountered while sending to Firebase:');
         console.error(e);
       }
     }
