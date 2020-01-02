@@ -66,7 +66,9 @@ export class AppComponent {
       /* Initialize preferences */
       this.settings.readPrefs();
       /* Localize back button text */
-      this.config.set('backButtonText', this.translate.instant('generic.back'));
+      this.translate.get('generic.back').subscribe((res: string) => {
+        this.config.set('backButtonText', res);
+      });
       this.apiSvc.getMaintenanceMode();
       /* Subscribe to the authenticationState object, and check if the user is
        * logged in or not. */
