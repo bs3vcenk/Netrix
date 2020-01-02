@@ -34,6 +34,7 @@ export class NotificationService {
     this.plt.ready().then(() => {
       this.firebase.logMessage('NotificationService/syncLocalLists(): Resetting notification lists');
       this.notif.getAll().then(notifs => {
+        this.firebase.logMessage('NotificationService/syncLocalLists(): ' + JSON.stringify(notifs));
         this.scheduledNotifIDs = [];
         notifs.forEach(notifX => {
           this.scheduledNotifIDs.push(notifX.id);
