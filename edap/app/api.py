@@ -36,7 +36,7 @@ def authenticate():
 
 def dev_pw_area(f):
 	"""
-		Decorator that marks a function as belonging to the browser-side
+		Decorator that marks a function as belonging to the browser-accessible
 		/dev/ dashboard, and protects it with a username and password
 	"""
 	@wraps(f)
@@ -65,7 +65,7 @@ def dev_pw_area(f):
 			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
 			abort(404)
 		# If the credential pair was correct, log access and return
-		log.info('DEV => Successful access from %s using password auth', ip)
+		log.debug('DEV => Successful access from %s using password auth', ip)
 		return f(*args, **kwargs)
 	return decorated
 
@@ -100,7 +100,7 @@ def dev_area(f):
 			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
 			abort(404)
 		# If the token verification was successful, log access and return
-		log.info('DEV => Successful access from %s using token auth', ip)
+		log.debug('DEV => Successful access from %s using token auth', ip)
 		return f(*args, **kwargs)
 	return decorated
 
@@ -252,8 +252,7 @@ def dev_log():
 	"""
 		DEV: Simple page to print the log file.
 	"""
-	filter_sync = request.args.get('filter', type=bool)
-	return make_response(jsonify({'log':read_log(exclude_syncing=filter_sync)}), 200)
+	return make_response(jsonify({'log':read_log()}), 200)
 
 @app.route('/dev/firebase', methods=["GET"])
 @dev_area
@@ -400,8 +399,8 @@ def dev_force_diff(token):
 	"""
 	if not verify_request(token):
 		abort(401)
-	debug_output = sync(token, debug=True)
-	return make_response(debug_output, 200)
+	sync(token)
+	return make_response('', 200)
 
 @app.route('/api/login', methods=["POST"])
 def login():
