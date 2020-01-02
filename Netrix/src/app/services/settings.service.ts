@@ -5,40 +5,22 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { BehaviorSubject } from 'rxjs';
 
-interface Preferences {
-  theme: 'dark' | 'light';
-  dataCollection: boolean;
-  showAd: boolean;
-  enableNotifications: boolean;
-  testNotifTime: number;
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class SettingsService {
 
   migrationFinished = new BehaviorSubject(false);
-  prefsFinished = new BehaviorSubject(false);
 
-  /*dataPreference = null;
+  dataPreference = null;
   notifPreference = null;
   adPreference = null;
-  forceCroatianPreference = null;*/
+  forceCroatianPreference = null;
   language = null;
-  // notifTime = null;
+  notifTime = null;
   apiServer = 'https://api.netrix.io';
   // httpLimit = 5000;
-  // globalTheme: 'dark' | 'light';
-
-  private defaultPreferences: Preferences = {
-    theme: 'light',
-    dataCollection: false,
-    showAd: true,
-    enableNotifications: true,
-    testNotifTime: 3
-  };
-  preferences: Preferences = this.defaultPreferences;
+  globalTheme: 'dark' | 'light';
 
   constructor(
     private storage: Storage,
@@ -51,25 +33,43 @@ export class SettingsService {
     });
   }
 
-  async resetPreferences() {
-    /* Reset user preferences (also called on first start) */
-    await this.storage.set('user-preferences', this.defaultPreferences);
-    this.firebase.logMessage('SettingsService/resetPreferences(): Successfully (re)set preferences');
-  }
-
-  async syncPreferences() {
-    /* Sync `preferences` variable with database */
-    await this.storage.set('user-preferences', this.preferences);
-    this.firebase.logMessage('SettingsService/syncPreferences(): Successfully synced preferences with database');
-  }
-
   readPrefs() {
-    this.storage.get('user-preferences').then((res: Preferences) => {
-      if (res === null) {
-        this.resetPreferences();
-      } else {
-        this.preferences = res;
+    this.storage.get('data-preference').then(res => {
+      if (res != null) {
+        this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference set to ' + res);
+        this.firebase.setAnalyticsCollectionEnabled(res);
+        this.dataPreference = res;
+      } else { // If it isn't stored, store it and set default (false)
+        this.storage.set('data-preference', false).then(() => {
+          this.dataPreference = false;
+          this.firebase.setAnalyticsCollectionEnabled(false);
+          this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference defaulted to off');
+        });
       }
+      // this.hasLoadedDataPref.next(true);
+      this.storage.get('notif-preference').then(resx => {
+        if (resx != null) {
+          this.notifPreference = resx;
+        } else {
+          this.notifPreference = true;
+        }
+      });
+      this.storage.get('notif-time').then(resx => {
+        if (resx != null) {
+          this.notifTime = resx;
+        } else {
+          this.notifTime = 3; // three days
+        }
+      });
+      this.storage.get('global-theme').then(resx => {
+        if (resx != null) {
+          this.globalTheme = resx;
+          this.setGlobalTheme(this.globalTheme);
+        } else {
+          this.globalTheme = 'light';
+        }
+      });
+      this.adPreference = this.admobSvc.adPreference;
     });
   }
 
@@ -83,7 +83,23 @@ export class SettingsService {
 
   setDataCollection(val: boolean) {
     /* Change the analytics collection preference */
+    this.changePreference('data-preference', val);
     this.firebase.setAnalyticsCollectionEnabled(val);
+    this.dataPreference = val;
+  }
+
+  setAdShow(val: boolean) {
+    /* Change whether the banner ad should be initialized on startup */
+    this.changePreference('ad-preference', val);
+    this.admobSvc.adPreference = val;
+    this.adPreference = val;
+  }
+
+  changePreference(pref, prefValue) {
+    /* Set `pref` to `prefValue` */
+    this.storage.set(pref, prefValue).then(() => {
+      this.firebase.logMessage('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
+    });
   }
 
   async migrateData() {

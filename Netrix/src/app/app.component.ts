@@ -116,7 +116,7 @@ export class AppComponent {
       this.apiSvc.loadingFinishedTests.subscribe(val => {
         if (val) {
           this.firebase.logMessage('AppComponent/initializeApp(): Test loading finished');
-          this.notifSvc.scheduleTestNotifications(this.settings.preferences.testNotifTime);
+          this.notifSvc.scheduleTestNotifications(this.settings.notifTime);
         }
       });
 

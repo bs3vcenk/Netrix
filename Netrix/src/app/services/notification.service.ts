@@ -60,7 +60,7 @@ export class NotificationService {
 
   formatDate(origDate: number): Date {
     /* Get notification date from test date, and set it to 7 AM */
-    const notifDate = new Date(origDate - (this.settings.preferences.testNotifTime * this.oneDayInMiliseconds));
+    const notifDate = new Date(origDate - (this.settings.notifTime * this.oneDayInMiliseconds));
     notifDate.setHours(7, 0); // Make sure it triggers at 7 instead of midnight
     return notifDate;
   }
@@ -88,7 +88,7 @@ export class NotificationService {
               id: test.id,
               title: this.translate.instant('notif.text.test'),
               text: test.subject + ': ' + test.test + ' '
-                + this.translate.instant('notif.text.inXdays').replace('DAYS', this.settings.preferences.testNotifTime),
+                + this.translate.instant('notif.text.inXdays').replace('DAYS', this.settings.notifTime),
               trigger: { at: this.formatDate(test.date * 1000) }
             } as ILocalNotification);
           }

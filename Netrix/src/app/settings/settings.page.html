@@ -46,7 +46,7 @@
     <!-- SWITCH: Master notification switch -->
     <ion-item>
       <ion-label>{{ 'settings.notifs.master' | translate }}</ion-label>
-      <ion-toggle slot="end" [(ngModel)]="settings.preferences.enableNotifications" (ionChange)="settings.syncPreferences()" disabled="{{usingCache}}"></ion-toggle>
+      <ion-toggle slot="end" [(ngModel)]="notifPreference" (ionChange)="updMainNotificationPreference()" disabled="{{usingCache}}"></ion-toggle>
     </ion-item>
 
     <!-- Only if master enabled -->
@@ -57,7 +57,7 @@
     <!-- BUTTON: Test notification time -->
     <ion-item [@fadeInOut] detail="false" button (click)="openNotifTimePicker()" *ngIf="notifPreference && !usingCache" disabled="{{usingCache}}">
       <ion-label>{{ 'settings.notifs.time' | translate}}</ion-label>
-      <ion-text class="ion-text-right">{{ settings.preferences.testNotifTime }} {{ dayString }}</ion-text>
+      <ion-text class="ion-text-right">{{ testNotifTime }} {{ dayString }}</ion-text>
     </ion-item>
   </ion-list>
 
@@ -68,7 +68,7 @@
     <!-- SWITCH: Dark mode-->
     <ion-item>
       <ion-label>{{ 'settings.design.darkmode' | translate }}</ion-label>
-      <ion-toggle slot="end" [(ngModel)]="updDarkModePreference" (ionChange)="updDarkModePreference()"></ion-toggle>
+      <ion-toggle slot="end" [(ngModel)]="darkModePreference" (ionChange)="updDarkModePreference()"></ion-toggle>
     </ion-item>
     <!-- SWITCH (disabled): Force Croatian language -->
     <!--<ion-item>
