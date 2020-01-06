@@ -36,7 +36,7 @@ export class SettingsService {
   async readPrefs() {
     const dataPref = await this.storage.get('data-preference');
     if (dataPref != null) {
-      this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference set to ' + res);
+      this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference set to ' + dataPref);
       this.firebase.setAnalyticsCollectionEnabled(dataPref);
       this.dataPreference = dataPref;
     } else { // If it isn't stored, store it and set default (false)
@@ -45,7 +45,7 @@ export class SettingsService {
       this.firebase.setAnalyticsCollectionEnabled(false);
       this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference defaulted to off');
     }
-    const notifPref = await this.storage.get('notif-preference')
+    const notifPref = await this.storage.get('notif-preference');
     if (notifPref != null) {
       this.notifPreference = notifPref;
     } else {
@@ -57,7 +57,7 @@ export class SettingsService {
     } else {
       this.notifTime = 3; // three days
     }
-    const theme = await this.storage.get('global-theme')
+    const theme = await this.storage.get('global-theme');
     if (theme != null) {
       this.globalTheme = theme;
       this.setGlobalTheme(this.globalTheme);
