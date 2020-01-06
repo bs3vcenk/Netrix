@@ -45,12 +45,14 @@ export class Tab1Page implements OnInit {
       if (isLoaded) {
         this.currentTestsLen = this.apiSvc.currentTests.length;
         if (this.currentTestsLen > 0) {
+          this.firebase.startTrace('calculateRemainingTests');
           for (const testGroup of this.apiSvc.tests) {
             if (testGroup.week === weekID) {
               this.firebase.logMessage('Tab1Page/calculateRemainingTests(): Found matching test group for week ID ' + weekID);
               this.remainingTests = testGroup.currentTests;
             }
           }
+          this.firebase.stopTrace('calculateRemainingTests');
         }
       } else {
         this.currentTestsLen = null;
