@@ -33,44 +33,38 @@ export class SettingsService {
     });
   }
 
-  readPrefs() {
-    this.storage.get('data-preference').then(res => {
-      if (res != null) {
-        this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference set to ' + res);
-        this.firebase.setAnalyticsCollectionEnabled(res);
-        this.dataPreference = res;
-      } else { // If it isn't stored, store it and set default (false)
-        this.storage.set('data-preference', false).then(() => {
-          this.dataPreference = false;
-          this.firebase.setAnalyticsCollectionEnabled(false);
-          this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference defaulted to off');
-        });
-      }
-      // this.hasLoadedDataPref.next(true);
-      this.storage.get('notif-preference').then(resx => {
-        if (resx != null) {
-          this.notifPreference = resx;
-        } else {
-          this.notifPreference = true;
-        }
-      });
-      this.storage.get('notif-time').then(resx => {
-        if (resx != null) {
-          this.notifTime = resx;
-        } else {
-          this.notifTime = 3; // three days
-        }
-      });
-      this.storage.get('global-theme').then(resx => {
-        if (resx != null) {
-          this.globalTheme = resx;
-          this.setGlobalTheme(this.globalTheme);
-        } else {
-          this.globalTheme = 'light';
-        }
-      });
-      this.adPreference = this.admobSvc.adPreference;
-    });
+  async readPrefs() {
+    const dataPref = await this.storage.get('data-preference');
+    if (dataPref != null) {
+      this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference set to ' + res);
+      this.firebase.setAnalyticsCollectionEnabled(dataPref);
+      this.dataPreference = dataPref;
+    } else { // If it isn't stored, store it and set default (false)
+      await this.storage.set('data-preference', false);
+      this.dataPreference = false;
+      this.firebase.setAnalyticsCollectionEnabled(false);
+      this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference defaulted to off');
+    }
+    const notifPref = await this.storage.get('notif-preference')
+    if (notifPref != null) {
+      this.notifPreference = notifPref;
+    } else {
+      this.notifPreference = true;
+    }
+    const notifTime = await this.storage.get('notif-time');
+    if (notifTime != null) {
+      this.notifTime = notifTime;
+    } else {
+      this.notifTime = 3; // three days
+    }
+    const theme = await this.storage.get('global-theme')
+    if (theme != null) {
+      this.globalTheme = theme;
+      this.setGlobalTheme(this.globalTheme);
+    } else {
+      this.globalTheme = 'light';
+    }
+    this.adPreference = this.admobSvc.adPreference;
   }
 
   setGlobalTheme(nThemeName: 'dark' | 'light') {
@@ -95,11 +89,10 @@ export class SettingsService {
     this.adPreference = val;
   }
 
-  changePreference(pref, prefValue) {
+  async changePreference(pref, prefValue) {
     /* Set `pref` to `prefValue` */
-    this.storage.set(pref, prefValue).then(() => {
-      this.firebase.logMessage('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
-    });
+    await this.storage.set(pref, prefValue);
+    this.firebase.logMessage('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
   }
 
   async migrateData() {
