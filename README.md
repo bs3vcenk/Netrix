@@ -7,4 +7,4 @@
 
 Najnovija verzija je dostupna na [Play Store stranici](https://play.google.com/store/apps/details?id=io.btx3.netrix).
 
-U slučaju da je potrebna starija verzija (od 1.1.0 do 1.4.0), moguće ju je preuzeti pod [Releases](https://github.com/btx3/Netrix/releases).
+Starije verzije su dostupne [ovdje](https://github.com/btx3/Netrix/releases).
