@@ -286,7 +286,7 @@ export class ApiService {
       response = await this.http.get(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info'
       ).toPromise();
-      info = JSON.parse(response.data);
+      info = response;
     } catch (error) {
       if (error.status === 401) {
         this.authServ.logout();
@@ -314,7 +314,7 @@ export class ApiService {
     this.http.get(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.all'
     ).subscribe((response: any) => {
-      this.ignoredNotifTypes = JSON.parse(response).value.ignore;
+      this.ignoredNotifTypes = response.value.ignore;
       /* Let preCacheData() know we're done */
       this.loadingFinishedNotif.next(true);
       // this.loadingFinishedNotif.complete();
@@ -335,7 +335,7 @@ export class ApiService {
       rx = await this.http.get(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects'
       ).toPromise();
-      response = JSON.parse(rx);
+      response = rx;
     } catch (error) {
       if (error.status === 401) {
         this.authServ.logout();
@@ -376,7 +376,7 @@ export class ApiService {
       rx = await this.http.get(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/tests'
       ).toPromise();
-      response = JSON.parse(rx.data);
+      response = rx;
     } catch (error) {
       if (error.status === 401) {
         this.authServ.logout();
@@ -477,7 +477,7 @@ export class ApiService {
       response = await this.http.get(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/absences'
       ).toPromise();
-      absences = JSON.parse(response.data);
+      absences = response;
     } catch (error) {
       if (error.status === 401) {
         this.authServ.logout();
@@ -541,7 +541,7 @@ export class ApiService {
       const rx: any = await this.http.get(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects/' + subjId
       ).toPromise();
-      const response = JSON.parse(rx);
+      const response = rx;
       const subject = this.processSubjectData(response);
       this.subjCacheMap[subjId] = subject;
       return subject;
