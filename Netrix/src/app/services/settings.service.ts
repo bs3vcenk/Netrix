@@ -27,51 +27,49 @@ export class SettingsService {
     private admobSvc: AdmobService,
     private statusBar: StatusBar,
     private firebase: FirebaseX
-  ) {}
-
-  readPrefs() {
-    this.storage.get('data-preference').then(res => {
-      if (res != null) {
-        console.log('SettingsService/readPrefs(): Firebase Analytics preference set to ' + res);
-        this.firebase.setAnalyticsCollectionEnabled(res);
-        this.dataPreference = res;
-      } else { // If it isn't stored, store it and set default (false)
-        this.storage.set('data-preference', false).then(() => {
-          this.dataPreference = false;
-          this.firebase.setAnalyticsCollectionEnabled(false);
-          console.log('SettingsService/readPrefs(): Firebase Analytics preference defaulted to off');
-        });
-      }
-      // this.hasLoadedDataPref.next(true);
-      this.storage.get('notif-preference').then(resx => {
-        if (resx != null) {
-          this.notifPreference = resx;
-        } else {
-          this.notifPreference = true;
-        }
-      });
-      this.storage.get('notif-time').then(resx => {
-        if (resx != null) {
-          this.notifTime = resx;
-        } else {
-          this.notifTime = 3; // three days
-        }
-      });
-      this.storage.get('global-theme').then(resx => {
-        if (resx != null) {
-          this.globalTheme = resx;
-          this.setGlobalTheme(this.globalTheme);
-        } else {
-          this.globalTheme = 'light';
-        }
-      });
-      this.adPreference = this.admobSvc.adPreference;
+  ) {
+    this.storage.ready().then(() => {
+      this.firebase.logMessage('SettingsService: Storage is ready');
     });
+  }
+
+  async readPrefs() {
+    const dataPref = await this.storage.get('data-preference');
+    if (dataPref != null) {
+      this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference set to ' + dataPref);
+      this.firebase.setAnalyticsCollectionEnabled(dataPref);
+      this.dataPreference = dataPref;
+    } else { // If it isn't stored, store it and set default (false)
+      await this.storage.set('data-preference', false);
+      this.dataPreference = false;
+      this.firebase.setAnalyticsCollectionEnabled(false);
+      this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference defaulted to off');
+    }
+    const notifPref = await this.storage.get('notif-preference');
+    if (notifPref != null) {
+      this.notifPreference = notifPref;
+    } else {
+      this.notifPreference = true;
+    }
+    const notifTime = await this.storage.get('notif-time');
+    if (notifTime != null) {
+      this.notifTime = notifTime;
+    } else {
+      this.notifTime = 3; // three days
+    }
+    const theme = await this.storage.get('global-theme');
+    if (theme != null) {
+      this.globalTheme = theme;
+      this.setGlobalTheme(this.globalTheme);
+    } else {
+      this.globalTheme = 'light';
+    }
+    this.adPreference = this.admobSvc.adPreference;
   }
 
   setGlobalTheme(nThemeName: 'dark' | 'light') {
     /* Set/unset dark mode */
-    console.log('SettingsService/setGlobalTheme(): Setting ' + nThemeName + ' theme');
+    this.firebase.logMessage('SettingsService/setGlobalTheme(): Setting ' + nThemeName + ' theme');
     document.body.classList.toggle('dark', nThemeName === 'dark');
     nThemeName === 'dark' ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
     this.statusBar.backgroundColorByHexString(nThemeName === 'dark' ? '#0d0d0d' : '#f8f8f8');
@@ -91,11 +89,10 @@ export class SettingsService {
     this.adPreference = val;
   }
 
-  changePreference(pref, prefValue) {
+  async changePreference(pref, prefValue) {
     /* Set `pref` to `prefValue` */
-    this.storage.set(pref, prefValue).then(() => {
-      console.log('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
-    });
+    await this.storage.set(pref, prefValue);
+    this.firebase.logMessage('SettingsService/changePreference(): Set ' + pref + ' to ' + prefValue);
   }
 
   async migrateData() {
@@ -105,23 +102,22 @@ export class SettingsService {
     // Check if we are running SQLite
     const res = await this.storage.get(dummyKeyTitle);
     if (res) {
-      console.log('SettingsService/migrateData(): Don\'t need to migrate data, migration already finished.');
+      this.firebase.logMessage('SettingsService/migrateData(): Don\'t need to migrate data, migration already finished.');
       this.migrationFinished.next(true);
       return;
     }
     // Open the default Ionic database, named "_ionicstorage"
     const idb = window.indexedDB.open('_ionicstorage');
     idb.onsuccess = (_) => {
-      console.log('SettingsService/migrateData(): Opened IndexedDB');
+      this.firebase.logMessage('SettingsService/migrateData(): Opened IndexedDB');
       const database = idb.result;
       // Now open the "_ionickv" store
       let objStore: IDBObjectStore;
       try {
-        objStore = database.transaction('_ionickv', 'readonly').objectStore('_ionickv');4
+        objStore = database.transaction('_ionickv', 'readonly').objectStore('_ionickv');
       } catch (e) {
-        console.warn('SettingsService/migrateData(): Failed to open db transaction:');
-        console.warn(e);
-        console.warn('SettingsService/migrateData(): Assuming this is a new install and does not need migrating');
+        this.firebase.logMessage('SettingsService/migrateData(): Failed to open db transaction');
+        this.firebase.logMessage('SettingsService/migrateData(): Assuming this is a new install and does not need migrating');
         this.storage.set(dummyKeyTitle, dummyKeyContent);
         this.migrationFinished.next(true);
         return;
@@ -134,7 +130,7 @@ export class SettingsService {
         } else {
           this.migrationFinished.next(true);
           this.storage.set(dummyKeyTitle, dummyKeyContent);
-          console.log('SettingsService/migrateData(): No more keys left');
+          this.firebase.logMessage('SettingsService/migrateData(): No more keys left');
         }
       };
     };

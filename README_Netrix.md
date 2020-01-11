@@ -2,7 +2,7 @@
 
 Netrix je frontend za eDAP API, pisan u [Ionic](https://ionicframework.com/) frameworku (Angular).
 
-Popis promjena odnosno changelog je moguće pronaći [ovdje](https://gitlab.sh.netrix.io/btx3/Netrix/blob/master/Netrix/CHANGELOG.md).
+Popis promjena odnosno changelog je moguće pronaći [ovdje](https://github.com/btx3/Netrix/blob/master/Netrix/CHANGELOG.md).
 
 ## Instalacija okruženja
 

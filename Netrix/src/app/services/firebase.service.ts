@@ -18,16 +18,13 @@ export class FirebaseService {
 
   async getToken(userid) {
     /* Get a device token for Firebase */
-    if (!this.platform.is('cordova')) { return; }
     const token = await this.firebase.getToken();
     this.saveToken(token, userid);
   }
 
   private saveToken(firebaseToken: string, serviceToken: string) {
     /* Store device token (for FCM) and API token (for server-side identification) */
-    if (!this.platform.is('cordova')) { return; }
     /* Add the token to crash reports */
-    this.firebase.setUserId(serviceToken);
     this.firebase.setCrashlyticsUserId(serviceToken);
     /* Push the device token to the API */
     this.apiSvc.saveFirebaseToken(firebaseToken);
@@ -66,6 +63,12 @@ export class CrashlyticsErrorHandler extends ErrorHandler {
           this.firebase.logError(error.message, st);
         });
       } catch (e) {
+        console.log(
+          'CrashlyticsErrorHandler/handleError(): Failed to send error to Crashlytics; assuming Firebase is unavailable on this device'
+        );
+        console.log('CrashlyticsErrorHandler/handleError(): Originally encountered exception:');
+        console.error(error);
+        console.log('CrashlyticsErrorHandler/handleError(): Exception encountered while sending to Firebase:');
         console.error(e);
       }
     }
