@@ -40,11 +40,9 @@
     "cordova-android": "^8.1.0",
     "cordova-ios": "5.0.1",
     "cordova-plugin-add-swift-support": "^2.0.2",
-    "cordova-plugin-advanced-http": "^2.3.1",
     "cordova-plugin-androidx": "^1.0.2",
     "cordova-plugin-androidx-adapter": "^1.1.0",
     "cordova-plugin-badge": "^0.8.8",
-    "cordova-plugin-file": "^6.0.2",
     "cordova-plugin-firebasex": "^7.0.1",
     "cordova-plugin-local-notification": "git+https://github.com/katzer/cordova-plugin-local-notifications.git#caff55ec758fdf298029ae98aff7f6a8a097feac",
     "cordova-plugin-splashscreen": "^5.0.3",
@@ -97,9 +95,6 @@
       },
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-statusbar": {},
-      "cordova-plugin-advanced-http": {
-        "OKHTTP_VERSION": "3.13.1"
-      },
       "cordova-plugin-firebasex": {
         "ANDROID_ICON_ACCENT": "#FF00FFFF",
         "ANDROID_PLAY_SERVICES_TAGMANAGER_VERSION": "17.0.0",
