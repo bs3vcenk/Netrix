@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Platform, Config } from '@ionic/angular';
+import { Platform, Config, ToastController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './services/authentication.service';
 import { LanguageService } from './services/language.service';
@@ -9,8 +9,8 @@ import { SettingsService } from './services/settings.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from './services/api.service';
 import { NotificationService } from './services/notification.service';
+import { environment } from '../environments/environment';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
   selector: 'app-root',
@@ -23,16 +23,27 @@ export class AppComponent {
     private authenticationService: AuthenticationService,
     private router: Router,
     private languageService: LanguageService,
+    private toastController: ToastController,
     private fcm: FirebaseService,
     private settings: SettingsService,
     private translate: TranslateService,
     private config: Config,
     private apiSvc: ApiService,
     private notifSvc: NotificationService,
-    private splash: SplashScreen,
-    private firebase: FirebaseX
+    private splash: SplashScreen
   ) {
     this.initializeApp();
+  }
+
+  private async presentToast(header: string, message: string) {
+    const toast = await this.toastController.create({
+      header,
+      message,
+      duration: 3000,
+      color: 'dark',
+      position: 'top'
+    });
+    toast.present();
   }
 
   private notificationSetup(token) {
@@ -41,7 +52,8 @@ export class AppComponent {
       this.fcm.onNotifications().subscribe(
         () => this.apiSvc.switchActiveClass(0));
     } catch (e) {
-      this.firebase.logMessage('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running Cordova.');
+      console.warn('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running Cordova.');
+      console.warn('AppComponent/notificationSetup(): This means we won\'t be receiving any Firebase notifications.');
     }
   }
 
@@ -72,10 +84,7 @@ export class AppComponent {
        * logged in or not. */
       this.authenticationService.authenticationState.subscribe(state => {
         if (state) {
-          /* Navigate to the subject list and prevent returning to the login screen with
-           * the back button/gesture */
-          this.router.navigate(['tabs', 'tabs', 'tab1'], {replaceUrl: true});
-          /* Reset the class ID to 0, since only ID 0 is stored on login
+          /* First, reset the class ID to 0, since only ID 0 is stored on login
            * (other IDs are available by calling the /fetchclass endpoint).
            *
            * This is needed because after a logout and a login without restarting
@@ -87,6 +96,9 @@ export class AppComponent {
           this.apiSvc.preCacheData();
           /* Set up Firebase Cloud Messaging for notifications */
           this.notificationSetup(this.authenticationService.token);
+          /* Navigate to the subject list and prevent returning to the login screen with
+           * the back button/gesture */
+          this.router.navigate(['tabs', 'tabs', 'tab1'], {replaceUrl: true});
         } else {
           /* If the user is not logged in, direct to the login page */
           this.router.navigate(['login'], {replaceUrl: true});
@@ -99,7 +111,7 @@ export class AppComponent {
 
       /* Handle network and server errors, switching to the appropriate page if
        * there is an error */
-      /*this.apiSvc.networkError.subscribe(val => {
+      this.apiSvc.networkError.subscribe(val => {
         this.handleErrorSender(val);
       });
       this.apiSvc.dbError.subscribe(val => {
@@ -110,12 +122,23 @@ export class AppComponent {
       });
       this.apiSvc.maintenanceError.subscribe(val => {
         this.handleErrorSender(val);
-      });*/
+      });
+
+      /* Indicate if using developer build */
+      if (!environment.production) {
+        this.toastController.create({
+          message: 'Using a developer build',
+          duration: 2000,
+          color: 'dark'
+        }).then(alert => {
+          alert.present();
+        });
+      }
 
       /* Check and schedule exam notifications when ready */
       this.apiSvc.loadingFinishedTests.subscribe(val => {
         if (val) {
-          this.firebase.logMessage('AppComponent/initializeApp(): Test loading finished');
+          console.log('AppComponent/initializeApp(): Test loading finished');
           this.notifSvc.scheduleTestNotifications(this.settings.notifTime);
         }
       });

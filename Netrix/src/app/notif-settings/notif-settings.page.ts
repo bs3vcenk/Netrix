@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { TranslateService } from '@ngx-translate/core';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
   selector: 'app-notif-settings',
@@ -21,8 +20,7 @@ export class NotifSettingsPage implements OnInit {
 
   constructor(
     private apiSvc: ApiService,
-    private translate: TranslateService,
-    private firebase: FirebaseX
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -42,13 +40,13 @@ export class NotifSettingsPage implements OnInit {
   }
 
   handleChk(fType) {
-    this.firebase.logMessage(fType);
+    console.log(fType);
     const currentStatus = !fType.checked;
     if (currentStatus) { // Now checked
-      this.firebase.logMessage('notif-settings/handleChk(): Checked property ' + fType.id);
+      console.log('notif-settings/handleChk(): Checked property ' + fType.id);
       this.removeFromIgnoreList(fType.id);
     } else { // Now unchecked
-      this.firebase.logMessage('notif-settings/handleChk(): Unchecked property ' + fType.id);
+      console.log('notif-settings/handleChk(): Unchecked property ' + fType.id);
       this.addToIgnoreList(fType.id);
     }
   }

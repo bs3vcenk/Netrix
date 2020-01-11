@@ -1,11 +1,3 @@
-## 1.9.10 (2020-01-11)
-* **NOVO**: Opcija za isključivanje reklama
-* **PROMJENA**: Male izmjene dizajna oko cijele aplikacije
-* **PROMJENA**: Novi HTTP backend - općenito brže hvatanje podataka
-* **MISC**: Poboljšanje izvještaja o greškama
-* **MISC**: Brža prijava
-* **MISC**: Smanjena količina podataka koja se šalje na Analytics (ako je uključen)
-
 ## 1.9.9 (2019-12-12)
 * **FIX**: Automatska prijava nije radila na novim instalacijama
 * **MISC**: Mala poboljšanja dizajna

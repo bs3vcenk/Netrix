@@ -24,6 +24,7 @@ from os.path import join as _join_path
 from os.path import getsize as _get_file_size
 from threading import Thread
 from time import sleep
+from time import clock as _clock
 from string import ascii_letters
 from typing import List
 from api_backend_config import Config
@@ -82,23 +83,16 @@ def get_vault_info() -> dict:
 	"""
 		Get info about Hashicorp Vault.
 	"""
-	# Return immediately if Vault is not enabled
 	if not config.vault.enabled:
 		return {'enabled': False}
-	# Otherwise setup an HTTP session
 	session = requests.Session()
 	session.headers = {'X-Vault-Token': config.vault.read_token}
-	# Set up an object we'll edit with more data later and return
 	returnable = {'enabled': True}
-	# Get Vault health
 	health = session.get('%s/v1/sys/health' % config.vault.server).json()
-	# Store seal status and version in object
 	returnable['sealed'] = health['sealed']
 	returnable['version'] = health['version']
-	# Check TTL (Time-To-Live) for the read token
 	read_token_status = session.get('%s/v1/auth/token/lookup-self' % config.vault.server).json()
 	returnable['read_token_ttl'] = read_token_status['data']['ttl']
-	# Check TTL (Time-To-Live) for the write token
 	write_token_status = session.get('%s/v1/auth/token/lookup-self' % config.vault.server, headers={'X-Vault-Token': config.vault.write_token}).json()
 	returnable['write_token_ttl'] = write_token_status['data']['ttl']
 	return returnable
@@ -107,7 +101,6 @@ def _round(n, decimals=0):
 	"""
 		Improved round function. Rounds .5 upwards instead of builtin
 		round()'s downwards rounding.
-		Taken from this StackOverflow answer: https://stackoverflow.com/a/52617883
 	"""
 	expoN = n * 10 ** decimals
 	if abs(expoN) - abs(_math_floor(expoN)) < 0.5:
@@ -116,8 +109,7 @@ def _round(n, decimals=0):
 
 def _send_telegram_notification(message: str, parse_mode: str = "Markdown"):
 	"""
-		Send a notification through Telegram. Refer to https://core.telegram.org/bots/api#sendMessage
-		for more info on what this does.
+		Send a notification through Telegram.
 	"""
 	requests.post(
 		'https://api.telegram.org/bot%s/sendMessage' % config.error_notifications.telegram_token,
@@ -128,20 +120,9 @@ def _send_telegram_notification(message: str, parse_mode: str = "Markdown"):
 		}
 	)
 
-def notify_error(problem_header: str, component: str, stacktrace=None, additional_info: dict = None):
+def notify_error(problem_header: str, component: str, stacktrace=None, additional_info=None):
 	"""
-		Format (Markdown) and send a notification about an exception/error.
-
-		This is a kind of intermediary function, just in case I implement
-		more notification providers later on.
-
-		Messages will look like this:
-		<HEADER>
-		Component: <whichever component failed>
-		<additional_info key>: <value>
-		...
-
-		If `stacktrace` is supplied, that will also be sent as a separate message.
+		Send a notification about an exception/error.
 	"""
 	message_content = "*%s*\nComponent: `%s`" % (problem_header, component)
 	if additional_info:
@@ -243,7 +224,7 @@ def _exit(exitCode: int):
 	"""
 		Present additional information on exit (exit code and instructions).
 	"""
-	print("!!! Exited with code %i\n    If possible, check the log file for more information.\n    Make sure you configured eDAP correctly! Read the documentation\n    completely and verify your configuration." % exitCode)
+	print("!!! Exited with code %i\n    If possible, check the log file for more information.\n    Make sure you configured eDAP correctly! Read the documentation\n    completely and verify your configuration before reporting an error." % exitCode)
 	_sys_exit(exitCode)
 
 def localize(token: str, notif_type: str) -> str:
@@ -285,9 +266,9 @@ def localize(token: str, notif_type: str) -> str:
 
 def random_string(length: int) -> str:
 	"""
-		Return a random string of a specified length.
+		Return a random string with of specified length.
 	"""
-	return ''.join(_random_choice(ascii_letters) for _ in range(length))
+	return ''.join(_random_choice(ascii_letters) for m in range(length))
 
 def get_setting(token: str, action: str):
 	"""
@@ -304,16 +285,9 @@ def get_setting(token: str, action: str):
 		return o['settings']['notif']
 	raise NonExistentSetting
 
-def process_setting(token: str, action: str, val):
+def process_setting(token: str, action: str, val: str):
 	"""
-		Modify user settings. Currently, this is only used to control notifications.
-
-		`action` can be:
-			notif.disable - whether to send notifications; `val` is of type `bool`
-			notif.ignore.add - add a notification type to the blacklist; `val` is of type `str`
-			notif.ignore.del - remove a notification type from the blacklist; `val` is of type `str`
-
-		Notification types can be: grade, note, test, absence.
+		Do an action, with val as the data/arguments on a profile.
 	"""
 	o = get_data(token)
 	if 'settings' not in o:
@@ -350,7 +324,7 @@ def _formatAndSendNotification(token: str, notifData):
 	testNotif = []
 	noteNotif = []
 	absenceNotif = False
-	toSendQueue = [] # List of notifications to send
+	toSendQueue = []
 	exceptions = get_data(token)['settings']['notif']['ignore']
 	for x in notifData:
 		# TODO: Fix test notifications
@@ -387,7 +361,7 @@ def _formatAndSendNotification(token: str, notifData):
 
 def _subj_id_to_name(token: str, class_id: int, subject_id: int) -> str:
 	"""
-		Get the subject name belonging to a subject ID.
+		Get the name belonging to a subject ID.
 	"""
 	if not verify_request(token, class_id, subject_id):
 		raise Exception('Bad auth data')
@@ -395,8 +369,8 @@ def _subj_id_to_name(token: str, class_id: int, subject_id: int) -> str:
 
 def _stop_sync(token: str):
 	"""
-		Stop background sync thread for a given token. This will stop the
-		thread on the next run (once `sleep()` finishes inside the thread).
+		Stop background sync thread for a given token, e.g. if
+		terminated.
 	"""
 	if "sync:" + token in _threads:
 		_threads["sync:" + token]["run"] = False
@@ -409,7 +383,7 @@ def get_sync_threads() -> List[str]:
 
 def start_sync(token: str):
 	"""
-		Start a background sync thread for a given token.
+		Start a sync thread for a given token.
 	"""
 	global _threads
 	if "sync:" + token not in _threads:
@@ -417,9 +391,16 @@ def start_sync(token: str):
 		to.start()
 		_threads["sync:" + token] = {"obj":to, "run":True}
 
+def _maintenance():
+	"""
+		Run maintenance tasks
+	"""
+	log.info('Optimizing AOF database file')
+	_redis.bgrewriteaof()
+
 def restore_syncs():
 	"""
-		Restore all sync threads (this is run on startup).
+		Restore all sync threads (on startup).
 	"""
 	tokens = get_tokens()
 	log.info('Starting sync threads for %s tokens', len(tokens))
@@ -431,33 +412,47 @@ def sync_dev(data2, token: str):
 	"""
 		DEV: Simulate sync with two objects.
 	"""
-	log.info("Simulating sync for %s", token)
+	log.debug("Simulating sync")
 	o = get_data(token)
 	diff = _profile_difference(o["data"], data2)
 	if diff:
-		log.info("Difference detected: %s", diff)
+		log.debug("Difference detected")
 		o["new"] = diff
 		save_data(token, o)
 		_formatAndSendNotification(token, diff)
-	else:
-		log.warning("No difference detected (??) This should not happen :P")
 
-def sync(token: str):
+def sync(token: str, debug: bool = False):
 	"""
 		Pull remote data, compare with current and replace if needed.
 	"""
+	if debug:
+		log_buffer = ""
 	log.debug("Syncing %s", token)
+	if debug:
+		log_buffer += "START_SYNC token:%s\n" % token
+		log_buffer += "FETCH_OLD_DATA\n"
 	fData = get_data(token)
 	fb_token_info = get_firebase_info(fData['firebase_device_token'])
+	if debug:
+		log_buffer += "VERIFY_ACTIVITY status:%s\n" % fb_token_info['status']
 	if not fb_token_info['status']:
 		# Inactive token, stop sync
 		log.warning('Inactive token %s detected, stopping sync', token)
 		purge_token(token)
+		if debug:
+			return log_buffer
 		return
 	data = fData["data"] # Old data
 	credentials = get_credentials(token)
+	if debug:
+		log_buffer += "CREDENTIALS username:%s password:%s\n" % (credentials['username'], credentials['password'])
+		log_buffer += "FETCH_NEW_DATA\n"
 	nData = populate_data(edap.edap(credentials["username"], credentials["password"])) # New data
+	if debug:
+		log_buffer += "GET_DIFFERENCE\n"
 	diff = _profile_difference(data, nData)
+	if debug:
+		log_buffer += "DIFF_RESULT diff:%s\n" % diff
 	if diff:
 		# Overwrite everything if new class
 		if diff[0]['type'] == 'class':
@@ -468,11 +463,14 @@ def sync(token: str):
 		save_data(token, fData)
 		if not fData["settings"]["notif"]["disable"]:
 			_formatAndSendNotification(token, diff)
+	if debug:
+		return log_buffer
 
 def _profile_difference(dObj1, dObj2) -> List[dict]:
 	"""
 		Return the difference between two student data dicts.
 	"""
+	start = _clock()
 	_finalReturn = []
 	## CLASS DIFFERENCE ##
 	t1 = deepcopy(dObj1['classes'])
@@ -494,6 +492,8 @@ def _profile_difference(dObj1, dObj2) -> List[dict]:
 		for i in difflist:
 			_finalReturn.append({'type':'test', 'classId':0, 'data':i})
 	## ABSENCE DIFFERENCE (FIRST CLASS ONLY) ##
+	# Only check length to avoid spamming notifications for
+	# each class period.
 	t1 = deepcopy(dObj1['classes'][0]['absences']['full'])
 	t2 = deepcopy(dObj2['classes'][0]['absences']['full'])
 	difflist = [x for x in t2 if x not in t1]
@@ -501,7 +501,7 @@ def _profile_difference(dObj1, dObj2) -> List[dict]:
 		log.info("Found difference in absences")
 		_finalReturn.append({'type':'absence', 'classId':0, 'data':None})
 	## PER-SUBJECT GRADE DIFFERENCE (FIRST CLASS ONLY) ##
-	# Iterating over two lists at once using `zip()`: https://stackoverflow.com/a/1663826
+	# https://stackoverflow.com/a/1663826
 	sId = 0
 	for i, j in zip(dObj1['classes'][0]['subjects'], dObj2['classes'][0]['subjects']):
 		if "grades" in j:
@@ -525,6 +525,8 @@ def _profile_difference(dObj1, dObj2) -> List[dict]:
 				for x in difflist:
 					_finalReturn.append({'type':'note', 'classId':0, 'subjectId': sId, 'data':x})
 		sId += 1
+	request_time = _clock() - start
+	log.debug("==> TIMER => {0:.0f}ms".format(request_time))
 	return _finalReturn
 
 def save_data(token: str, dataObj):
@@ -601,8 +603,6 @@ def sendNotification(token: str, title: str, content: str, data=None):
 		out_json["data"] = data
 
 	try:
-		# https://firebase.google.com/docs/cloud-messaging/http-server-ref
-		# TODO: Migrate to new API
 		a = requests.post(
 			'https://fcm.googleapis.com/fcm/send',
 			json=out_json,
@@ -702,27 +702,33 @@ def _read_config() -> Config:
 	print("[eDAP] [INFO] Further logging is in %s/edap_api.log" % cfg_obj.storage)
 	return cfg_obj
 
-def read_log() -> str:
+def read_log(exclude_syncing=False) -> str:
 	"""
-		Read the log file.
+		Read the log file. Setting `exclude_syncing` to True will exclude
+		all lines from the `get_class_profile` function.
 	"""
+	log_lines = []
 	with open(_join_path(config.storage, "edap_api.log")) as f:
-		return f.read()
+		for x in f.readlines():
+			if exclude_syncing and 'get_class_profile' in x:
+				continue
+			log_lines.append(x)
+	return ''.join(log_lines)
 
 def make_html(title="eDAP dev", content=None, bare=False) -> str:
 	"""
 		HTML creator template for the /dev/ dashboard. Allows specifying the title,
-		content, and if the page needs to have a header.
+		content, and if the page needs to have no header (e.g. the /dev/log page).
 	"""
 	if not bare:
 		return '<!DOCTYPE html><html><head><title>%s</title></head><body><h1>%s</h1>%s</body></html>' % (title, title, content)
 	else:
 		return '<!DOCTYPE html><html><head><title>%s</title></head><body>%s</body></html>' % (title, content)
 
+# https://stackoverflow.com/a/14822210
 def convert_size(size_bytes: int):
 	"""
 		Convert bytes to a human-readable format.
-		Taken from this StackOverflow answer: https://stackoverflow.com/a/14822210
 	"""
 	if size_bytes == 0:
 		return "0B"
@@ -734,8 +740,7 @@ def convert_size(size_bytes: int):
 
 def _init_db(host: str = "localhost", port: int = 6379, db: int = 0) -> redis.Redis:
 	"""
-		Initialize the Redis DB by connecting to it and running a
-		`ping` command.
+		Initialize the Redis DB.
 	"""
 	try:
 		r = redis.Redis(host=host, port=port, db=db)
@@ -754,10 +759,7 @@ def get_data(token: str):
 		Retreive JSON from Redis by token, format it from bytes to string,
 		and return it as a dict.
 	"""
-	try:
-		return _json_load(_redis.get("token:" + token).decode("utf-8"))
-	except AttributeError:
-		notify_error('DATA GET ERROR', 'get_data', additional_info={'token':token})
+	return _json_load(_redis.get("token:" + token).decode("utf-8"))
 
 def get_tokens() -> List[str]:
 	"""
@@ -811,8 +813,9 @@ def populate_data(obj) -> dict:
 	"""
 		Call get_class_profile() to initialize the data object in
 		a newly-created profile.
+		TODO: Should probably be removed and the invoking code
+		refactored to just call get_class_profile().
 	"""
-	# TODO: Should probably be merged with `get_class_profile()`.
 	data_dict = {'classes':None}
 	try:
 		output = obj.getClasses()
@@ -830,8 +833,10 @@ def get_class_profile(obj, class_id: int, class_obj) -> dict:
 		class ID that will be "expanded" (add grades, exams, etc.)
 		and class_obj is the class object to which the data will
 		be assigned to.
+
+		TODO: Refactor a lot of this and the invoking code, makes
+		very little sense right now.
 	"""
-	# TODO: Rewrite a lot of this and the invoking code, makes very little sense right now; handle exceptions properly.
 	try:
 		# Get a list of current tests and all tests
 		tests_nowonly = obj.getTests(class_id, alltests=False)
@@ -1000,13 +1005,13 @@ def get_db_keys() -> int:
 
 def get_db_info() -> dict:
 	"""
-		Get info about the Redis DB. (https://redis.io/commands/info)
+		Get info about the Redis DB.
 	"""
 	return _redis.info()
 
 def optimize_db_aof():
 	"""
-		Optimize/rewrite the AOF. (https://redis.io/commands/bgrewriteaof)
+		Optimize/rewrite the AOF.
 	"""
 	_redis.bgrewriteaof()
 

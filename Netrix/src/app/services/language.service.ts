@@ -8,14 +8,31 @@ import { Storage } from '@ionic/storage';
 })
 export class LanguageService {
 
+  forceCroatianPreference = null;
+
   constructor(
     private translate: TranslateService,
-    private settings: SettingsService
-  ) { }
+    private settings: SettingsService,
+    private storage: Storage
+  ) {
+    this.storage.get('force-croatian-preference').then((pref) => {
+      if (pref != null) {
+        this.forceCroatianPreference = pref;
+      } else {
+        this.forceCroatianPreference = false;
+      }
+      this.settings.forceCroatianPreference = this.forceCroatianPreference;
+    });
+  }
 
   setInitialLang() {
-    /* Get device language */
-    const language = this.translate.getBrowserLang();
+    let language;
+    if (this.forceCroatianPreference) {
+      language = 'hr';
+    } else {
+      /* Get device language */
+      language = this.translate.getBrowserLang();
+    }
     /* Set the default language to HR */
     this.translate.setDefaultLang('hr');
     /* Set the app language to the device lang, if available */

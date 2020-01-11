@@ -14,25 +14,23 @@
 
 	<!-- Login form -->
 	<div id="loginPage">
-		<form>
-			<ion-list lines="full" id="loginForm">
-				<!-- Username -->
-				<ion-item>
-					<ion-label position="stacked">{{ 'login.text.holder_user' | translate }}</ion-label>
-					<ion-input required type="text" [(ngModel)]="loUsername" name="user"></ion-input>
-				</ion-item>
-				<!-- Password -->
-				<ion-item>
-					<ion-label position="stacked">{{ 'login.text.holder_pass' | translate }}</ion-label>
-					<ion-input required type="password" [(ngModel)]="loPassword" name="passw"></ion-input>
-				</ion-item>
-			</ion-list>
-			<!-- Login button-->
-			<ion-button id="loginButton" (click)="login()" type="submit"> 
-				<div *ngIf="!isLoading">{{ 'login.text.login' | translate }}</div>
-				<div *ngIf="isLoading"><ion-spinner name="crescent"></ion-spinner></div>
-			</ion-button>
-		</form>
+		<ion-list lines="full" id="loginForm">
+			<!-- Username -->
+			<ion-item>
+				<ion-label position="stacked">{{ 'login.text.holder_user' | translate }}</ion-label>
+				<ion-input required type="text" [(ngModel)]="loUsername"></ion-input>
+			</ion-item>
+			<!-- Password -->
+			<ion-item>
+				<ion-label position="stacked">{{ 'login.text.holder_pass' | translate }}</ion-label>
+				<ion-input required type="password" [(ngModel)]="loPassword"></ion-input>
+			</ion-item>
+		</ion-list>
+		<!-- Login button-->
+		<ion-button id="loginButton" (click)="login()">
+			<div *ngIf="!isLoading">{{ 'login.text.login' | translate }}</div>
+			<div *ngIf="isLoading"><ion-spinner name="crescent"></ion-spinner></div>
+		</ion-button>
 		<!-- Additional buttons -->
 		<div id="addonButtons">
 			<!-- Privacy policy -->

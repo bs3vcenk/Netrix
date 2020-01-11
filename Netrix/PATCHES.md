@@ -1,5 +1,13 @@
 # Potrebne promjene za potpunu funkcionalnost
 
+## FirebaseX.logError()
+
+Potrebno je izmjeniti datoteke `index.d.ts` i `index.js` u mapi `node_modules/@ionic-native/firebase-x/ngx`; treba se dodati još jedan argument na logError funkciju, da izgleda ovako:
+
+![Prikaz izmjene koda](https://i.imgur.com/AdzBuD0.png)
+
+Najbolje ga je nazvati `stackTrace`, ali ime može biti bilo kakvo.
+
 ## Dark mode
 
 Potrebno je izmjeniti funkciju `setStatusBarBackgroundColor` u datoteci `plugins/cordova-plugin-statusbar/src/android/StatusBar.java`.
