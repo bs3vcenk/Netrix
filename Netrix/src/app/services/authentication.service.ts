@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
 import { Platform } from '@ionic/angular';
-import { HTTP } from '@ionic-native/http/ngx';
+import { HttpClient } from '@angular/common/http';
 import { Device } from '@ionic-native/device/ngx';
 import { SettingsService } from './settings.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
@@ -24,7 +24,7 @@ export class AuthenticationService {
   constructor(
     private storage: Storage,
     private plt: Platform,
-    private http: HTTP,
+    private http: HttpClient,
     private device: Device,
     private settings: SettingsService,
     private firebase: FirebaseX
@@ -58,9 +58,8 @@ export class AuthenticationService {
         platform: this.device.platform,
         device: this.device.model,
         language: this.settings.language
-      },
-      this.httpHeader)
-    .then(() => {
+      })
+    .subscribe(() => {
       this.firebase.logMessage('AuthenticationService/sendDeviceInfo(): Successfully sent device info');
     }, () => {
       this.firebase.logMessage('AuthenticationService/sendDeviceInfo(): Failed to send device info');
@@ -76,15 +75,15 @@ export class AuthenticationService {
     ));*/
     const response = await this.http.post(
       this.settings.apiServer + '/api/login',
-      {username, password},
-      this.httpHeader
-    );
+      {username, password}
+    ).toPromise();
     this.handleLogin(response);
     return response;
   }
 
   private handleLogin(data) {
-    const token = JSON.parse(data.data).token;
+    console.log(data);
+    const token = data.token;
     /* Store the token so we don't have to log in every time */
     this.storage.set('auth-token', token).then(() => {
       this.token = token;
@@ -100,10 +99,8 @@ export class AuthenticationService {
     return this.storage.remove('auth-token').then(() => {
       /* Let the API know the user has logged out, so it knows it can discard the user's data */
       this.http.get(
-        this.settings.apiServer + '/api/user/' + this.token + '/logout',
-        {},
-        this.httpHeader
-      ).then(() => {
+        this.settings.apiServer + '/api/user/' + this.token + '/logout'
+      ).subscribe(() => {
         this.firebase.logMessage('AuthenticationService/logout(): Server-side data successfully deleted');
       }, () => {
         this.firebase.logMessage('AuthenticationService/logout(): Failed to delete server-side data');
