@@ -1,3 +1,6 @@
+## 1.9.11 (2020-01-11)
+* **FIX**: Prekidač za dark mode nije vraćao na bijelu temu
+
 ## 1.9.10 (2020-01-11)
 * **NOVO**: Opcija za isključivanje reklama
 * **PROMJENA**: Male izmjene dizajna oko cijele aplikacije
