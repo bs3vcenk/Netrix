@@ -31,12 +31,12 @@ export class PrivacyPage implements OnInit {
   }
 
   private render() {
-    this.http.get('https://netrix.io/privacy.md')
+    this.http.get('https://netrix.io/privacy.md', {responseType: 'text'})
     .subscribe((response: any) => {
       const converter = new showdown.Converter();
       this.html = converter.makeHtml(response);
     }, (error) => {
-      this.html = '<h1>Greška</h1><h2>Server je odgovorio s ' + error.status + '<h2>';
+      this.html = '<h1>Greška</h1><pre>' + JSON.stringify(error, null, 2) + '</pre>';
     });
   }
 
