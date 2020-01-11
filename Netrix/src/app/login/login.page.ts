@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
 import { AlertController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,8 @@ export class LoginPage implements OnInit {
     private toastCtrl: ToastController,
     private translate: TranslateService,
     private authServ: AuthenticationService,
-    private alertControl: AlertController
+    private alertControl: AlertController,
+    private firebase: FirebaseX
   ) { }
 
   ngOnInit() {
@@ -51,14 +53,15 @@ export class LoginPage implements OnInit {
     this.isLoading = true;
 
     // Send the request
-    this.authServ.login(this.loUsername, this.loPassword).subscribe(() => {
+    this.authServ.login(this.loUsername, this.loPassword).then(() => {
       // Everything fine
-      console.log('login/login(): Successful login');
+      this.firebase.logMessage('login/login(): Successful login');
       this.isLoading = false; // Stop the "Logging in..." alert
     }, (err) => {
       this.isLoading = false; // Stop alert
+      console.log(err);
       let e;
-      try { e = JSON.parse(err.error); } catch (ex) { e = {error: null}; }
+      try { e = err.error; } catch (ex) { e = {error: null}; }
       if (e.error === 'E_INVALID_CREDENTIALS') {
         // Bad creds
         this.networkError(

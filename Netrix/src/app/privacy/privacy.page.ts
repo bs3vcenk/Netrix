@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import showdown from 'showdown/dist/showdown.js';
-import { HTTP } from '@ionic-native/http/ngx';
+import { HttpClient } from '@angular/common/http';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
@@ -20,7 +20,7 @@ export class PrivacyPage implements OnInit {
   html = null;
 
   constructor(
-    private http: HTTP
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -31,12 +31,12 @@ export class PrivacyPage implements OnInit {
   }
 
   private render() {
-    this.http.get('https://netrix.io/privacy.md', {}, {'User-Agent': 'Netrix'})
-    .then((response) => {
+    this.http.get('https://netrix.io/privacy.md', {responseType: 'text'})
+    .subscribe((response: any) => {
       const converter = new showdown.Converter();
-      this.html = converter.makeHtml(response.data);
+      this.html = converter.makeHtml(response);
     }, (error) => {
-      this.html = '<h1>Greška</h1><h2>Server je odgovorio s ' + error.status + '<h2>';
+      this.html = '<h1>Greška</h1><pre>' + JSON.stringify(error, null, 2) + '</pre>';
     });
   }
 
