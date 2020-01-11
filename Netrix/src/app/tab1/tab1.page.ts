@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../services/api.service';
 import { AdmobService } from '../services/admob.service';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Component({
   selector: 'app-tab1',
@@ -27,8 +26,7 @@ export class Tab1Page implements OnInit {
 
   constructor(
     private apiSvc: ApiService,
-    private admobSvc: AdmobService,
-    private firebase: FirebaseX
+    private admobSvc: AdmobService
   ) {
     this.initInBg();
     this.calculateRemainingTests();
@@ -47,7 +45,7 @@ export class Tab1Page implements OnInit {
         if (this.currentTestsLen > 0) {
           for (const testGroup of this.apiSvc.tests) {
             if (testGroup.week === weekID) {
-              this.firebase.logMessage('Tab1Page/calculateRemainingTests(): Found matching test group for week ID ' + weekID);
+              console.log('Tab1Page/calculateRemainingTests(): Found matching test group for week ID ' + weekID);
               this.remainingTests = testGroup.currentTests;
             }
           }

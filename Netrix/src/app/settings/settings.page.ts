@@ -123,11 +123,9 @@ export class SettingsPage {
   }
 
   updDarkModePreference() {
-    if (this.darkModePreference ? 'dark' : 'light' === this.settings.globalTheme) {
-      this.settings.changePreference('global-theme', this.darkModePreference ? 'dark' : 'light');
-      this.settings.globalTheme = this.darkModePreference ? 'dark' : 'light';
-      this.settings.setGlobalTheme(this.settings.globalTheme);
-    }
+    this.settings.changePreference('global-theme', this.darkModePreference ? 'dark' : 'light');
+    this.settings.globalTheme = this.darkModePreference ? 'dark' : 'light';
+    this.settings.setGlobalTheme(this.settings.globalTheme);
   }
 
   updHRForcePreference() {

@@ -22,11 +22,11 @@
       <ion-label>{{ 'settings.analytics.usage' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="dataPreference" (ionChange)="updDeviceInfoPreference()"></ion-toggle>
     </ion-item>
-    <!-- SWITCH: Advertisements -->
-    <ion-item>
+    <!-- SWITCH (disabled): Advertisements -->
+    <!--<ion-item>
       <ion-label>{{ 'settings.analytics.ads' | translate }}</ion-label>
-      <ion-toggle slot="end" [(ngModel)]="adPreference" (ionChange)="updAdPreference()"></ion-toggle>
-    </ion-item>
+      <ion-toggle slot="end" [(ngModel)]="adPreference" (ionChange)="updAdPreference()" disabled="true"></ion-toggle>
+    </ion-item>-->
     <ion-item button routerLink="/privacy" routerDirection="forward" disabled="{{usingCache}}">
       <ion-label>{{ 'login.text.privacy' | translate }}</ion-label>
     </ion-item>
@@ -85,23 +85,23 @@
 
     <!-- Developer -->
     <!-- BUTTON: Reset notifications -->
-    <ion-item button (click)="resetNotif()">
+    <ion-item button (click)="resetNotif()" *ngIf="developer">
       <ion-label>Reset notifications</ion-label>
     </ion-item>
     <!-- BUTTON: Force language to hr -->
-    <ion-item button (click)="forceCroatian()">
+    <ion-item button (click)="forceCroatian()" *ngIf="developer">
       <ion-label>Force switch to HR locale</ion-label>
     </ion-item>
     <!-- BUTTON: Invert usingCache setting -->
-    <ion-item button (click)="invertCacheIndicator()">
+    <ion-item button (click)="invertCacheIndicator()" *ngIf="developer">
       <ion-label>Invert usingCache setting</ion-label>
     </ion-item>
     <!-- BUTTON: Clear cache -->
-    <ion-item button (click)="clearCache()">
+    <ion-item button (click)="clearCache()" *ngIf="developer">
       <ion-label>Clear cache</ion-label>
     </ion-item>
     <!-- BUTTON: Disable advertisement banner -->
-    <ion-item button (click)="disableBanner()">
+    <ion-item button (click)="disableBanner()" *ngIf="developer">
       <ion-label>Hide banner ad</ion-label>
     </ion-item>
   </ion-list>

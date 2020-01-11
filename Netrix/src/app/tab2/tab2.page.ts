@@ -20,8 +20,8 @@ export class Tab2Page {
   tests = null;
   showAllPreference = false;
   currentTests = [];
-  oneWeek = 7 * 24 * 60 * 60 * 1000; // ms
-  oneDay = 24 * 60 * 60 * 1000; // ms
+  oneWeek = 604800000; // in ms
+  oneDay = 86400000;
   currentDate = Date.now();
 
   constructor(
@@ -60,29 +60,28 @@ export class Tab2Page {
   }
 
   getMonday(timestamp: number): Date {
-    /* From https://stackoverflow.com/a/4156516 */
+    /* https://stackoverflow.com/a/4156516 */
     const d = new Date(timestamp);
     const day = d.getDay();
     const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
     return new Date(d.setDate(diff));
   }
 
-  calculateRemainingTime(toDate: number): string {
-    /* `toDate` is expected to be a standard UNIX timestamp in seconds, but JS deals
-     * with milliseconds, so we multiply it by 1000. We then subtract the current date from
-     * `toDate` to get the number of milliseconds until the date. Finally, that is converted
-     * to days. */
+  /*calculateRemainingDays(toDate: number): string {
     const numberOfDays = Math.ceil(((toDate * 1000) - this.currentDate) / 1000 / 60 / 60 / 24);
-    /* Convert the days to months, then round up to the lowest value (floor) since we'll be
-     * showing the exact number of days until the date next to the month. */
+    return numberOfDays === 0 ? this.translate.instant('tab2.today') : numberOfDays.toString() + 'd';
+  }*/
+
+  calculateRemainingTime(toDate: number): string {
+    const numberOfDays = Math.ceil(((toDate * 1000) - this.currentDate) / 1000 / 60 / 60 / 24);
     const months = Math.floor(numberOfDays / 30);
-    let formattedString = ''; // We'll update and return this variable
-    if (months >= 1) { // If there is at least a month until the date, include it in the string and return just that
+    let formattedString = '';
+    if (months >= 1) {
       formattedString = months.toString() + 'm ' + (numberOfDays - (months * 30)).toString() + 'd';
-    } else { // If there isn't at least a month left, we can handle 2 cases
-      if (numberOfDays === 0) { // The date is today; in that case return the translated string for 'today'
+    } else {
+      if (numberOfDays === 0) {
         formattedString = this.translate.instant('tab2.today');
-      } else { // There are some days left, but less than a month; just return the number of days
+      } else {
         formattedString = numberOfDays + 'd';
       }
     }

@@ -5,7 +5,6 @@ import { BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from './settings.service';
 import { Platform } from '@ionic/angular';
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -22,8 +21,7 @@ export class NotificationService {
     private apiSvc: ApiService,
     private translate: TranslateService,
     private settings: SettingsService,
-    private plt: Platform,
-    private firebase: FirebaseX
+    private plt: Platform
   ) {
     /* Get all scheduled notifications and let scheduleTestNotifications
      * know we're done */
@@ -32,15 +30,16 @@ export class NotificationService {
 
   syncLocalLists() {
     this.plt.ready().then(() => {
-      this.firebase.logMessage('NotificationService/syncLocalLists(): Resetting notification lists');
+      console.log('NotificationService/syncLocalLists(): Resetting notification lists');
       this.notif.getAll().then(notifs => {
-        this.firebase.logMessage('NotificationService/syncLocalLists(): ' + JSON.stringify(notifs));
         this.scheduledNotifIDs = [];
         notifs.forEach(notifX => {
           this.scheduledNotifIDs.push(notifX.id);
         });
         this.scheduledNotifs = notifs;
         this.notifInitFinished.next(true);
+        /*console.log('NotificationService/syncLocalLists(): notifs:');
+        console.log(notifs);*/
       });
     });
   }
@@ -67,16 +66,16 @@ export class NotificationService {
 
   scheduleTestNotifications(days: number) {
     if (this.apiSvc.usingCachedContent) {
-      this.firebase.logMessage('NotificationService/scheduleTestNotifications(): Running in offline mode, not scheduling notifications');
+      console.log('NotificationService/scheduleTestNotifications(): Running in offline mode, not scheduling notifications');
       return;
     } else if (this.apiSvc.classId.value !== 0) {
-      this.firebase.logMessage('NotificationService/scheduleTestNotifications(): Class ID not 0, not scheduling notifications');
+      console.log('NotificationService/scheduleTestNotifications(): Class ID not 0, not scheduling notifications');
       return;
     }
     /* Wait until notif.getAll() is done */
     this.notifInitFinished.subscribe(val => {
       if (val) {
-        this.firebase.logMessage('NotificationService/scheduleTestNotifications(): notifInitFinished, starting schedule');
+        console.log('NotificationService/scheduleTestNotifications(): notifInitFinished, starting schedule');
         // tslint:disable-next-line: prefer-const
         let toBeScheduled = [];
         /* Format every 'current' test into a notification and append it
@@ -93,6 +92,10 @@ export class NotificationService {
             } as ILocalNotification);
           }
         });
+        /*console.log('NotificationService/scheduleTestNotifications(): toBeScheduled:');
+        console.log(toBeScheduled);
+        console.log('NotificationService/scheduleTestNotifications(): this.apiSvc.tests:');
+        console.log(this.apiSvc.tests);*/
         this.scheduleNotifications(toBeScheduled);
       }
     });
@@ -100,7 +103,7 @@ export class NotificationService {
 
   private scheduleNotifications(notifications: ILocalNotification[]) {
     /* Schedules a list of notifications. Time is in miliseconds */
-    this.firebase.logMessage(
+    console.log(
       'NotificationService/scheduleNotifications(): Scheduling ' + notifications.length + ' notifications'
     );
     this.notif.schedule(notifications);
