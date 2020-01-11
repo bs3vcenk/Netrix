@@ -59,6 +59,7 @@ export class LoginPage implements OnInit {
       this.isLoading = false; // Stop the "Logging in..." alert
     }, (err) => {
       this.isLoading = false; // Stop alert
+      console.log(err);
       let e;
       try { e = JSON.parse(err.error); } catch (ex) { e = {error: null}; }
       if (e.error === 'E_INVALID_CREDENTIALS') {

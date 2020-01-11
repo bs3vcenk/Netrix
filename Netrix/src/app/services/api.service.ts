@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SettingsService } from './settings.service';
 import { AuthenticationService } from './authentication.service';
 import { BehaviorSubject } from 'rxjs';
-import { HTTP, HTTPResponse } from '@ionic-native/http/ngx';
+import { HttpClient} from '@angular/common/http';
 import { Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
@@ -63,7 +63,7 @@ export class ApiService {
   maintenanceError = new BehaviorSubject(false);
 
   constructor(
-    private http: HTTP,
+    private http: HttpClient,
     private settings: SettingsService,
     private authServ: AuthenticationService,
     private plt: Platform,
@@ -132,7 +132,7 @@ export class ApiService {
   handleErr(errorObj) {
     /* Error handler function, decides what type of error message to display to the user */
     let e;
-    try { e = JSON.parse(errorObj.error); } catch (ex) { e = {error: null}; }
+    try { e = errorObj.error; } catch (ex) { e = {error: null}; }
     if (e.error === 'E_TOKEN_NONEXISTENT') {
       /* User is not authenticated (possibly token purged from server DB, or logged out
        * from another device) */
@@ -195,9 +195,8 @@ export class ApiService {
     try {
       await this.http.post(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/fetchclass',
-        {class_id: classId},
-        this.httpHeader
-      );
+        {class_id: classId}
+      ).toPromise();
     } catch (e) {
       this.handleErr(e);
     }
@@ -206,11 +205,9 @@ export class ApiService {
   getClasses() {
     /* Gets a list of classes */
     this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes',
-      {},
-      this.httpHeader
-    ).then((rx) => {
-      const response = JSON.parse(rx.data);
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes'
+    ).subscribe((rx: any) => {
+      const response = rx;
       this.classes = response.classes;
     }, () => {
       this.firebase.logMessage('ApiService/getClasses(): Request failed, but not calling handleErr');
@@ -221,10 +218,8 @@ export class ApiService {
     /* Check if maintenance mode is in progress */
     this.http.get(
       'https://ocjene.skole.hr/',
-      {},
-      this.httpHeader
-    ).then((rx) => {
-      if (rx.data.includes('trenutno u nadogradnji')) {
+    ).subscribe((rx: any) => {
+      if (rx.includes('trenutno u nadogradnji')) {
         this.maintenanceError.next(true);
       }
     }, () => {
@@ -236,9 +231,8 @@ export class ApiService {
      * profile */
     this.http.post(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/firebase',
-      {deviceToken: firebaseToken},
-      this.httpHeader
-    ).then(() => {},
+      {deviceToken: firebaseToken}
+    ).subscribe(() => {},
     () => {
       this.firebase.logMessage('ApiService/saveFirebaseToken(): Request failed, but not calling handleErr');
     });
@@ -249,9 +243,8 @@ export class ApiService {
     if (this.ignoredNotifTypes.includes(nType)) {
       this.http.post(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.del',
-        {parameter: nType},
-        this.httpHeader
-      ).then(() => {
+        {parameter: nType}
+      ).subscribe(() => {
         delete this.ignoredNotifTypes[this.ignoredNotifTypes.indexOf(nType)];
       }, (error) => {
         this.handleErr(error);
@@ -263,9 +256,8 @@ export class ApiService {
     /* Toggle master notification switch */
     this.http.post(
       this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.disable',
-      {parameter: nState},
-      this.httpHeader
-    ).then(() => {
+      {parameter: nState}
+    ).subscribe(() => {
     }, (error) => {
       this.handleErr(error);
     });
@@ -276,9 +268,8 @@ export class ApiService {
     if (!this.ignoredNotifTypes.includes(nType)) {
       this.http.post(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.add',
-        {parameter: nType},
-        this.httpHeader
-      ).then(() => {
+        {parameter: nType}
+      ).subscribe(() => {
         this.ignoredNotifTypes.push(nType);
       }, (error) => {
         this.handleErr(error);
@@ -288,15 +279,13 @@ export class ApiService {
 
   async getUserInfo(classId: number) {
     /* Get information about user */
-    let response: HTTPResponse;
+    let response: any;
     let info;
     let fetchedFromCache = false;
     try {
       response = await this.http.get(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info',
-        {},
-        this.httpHeader
-      );
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info'
+      ).toPromise();
       info = JSON.parse(response.data);
     } catch (error) {
       if (error.status === 401) {
@@ -323,11 +312,9 @@ export class ApiService {
   getNotifConfig() {
     /* Get list of disabled notification types, for display in the Notification management view */
     this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.all',
-      {},
-      this.httpHeader
-    ).then((response) => {
-      this.ignoredNotifTypes = JSON.parse(response.data).value.ignore;
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.all'
+    ).subscribe((response: any) => {
+      this.ignoredNotifTypes = JSON.parse(response).value.ignore;
       /* Let preCacheData() know we're done */
       this.loadingFinishedNotif.next(true);
       // this.loadingFinishedNotif.complete();
@@ -341,16 +328,14 @@ export class ApiService {
 
   async getSubjects(classId: number) {
     /* Get a stripped list of all subjects (alldata=0), containing no grades or notes */
-    let rx: HTTPResponse;
+    let rx;
     let response;
     let fetchedFromCache = false;
     try {
       rx = await this.http.get(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects',
-        {},
-        this.httpHeader
-      );
-      response = JSON.parse(rx.data);
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects'
+      ).toPromise();
+      response = JSON.parse(rx);
     } catch (error) {
       if (error.status === 401) {
         this.authServ.logout();
@@ -384,15 +369,13 @@ export class ApiService {
   }
 
   async getTests(classId: number) {
-    let rx: HTTPResponse;
+    let rx;
     let response;
     let fetchedFromCache = false;
     try {
       rx = await this.http.get(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/tests',
-        {},
-        this.httpHeader
-      );
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/tests'
+      ).toPromise();
       response = JSON.parse(rx.data);
     } catch (error) {
       if (error.status === 401) {
@@ -487,15 +470,13 @@ export class ApiService {
 
   async getAbsences(classId: number) {
     /* Get a list of absences, both an overview and a detailed list */
-    let response: HTTPResponse;
+    let response;
     let absences;
     let fetchedFromCache = false;
     try {
       response = await this.http.get(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/absences',
-        {},
-        this.httpHeader
-      );
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/absences'
+      ).toPromise();
       absences = JSON.parse(response.data);
     } catch (error) {
       if (error.status === 401) {
@@ -557,12 +538,10 @@ export class ApiService {
       /* If we don't, fetch the data from the server, process it, and store it
        * into the cache */
       this.firebase.logMessage('ApiService/getSubject(): Subject ID ' + subjId + ' not cached, fetching remote');
-      const rx = await this.http.get(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects/' + subjId,
-        {},
-        this.httpHeader
-      );
-      const response = JSON.parse(rx.data);
+      const rx: any = await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects/' + subjId
+      ).toPromise();
+      const response = JSON.parse(rx);
       const subject = this.processSubjectData(response);
       this.subjCacheMap[subjId] = subject;
       return subject;
