@@ -27,6 +27,7 @@ from time import sleep
 from string import ascii_letters
 from typing import List
 from api_backend_config import Config
+from datetime import datetime
 
 log = logging.getLogger(__name__)
 _redis = None
@@ -35,6 +36,62 @@ _threads = {}
 
 class NonExistentSetting(Exception):
 	"""Specified setting ID is non-existent."""
+
+def _filter_grade_list_by_months(input_gradelist: list, from_month: int, to_month: int) -> list:
+	"""
+		Filter a list of grade objects by showing only grades in
+		a specified month span.
+	"""
+	return list(filter(lambda x: from_month <= datetime.utcfromtimestamp(x['date']).month <= to_month, input_gradelist))
+
+def graph_average(input_gradelist: list) -> list:
+	"""
+		Return the history of a user's average by month. This is used to
+		construct the graph in the client.
+	"""
+	# Sort the grade list so we can assume the first element is the oldest,
+	# and the last is the newest
+	sorted_input_list = sorted(input_gradelist, key=lambda k: k['date'])
+	grades_sorted_by_month = {}
+	# Get lower limit for our grade range (oldest grade)
+	lower_month_limit = datetime.utcfromtimestamp(sorted_input_list[0]['date']).month
+	# Get upper limit (newest grade)
+	upper_month_limit = datetime.utcfromtimestamp(sorted_input_list[-1]['date']).month
+	# Set a variable we'll use to iterate through the month ranges
+	current_month = upper_month_limit
+	while current_month >= lower_month_limit:
+		# Filter grade list to include every grade between the oldest one and the last one
+		# in the current month
+		glist = _filter_grade_list_by_months(sorted_input_list, lower_month_limit, current_month)
+		# Set up/configure our dictionary
+		if str(current_month) not in grades_sorted_by_month:
+			grades_sorted_by_month[str(current_month)] = {}
+		# Iterate over grades in the filtered list
+		for grade in glist:
+			if str(grade['subject_id']) not in grades_sorted_by_month[str(current_month)]:
+				grades_sorted_by_month[str(current_month)][str(grade['subject_id'])] = []
+			grades_sorted_by_month[str(current_month)][str(grade['subject_id'])].append(grade)
+		# Go one month lower
+		current_month -= 1
+	# Initialize the variable we'll return
+	returnable = []
+	# Calculate averages for each of the subjects, then calculate the overall
+	# average for each month
+	for month in grades_sorted_by_month:
+		subject_averages = []
+		for subject_id in grades_sorted_by_month[month]:
+			if grades_sorted_by_month[month][subject_id]:
+				gradesx = [x['grade'] for x in grades_sorted_by_month[month][subject_id]]
+				subject_averages.append(
+					_round(sum(gradesx)/len(gradesx), 0)
+				)
+		returnable.append({
+			'month': int(month),
+			'average': _round(sum(subject_averages)/len(subject_averages), 2) if subject_averages else 0
+		})
+	# Sort final list by month in descending order
+	returnable.sort(key=lambda k: k['month'])
+	return returnable
 
 def memory_summary():
 	"""
