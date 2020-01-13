@@ -65,7 +65,11 @@
     "alert": {
       "logout": {
         "header": "Odjaviti?",
-        "content": "To će pobrisati tvoje podatke s Netrixovih servera i isključiti sve obavijesti."
+        "content": "To će pobrisati tvoje podatke s Netrixovih servera i isključiti sve obavijesti.",
+        "choice": {
+          "cancel": "Odbaci",
+          "logout": "Stvarno odjavi"
+        }
       },
       "time": {
         "choice": {

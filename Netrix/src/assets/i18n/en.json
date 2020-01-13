@@ -65,7 +65,11 @@
     "alert": {
       "logout": {
         "header": "Log out?",
-        "content": "This will delete your data from Netrix's servers and disable all notifications."
+        "content": "This will delete your data from Netrix's servers and disable all notifications.",
+        "choice": {
+          "cancel": "Cancel",
+          "logout": "Really log out"
+        }
       },
       "time": {
         "choice": {

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, PickerController, ToastController } from '@ionic/angular';
+import { AlertController, PickerController, ToastController, ActionSheetController } from '@ionic/angular';
 import { AuthenticationService } from '../services/authentication.service';
 import { SettingsService } from '../services/settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
@@ -44,7 +44,7 @@ export class SettingsPage {
     private pickerCtrl: PickerController,
     private translate: TranslateService,
     private apiSvc: ApiService,
-    private alertControl: AlertController,
+    private actionSheetControl: ActionSheetController,
     private toastControl: ToastController,
     private notifSvc: NotificationService,
     private admobSvc: AdmobService
@@ -68,20 +68,19 @@ export class SettingsPage {
 
   logout() {
     // Data collection alert
-    this.alertControl.create({
-      header: this.translate.instant('settings_page.alert.logout.header'),
-      message: this.translate.instant('settings_page.alert.logout.content'),
+    this.actionSheetControl.create({
+      header: this.translate.instant('settings_page.alert.logout.content'),
       buttons: [
         {
-          text: this.translate.instant('generic.choice.no'),
-          role: 'cancel'
-        },
-        {
-          text: this.translate.instant('generic.choice.yes'),
+          text: this.translate.instant('settings_page.alert.logout.choice.logout'),
+          role: 'destructive',
           handler: () => {
-            // Proceed to logout if accepted
             this._logout();
           }
+        },
+        {
+          text: this.translate.instant('settings_page.alert.logout.choice.cancel'),
+          role: 'cancel'
         }
       ]
     }).then(alert => {

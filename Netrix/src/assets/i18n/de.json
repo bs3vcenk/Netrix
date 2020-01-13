@@ -65,7 +65,11 @@
     "alert": {
       "logout": {
         "header": "Abmelden?",
-        "content": "Dadurch werden Ihre Daten von den Servern von Netrix gelöscht und alle Benachrichtigungen deaktiviert."
+        "content": "Dadurch werden Ihre Daten von den Servern von Netrix gelöscht und alle Benachrichtigungen deaktiviert.",
+        "choice": {
+          "cancel": "Abbrechen",
+          "logout": "Wirklich abmelden"
+        }
       },
       "time": {
         "choice": {
