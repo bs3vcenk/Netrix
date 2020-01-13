@@ -6,7 +6,7 @@ This module contains various functions which interact with the backend
 of the eDAP-API system.
 """
 
-import logging, redis, edap, requests
+import logging, redis, edap, requests, setproctitle
 from hashlib import md5 as _MD5HASH
 from hashlib import sha256 as _SHA256HASH
 from json import loads as _json_load
@@ -619,6 +619,7 @@ def _sync(token: str):
 	"""
 		Wrapper around sync, for bg execution (random timeout).
 	"""
+	setproctitle.setproctitle('eDAP sync thread [%s]' % token)
 	while True:
 		val = randint(config.sync.min_delay, config.sync.max_delay)
 		log.debug("Waiting %i s for %s", val, token)
