@@ -11,7 +11,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-list lines="full">
+  <ion-list>
     <!-- SEP: Analytics and ads -->
     <ion-list-header>
       <ion-label>{{ 'settings.analytics.header' | translate }}</ion-label>
@@ -37,7 +37,7 @@
     </ion-item>-->
   </ion-list>
 
-  <ion-list lines="full">
+  <ion-list>
     <!-- SEP: Notifications -->
     <ion-list-header>
       <ion-label>{{ 'settings.notifs.header' | translate }}</ion-label>
@@ -61,7 +61,7 @@
     </ion-item>
   </ion-list>
 
-  <ion-list lines="full">
+  <ion-list>
     <ion-list-header>
       <ion-label>{{ 'settings.design.header' | translate }}</ion-label>
     </ion-list-header>
@@ -77,9 +77,9 @@
     </ion-item>-->
   </ion-list>
 
-  <ion-list lines="full" *ngIf="developer">
+  <ion-list *ngIf="developer">
     <!-- SEP: Experimental -->
-    <ion-list-header *ngIf="developer">
+    <ion-list-header>
       <ion-label>Experimental</ion-label>
     </ion-list-header>
 
