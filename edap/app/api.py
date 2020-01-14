@@ -394,8 +394,7 @@ def dev_test_diff(token):
 @dev_pw_area
 def dev_force_diff(token):
 	"""
-		DEV: Force a sync operation for a token. Will output debugging
-		logs, which include credentials!
+		DEV: Force a sync operation for a token.
 	"""
 	if not verify_request(token):
 		abort(401)
