@@ -152,5 +152,10 @@
   },
   "classes": {
     "title": "Klassen"
+  },
+  "shorthand": {
+    "day": "T",
+    "week": "W",
+    "month": "M"
   }
 }

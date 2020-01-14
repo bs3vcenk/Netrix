@@ -24,6 +24,10 @@ export class Tab2Page {
   oneDay = 24 * 60 * 60 * 1000; // ms
   currentDate = Date.now();
 
+  dayShorthand = this.translate.instant('shorthand.day');
+  weekShorthand = this.translate.instant('shorthand.week');
+  monthShorthand = this.translate.instant('shorthand.month');
+
   constructor(
     private apiSvc: ApiService,
     private translate: TranslateService
@@ -73,17 +77,21 @@ export class Tab2Page {
      * `toDate` to get the number of milliseconds until the date. Finally, that is converted
      * to days. */
     const numberOfDays = Math.ceil(((toDate * 1000) - this.currentDate) / 1000 / 60 / 60 / 24);
-    /* Convert the days to months, then round up to the lowest value (floor) since we'll be
+    /* Convert the days to weeks, then round up to the lowest value (floor) since we'll be
      * showing the exact number of days until the date next to the month. */
-    const months = Math.floor(numberOfDays / 30);
+    const weeks = Math.floor(numberOfDays / 7);
     let formattedString = ''; // We'll update and return this variable
-    if (months >= 1) { // If there is at least a month until the date, include it in the string and return just that
-      formattedString = months.toString() + 'm ' + (numberOfDays - (months * 30)).toString() + 'd';
-    } else { // If there isn't at least a month left, we can handle 2 cases
+    if (weeks >= 1) { // If there is at least a week until the date, include it in the string and return just that
+      formattedString = weeks.toString() + this.weekShorthand;
+      const leftoverDays = numberOfDays - (weeks * 7);
+      if (leftoverDays >= 1) { // If there are not enough days to fill the week, show them too
+        formattedString += ' ' + leftoverDays.toString() + this.dayShorthand;
+      }
+    } else { // If there isn't at least a week left, we can handle 2 cases
       if (numberOfDays === 0) { // The date is today; in that case return the translated string for 'today'
         formattedString = this.translate.instant('tab2.today');
       } else { // There are some days left, but less than a month; just return the number of days
-        formattedString = numberOfDays + 'd';
+        formattedString = numberOfDays.toString() + this.dayShorthand;
       }
     }
     return formattedString;

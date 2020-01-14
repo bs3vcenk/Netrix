@@ -152,5 +152,10 @@
   },
   "classes": {
     "title": "Razredi"
+  },
+  "shorthand": {
+    "day": "d",
+    "week": "tj",
+    "month": "m"
   }
 }

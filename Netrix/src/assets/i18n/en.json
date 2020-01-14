@@ -152,5 +152,10 @@
   },
   "classes": {
     "title": "Classes"
+  },
+  "shorthand": {
+    "day": "d",
+    "week": "w",
+    "month": "m"
   }
 }
