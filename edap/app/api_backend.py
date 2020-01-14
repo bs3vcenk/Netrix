@@ -1071,6 +1071,6 @@ config = _read_config()
 logging.basicConfig(
 	filename=_join_path(config.storage, "edap_api.log"),
 	level=logging.INFO,
-	format="%(asctime)s > %(funcName)s(%(levelname)s) => %(message)s"
+	format="%(asctime)s > %(levelname)s => %(message)s"
 )
 _redis = _init_db()
