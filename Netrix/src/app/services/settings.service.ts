@@ -11,6 +11,7 @@ import { BehaviorSubject } from 'rxjs';
 export class SettingsService {
 
   migrationFinished = new BehaviorSubject(false);
+  settingsReady = new BehaviorSubject(false);
 
   dataPreference = null;
   notifPreference = null;
@@ -65,6 +66,8 @@ export class SettingsService {
       this.globalTheme = 'light';
     }
     this.adPreference = this.admobSvc.adPreference;
+    this.firebase.logMessage('SettingsService/readPrefs(): Firing settingsReady observable');
+    this.settingsReady.next(true);
     this.firebase.logMessage('SettingsService/readPrefs(): PREFERENCES:');
     this.firebase.logMessage('SettingsService/readPrefs(): Analytics: ' + this.dataPreference);
     this.firebase.logMessage('SettingsService/readPrefs(): Notifications: ' + this.notifPreference);
