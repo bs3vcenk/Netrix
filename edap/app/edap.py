@@ -55,7 +55,7 @@ class edap:
 	             pasw: str,
 	             parser: str = "lxml",
 	             edurl: str = "https://ocjene.skole.hr",
-	             ua: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/70.0 (https://netrix.io)",
+	             ua: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0 (https://netrix.io)",
 	             debug: bool = False,
 	             loglevel: int = 1,
 	             hidepriv: bool = True,
