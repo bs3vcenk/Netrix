@@ -1073,4 +1073,5 @@ logging.basicConfig(
 	level=logging.INFO,
 	format="%(asctime)s > %(levelname)s => %(message)s"
 )
+logging._srcfile = None
 _redis = _init_db()
