@@ -65,6 +65,11 @@ export class SettingsService {
       this.globalTheme = 'light';
     }
     this.adPreference = this.admobSvc.adPreference;
+    this.firebase.logMessage('SettingsService/readPrefs(): PREFERENCES:');
+    this.firebase.logMessage('SettingsService/readPrefs(): Analytics: ' + this.dataPreference);
+    this.firebase.logMessage('SettingsService/readPrefs(): Notifications: ' + this.notifPreference);
+    this.firebase.logMessage('SettingsService/readPrefs(): Notification time: ' + this.notifTime);
+    this.firebase.logMessage('SettingsService/readPrefs(): Theme: ' + this.globalTheme);
   }
 
   setGlobalTheme(nThemeName: 'dark' | 'light') {
