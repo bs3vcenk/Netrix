@@ -1,7 +1,6 @@
 """A library for parsing CARNet's eDnevnik using BeautifulSoup."""
 from datetime import datetime
 import inspect, re, requests
-from timeit import default_timer as timer
 from typing import List
 try:
 	from bs4 import BeautifulSoup
@@ -60,9 +59,7 @@ class edap:
 	             debug: bool = False,
 	             loglevel: int = 1,
 	             hidepriv: bool = True,
-	             hide_confidential: bool = True,
-	             return_processing_time: bool = False,
-	             dumpable_logs: bool = True):
+	             hide_confidential: bool = True):
 		"""
 			Authenticates the user to eDnevnik.
 
@@ -87,9 +84,6 @@ class edap:
 		self.loglevel = loglevel
 		self.hidepriv = hidepriv
 		self.hide_confidential = hide_confidential
-		self.return_processing_time = return_processing_time
-		self.dumpable_logs = dumpable_logs
-		self.log = ""
 		self.class_ids = []
 		self.subject_ids = []
 		self.subject_cache = {}
@@ -134,38 +128,22 @@ class edap:
 
 			:raises FatalLogExit: If something is logged with level 4/FATAL
 		"""
-		if loglevel > 4:
-			print("EDAP/Error: Unknown loglevel %s" % loglevel)
-		# Map numerical levels to strings
-		logl = ["Verbose", "Info", "Warning", "Error", "FATAL"]
-		# Substitute text in "[{}]" with "PRIVATE" (only if hidepriv is True)
-		if "[{" and "}]" in logs and self.hidepriv:
-			logs = re.sub(r'\[\{.+?\}\]', '[PRIVATE]', logs)
-		# Put the log string together
-		log_string = "EDAP/%s/%s: %s" % (logl[loglevel], inspect.stack()[1].function, logs)
-		# Print string if:
-		# 	Debug mode is enabled (debug=True) AND
-		# 	Log level is higher than or equal to minimum loglevel specified in __init__
-		# 	OR Log level is Fatal (numerical: 4)
-		if self.debug and loglevel >= self.loglevel or loglevel == 4:
-			print(log_string)
-		# Append to log buffer if:
-		# 	Dumpable logs are enabled AND
-		# 	Log level is higher than or equal to minimum loglevel specified in __init__
-		if self.dumpable_logs and loglevel >= self.loglevel:
-			self.log += log_string + "\n"
-
-	def dump_data(self):
-		"""
-			Dump stored variables and log if possible.
-		"""
-		print('USERNAME: %s' % self.user)
-		print('PARSER: %s' % self.parser)
-		print('USER AGENT: %s' % self.useragent)
-		print('SUBJECT CACHE: %s' % ('No' if not self.subject_cache else 'Yes (%s)' % (len(self.subject_cache.keys()))))
-		print('ABSENCE CACHE: %s' % ('No' if not self.absence_cache else 'Yes'))
-		print('CLASS IDs: %s' % (', '.join(self.class_ids) if self.class_ids else 'not initialized'))
-		print('==========\n%s' % self.log if self.dumpable_logs else 'Dumpable logs not enabled')
+		if self.debug:
+			if loglevel > 4:
+				print("EDAP/Error: Unknown loglevel %s" % loglevel)
+			# Map numerical levels to strings
+			logl = ["Verbose", "Info", "Warning", "Error", "FATAL"]
+			# Substitute text in "[{}]" with "PRIVATE" (only if hidepriv is True)
+			if "[{" and "}]" in logs and self.hidepriv:
+				logs = re.sub(r'\[\{.+?\}\]', '[PRIVATE]', logs)
+			# Put the log string together
+			log_string = "EDAP/%s/%s: %s" % (logl[loglevel], inspect.stack()[1].function, logs)
+			# Print string if:
+			# 	Debug mode is enabled (debug=True) AND
+			# 	Log level is higher than or equal to minimum loglevel specified in __init__
+			# 	OR Log level is Fatal (numerical: 4)
+			if self.debug and loglevel >= self.loglevel or loglevel == 4:
+				print(log_string)
 
 	def __fetch(self, url: str) -> str:
 		"""
@@ -208,8 +186,6 @@ class edap:
 		self.__edlog(1, "Listing classes for [{%s}]" % self.user)
 		self.__edlog(0, "Getting class selection HTML")
 		response = self.__fetch("%s/razredi/odabir" % self.edurl)
-		if self.return_processing_time:
-			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		classlist_preformat = soup.find_all("a", class_="class-wrap")
@@ -236,8 +212,6 @@ class edap:
 			})
 			self.class_ids.append(i["href"].replace("/pregled/predmeti/", ""))
 		self.__edlog(1, "Completed with %s classes found" % len(classlist))
-		if self.return_processing_time:
-			return classlist, timer() - start
 		return classlist
 
 	def getSubjects(self, class_id: int) -> List[dict]:
@@ -251,8 +225,6 @@ class edap:
 		self.__verify(class_id)
 		self.__edlog(1, "Getting subject list for class id %s (remote ID [{%s}])" % (class_id, self.class_ids[class_id]))
 		response = self.__fetch("%s/pregled/predmeti/%s" % (self.edurl, self.class_ids[class_id]))
-		if self.return_processing_time:
-			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		subjectlist_preformat = soup.find("div", id="courses").find_all("a")
@@ -273,8 +245,6 @@ class edap:
 			subjinfo.append({'subject':x[0].strip(), 'professors':prof})
 			self.subject_ids.append(i["href"])
 		self.__edlog(1, "Completed with %s subjects found" % len(subjinfo))
-		if self.return_processing_time:
-			return subjinfo, timer() - start
 		return subjinfo
 
 	def getTests(self, class_id: int, alltests: bool = False) -> List[dict]:
@@ -294,8 +264,6 @@ class edap:
 		else:
 			addon = ""
 		response = self.__fetch("%s/pregled/ispiti/%s" % (self.edurl, str(self.class_ids[class_id]) + addon))
-		if self.return_processing_time:
-			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
@@ -311,8 +279,6 @@ class edap:
 		# 	[1] or y in 2nd for loop => the subject of the test
 		# 	[2] or z in 2nd for loop => the date of the test, formatted in dd.mm.yyyy., converted to UNIX timestamp
 		final_returnable = [{"subject": x, "test": y, "date": _format_to_date(z)} for x, y, z in [x[i:i+3] for i in range(0, len(x), 3)]]
-		if self.return_processing_time:
-			return final_returnable, timer() - start
 		return final_returnable
 
 	def getGrades(self, class_id: int, subject_id: int) -> List[dict]:
@@ -333,8 +299,6 @@ class edap:
 		else:
 			self.__edlog(1, "Fetching subject %s from cache" % subject_id)
 			response = self.subject_cache[self.subject_ids[subject_id]]
-		if self.return_processing_time:
-			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		grade_table = soup.find("table", id="grade_notes")
@@ -358,8 +322,6 @@ class edap:
 		# needs to be converted to UNIX)
 		# Then add that dict to a list (we can do this in one line)
 		final_returnable = [{"date": _format_to_date(y[0]), "note":y[1], "grade":int(y[2])} for y in grades_unfiltered]
-		if self.return_processing_time:
-			return final_returnable, timer() - start
 		return final_returnable
 
 	def getNotes(self, class_id: int, subject_id: int) -> List[dict]:
@@ -380,8 +342,6 @@ class edap:
 		else:
 			self.__edlog(1, "Fetching subject %s from cache" % subject_id)
 			response = self.subject_cache[self.subject_ids[subject_id]]
-		if self.return_processing_time:
-			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		note_table = soup.find("table", id="notes")
@@ -404,13 +364,9 @@ class edap:
 		# This is the more likely "notes empty"-check to occur
 		if notes_unfiltered[0][0] == "Nema ostalih bilježaka":
 			self.__edlog(1, "No notes found for this subject")
-			if self.return_processing_time:
-				return [], timer() - start
 			return []
 		# Do the dict assignment and date conversion in one line
 		final_returnable = [{"date": _format_to_date(y[0]), "note":y[1]} for y in notes_unfiltered]
-		if self.return_processing_time:
-			return final_returnable, timer() - start
 		return final_returnable
 
 	def getConcludedGrade(self, class_id: int, subject_id: int):
@@ -431,8 +387,6 @@ class edap:
 		else:
 			self.__edlog(1, "Fetching subject %s from cache" % subject_id)
 			response = self.subject_cache[self.subject_ids[subject_id]]
-		if self.return_processing_time:
-			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
@@ -449,13 +403,9 @@ class edap:
 				raise ParseError('Regex failed to match %s' % x)
 			self.__edlog(0, "Formatted string: [{%s}]" % result.group(1))
 			self.__edlog(0, "Found concluded grade for this subject")
-			if self.return_processing_time:
-				return True, int(result.group(1)), timer() - start
 			return True, int(result.group(1))
 		# Otherwise we have no concluded grade
 		self.__edlog(0, "No concluded grade found for this subject")
-		if self.return_processing_time:
-			return False, None, timer() - start
 		return False, None
 
 	def getInfo(self, class_id: int) -> dict:
@@ -467,8 +417,6 @@ class edap:
 		self.__verify(class_id)
 		self.__edlog(0, "Getting info for class id %s" % class_id)
 		response = self.__fetch("%s/pregled/osobni_podaci/%s" % (self.edurl, self.class_ids[class_id]))
-		if self.return_processing_time:
-			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
@@ -492,8 +440,6 @@ class edap:
 			del user_data['oib']
 			del user_data['address']
 			del user_data['matbroj']
-		if self.return_processing_time:
-			return user_data, timer() - start
 		return user_data
 
 	def getStudentNotes(self, class_id: int) -> dict:
@@ -554,8 +500,6 @@ class edap:
 		else:
 			self.__edlog(1, "Fetching absences from cache")
 			response = self.absence_cache[self.class_ids[class_id]]
-		if self.return_processing_time:
-			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
@@ -573,8 +517,6 @@ class edap:
 			'sum': int(x_fix[3].replace("Ukupno: ", "")),
 			'sum_leftover': int(x_fix[4].replace("Ukupno ostalo: ", ""))
 		}
-		if self.return_processing_time:
-			return final_returnable, timer() - start
 		return final_returnable
 
 	def getAbsenceList(self, class_id: int) -> List[dict]:
@@ -592,8 +534,6 @@ class edap:
 		else:
 			self.__edlog(1, "Fetching absences from cache")
 			response = self.absence_cache[self.class_ids[class_id]]
-		if self.return_processing_time:
-			start = timer()
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
@@ -629,6 +569,4 @@ class edap:
 				absObj["justified"] = absence.find("td", class_="opravdano").find("img").get("alt") == "Opravdano"
 				absLst['absences'].append(absObj)
 			abslist2.append(absLst)
-		if self.return_processing_time:
-			return abslist2, timer() - start
 		return abslist2
