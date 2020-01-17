@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { Storage } from '@ionic/storage';
 
 declare var admob;
 
@@ -9,17 +10,17 @@ export class AdmobService {
   adPreference = null;
 
   constructor(
-    private firebase: FirebaseX
+    private firebase: FirebaseX,
+    private storage: Storage
   ) {
     /* Check if the user wants to see ads */
-    /*this.storage.get('ad-preference').then(res => {
+    this.storage.get('ad-preference').then(res => {
       if (res != null) {
         this.adPreference = res;
       } else {
         this.adPreference = true;
       }
-    });*/
-    this.adPreference = true; // TODO: Decide if this stays
+    });
   }
 
   showBanner() {
