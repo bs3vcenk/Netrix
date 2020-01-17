@@ -1,3 +1,6 @@
+## 1.9.12 (2020-01-17)
+* **FIX**: Reklame se nisu isključile nakon promjene opcije
+
 ## 1.9.11 (2020-01-11)
 * **FIX**: Prekidač za dark mode nije vraćao na bijelu temu
 
