@@ -74,8 +74,8 @@ export class NotificationService {
       return;
     }
     /* Wait until notif.getAll() is done */
-    this.notifInitFinished.subscribe(val => {
-      if (val) {
+    this.notifInitFinished.toPromise().then(() => {
+      this.settings.settingsReady.toPromise().then(() => {
         this.firebase.logMessage('NotificationService/scheduleTestNotifications(): notifInitFinished, starting schedule');
         // tslint:disable-next-line: prefer-const
         let toBeScheduled = [];
@@ -94,7 +94,7 @@ export class NotificationService {
           }
         });
         this.scheduleNotifications(toBeScheduled);
-      }
+      });
     });
   }
 
