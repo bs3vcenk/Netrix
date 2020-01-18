@@ -3,7 +3,7 @@ from flask import Flask, jsonify, make_response, request, abort
 from api_backend import *
 import edap, traceback
 
-API_VERSION = "2.14.2"
+API_VERSION = "2.15"
 
 log = logging.getLogger('EDAP-API')
 
