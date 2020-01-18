@@ -3,7 +3,7 @@ from flask import Flask, jsonify, make_response, request, abort
 from api_backend import *
 import edap, traceback
 
-API_VERSION = "2.14.2"
+API_VERSION = "2.15"
 
 log = logging.getLogger('EDAP-API')
 
@@ -394,8 +394,7 @@ def dev_test_diff(token):
 @dev_pw_area
 def dev_force_diff(token):
 	"""
-		DEV: Force a sync operation for a token. Will output debugging
-		logs, which include credentials!
+		DEV: Force a sync operation for a token.
 	"""
 	if not verify_request(token):
 		abort(401)

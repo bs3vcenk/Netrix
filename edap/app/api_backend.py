@@ -6,7 +6,7 @@ This module contains various functions which interact with the backend
 of the eDAP-API system.
 """
 
-import logging, redis, edap, requests
+import logging, redis, edap, requests, setproctitle
 from hashlib import md5 as _MD5HASH
 from hashlib import sha256 as _SHA256HASH
 from json import loads as _json_load
@@ -22,7 +22,7 @@ from math import pow as _math_pow
 from os import environ
 from os.path import join as _join_path
 from os.path import getsize as _get_file_size
-from threading import Thread
+from threading import Thread, currentThread
 from time import sleep
 from string import ascii_letters
 from typing import List
@@ -399,7 +399,7 @@ def _stop_sync(token: str):
 		thread on the next run (once `sleep()` finishes inside the thread).
 	"""
 	if "sync:" + token in _threads:
-		_threads["sync:" + token]["run"] = False
+		_threads["sync:" + token]["obj"].do_run = False
 
 def get_sync_threads() -> List[str]:
 	"""
@@ -619,14 +619,14 @@ def _sync(token: str):
 	"""
 		Wrapper around sync, for bg execution (random timeout).
 	"""
-	while True:
+	setproctitle.setproctitle('eDAP sync thread [%s]' % token)
+	t = currentThread()
+	while getattr(t, 'do_run', True):
 		val = randint(config.sync.min_delay, config.sync.max_delay)
 		log.debug("Waiting %i s for %s", val, token)
 		sleep(val)
-		if not _threads["sync:" + token]["run"]:
-			del _threads["sync:" + token]
-			break
 		sync(token)
+	log.info('Sync thread %s ending', token)
 
 def _get_var(varname: str, _bool: bool = False, default=None):
 	"""
@@ -1014,6 +1014,7 @@ config = _read_config()
 logging.basicConfig(
 	filename=_join_path(config.storage, "edap_api.log"),
 	level=logging.INFO,
-	format="%(asctime)s > %(funcName)s(%(levelname)s) => %(message)s"
+	format="%(asctime)s > %(levelname)s => %(message)s"
 )
+logging._srcfile = None
 _redis = _init_db()
