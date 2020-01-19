@@ -57,6 +57,15 @@
       "sum": "Alle"
     }
   },
+  "tab4": {
+    "title": "Statistik",
+    "cards": {
+      "exams": "Prüfungen",
+      "average": "Durchschnitt",
+      "change": "Änderung",
+      "history": "Notendurchschnitt im Laufe der Zeit"
+    }
+  },
   "settings_page": {
     "title": "Einstellungen",
     "text": {
@@ -115,7 +124,8 @@
     "subjects": "Schulfächer",
     "tests": "Prüfungen",
     "settings": "Einstellungen",
-    "absences": "Abwesenheiten"
+    "absences": "Abwesenheiten",
+    "stats": "Statistik"
   },
   "settings": {
     "analytics": {

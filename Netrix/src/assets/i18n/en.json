@@ -57,6 +57,15 @@
       "sum": "All"
     }
   },
+  "tab4": {
+    "title": "Stats",
+    "cards": {
+      "exams": "Exams",
+      "average": "Average",
+      "change": "Change",
+      "history": "Average over time"
+    }
+  },
   "settings_page": {
     "title": "Settings",
     "text": {
@@ -115,7 +124,8 @@
     "subjects": "Subjects",
     "tests": "Exams",
     "settings": "Settings",
-    "absences": "Absences"
+    "absences": "Absences",
+    "stats": "Stats"
   },
   "settings": {
     "analytics": {

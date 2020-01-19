@@ -57,6 +57,15 @@
       "sum": "Svi"
     }
   },
+  "tab4": {
+    "title": "Statistika",
+    "cards": {
+      "exams": "Ispiti",
+      "average": "Prosjek",
+      "change": "Promjena",
+      "history": "Prosjek kroz vrijeme"
+    }
+  },
   "settings_page": {
     "title": "Postavke",
     "text": {
@@ -115,7 +124,8 @@
     "subjects": "Predmeti",
     "tests": "Ispiti",
     "settings": "Postavke",
-    "absences": "Izostanci"
+    "absences": "Izostanci",
+    "stats": "Statistika"
   },
   "settings": {
     "analytics": {
