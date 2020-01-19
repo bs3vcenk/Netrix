@@ -15,43 +15,44 @@ export class Tab4Page implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    // Create blue gradient (from https://blog.vanila.io/chart-js-tutorial-how-to-make-gradient-line-chart-af145e5c92f9)
     const gradientStroke = this.gradeHistoryGraph.nativeElement.getContext('2d').createLinearGradient(500, 0, 100, 0);
     gradientStroke.addColorStop(0, '#00d2ff');
     gradientStroke.addColorStop(1, '#3a47d5');
+    // Initialize the grade history chart
     this.gradehistChart = new Chart(this.gradeHistoryGraph.nativeElement, {
-      type: 'line',
+      type: 'line', // We want this to be a line chart
       data: {
-        labels: ['SIJ', 'VELJ', 'OZU', 'TRA', 'SVI', 'LIP', 'KOL'],
-        datasets: [
+        labels: ['SIJ', 'VELJ', 'OZU', 'TRA', 'SVI', 'LIP', 'KOL'], // Placeholder labels for now
+        datasets: [ // Only one dataset -- grade average over time
           {
-            label: 'My First dataset',
             fill: true,
             data: [65, 59, 80, 81, 56, 55, 40],
-            borderColor:               gradientStroke,
-            pointBorderColor:          gradientStroke,
-            pointBackgroundColor:      gradientStroke,
+            borderColor: gradientStroke,
+            pointBorderColor: gradientStroke,
+            pointBackgroundColor: gradientStroke,
             pointHoverBackgroundColor: gradientStroke,
-            pointHoverBorderColor:     gradientStroke,
-            backgroundColor:           gradientStroke,
+            pointHoverBorderColor: gradientStroke,
+            backgroundColor: gradientStroke,
             pointRadius: 0
           }
         ]
       },
       options: {
         legend: {
-          display: false,
+          display: false, // Disable the legend
         },
         tooltips: {
-          enabled: false,
+          enabled: false, // Disable tooltips on tap
         },
         scales: {
           xAxes: [{
             gridLines: {
-              display: false,
+              display: false, // Disable grid lines
             }
           }],
           yAxes: [{
-            display: false,
+            display: false, // Disable entire y axis for now
           }]
         }
       }
