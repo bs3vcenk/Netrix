@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Chart } from 'chart.js';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-tab4',
@@ -8,11 +9,17 @@ import { Chart } from 'chart.js';
 })
 export class Tab4Page implements OnInit {
 
+  // Chart configuration
   @ViewChild('gradeHistoryGraph', {static: true}) gradeHistoryGraph: ElementRef;
-
   private gradehistChart: Chart;
 
-  constructor() { }
+  // Other data
+  fullAverage: number;
+  recentTests: Array<any>;
+
+  constructor(
+    private api: ApiService
+  ) { }
 
   ngOnInit() {
     // Create blue gradient (from https://blog.vanila.io/chart-js-tutorial-how-to-make-gradient-line-chart-af145e5c92f9)
