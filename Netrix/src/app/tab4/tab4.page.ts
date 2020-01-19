@@ -15,7 +15,7 @@ export class Tab4Page implements OnInit {
   // This will be used as a reference to how the data will look like when fetched from
   // the server.
   exampleGraphResponse: Array<any> = JSON.parse(
-    '[{"average":3.87,"month":0},{"average":3.87,"month":1},{"average":3.8,"month":2},{"average":3.8,"month":3},{"average":3.73,"month":4},{"average":3.87,"month":5},{"average":4.0,"month":6},{"average":4.2,"month":9},{"average":3.6,"month":10},{"average":3.87,"month":11}]'
+    '[{"average":3.87,"month":1},{"average":3.8,"month":2},{"average":3.8,"month":3},{"average":3.73,"month":4},{"average":3.87,"month":5},{"average":4.0,"month":6},{"average":4.2,"month":9},{"average":3.6,"month":10},{"average":3.87,"month":11}]'
   );
 
   // Chart configuration
