@@ -81,29 +81,29 @@ def graph_average(input_gradelist: list) -> list:
 	# Sort the grade list so we can assume the first element is the oldest,
 	# and the last is the newest
 	sorted_input_list = sorted(input_gradelist, key=lambda k: k['date'])
-	now = datetime.now().timestamp()
 	grades_sorted_by_month = []
 	# List of month 
 	months_to_scan = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6]
 	# Get lower limit for our grade range (oldest grade)
 	lower_month_limit = _get_month_start_timestamp(sorted_input_list[0]['date'])
+	# Get upper limit (newest grade)
+	upper_month_limit = int((datetime.fromtimestamp(sorted_input_list[-1]['date']) + relativedelta(months=1)).timestamp())
 	print('lower_month_limit: %s' % lower_month_limit)
+	print('upper_month_limit: %s' % upper_month_limit)
 	sclist = [datetime.fromtimestamp(lower_month_limit) + relativedelta(months=1)]
 	for _ in months_to_scan[1:]:
 		sclist.append(sclist[-1] + relativedelta(months=1))
-	# Get upper limit (newest grade)
-	#upper_month_limit = datetime.utcfromtimestamp(sorted_input_list[-1]['date']).month
 	for current_month in sclist:
-		print('current_month: %s' % current_month.timestamp())
-		if current_month.timestamp() > now:
+		print('current_month: %s (%s)' % (current_month.timestamp(), current_month.month))
+		if current_month.timestamp() > upper_month_limit:
 			break
 		# Filter grade list to include every grade between the oldest one and the last one
 		# in the current month
 		glist = _filter_grade_list_by_date(sorted_input_list, lower_month_limit, int(current_month.timestamp()))
 		# Set up/configure our dictionary
-		scan_result = _search_dict_list(grades_sorted_by_month, 'month', current_month.month)
+		scan_result = _search_dict_list(grades_sorted_by_month, 'month', current_month.month - 1)
 		if not scan_result:
-			grades_sorted_by_month.append({'month': current_month.month, 'grades': {}})
+			grades_sorted_by_month.append({'month': current_month.month - 1, 'grades': {}})
 		# Iterate over grades in the filtered list
 		for grade in glist:
 			if str(grade['subject_id']) not in grades_sorted_by_month[-1]['grades']:
