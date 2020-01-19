@@ -23,6 +23,15 @@ export class Tab4Page implements OnInit {
 
   ngOnInit() {
     this.createGradeHistoryChart();
+    this.setupAverage();
+  }
+
+  /* Show current grade average in UI */
+  private setupAverage() {
+    this.api.loadingFinishedSubj.subscribe(() => {
+      console.log('loadingFinishedSubj');
+      this.fullAverage = this.api.fullAvg;
+    });
   }
 
   private createGradeHistoryChart() {
