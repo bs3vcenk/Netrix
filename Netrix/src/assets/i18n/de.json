@@ -161,7 +161,8 @@
     }
   },
   "classes": {
-    "title": "Klassen"
+    "title": "Klassen",
+    "close": "Schließen"
   },
   "shorthand": {
     "day": "T",

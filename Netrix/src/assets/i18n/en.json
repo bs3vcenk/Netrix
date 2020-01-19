@@ -161,7 +161,8 @@
     }
   },
   "classes": {
-    "title": "Classes"
+    "title": "Classes",
+    "close": "Close"
   },
   "shorthand": {
     "day": "d",
