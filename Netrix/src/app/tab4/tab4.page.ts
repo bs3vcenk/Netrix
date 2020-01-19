@@ -2,6 +2,9 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Chart } from 'chart.js';
 import { ApiService } from '../services/api.service';
 
+/* School year starts in September */
+const SCHOOL_MONTH_ORDER = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8];
+
 @Component({
   selector: 'app-tab4',
   templateUrl: './tab4.page.html',
@@ -11,13 +14,16 @@ export class Tab4Page implements OnInit {
 
   // This will be used as a reference to how the data will look like when fetched from
   // the server.
-  exampleGraphResponse = JSON.parse(
-    '[{"average":4.08,"month":1},{"average":5.0,"month":10},{"average":4.2,"month":11},{"average":4.0,"month":12}]'
+  exampleGraphResponse: Array<any> = JSON.parse(
+    '[{"average":3.87,"month":0},{"average":3.87,"month":1},{"average":3.8,"month":2},{"average":3.8,"month":3},{"average":3.73,"month":4},{"average":3.87,"month":5},{"average":4.0,"month":6},{"average":4.2,"month":9},{"average":3.6,"month":10},{"average":3.87,"month":11}]'
   );
 
   // Chart configuration
   @ViewChild('gradeHistoryGraph', {static: true}) gradeHistoryGraph: ElementRef;
   private gradehistChart: Chart;
+  // -- Chart data
+  chartLabels: Array<string> = [];
+  chartDataset: Array<number> = [];
 
   // Other data
   fullAverage: number;
@@ -29,15 +35,27 @@ export class Tab4Page implements OnInit {
 
   ngOnInit() {
     this.createGradeHistoryChart();
-    this.setupAverage();
+    this.api.loadingFinishedSubj.subscribe(() => {
+      this.formatGraphResponse();
+      this.setupAverage();
+    });
+  }
+
+  /* Format server graph response into separate labels and dataset arrays */
+  private formatGraphResponse() {
+    // Sorting from https://stackoverflow.com/a/16221350
+    const orderedList = this.exampleGraphResponse.sort((a, b) => {
+      return SCHOOL_MONTH_ORDER.indexOf(a.month) - SCHOOL_MONTH_ORDER.indexOf(b.month);
+    });
+    orderedList.forEach((gObject) => {
+      this.chartLabels.push(gObject.month.toString());
+      this.chartDataset.push(gObject.average);
+    });
   }
 
   /* Show current grade average in UI */
   private setupAverage() {
-    this.api.loadingFinishedSubj.subscribe(() => {
-      console.log('loadingFinishedSubj');
-      this.fullAverage = this.api.fullAvg;
-    });
+    this.fullAverage = this.api.fullAvg;
   }
 
   private createGradeHistoryChart() {
@@ -49,11 +67,11 @@ export class Tab4Page implements OnInit {
     this.gradehistChart = new Chart(this.gradeHistoryGraph.nativeElement, {
       type: 'line', // We want this to be a line chart
       data: {
-        labels: ['SIJ', 'VELJ', 'OZU', 'TRA', 'SVI', 'LIP', 'KOL'], // Placeholder labels for now
+        labels: this.chartLabels,
         datasets: [ // Only one dataset -- grade average over time
           {
             fill: true,
-            data: [65, 59, 80, 81, 56, 55, 40],
+            data: this.chartDataset,
             borderColor: gradientStroke,
             pointBorderColor: gradientStroke,
             pointBackgroundColor: gradientStroke,
@@ -78,7 +96,14 @@ export class Tab4Page implements OnInit {
             }
           }],
           yAxes: [{
-            display: false, // Disable entire y axis for now
+            display: true, // Disable entire y axis for now
+            gridLines: {
+              display: false, // Disable grid lines
+            },
+            ticks: {
+              suggestedMin: 3,
+              maxTicksLimit: 6
+            },
           }]
         }
       }
