@@ -9,6 +9,12 @@ import { ApiService } from '../services/api.service';
 })
 export class Tab4Page implements OnInit {
 
+  // This will be used as a reference to how the data will look like when fetched from
+  // the server.
+  exampleGraphResponse = JSON.parse(
+    '[{"average":4.08,"month":1},{"average":5.0,"month":10},{"average":4.2,"month":11},{"average":4.0,"month":12}]'
+  );
+
   // Chart configuration
   @ViewChild('gradeHistoryGraph', {static: true}) gradeHistoryGraph: ElementRef;
   private gradehistChart: Chart;
