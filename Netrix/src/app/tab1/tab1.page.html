@@ -9,7 +9,7 @@
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="secondary">
-      <ion-button routerLink="/classes" routerDirection="forward" disabled="{{usingCache}}">
+      <ion-button (click)="showClassSelectionScreen()" disabled="{{usingCache}}">
         {{ 'tab1.text.classes' | translate }}
       </ion-button>
     </ion-buttons>

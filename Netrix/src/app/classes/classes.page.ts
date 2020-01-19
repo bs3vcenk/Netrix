@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
-import { NavController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-classes',
@@ -14,7 +14,7 @@ export class ClassesPage implements OnInit {
 
   constructor(
     private apiSvc: ApiService,
-    private navCtrl: NavController
+    private modalController: ModalController
   ) {
     this.classes = this.apiSvc.classes;
     this.currentClass = this.apiSvc.classId.value;
@@ -25,6 +25,10 @@ export class ClassesPage implements OnInit {
 
   switchClass(classId: number) {
     this.apiSvc.switchActiveClass(classId);
-    this.navCtrl.navigateBack('/tabs/tabs/tab1');
+    this.dismiss();
+  }
+
+  dismiss() {
+    this.modalController.dismiss();
   }
 }
