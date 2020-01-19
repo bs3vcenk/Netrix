@@ -22,6 +22,10 @@ export class Tab4Page implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.createGradeHistoryChart();
+  }
+
+  private createGradeHistoryChart() {
     // Create blue gradient (from https://blog.vanila.io/chart-js-tutorial-how-to-make-gradient-line-chart-af145e5c92f9)
     const gradientStroke = this.gradeHistoryGraph.nativeElement.getContext('2d').createLinearGradient(500, 0, 100, 0);
     gradientStroke.addColorStop(0, '#00d2ff');
