@@ -164,6 +164,11 @@ body.dark {
     --ion-item-background: #1c1c1c;
   }
 
+  /* Fix 'cancel' button blending in while in dark mode */
+  button.action-sheet-button.ion-activatable.action-sheet-cancel.sc-ion-action-sheet-ios {
+    --background-selected: #1c1c1c;
+  }
+
   --ion-item-background: #000000;
   --ion-item-background-activated: #313131;
 }
