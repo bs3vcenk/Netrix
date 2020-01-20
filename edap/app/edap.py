@@ -59,7 +59,8 @@ class edap:
 	             debug: bool = False,
 	             loglevel: int = 1,
 	             hidepriv: bool = True,
-	             hide_confidential: bool = True):
+	             hide_confidential: bool = True,
+	             headers: dict = None):
 		"""
 			Authenticates the user to eDnevnik.
 
@@ -90,6 +91,9 @@ class edap:
 		self.absence_cache = {}
 		self.session = requests.Session()
 		self.session.headers.update({"User-Agent":self.useragent})
+		if headers:
+			self.__edlog(1, "Additional headers '%s' will be added to all requests" % ', '.join(headers))
+			self.session.headers.update(headers)
 		self.__edlog(0, "Sending initial request to obtain CSRF")
 		try:
 			r = self.session.get("%s/pocetna/prijava" % self.edurl)
