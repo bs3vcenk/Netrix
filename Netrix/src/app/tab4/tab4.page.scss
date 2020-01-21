@@ -2,4 +2,7 @@ ion-card {
     /* Padding is provided by ion-grid, so we'll override the defaults */
     margin: 0 !important;
     padding: 0 !important;
+    ion-card-content {
+        padding-top: 0 !important;
+    }
 }
