@@ -71,11 +71,14 @@ export class Tab4Page implements OnInit {
         dataDict[gObject.grade.toString()] += 1;
       }
     });
-    const dictKeys = Object.keys(dataDict);
-    // dictKeys.sort((a, b) => parseInt(b) - parseInt(a));
-    for (const key in dictKeys) {
-      this.gradeAmountLabels.push(key);
-      this.gradeAmountDataset.push(dataDict[key]);
+    let dictKeys: string[] = Object.keys(dataDict);
+    dictKeys = dictKeys.sort().reverse();
+    for (const index in dictKeys) {
+      if (index) {
+        const key = dictKeys[index];
+        this.gradeAmountLabels.push(key);
+        this.gradeAmountDataset.push(dataDict[key]);
+      }
     }
   }
 
