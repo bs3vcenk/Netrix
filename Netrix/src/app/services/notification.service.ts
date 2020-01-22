@@ -74,27 +74,31 @@ export class NotificationService {
       return;
     }
     /* Wait until notif.getAll() is done */
-    this.notifInitFinished.toPromise().then(() => {
-      this.settings.settingsReady.toPromise().then(() => {
-        this.firebase.logMessage('NotificationService/scheduleTestNotifications(): notifInitFinished, starting schedule');
-        // tslint:disable-next-line: prefer-const
-        let toBeScheduled = [];
-        /* Format every 'current' test into a notification and append it
-         * to a list of to-be-scheduled tests */
-        this.apiSvc.currentTests.forEach(test => {
-          /* If it's already scheduled, avoid scheduling again */
-          if (!this.scheduledNotifIDs.includes(test.id)) {
-            toBeScheduled.push({
-              id: test.id,
-              title: this.translate.instant('notif.text.test'),
-              text: test.subject + ': ' + test.test + ' '
-                + this.translate.instant('notif.text.inXdays').replace('DAYS', this.settings.notifTime),
-              trigger: { at: this.formatDate(test.date * 1000) }
-            } as ILocalNotification);
+    this.notifInitFinished.subscribe((notifInitFinished) => {
+      if (notifInitFinished) {
+        this.settings.settingsReady.subscribe((settingsReady) => {
+          if (settingsReady) {
+            this.firebase.logMessage('NotificationService/scheduleTestNotifications(): notifInitFinished, starting schedule');
+            // tslint:disable-next-line: prefer-const
+            let toBeScheduled = [];
+            /* Format every 'current' test into a notification and append it
+            * to a list of to-be-scheduled tests */
+            this.apiSvc.currentTests.forEach(test => {
+              /* If it's already scheduled, avoid scheduling again */
+              if (!this.scheduledNotifIDs.includes(test.id)) {
+                toBeScheduled.push({
+                  id: test.id,
+                  title: this.translate.instant('notif.text.test'),
+                  text: test.subject + ': ' + test.test + ' '
+                    + this.translate.instant('notif.text.inXdays').replace('DAYS', this.settings.notifTime),
+                  trigger: { at: this.formatDate(test.date * 1000) }
+                } as ILocalNotification);
+              }
+            });
+            this.scheduleNotifications(toBeScheduled);
           }
         });
-        this.scheduleNotifications(toBeScheduled);
-      });
+      }
     });
   }
 
