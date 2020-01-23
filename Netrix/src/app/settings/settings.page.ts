@@ -37,6 +37,7 @@ export class SettingsPage {
   usingCache = null;
   dayString = this.timePlural;
   developer = !environment.production;
+  exp_enabled = false;
 
   constructor(
     private authServ: AuthenticationService,
@@ -197,6 +198,10 @@ export class SettingsPage {
 
   disableBanner() {
     this.admobSvc.hideBanner();
+  }
+
+  exp_changeStatus() {
+    this.exp_enabled = !this.exp_enabled;
   }
 
 }

@@ -112,4 +112,12 @@
       <ion-label>{{ 'settings_page.text.logout' | translate }}</ion-label>
     </ion-item>
   </ion-list>
+
+  <ion-list *ngIf="!developer">
+    <!-- SWITCH: Show experimental options -->
+    <ion-item>
+      <ion-label>{{ 'settings.experimental.enable' | translate }}</ion-label>
+      <ion-toggle slot="end" [(ngModel)]="exp_enabled" (ionChange)="exp_changeStatus()"></ion-toggle>
+    </ion-item>
+  </ion-list>
 </ion-content>
