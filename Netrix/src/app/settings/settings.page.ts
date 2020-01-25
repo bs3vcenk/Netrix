@@ -200,8 +200,4 @@ export class SettingsPage {
     this.admobSvc.hideBanner();
   }
 
-  exp_changeStatus() {
-    this.exp_enabled = !this.exp_enabled;
-  }
-
 }
