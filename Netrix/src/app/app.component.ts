@@ -38,8 +38,11 @@ export class AppComponent {
   private notificationSetup(token) {
     this.fcm.getToken(token);
     try {
-      this.fcm.onNotifications().subscribe(
-        () => this.apiSvc.switchActiveClass(0));
+      this.fcm.onNotifications().subscribe(() => {
+        if (!this.apiSvc.usingCachedContent) {
+          this.apiSvc.switchActiveClass(0);
+        }
+      });
     } catch (e) {
       this.firebase.logMessage('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running Cordova.');
     }
