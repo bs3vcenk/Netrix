@@ -17,7 +17,7 @@ import { CrashlyticsErrorHandler } from './services/firebase.service';
 import { AdMob } from '@ionic-native/admob-plus/ngx';
 import { AdmobService } from './services/admob.service';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
-import { ClassesPage } from './classes/classes.page';
+import { ClassesPageModule } from './classes/classes.module';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
@@ -25,11 +25,7 @@ export function createTranslateLoader(http: HttpClient) {
 
 @NgModule({
   declarations: [
-    AppComponent,
-    ClassesPage
-  ],
-  entryComponents: [
-    ClassesPage
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -47,7 +43,8 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    HttpClientModule
+    HttpClientModule,
+    ClassesPageModule
   ],
   providers: [
     StatusBar,
