@@ -135,7 +135,7 @@
     },
     "notifs": {
       "header": "Benachrichtigungen",
-      "management": "Benachrichtigungsverwaltung",
+      "management": "Benachrichtigungskategorien",
       "time": "Vor Prüfung benachrichtigen",
       "master": "Alle Benachrichtigungen"
     },
@@ -147,7 +147,7 @@
     "time_plural": "Tagen"
   },
   "notifSettings": {
-    "title": "Benachrichtigungsverwaltung",
+    "title": "Benachrichtigungskategorien",
     "tests": "Prüfungen",
     "grades": "Noten",
     "classes": "Schulfächer",

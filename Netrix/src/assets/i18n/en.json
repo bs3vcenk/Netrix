@@ -135,7 +135,7 @@
     },
     "notifs": {
       "header": "Notifications",
-      "management": "Notification management",
+      "management": "Notification types",
       "time": "Notify before test",
       "master": "All notifications"
     },
@@ -147,7 +147,7 @@
     "time_plural": "days"
   },
   "notifSettings": {
-    "title": "Notification management",
+    "title": "Notification types",
     "tests": "Exams",
     "grades": "Grades",
     "classes": "Classes",

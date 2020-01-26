@@ -135,7 +135,7 @@
     },
     "notifs": {
       "header": "Obavijesti",
-      "management": "Upravljanje obavijestima",
+      "management": "Kategorije obavijesti",
       "time": "Obavjesti prije ispita",
       "master": "Sve obavijesti"
     },
@@ -147,7 +147,7 @@
     "time_plural": "dana"
   },
   "notifSettings": {
-    "title": "Upravljanje obavijestima",
+    "title": "Kategorije obavijesti",
     "tests": "Ispiti",
     "grades": "Ocjene",
     "classes": "Razredi",
