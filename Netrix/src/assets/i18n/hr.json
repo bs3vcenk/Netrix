@@ -129,9 +129,9 @@
   },
   "settings": {
     "analytics": {
-      "header": "Analitika i reklame",
+      "header": "Izvještaji i reklame",
       "ads": "Prikazuj reklame",
-      "usage": "Šalji podatke o upotrebi"
+      "errors": "Šalji izvještaje o rušenju aplikacije"
     },
     "notifs": {
       "header": "Obavijesti",

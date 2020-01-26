@@ -13,7 +13,7 @@ export class SettingsService {
   migrationFinished = new BehaviorSubject(false);
   settingsReady = new BehaviorSubject(false);
 
-  dataPreference = null;
+  errorReportPreference = null;
   notifPreference = null;
   adPreference = null;
   forceCroatianPreference = null;
@@ -35,16 +35,16 @@ export class SettingsService {
   }
 
   async readPrefs() {
-    const dataPref = await this.storage.get('data-preference');
+    const dataPref = await this.storage.get('error-report-preference');
     if (dataPref != null) {
-      this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference set to ' + dataPref);
-      this.firebase.setAnalyticsCollectionEnabled(dataPref);
-      this.dataPreference = dataPref;
-    } else { // If it isn't stored, store it and set default (false)
-      await this.storage.set('data-preference', false);
-      this.dataPreference = false;
-      this.firebase.setAnalyticsCollectionEnabled(false);
-      this.firebase.logMessage('SettingsService/readPrefs(): Firebase Analytics preference defaulted to off');
+      this.firebase.logMessage('SettingsService/readPrefs(): Crashlytics preference set to ' + dataPref);
+      this.firebase.setCrashlyticsCollectionEnabled(dataPref);
+      this.errorReportPreference = dataPref;
+    } else { // If it isn't stored, store it and set default (treu)
+      this.storage.set('error-report-preference', true);
+      this.errorReportPreference = true;
+      this.firebase.setCrashlyticsCollectionEnabled(true);
+      this.firebase.logMessage('SettingsService/readPrefs(): Crashlytics preference defaulted to off');
     }
     const notifPref = await this.storage.get('notif-preference');
     if (notifPref != null) {
@@ -69,7 +69,7 @@ export class SettingsService {
     this.firebase.logMessage('SettingsService/readPrefs(): Firing settingsReady observable');
     this.settingsReady.next(true);
     this.firebase.logMessage('SettingsService/readPrefs(): PREFERENCES:');
-    this.firebase.logMessage('SettingsService/readPrefs(): Analytics: ' + this.dataPreference);
+    this.firebase.logMessage('SettingsService/readPrefs(): Crashlytics: ' + this.errorReportPreference);
     this.firebase.logMessage('SettingsService/readPrefs(): Notifications: ' + this.notifPreference);
     this.firebase.logMessage('SettingsService/readPrefs(): Notification time: ' + this.notifTime);
     this.firebase.logMessage('SettingsService/readPrefs(): Theme: ' + this.globalTheme);
@@ -83,11 +83,11 @@ export class SettingsService {
     this.statusBar.backgroundColorByHexString(nThemeName === 'dark' ? '#0d0d0d' : '#f8f8f8');
   }
 
-  setDataCollection(val: boolean) {
+  setCrashReport(val: boolean) {
     /* Change the analytics collection preference */
-    this.changePreference('data-preference', val);
-    this.firebase.setAnalyticsCollectionEnabled(val);
-    this.dataPreference = val;
+    this.changePreference('error-report-preference', val);
+    this.firebase.setCrashlyticsCollectionEnabled(val);
+    this.errorReportPreference = val;
   }
 
   setAdShow(val: boolean) {

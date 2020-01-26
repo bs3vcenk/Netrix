@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, PickerController, ToastController, ActionSheetController } from '@ionic/angular';
+import { PickerController, ToastController, ActionSheetController } from '@ionic/angular';
 import { AuthenticationService } from '../services/authentication.service';
 import { SettingsService } from '../services/settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
@@ -27,7 +27,7 @@ export class SettingsPage {
   timeSingular = this.translate.instant('settings.time_singular');
   timePlural = this.translate.instant('settings.time_plural');
 
-  dataPreference = null;
+  errorReportPreference = null;
   notifPreference = null;
   errorPreference = null;
   adPreference = null;
@@ -50,7 +50,7 @@ export class SettingsPage {
     private notifSvc: NotificationService,
     private admobSvc: AdmobService
   ) {
-    this.dataPreference = this.settings.dataPreference;
+    this.errorReportPreference = this.settings.errorReportPreference;
     // this.errorPreference = this.settings.errorPreference;
     this.notifPreference = this.settings.notifPreference;
     this.testNotifTime = this.settings.notifTime;
@@ -100,9 +100,9 @@ export class SettingsPage {
     });
   }
 
-  updDeviceInfoPreference() {
-    if (this.dataPreference !== this.settings.dataPreference) {
-      this.settings.setDataCollection(this.dataPreference);
+  updErrorReportPreference() {
+    if (this.errorReportPreference !== this.settings.errorReportPreference) {
+      this.settings.setCrashReport(this.errorPreference);
     }
   }
 

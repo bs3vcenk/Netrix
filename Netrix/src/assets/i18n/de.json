@@ -129,9 +129,9 @@
   },
   "settings": {
     "analytics": {
-      "header": "Analytics und Anzeigen",
+      "header": "Berichte und Anzeigen",
       "ads": "Anzeigen einblenden",
-      "usage": "Nutzungsinformationen senden"
+      "errors": "Absturzberichte senden"
     },
     "notifs": {
       "header": "Benachrichtigungen",
