@@ -43,7 +43,7 @@
     "cordova-plugin-androidx": "^1.0.2",
     "cordova-plugin-androidx-adapter": "^1.1.0",
     "cordova-plugin-badge": "^0.8.8",
-    "cordova-plugin-firebasex": "^7.0.1",
+    "cordova-plugin-firebasex": "git+ssh://git@github.com/btx3/cordova-plugin-firebasex.git#master",
     "cordova-plugin-local-notification": "git+https://github.com/katzer/cordova-plugin-local-notifications.git#caff55ec758fdf298029ae98aff7f6a8a097feac",
     "cordova-plugin-splashscreen": "^5.0.3",
     "cordova-plugin-statusbar": "^2.4.3",
