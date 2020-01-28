@@ -1,3 +1,12 @@
+## 1.9.13 (2020-01-28)
+* **NOVO**: Opcija za kontroliranje izvještaja o rušenju aplikacije
+* **FIX**: Obavijesti o ispitima "za null dana"
+* **FIX**: Neuspjeli HTTP zahtjev prilikom otvaranja obavijesti u izvanmrežnom načinu
+* **FIX**: Nepotreban resceduling obavijesti nakon otvaranja aplikacije
+* **PROMJENA**: Malo drugačiji izgled stranice za izbor razreda
+* **PROMJENA**: Broj tjedana umjesto mjeseci do ispita
+* **MISC**: Uklonjen Firebase Analytics - manja aplikacija
+
 ## 1.9.12 (2020-01-17)
 * **FIX**: Reklame se nisu isključile nakon promjene opcije
 
