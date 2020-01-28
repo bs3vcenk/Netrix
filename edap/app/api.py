@@ -618,6 +618,35 @@ def get_classes(token):
 			pass
 	return make_response(jsonify(o), 200)
 
+@app.route('/api/user/<string:token>/classes/<int:class_id>/history', methods=["GET"])
+def get_history(token, class_id):
+	"""
+		Get a history of either grades or notes, specified using
+		`type` named parameter.
+	"""
+	if not verify_request(token, class_id):
+		abort(401)
+	req_type = request.args.get('type')
+	if req_type == 'grade':
+		output_format = request.args.get('output', default='complete') # complete or graph
+		if output_format not in ['graph', 'complete']:
+			return make_response(jsonify({'error': 'E_INVALID_OUTPUT_FORMAT'}), 400)
+		subjs = get_data(token)['data']['classes'][class_id]['subjects']
+		# Compile a list of all grades
+		grade_list = []
+		for subject in subjs:
+			for grade in subject['grades']:
+				grade['subject_id'] = subject['id']
+				grade_list.append(grade)
+		if output_format == 'complete':
+			# Sort by date, newest first, output everything
+			return make_response(jsonify(sorted(grade_list, key=lambda k: k['date'], reverse=True)), 200)
+		elif output_format == 'graph':
+			# Return averages for months, calculate with subject averages
+			return make_response(jsonify(graph_average(grade_list)), 200)
+	log.warning('%s: Requested history with invalid or missing type for class ID %s', token, class_id)
+	return make_response(jsonify({'error': 'E_MISSING_OR_INVALID_TYPE'}), 400)
+
 @app.route('/api/user/<string:token>/classes/<int:class_id>/info', methods=["GET"])
 def get_user_info(token, class_id):
 	"""

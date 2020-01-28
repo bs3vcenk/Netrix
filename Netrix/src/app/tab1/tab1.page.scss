@@ -10,30 +10,6 @@
 	font-size: 29px;
 }
 
-#cntr {
-  height: 95%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#netHeader {
-  font-weight: 700 !important;
-  font-size: 40px;
-}
-
-#preWholeAvgText {
-  font-size: 12px;
-  padding-top: 8px;
-}
-
-#wholeAvgText {
-  font-size: 38px;
-  font-weight: 700 !important;
-  margin-top: 0px;
-}
-
 #wrapper {
   display: flex;
   /* Fix incorrect padding, causing top bar to be slightly off center */

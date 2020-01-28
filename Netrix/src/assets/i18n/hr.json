@@ -57,6 +57,15 @@
       "sum": "Svi"
     }
   },
+  "tab4": {
+    "title": "Statistika",
+    "cards": {
+      "exams": "Ispiti",
+      "average": "Prosjek",
+      "change": "Promjena",
+      "history": "Prosjek kroz vrijeme"
+    }
+  },
   "settings_page": {
     "title": "Postavke",
     "text": {
@@ -65,7 +74,11 @@
     "alert": {
       "logout": {
         "header": "Odjaviti?",
-        "content": "To će pobrisati tvoje podatke s Netrixovih servera i isključiti sve obavijesti."
+        "content": "To će pobrisati tvoje podatke s Netrixovih servera i isključiti sve obavijesti.",
+        "choice": {
+          "cancel": "Odbaci",
+          "logout": "Stvarno odjavi"
+        }
       },
       "time": {
         "choice": {
@@ -111,17 +124,18 @@
     "subjects": "Predmeti",
     "tests": "Ispiti",
     "settings": "Postavke",
-    "absences": "Izostanci"
+    "absences": "Izostanci",
+    "stats": "Statistika"
   },
   "settings": {
     "analytics": {
-      "header": "Analitika i reklame",
+      "header": "Izvještaji i reklame",
       "ads": "Prikazuj reklame",
-      "usage": "Šalji podatke o upotrebi"
+      "errors": "Šalji izvještaje o rušenju aplikacije"
     },
     "notifs": {
       "header": "Obavijesti",
-      "management": "Upravljanje obavijestima",
+      "management": "Kategorije obavijesti",
       "time": "Obavjesti prije ispita",
       "master": "Sve obavijesti"
     },
@@ -133,7 +147,7 @@
     "time_plural": "dana"
   },
   "notifSettings": {
-    "title": "Upravljanje obavijestima",
+    "title": "Kategorije obavijesti",
     "tests": "Ispiti",
     "grades": "Ocjene",
     "classes": "Razredi",
@@ -147,6 +161,12 @@
     }
   },
   "classes": {
-    "title": "Razredi"
+    "title": "Razredi",
+    "close": "Zatvori"
+  },
+  "shorthand": {
+    "day": "d",
+    "week": "tj",
+    "month": "m"
   }
 }

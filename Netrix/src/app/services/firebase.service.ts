@@ -24,8 +24,6 @@ export class FirebaseService {
 
   private saveToken(firebaseToken: string, serviceToken: string) {
     /* Store device token (for FCM) and API token (for server-side identification) */
-    /* Add the token to crash reports */
-    this.firebase.setCrashlyticsUserId(serviceToken);
     /* Push the device token to the API */
     this.apiSvc.saveFirebaseToken(firebaseToken);
   }

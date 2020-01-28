@@ -38,8 +38,11 @@ export class AppComponent {
   private notificationSetup(token) {
     this.fcm.getToken(token);
     try {
-      this.fcm.onNotifications().subscribe(
-        () => this.apiSvc.switchActiveClass(0));
+      this.fcm.onNotifications().subscribe(() => {
+        if (!this.apiSvc.usingCachedContent) {
+          this.apiSvc.switchActiveClass(0);
+        }
+      });
     } catch (e) {
       this.firebase.logMessage('AppComponent/notificationSetup(): Failed to start sub to notifications, probably not running Cordova.');
     }
@@ -67,7 +70,7 @@ export class AppComponent {
       this.translate.get('generic.back').subscribe((res: string) => {
         this.config.set('backButtonText', res);
       });
-      this.apiSvc.getMaintenanceMode();
+      // this.apiSvc.getMaintenanceMode();
       /* Subscribe to the authenticationState object, and check if the user is
        * logged in or not. */
       this.authenticationService.authenticationState.subscribe(state => {
@@ -92,8 +95,6 @@ export class AppComponent {
           this.router.navigate(['login'], {replaceUrl: true});
           /* Reset BehaviorSubjects in case of a logout */
           this.apiSvc.resetLoadingState();
-          /* Delete scheduled test notifications */
-          this.notifSvc.disableAll();
         }
       });
 

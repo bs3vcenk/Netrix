@@ -27,6 +27,8 @@ from time import sleep
 from string import ascii_letters
 from typing import List
 from api_backend_config import Config
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 log = logging.getLogger(__name__)
 _redis = None
@@ -35,6 +37,97 @@ _threads = {}
 
 class NonExistentSetting(Exception):
 	"""Specified setting ID is non-existent."""
+
+def _get_month_start_timestamp(input_date: int) -> int:
+	return int(datetime.fromtimestamp(input_date).replace(hour=0, minute=0, day=1).timestamp())
+
+def _filter_grade_list_by_date(input_gradelist: list, from_date: int, to_date: int) -> list:
+	"""
+		Filter a list of grade objects by showing only grades in
+		a specified month span.
+	"""
+	return list(filter(lambda x: from_date <= x['date'] <= to_date, input_gradelist))
+
+def _search_dict_list(input_list: list, key, match, return_type: str = 'boolean'):
+	"""
+		Search a list of dictionaries (`input_list`) and return if dict[`key`] matches
+		`match`. If the item does not exist, it will return None (unless `return_type`
+		is `bool`).
+
+		`return_type` can be:
+			boolean - return True if the object exists and False if it does not (default)
+			index - return the position of the element in the list
+			object - return the result
+	"""
+	result = next((item for item in input_list if item[key] == match), None)
+	if return_type == 'boolean':
+		return result != None
+	elif return_type == 'object' or result == None:
+		return result
+	elif return_type == 'index':
+		try:
+			return input_list.index(result)
+		except ValueError:
+			return None
+	else:
+		raise Exception('Unknown `return_type` value `%s`' % return_type)
+
+def graph_average(input_gradelist: list) -> list:
+	"""
+		Return the history of a user's average by month. This is used to
+		construct the graph in the client.
+	"""
+	# TODO: Cleanup
+	# Sort the grade list so we can assume the first element is the oldest,
+	# and the last is the newest
+	sorted_input_list = sorted(input_gradelist, key=lambda k: k['date'])
+	grades_sorted_by_month = []
+	# List of month 
+	months_to_scan = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6]
+	# Get lower limit for our grade range (oldest grade)
+	lower_month_limit = _get_month_start_timestamp(sorted_input_list[0]['date'])
+	# Get upper limit (newest grade)
+	upper_month_limit = int((datetime.fromtimestamp(sorted_input_list[-1]['date']) + relativedelta(months=1)).timestamp())
+	print('lower_month_limit: %s' % lower_month_limit)
+	print('upper_month_limit: %s' % upper_month_limit)
+	sclist = [datetime.fromtimestamp(lower_month_limit) + relativedelta(months=1)]
+	for _ in months_to_scan[1:]:
+		sclist.append(sclist[-1] + relativedelta(months=1))
+	for current_month in sclist:
+		print('current_month: %s (%s)' % (current_month.timestamp(), current_month.month))
+		if current_month.timestamp() > upper_month_limit:
+			break
+		# Filter grade list to include every grade between the oldest one and the last one
+		# in the current month
+		glist = _filter_grade_list_by_date(sorted_input_list, lower_month_limit, int(current_month.timestamp()))
+		# Set up/configure our dictionary
+		scan_result = _search_dict_list(grades_sorted_by_month, 'month', current_month.month - 1)
+		if not scan_result:
+			grades_sorted_by_month.append({'month': current_month.month - 1, 'grades': {}})
+		# Iterate over grades in the filtered list
+		for grade in glist:
+			if str(grade['subject_id']) not in grades_sorted_by_month[-1]['grades']:
+				grades_sorted_by_month[-1]['grades'][str(grade['subject_id'])] = []
+			grades_sorted_by_month[-1]['grades'][str(grade['subject_id'])].append(grade)
+	# Initialize the variable we'll return
+	returnable = []
+	# Calculate averages for each of the subjects, then calculate the overall
+	# average for each month
+	for month in grades_sorted_by_month:
+		subject_averages = []
+		for subject_id in month['grades']:
+			if month['grades'][subject_id]:
+				gradesx = [x['grade'] for x in month['grades'][subject_id]]
+				subject_averages.append(
+					_round(sum(gradesx)/len(gradesx), 0)
+				)
+		returnable.append({
+			'month': int(month['month']),
+			'average': _round(sum(subject_averages)/len(subject_averages), 2) if subject_averages else 0
+		})
+	# Sort final list by month in descending order
+	returnable.sort(key=lambda k: k['month'])
+	return returnable
 
 def memory_summary():
 	"""

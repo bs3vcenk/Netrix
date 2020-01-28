@@ -49,4 +49,17 @@ export class AdmobService {
       }
     });
   }
+
+  loadInterstitial() {
+    this.firebase.logMessage('AdmobService/loadInterstitial(): Preparing interstitial ad');
+    return admob.interstitial.load({
+      id: 'ca-app-pub-3536042070948443/9659847570'
+    });
+  }
+
+  async showInterstitial() {
+    /* Show the interstitial ad */
+    this.firebase.logMessage('AdmobService/showInterstitial(): Showing interstitial ad');
+    await admob.interstitial.show();
+  }
 }

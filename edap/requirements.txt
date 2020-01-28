@@ -1,5 +1,5 @@
 requests==2.22.0
-BeautifulSoup4==4.8.1
+BeautifulSoup4==4.8.2
 Flask==1.1.1
 redis==3.3.11
 lxml==4.4.2

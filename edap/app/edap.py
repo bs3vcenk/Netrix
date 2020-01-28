@@ -59,22 +59,22 @@ class edap:
 	             debug: bool = False,
 	             loglevel: int = 1,
 	             hidepriv: bool = True,
-	             hide_confidential: bool = True):
+	             hide_confidential: bool = True,
+	             headers: dict = None):
 		"""
 			Authenticates the user to eDnevnik.
 
-			:param str user: Username for eDnevnik
-			:param str pasw: Password for eDnevnik
-			:param str parser: The parser that will be used for BeautifulSoup
-			:param str edurl: HTTP(S) address to the eDnevnik service
-			:param str ua: The User-Agent header which will be sent to the service
-			:param bool debug: Enables/disables logging
-			:param int loglevel: Level of logging, can be 0-4, although 4 (fatal) is always shown
-			:param bool hidepriv: Enables/disables hiding identifiable information
-			:param bool hide_confidential: Enables/disables returning confidential information, such as OIB
-			:param bool return_processing_time: Returns additional variable containing processing time in s
-
-			:raises WrongCredentials: If the provided credentials are invalid
+			== ARGUMENTS
+			user - Username for eDnevnik
+			pasw - Password for eDnevnik
+			parser - The parser that will be used for BeautifulSoup (default: lxml)
+			edurl - eDnevnik URL (default: https://ocjene.skole.hr)
+			ua - User-Agent header (default: Firefox 72.0)
+			debug - Enables/disables debug logging
+			loglevel - Logging verbosity, can be 0-4
+			hidepriv - Hide private info in logs
+			hide_confidential - Enables hiding confidential information, such as OIB or address
+			headers - HTTP headers to append to all requests
 		"""
 		self.parser = parser
 		self.edurl = edurl
@@ -90,6 +90,9 @@ class edap:
 		self.absence_cache = {}
 		self.session = requests.Session()
 		self.session.headers.update({"User-Agent":self.useragent})
+		if headers:
+			self.__edlog(1, "Additional headers '%s' will be added to all requests" % ', '.join(headers))
+			self.session.headers.update(headers)
 		self.__edlog(0, "Sending initial request to obtain CSRF")
 		try:
 			r = self.session.get("%s/pocetna/prijava" % self.edurl)
@@ -121,12 +124,10 @@ class edap:
 			Logging function, logs to stdout.
 
 			Log levels: 0/Verbose, 1/Info, 2/Warning, 3/Error, 4/FATAL.
-			Level 4 exits the module.
 
-			:param int loglevel: Level which is logged, can be 0/Verbose, 1/Info, 2/Warning, 3/Error or 4/FATAL (exits)
-			:param str logs: Log message
-
-			:raises FatalLogExit: If something is logged with level 4/FATAL
+			== ARGUMENTS
+			loglevel - Level which is logged, can be 0-4
+			logs - Log message
 		"""
 		if self.debug:
 			if loglevel > 4:
@@ -149,6 +150,9 @@ class edap:
 		"""
 			Simple internal function to fetch URL using stored session object
 			and also raise an exception for non 2xx codes.
+
+			== ARGUMENTS
+			url - URL to fetch using self.session object
 		"""
 		try:
 			o = self.session.get(url)
@@ -160,6 +164,10 @@ class edap:
 	def __verify(self, class_id: int, subject_id: int = None):
 		"""
 			Check if given `class_id` (and `subject_id`, if provided) exist.
+
+			== ARGUMENTS
+			class_id - Class ID to verify
+			subject_id - Subject ID to verify
 		"""
 		self.__edlog(0, 'Verifying class_id:%s, subject_id:%s' % (class_id, subject_id))
 		try:
@@ -180,8 +188,7 @@ class edap:
 
 			self.class_ids is populated and the IDs correspond to the indexes in the returned class list
 
-			:return: List of classes with their information
-			:rtype: list
+			RETURNS: list of classes, formatted {class, year, school_name, school_city, classmaster}
 		"""
 		self.__edlog(1, "Listing classes for [{%s}]" % self.user)
 		self.__edlog(0, "Getting class selection HTML")
@@ -218,9 +225,10 @@ class edap:
 		"""
 			Return list of subjects and professors for class ID "class_id"
 
-			:param int class_id: Class ID to get subjects for
-			:return: List of subjects with their information
-			:rtype: list
+			== ARGUMENTS
+			class_id - Class ID to get subjects for
+
+			RETURNS: list of subjects
 		"""
 		self.__verify(class_id)
 		self.__edlog(1, "Getting subject list for class id %s (remote ID [{%s}])" % (class_id, self.class_ids[class_id]))
@@ -251,10 +259,11 @@ class edap:
 		"""
 			Return list of tests
 
-			:param int class_id: Class ID to get tests for
-			:param bool alltests: Enable/disable getting all tests
-			:returns: List of tests, formatted as {subject, test name, date (Unix timestamp)}
-			:rtype: list
+			== ARGUMENTS
+			class_id - Class ID to get tests for
+			alltests - Enable getting all tests instead of just ones from the current date
+
+			RETURNS: list of tests, formatted as {subject, test name, date (Unix timestamp)}
 		"""
 		self.__verify(class_id)
 		self.__edlog(1, "Getting test list for class id %s (corresponding to actual ID [{%s}])" % (class_id, self.class_ids[class_id]))
@@ -285,10 +294,11 @@ class edap:
 		"""
 			Return grade list (dict, values "date", "note" and "grade") for a subject_id
 
-			:param int class_id: Class ID to narrow down subject selection
-			:param int subject_id: Subject ID to get grades for
-			:returns: List of grades, formatted {date, note, grade}
-			:rtype: list
+			== ARGUMENTS
+			class_id - Class ID to narrow down subject selection
+			subject_id - Subject ID to get grades for
+
+			RETURNS: list of grades, formatted {date, note, grade}
 		"""
 		self.__verify(class_id, subject_id)
 		self.__edlog(0, "Getting grade list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
@@ -328,10 +338,11 @@ class edap:
 		"""
 			Return note list (dict, values "date", "note") for a subject_id
 
-			:param int class_id: Class ID to narrow down subject selection
-			:param int subject_id: Subject ID to get notess for
-			:returns: List of grades, formatted {date, note}
-			:rtype: list
+			== ARGUMENTS
+			class_id - Class ID to narrow down subject selection
+			subject_id - Subject ID to get notes for
+
+			RETURNS: list of grades, formatted {date, note}
 		"""
 		self.__verify(class_id, subject_id)
 		self.__edlog(0, "Getting note list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
@@ -371,12 +382,13 @@ class edap:
 
 	def getConcludedGrade(self, class_id: int, subject_id: int):
 		"""
-			Return true/false if there is a concluded grade or not, and if there is return the grade.
+			Return whether there is a concluded grade, and if there is one, return it.
 
-			:param int class_id: Class ID to narrow down subject selection
-			:param int subject_id: Subject ID to get concluded grade for
-			:returns: Boolean indicating if there is a concluded grade for this subject, and concluded grade if exists
-			:rtype: bool, int
+			== ARGUMENTS
+			class_id - Class ID to narrow down subject selection
+			subject_id - Subject ID to get concluded grade for
+
+			RETURNS: boolean indicating if there is a concluded grade for this subject, and concluded grade if it exists, formatted (bool, int)
 		"""
 		self.__verify(class_id, subject_id)
 		self.__edlog(0, "Getting concluded grade for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
@@ -412,7 +424,11 @@ class edap:
 		"""
 			Return the info on a eDnevnik user.
 
-			ARGS: class_id [int/required]
+			== ARGUMENTS
+			class_id - Class ID to get info for
+
+			RETURNS: dict containing user info, formatted {number, name, oib, birthdate, birthplace, matbroj, address, program}
+			WARNING: if `hide_confidential` is enabled (default), fields `oib`, `address` and `matbroj` will be ommitted from the returned object
 		"""
 		self.__verify(class_id)
 		self.__edlog(0, "Getting info for class id %s" % class_id)
@@ -486,10 +502,13 @@ class edap:
 
 	def getAbsenceOverview(self, class_id: int) -> dict:
 		"""
-			Return an overview of classes marked absent for a given class
-			ID.
+			Return an overview of classes marked absent for a given class ID. An absence overview
+			contains only numbers of absent classes.
 
-			ARGS: class_id [int/required]
+			== ARGUMENTS
+			class_id - Class ID to get absence overview for
+
+			RETURNS: dict containing an overview of absences, formatted {justified, unjustified, awaiting, sum, sum_leftover}
 		"""
 		self.__verify(class_id)
 		self.__edlog(0, "Getting absent overview for class id %s" % class_id)
@@ -523,7 +542,10 @@ class edap:
 		"""
 			Return a full list of all marked absences for a given class ID.
 
-			ARGS: class_id [int/required]
+			== ARGUMENTS
+			class_id - Class ID to get absence list for
+
+			RETURNS: list of dictionaries (sorted by day), dicts formatted {period, subject, reason, justified, absences}
 		"""
 		self.__verify(class_id)
 		self.__edlog(0, "Getting absent list for class id %s" % class_id)
@@ -543,8 +565,6 @@ class edap:
 		except IndexError:
 			self.__edlog(1, "No absences for this class")
 			return []
-		## BLACK FUCKING MAGIC AHEAD ##
-		##    You have been warned   ##
 		o = x.find_all("tr")[1:]
 		abslist = []
 		last_searched = 0

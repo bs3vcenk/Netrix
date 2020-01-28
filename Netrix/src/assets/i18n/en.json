@@ -57,6 +57,15 @@
       "sum": "All"
     }
   },
+  "tab4": {
+    "title": "Stats",
+    "cards": {
+      "exams": "Exams",
+      "average": "Average",
+      "change": "Change",
+      "history": "Average over time"
+    }
+  },
   "settings_page": {
     "title": "Settings",
     "text": {
@@ -65,7 +74,11 @@
     "alert": {
       "logout": {
         "header": "Log out?",
-        "content": "This will delete your data from Netrix's servers and disable all notifications."
+        "content": "This will delete your data from Netrix's servers and disable all notifications.",
+        "choice": {
+          "cancel": "Cancel",
+          "logout": "Really log out"
+        }
       },
       "time": {
         "choice": {
@@ -111,17 +124,18 @@
     "subjects": "Subjects",
     "tests": "Exams",
     "settings": "Settings",
-    "absences": "Absences"
+    "absences": "Absences",
+    "stats": "Stats"
   },
   "settings": {
     "analytics": {
-      "header": "Analytics and ads",
+      "header": "Reports and ads",
       "ads": "Show advertisements",
-      "usage": "Send usage info"
+      "errors": "Send crash reports"
     },
     "notifs": {
       "header": "Notifications",
-      "management": "Notification management",
+      "management": "Notification types",
       "time": "Notify before test",
       "master": "All notifications"
     },
@@ -133,7 +147,7 @@
     "time_plural": "days"
   },
   "notifSettings": {
-    "title": "Notification management",
+    "title": "Notification types",
     "tests": "Exams",
     "grades": "Grades",
     "classes": "Classes",
@@ -147,6 +161,12 @@
     }
   },
   "classes": {
-    "title": "Classes"
+    "title": "Classes",
+    "close": "Close"
+  },
+  "shorthand": {
+    "day": "d",
+    "week": "w",
+    "month": "m"
   }
 }

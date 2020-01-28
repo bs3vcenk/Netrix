@@ -3,6 +3,8 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 import { ApiService } from '../services/api.service';
 import { AdmobService } from '../services/admob.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { ModalController } from '@ionic/angular';
+import { ClassesPage } from '../classes/classes.page';
 
 @Component({
   selector: 'app-tab1',
@@ -28,7 +30,8 @@ export class Tab1Page implements OnInit {
   constructor(
     private apiSvc: ApiService,
     private admobSvc: AdmobService,
-    private firebase: FirebaseX
+    private firebase: FirebaseX,
+    private modalController: ModalController
   ) {
     this.initInBg();
     this.calculateRemainingTests();
@@ -68,5 +71,12 @@ export class Tab1Page implements OnInit {
       this.subjects = this.apiSvc.subjects;
       this.usingCache = this.apiSvc.usingCachedContent;
     });
+  }
+
+  async showClassSelectionScreen() {
+    const modal = await this.modalController.create({
+      component: ClassesPage
+    });
+    return await modal.present();
   }
 }
