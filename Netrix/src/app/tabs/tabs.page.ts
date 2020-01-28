@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 })
 export class TabsPage {
 
-  private developer = !environment.production;
+  developer = !environment.production;
 
   constructor() {}
 
