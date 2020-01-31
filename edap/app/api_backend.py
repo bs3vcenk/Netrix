@@ -541,12 +541,13 @@ def sync(token: str):
 	"""
 	log.debug("Syncing %s", token)
 	fData = get_data(token)
-	fb_token_info = get_firebase_info(fData['firebase_device_token'])
-	if not fb_token_info['status']:
-		# Inactive token, stop sync
-		log.warning('Inactive token %s detected, stopping sync', token)
-		purge_token(token)
-		return
+	if config.firebase.enabled:
+		fb_token_info = get_firebase_info(fData['firebase_device_token'])
+		if not fb_token_info['status']:
+			# Inactive token, stop sync
+			log.warning('Inactive token %s detected, stopping sync', token)
+			purge_token(token)
+			return
 	data = fData["data"] # Old data
 	credentials = get_credentials(token)
 	nData = populate_data(edap.edap(credentials["username"], credentials["password"])) # New data
