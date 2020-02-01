@@ -32,6 +32,7 @@ export class SettingsPage {
   errorPreference = null;
   adPreference = null;
   forceCroatianPreference = null;
+  onDayNotifications = null;
   testNotifTime = null;
   darkModePreference = null;
   usingCache = null;
@@ -57,6 +58,7 @@ export class SettingsPage {
     this.adPreference = this.settings.adPreference;
     this.forceCroatianPreference = this.settings.forceCroatianPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
+    this.onDayNotifications = this.settings.onDayNotifications;
     this.usingCache = this.apiSvc.usingCachedContent;
     if (this.testNotifTime === 1) {
       this.dayString = this.timeSingular;
@@ -130,11 +132,11 @@ export class SettingsPage {
     }
   }
 
-  updHRForcePreference() {
-    if (this.forceCroatianPreference !== this.settings.forceCroatianPreference) {
-      this.settings.changePreference('force-croatian-preference', this.forceCroatianPreference);
-      this.settings.forceCroatianPreference = this.forceCroatianPreference;
-      this.effectOnRestart();
+  updOnDayNotificationsPreference() {
+    if (this.settings.onDayNotifications !== this.onDayNotifications) {
+      this.settings.changePreference('on-test-notif-preference', this.onDayNotifications);
+      this.settings.onDayNotifications = this.onDayNotifications;
+      this.resetNotif();
     }
   }
 

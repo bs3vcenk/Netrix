@@ -17,6 +17,7 @@ export class SettingsService {
   notifPreference = null;
   adPreference = null;
   forceCroatianPreference = null;
+  onDayNotifications = null;
   language = null;
   notifTime = null;
   apiServer = 'https://api.netrix.io';
@@ -65,6 +66,12 @@ export class SettingsService {
     } else {
       this.globalTheme = 'light';
     }
+    const onDayNotifs = await this.storage.get('on-test-notif-preference');
+    if (onDayNotifs != null) {
+      this.onDayNotifications = onDayNotifs;
+    } else {
+      this.onDayNotifications = true;
+    }
     this.adPreference = this.admobSvc.adPreference;
     this.firebase.logMessage('SettingsService/readPrefs(): Firing settingsReady observable');
     this.settingsReady.next(true);
@@ -73,6 +80,7 @@ export class SettingsService {
     this.firebase.logMessage('SettingsService/readPrefs(): Notifications: ' + this.notifPreference);
     this.firebase.logMessage('SettingsService/readPrefs(): Notification time: ' + this.notifTime);
     this.firebase.logMessage('SettingsService/readPrefs(): Theme: ' + this.globalTheme);
+    this.firebase.logMessage('SettingsService/readPrefs(): 0-day notifications: ' + this.onDayNotifications);
   }
 
   setGlobalTheme(nThemeName: 'dark' | 'light') {
