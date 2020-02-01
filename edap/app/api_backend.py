@@ -786,12 +786,21 @@ def _read_config() -> Config:
 			print("[eDAP] [WARN] Administrative notifications have been disabled; both the bot token and target UID need to be specified!")
 			cfg_obj.error_notifications.enabled = False
 
+	cfg_obj.redis.connection_type = _get_var("REDIS_CONN_TYPE", default='tcp')
+	cfg_obj.redis.address = _get_var("REDIS_ADDR", default='127.0.0.1')
+	cfg_obj.redis.port = int(_get_var("REDIS_PORT", default=6379))
+
 	print("[eDAP] [INFO] Developer access enabled: %s" % cfg_obj.dev.enabled)
 	print("[eDAP] [INFO] Using Cloudflare: %s" % cfg_obj.cloudflare.enabled)
 	print("[eDAP] [INFO] Using Firebase: %s" % cfg_obj.firebase.enabled)
 	print("[eDAP] [INFO] Send administrative notifications: %s" % cfg_obj.error_notifications.enabled)
 	print("[eDAP] [INFO] Waiting between %s and %s seconds before syncing for each user" % (cfg_obj.sync.min_delay, cfg_obj.sync.max_delay))
 	print("[eDAP] [INFO] Automatically adjusting sync times: %s" % cfg_obj.sync.auto_adjust)
+	print("[eDAP] [INFO] Redis connection type: %s" % ('TCP' if cfg_obj.redis.connection_type == 'tcp' else 'UNIX socket'))
+	print("[eDAP] [INFO] Redis address/path: %s" % cfg_obj.redis.address)
+	if cfg_obj.redis.connection_type == 'tcp':
+		print("[eDAP] [INFO] Redis port: %s" % cfg_obj.redis.port)
+	print()
 	print("[eDAP] [INFO] Further logging is in %s/edap_api.log" % cfg_obj.storage)
 	return cfg_obj
 
@@ -825,13 +834,17 @@ def convert_size(size_bytes: int):
 	s = round(size_bytes / p, 2)
 	return "%s %s" % (s, size_name[i])
 
-def _init_db(host: str = "localhost", port: int = 6379, db: int = 0) -> redis.Redis:
+def _init_db(host: str = "localhost", port: int = 6379, db: int = 0, unix_socket: bool = False) -> redis.Redis:
 	"""
 		Initialize the Redis DB by connecting to it and running a
 		`ping` command.
 	"""
 	try:
-		r = redis.Redis(host=host, port=port, db=db)
+		if unix_socket:
+			cpool = redis.ConnectionPool(connection_class=redis.UnixDomainSocketConnection, path=host)
+			r = redis.Redis(connection_pool=cpool, db=db)
+		else:
+			r = redis.Redis(host=host, port=port, db=db)
 		if r.ping():
 			log.info("Database connection successful")
 			return r
@@ -1110,4 +1123,8 @@ logging.basicConfig(
 	format="%(asctime)s > %(levelname)s => %(message)s"
 )
 logging._srcfile = None
-_redis = _init_db()
+_redis = _init_db(
+	host=config.redis.address,
+	port=config.redis.port,
+	unix_socket=(config.redis.connection_type == 'unix')
+)

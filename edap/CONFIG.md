@@ -10,6 +10,24 @@ Zadana vrijednost: `/data`
 
 Ovdje se spremaju logovi te se pretpostavlja da je i Redis AOF baza podataka (`appendonly.aof`) na istoj lokaciji.
 
+## `REDIS_CONN_TYPE`
+
+Zadana vrijednost: `tcp`
+
+Protokol za spajanje na Redis. Može biti `tcp` - preko TCP-a ili `unix` - preko UNIX socketa.
+
+## `REDIS_ADDR`
+
+Zadana vrijednost: `127.0.0.1`
+
+IP adresa Redis servera. Ako je `REDIS_CONN_TYPE` postavljen na `unix` onda je to putanja do UNIX socketa.
+
+## `REDIS_PORT`
+
+Zadana vrijednost: `6379`
+
+Port Redis servera. Ako je `REDIS_CONN_TYPE` postavljen na `unix`, varijabla se ne koristi.
+
 ## `CLOUDFLARE`
 
 Zadana vrijednost: `N`
