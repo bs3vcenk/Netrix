@@ -87,3 +87,15 @@ class Config:
 		enabled = False
 		telegram_token = None
 		telegram_uid = None
+
+	class redis:
+		"""
+			Parameters for establishing a connection to the Redis DB.
+
+			connection_type: `tcp` or `unix`.
+			address: IP address or UNIX socket path.
+			port: If type is `tcp`, this is the port to which we will connect to.
+		"""
+		connection_type = 'tcp'
+		address = '127.0.0.1'
+		port = 6379
