@@ -89,8 +89,16 @@
       <ion-label>Reset notifications</ion-label>
     </ion-item>
     <!-- BUTTON: Force language to hr -->
-    <ion-item button (click)="forceCroatian()">
+    <ion-item button (click)="forceLang('hr')">
       <ion-label>Force switch to HR locale</ion-label>
+    </ion-item>
+    <!-- BUTTON: Force language to en -->
+    <ion-item button (click)="forceLang('en')">
+      <ion-label>Force switch to EN locale</ion-label>
+    </ion-item>
+    <!-- BUTTON: Force language to en -->
+    <ion-item button (click)="forceLang('de')">
+      <ion-label>Force switch to DE locale</ion-label>
     </ion-item>
     <!-- BUTTON: Invert usingCache setting -->
     <ion-item button (click)="invertCacheIndicator()">

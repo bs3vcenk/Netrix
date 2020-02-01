@@ -185,8 +185,8 @@ export class SettingsPage {
     picker.present();
   }
 
-  forceCroatian() {
-    this.translate.use('hr');
+  forceLang(lang: string) {
+    this.translate.use(lang);
   }
 
   invertCacheIndicator() {
