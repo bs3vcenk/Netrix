@@ -4,13 +4,8 @@
       {{ 'tab1.title' | translate }}
     </ion-title>
     <ion-buttons slot="primary">
-      <ion-button routerLink="/settings" routerDirection="forward">
-        <ion-icon slot="icon-only" name="settings"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons slot="secondary">
-      <ion-button (click)="showClassSelectionScreen()" disabled="{{usingCache}}">
-        {{ 'tab1.text.classes' | translate }}
+      <ion-button (click)="showMoreOptions()">
+        <ion-icon slot="icon-only" name="more"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

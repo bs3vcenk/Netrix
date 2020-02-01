@@ -3,8 +3,10 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 import { ApiService } from '../services/api.service';
 import { AdmobService } from '../services/admob.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ActionSheetController } from '@ionic/angular';
 import { ClassesPage } from '../classes/classes.page';
+import { TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tab1',
@@ -31,7 +33,10 @@ export class Tab1Page implements OnInit {
     private apiSvc: ApiService,
     private admobSvc: AdmobService,
     private firebase: FirebaseX,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private actionSheetControl: ActionSheetController,
+    private translate: TranslateService,
+    private router: Router
   ) {
     this.initInBg();
     this.calculateRemainingTests();
@@ -78,5 +83,36 @@ export class Tab1Page implements OnInit {
       component: ClassesPage
     });
     return await modal.present();
+  }
+
+  async showMoreOptions() {
+    const actionSheet = await this.actionSheetControl.create({
+      header: this.translate.instant('tab1.more.header'),
+      buttons: [
+        {
+          text: this.translate.instant('tab1.more.settings'),
+          handler: () => {
+            this.router.navigate(['settings']);
+          }
+        },
+        {
+          text: this.translate.instant('tab1.more.classes'),
+          handler: () => {
+            this.showClassSelectionScreen();
+          }
+        },
+        {
+          text: this.translate.instant('tab1.more.users'),
+          handler: () => {
+            console.log('users');
+          }
+        },
+        {
+          text: this.translate.instant('tab1.more.close'),
+          role: 'cancel'
+        }
+      ]
+    });
+    return await actionSheet.present();
   }
 }
