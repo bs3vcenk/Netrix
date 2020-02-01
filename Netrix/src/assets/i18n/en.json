@@ -37,6 +37,13 @@
       "classes": "Classes",
       "no_grades": "No grades",
       "tests_remaining": "Exams remaining this week"
+    },
+    "more": {
+      "header": "Menu",
+      "settings": "Settings",
+      "classes": "Classes",
+      "users": "Switch accounts",
+      "close": "Close"
     }
   },
   "tab2": {
@@ -136,8 +143,9 @@
     "notifs": {
       "header": "Notifications",
       "management": "Notification types",
-      "time": "Notify before test",
-      "master": "All notifications"
+      "time": "Reminder before exam",
+      "master": "All notifications",
+      "onday": "Notification on day of exam"
     },
     "design": {
       "header": "Design",

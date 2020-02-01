@@ -37,6 +37,13 @@
       "classes": "Klassen",
       "no_grades": "Keine Noten",
       "tests_remaining": "Verbleibende Prüfungen diese Woche"
+    },
+    "more": {
+      "header": "Menü",
+      "settings": "Einstellungen",
+      "classes": "Klassen",
+      "users": "Konto wechseln",
+      "close": "Schließen"
     }
   },
   "tab2": {
@@ -136,8 +143,9 @@
     "notifs": {
       "header": "Benachrichtigungen",
       "management": "Benachrichtigungskategorien",
-      "time": "Vor Prüfung benachrichtigen",
-      "master": "Alle Benachrichtigungen"
+      "time": "Vor Prüfung erinnern",
+      "master": "Alle Benachrichtigungen",
+      "onday": "Benachrichtigung am Tag der Prüfung"
     },
     "design": {
       "header": "Design",

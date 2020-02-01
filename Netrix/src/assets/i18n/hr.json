@@ -37,6 +37,13 @@
       "classes": "Razredi",
       "no_grades": "Nema ocjena",
       "tests_remaining": "Preostalo testova ovaj tjedan"
+    },
+    "more": {
+      "header": "Izbornik",
+      "settings": "Postavke",
+      "classes": "Razredi",
+      "users": "Promjena računa",
+      "close": "Zatvori"
     }
   },
   "tab2": {
@@ -136,8 +143,9 @@
     "notifs": {
       "header": "Obavijesti",
       "management": "Kategorije obavijesti",
-      "time": "Obavjesti prije ispita",
-      "master": "Sve obavijesti"
+      "time": "Podsjetnik prije ispita",
+      "master": "Sve obavijesti",
+      "onday": "Obavijest na dan ispita"
     },
     "design": {
       "header": "Izgled",
