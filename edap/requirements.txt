@@ -6,3 +6,4 @@ lxml==4.4.2
 hiredis==1.0.1
 Pympler==0.8
 setproctitle==1.1.10
+python-dateutil==2.8.1
