@@ -219,6 +219,8 @@ class edap:
 			})
 			self.class_ids.append(i["href"].replace("/pregled/predmeti/", ""))
 		self.__edlog(1, "Completed with %s classes found" % len(classlist))
+		self.__edlog(0, "Decomposing tree")
+		soup.decompose()
 		return classlist
 
 	def getSubjects(self, class_id: int) -> List[dict]:
@@ -253,6 +255,8 @@ class edap:
 			subjinfo.append({'subject':x[0].strip(), 'professors':prof})
 			self.subject_ids.append(i["href"])
 		self.__edlog(1, "Completed with %s subjects found" % len(subjinfo))
+		self.__edlog(0, "Decomposing tree")
+		soup.decompose()
 		return subjinfo
 
 	def getTests(self, class_id: int, alltests: bool = False) -> List[dict]:
@@ -288,6 +292,8 @@ class edap:
 		# 	[1] or y in 2nd for loop => the subject of the test
 		# 	[2] or z in 2nd for loop => the date of the test, formatted in dd.mm.yyyy., converted to UNIX timestamp
 		final_returnable = [{"subject": x, "test": y, "date": _format_to_date(z)} for x, y, z in [x[i:i+3] for i in range(0, len(x), 3)]]
+		self.__edlog(0, "Decomposing tree")
+		soup.decompose()
 		return final_returnable
 
 	def getGrades(self, class_id: int, subject_id: int) -> List[dict]:
@@ -332,6 +338,8 @@ class edap:
 		# needs to be converted to UNIX)
 		# Then add that dict to a list (we can do this in one line)
 		final_returnable = [{"date": _format_to_date(y[0]), "note":y[1], "grade":int(y[2])} for y in grades_unfiltered]
+		self.__edlog(0, "Decomposing tree")
+		soup.decompose()
 		return final_returnable
 
 	def getNotes(self, class_id: int, subject_id: int) -> List[dict]:
@@ -378,6 +386,8 @@ class edap:
 			return []
 		# Do the dict assignment and date conversion in one line
 		final_returnable = [{"date": _format_to_date(y[0]), "note":y[1]} for y in notes_unfiltered]
+		self.__edlog(0, "Decomposing tree")
+		soup.decompose()
 		return final_returnable
 
 	def getConcludedGrade(self, class_id: int, subject_id: int):
@@ -418,6 +428,8 @@ class edap:
 			return True, int(result.group(1))
 		# Otherwise we have no concluded grade
 		self.__edlog(0, "No concluded grade found for this subject")
+		self.__edlog(0, "Decomposing tree")
+		soup.decompose()
 		return False, None
 
 	def getInfo(self, class_id: int) -> dict:
@@ -456,6 +468,8 @@ class edap:
 			del user_data['oib']
 			del user_data['address']
 			del user_data['matbroj']
+		self.__edlog(0, "Decomposing tree")
+		soup.decompose()
 		return user_data
 
 	def getStudentNotes(self, class_id: int) -> dict:
@@ -498,6 +512,8 @@ class edap:
 					'date': _format_to_date(chunk[2], "%Y-%m-%d")
 				})
 			data_object['measures'] = measures
+		self.__edlog(0, "Decomposing tree")
+		soup.decompose()
 		return data_object
 
 	def getAbsenceOverview(self, class_id: int) -> dict:
@@ -536,6 +552,8 @@ class edap:
 			'sum': int(x_fix[3].replace("Ukupno: ", "")),
 			'sum_leftover': int(x_fix[4].replace("Ukupno ostalo: ", ""))
 		}
+		self.__edlog(0, "Decomposing tree")
+		soup.decompose()
 		return final_returnable
 
 	def getAbsenceList(self, class_id: int) -> List[dict]:
@@ -589,4 +607,6 @@ class edap:
 				absObj["justified"] = absence.find("td", class_="opravdano").find("img").get("alt") == "Opravdano"
 				absLst['absences'].append(absObj)
 			abslist2.append(absLst)
+		self.__edlog(0, "Decomposing tree")
+		soup.decompose()
 		return abslist2
