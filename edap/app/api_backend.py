@@ -1075,29 +1075,6 @@ def hash_password(inp: str) -> str:
 	"""
 	return _SHA256HASH(inp.encode()).hexdigest()
 
-def get_counter(counter_id: str) -> int:
-	"""
-		Get a value of a counter by its ID.
-	"""
-	val = _redis.get("counter:"+counter_id)
-	if val is None:
-		_redis.set("counter:"+counter_id, 0)
-		return 0
-	return int(val)
-
-def _set_counter(counter_id: str, value: int):
-	"""
-		Set a counter to an integer value.
-	"""
-	_redis.set("counter:"+counter_id, value)
-
-def update_counter(counter_id: str):
-	"""
-		Increment a counter by 1.
-	"""
-	val = get_counter(counter_id)
-	_set_counter(counter_id, val+1)
-
 def get_db_keys() -> int:
 	"""
 		Get the number of stored keys in the Redis DB.
