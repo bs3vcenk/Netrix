@@ -119,7 +119,7 @@ def e401(_):
 		exist in the DB.
 	"""
 	log.warning('Nonexistent token/cID/sID')
-	return make_response(jsonify({'error':'E_TOKEN_NONEXISTENT'}), 401)
+	return make_response(jsonify({'error':'E_TOKEN_OR_CLASS_ID_OR_SUBJECT_ID_NONEXISTENT'}), 401)
 
 @app.errorhandler(400)
 def e400(_):
