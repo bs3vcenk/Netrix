@@ -69,9 +69,9 @@ export class SettingsPage {
     this.authServ.logout();
   }
 
-  logout() {
+  async logout() {
     // Data collection alert
-    this.actionSheetControl.create({
+    const alert = await this.actionSheetControl.create({
       header: this.translate.instant('settings_page.alert.logout.content'),
       buttons: [
         {
@@ -86,29 +86,26 @@ export class SettingsPage {
           role: 'cancel'
         }
       ]
-    }).then(alert => {
-      // Show the alert
-      alert.present();
     });
+    alert.present();
   }
 
-  effectOnRestart() {
-    this.toastControl.create({
+  async effectOnRestart() {
+    const toast = await this.toastControl.create({
       message: this.translate.instant('settings_page.alert.effect_on_restart'),
       duration: 3000,
       color: 'dark'
-    }).then((toast) => {
-      toast.present();
     });
+    toast.present();
   }
 
-  updErrorReportPreference() {
+  async updErrorReportPreference() {
     if (this.errorReportPreference !== this.settings.errorReportPreference) {
       this.settings.setCrashReport(this.errorPreference);
     }
   }
 
-  updAdPreference() {
+  async updAdPreference() {
     if (this.adPreference !== this.settings.adPreference) {
       this.settings.changePreference('ad-preference', this.adPreference);
       this.settings.adPreference = this.adPreference;
@@ -116,7 +113,7 @@ export class SettingsPage {
     }
   }
 
-  updMainNotificationPreference() {
+  async updMainNotificationPreference() {
     if (this.notifPreference !== this.settings.notifPreference) {
       this.settings.changePreference('notif-preference', this.notifPreference);
       this.settings.notifPreference = this.notifPreference;
@@ -124,7 +121,7 @@ export class SettingsPage {
     }
   }
 
-  updDarkModePreference() {
+  async updDarkModePreference() {
     if (this.settings.globalTheme !== (this.darkModePreference ? 'dark' : 'light')) {
       this.settings.changePreference('global-theme', this.darkModePreference ? 'dark' : 'light');
       this.settings.globalTheme = this.darkModePreference ? 'dark' : 'light';
@@ -132,7 +129,7 @@ export class SettingsPage {
     }
   }
 
-  updOnDayNotificationsPreference() {
+  async updOnDayNotificationsPreference() {
     if (this.settings.onDayNotifications !== this.onDayNotifications) {
       this.settings.changePreference('on-test-notif-preference', this.onDayNotifications);
       this.settings.onDayNotifications = this.onDayNotifications;
@@ -140,7 +137,7 @@ export class SettingsPage {
     }
   }
 
-  resetNotif() {
+  async resetNotif() {
     this.notifSvc.disableAll();
   }
 
