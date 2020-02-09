@@ -6,7 +6,7 @@ This module contains various functions which interact with the backend
 of the eDAP-API system.
 """
 
-import logging, redis, edap, requests, setproctitle
+import logging, redis, edap, requests, setproctitle, gc
 from hashlib import md5 as _MD5HASH
 from hashlib import sha256 as _SHA256HASH
 from json import loads as _json_load
@@ -561,6 +561,8 @@ def sync(token: str):
 		save_data(token, fData)
 		if not fData["settings"]["notif"]["disable"]:
 			_formatAndSendNotification(token, diff)
+	# Free memory
+	gc.collect()
 
 def _profile_difference(dObj1, dObj2) -> List[dict]:
 	"""
