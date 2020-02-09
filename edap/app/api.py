@@ -154,12 +154,8 @@ def e500(_):
 	"""
 	# Check if we need to send server error notifications
 	if config.error_notifications.enabled:
-		# If we do, get a stacktrace
-		exc = traceback.format_exc()
-		# Log error
-		log.critical('HTTP 500, sending notification')
 		# Send message
-		notify_error('HTTP 500 RESPONSE', 'generic', stacktrace=exc)
+		notify_error('HTTP 500 RESPONSE', 'generic')
 	else:
 		# If we don't, just log it
 		log.critical('HTTP 500 error!')
