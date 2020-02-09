@@ -210,11 +210,27 @@ def dev_memory_usage():
 @dev_area
 def dev_db_optimize():
 	"""
-		DEV: Rewrite the AOF file.
+		DEV: Rewrite the AOF file. Can be supplied with argument 'heavy'
+		which will also delete any excess class IDs (non-zero).
 	"""
+	heavy_opt = request.args.get('heavy', type=bool)
 	pre_size = convert_size(get_db_size())
+	if heavy_opt:
+		for token in get_tokens():
+			tdata = get_data(token)
+			for i in tdata['data']['classes'][1:]:
+				try:
+					del i['subjects']
+					del i['tests']
+					del i['absences']
+					del i['info']
+					del i['full']
+					del i['complete_avg']
+				except KeyError:
+					pass
+			save_data(token, tdata)
 	optimize_db_aof()
-	sleep(1)
+	sleep(2)
 	post_size = convert_size(get_db_size())
 	return make_response(jsonify({
 		'size_prev': pre_size,
