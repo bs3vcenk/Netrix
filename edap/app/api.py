@@ -34,6 +34,23 @@ def authenticate():
 		401, {'WWW-Authenticate': 'Basic realm="Login Required"'}
 	)
 
+def fetcher_verification(f):
+	"""
+		Verify eDAP-Fetcher requests.
+	"""
+	@wraps(f)
+	def decorated(*args, **kwargs):
+		ip = request.remote_addr
+		token = request.headers.get('X-API-Token', None)
+		if not token:
+			log.warning('FETCHER => No API token specified in request from %s', ip)
+			return make_response(jsonify({'error': 'E_FETCHER_NO_API_TOKEN'}), 401)
+		elif token != config['FETCHER_TOKEN']:
+			log.warning('FETCHER => Bad API token %s in request from %s', ip)
+			return make_response(jsonify({'error': 'E_FETCHER_BAD_TOKEN'}), 403)
+		return f(*args, **kwargs)
+	return decorated
+
 def dev_pw_area(f):
 	"""
 		Decorator that marks a function as belonging to the browser-accessible
@@ -716,6 +733,27 @@ def log_stats():
 		dataObj['cloudflare']['last_ip'] = request.headers["CF-Connecting-IP"]
 	save_data(token, dataObj)
 	return make_response(jsonify({"result":"ok"}), 200)
+
+@app.route('/remote/check', methods=["GET"])
+@fetcher_verification
+def fetcher_verify():
+	"""
+		Simple function to trigger checks in fetcher_verification()
+	"""
+	return make_response({'status': 'ok'}, 200)
+
+@app.route('/remote/nodes/<string:node_id>', methods=["GET", "POST"])
+@fetcher_verification
+def fetcher_add_node():
+	"""
+		Register node as fetcher.
+	"""
+	# TODO: Implementation
+	if not request.json:
+		abort(400)
+	elif not 'name' in request.json:
+		abort(400)
+	fetcher_backend_add_client()
 
 if __name__ == '__main__':
 	app.run(debug=True)

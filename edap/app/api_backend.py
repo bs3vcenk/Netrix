@@ -35,6 +35,9 @@ _redis = None
 
 _threads = {}
 
+_fetcher_clients = []
+_fetcher_jobs = {}
+
 class NonExistentSetting(Exception):
 	"""Specified setting ID is non-existent."""
 
@@ -167,6 +170,19 @@ def do_startup_checks():
 		if health['sealed']:
 			log.critical('Vault error - vault is sealed')
 			_exit(1)
+
+def fetcher_backend_get_clients() -> list:
+	"""
+		Get list of eDAP-Fetcher servers.
+	"""
+	return _fetcher_clients
+
+def fetcher_backend_add_client(fetcher_data_object: dict):
+	"""
+		Add a server to list of fetchers.
+	"""
+	# TODO: Implementation
+	_fetcher_clients.append(fetcher_data_object)
 
 def get_vault_info() -> dict:
 	"""
@@ -741,8 +757,12 @@ def _read_config() -> Config:
 	cfg_obj.storage = _get_var("DATA_FOLDER", default="/data")
 	print("[eDAP] [INFO] Storing data in: %s" % cfg_obj.storage)
 
+
 	cfg_obj.vault.enabled = _get_var("VAULT", _bool=True, default=True)
 	print("[eDAP] [INFO] Using Hashicorp Vault: %s" % cfg_obj.vault.enabled)
+
+	FETCHER_TOKEN = _get_var("FETCHER_TOKEN", default=random_string(10))
+	print("[eDAP] [INFO] Fetcher token is: %s" % FETCHER_TOKEN)
 
 	if cfg_obj.vault.enabled:
 		cfg_obj.vault.server = _get_var("VAULT_SERVER")
