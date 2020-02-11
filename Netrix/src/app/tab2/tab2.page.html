@@ -44,9 +44,9 @@
             <!--<ion-icon item-right name="notifications" *ngIf="testObj.scheduled"></ion-icon>-->
             <!-- Checkmark with *ngIf to show only if not current (already written) -->
             <ion-icon item-right name="checkmark" color="success" *ngIf="!testObj.current"></ion-icon>
-            <ion-text id="remaining" class="ion-text-right" *ngIf="testObj.current">
+            <ion-note id="remaining" *ngIf="testObj.current" slot="end" color="dark">
               {{ calculateRemainingTime(testObj.date) }}
-            </ion-text>
+            </ion-note>
           </ion-item>
         </ng-container>
       </ng-container>
@@ -57,7 +57,7 @@
   <ion-item class="ion-text-center" [@fadeInOut] *ngIf="currentTests.length == 0 && showAllPreference == false" lines="none" id="cntr">
     <ion-label>
       <!-- "Thumbs up" emoji -->
-      <object width="150" type="image/svg+xml" data="./assets/emoji/thumbsup.svg"></object>
+      <object width="100" type="image/svg+xml" data="./assets/emoji/thumbsup.svg"></object>
       <!-- Styled "no tests" message -->
       <h1 id="netHeader" class="ion-text-wrap">{{ 'tab2.notests' | translate }}</h1>
     </ion-label>

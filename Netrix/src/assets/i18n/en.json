@@ -2,8 +2,6 @@
   "generic": {
     "alert": {
       "network": "Network error",
-      "expiry": "Your login has expired",
-      "database": "Database connection failed; try again later",
       "server": "Server error; try again later"
     },
     "back": "Back",
@@ -24,7 +22,7 @@
         "header": "Maintenance in progress",
         "content": "e-Dnevnik is currently undergoing maintenance (we have no control over this). Check the website for more information."
       },
-      "cache": "Because you aren't currently connected to the Internet, you're viewing data from your last session."
+      "cache": "Because we can't currently connect to the server, you're being shown data from your last session."
     },
     "choice": {
       "yes": "Yes",
@@ -39,6 +37,13 @@
       "classes": "Classes",
       "no_grades": "No grades",
       "tests_remaining": "Exams remaining this week"
+    },
+    "more": {
+      "header": "Menu",
+      "settings": "Settings",
+      "classes": "Classes",
+      "users": "Switch accounts",
+      "close": "Close"
     }
   },
   "tab2": {
@@ -59,6 +64,15 @@
       "sum": "All"
     }
   },
+  "tab4": {
+    "title": "Stats",
+    "cards": {
+      "exams": "Exams",
+      "average": "Average",
+      "change": "Change",
+      "history": "Average over time"
+    }
+  },
   "settings_page": {
     "title": "Settings",
     "text": {
@@ -67,7 +81,11 @@
     "alert": {
       "logout": {
         "header": "Log out?",
-        "content": "This will delete your data from Netrix's servers, and will disable all notifications."
+        "content": "This will delete your data from Netrix's servers and disable all notifications.",
+        "choice": {
+          "cancel": "Cancel",
+          "logout": "Really log out"
+        }
       },
       "time": {
         "choice": {
@@ -106,26 +124,28 @@
       "holder_user": "Username",
       "holder_pass": "Password",
       "appdesc": "A modern interface for e-Dnevnik",
-      "privacy": "Privacy policy"
+      "privacy": "Data protection"
     }
   },
   "tabs": {
     "subjects": "Subjects",
     "tests": "Exams",
     "settings": "Settings",
-    "absences": "Absences"
+    "absences": "Absences",
+    "stats": "Stats"
   },
   "settings": {
     "analytics": {
-      "header": "Analytics and ads",
+      "header": "Reports and ads",
       "ads": "Show advertisements",
-      "usage": "Send usage info"
+      "errors": "Send crash reports"
     },
     "notifs": {
       "header": "Notifications",
-      "management": "Notification management",
-      "time": "Notify before test",
-      "master": "All notifications"
+      "management": "Notification types",
+      "time": "Reminder before exam",
+      "master": "All notifications",
+      "onday": "Notification on day of exam"
     },
     "design": {
       "header": "Design",
@@ -135,7 +155,7 @@
     "time_plural": "days"
   },
   "notifSettings": {
-    "title": "Notification management",
+    "title": "Notification types",
     "tests": "Exams",
     "grades": "Grades",
     "classes": "Classes",
@@ -149,6 +169,12 @@
     }
   },
   "classes": {
-    "title": "Classes"
+    "title": "Classes",
+    "close": "Close"
+  },
+  "shorthand": {
+    "day": "d",
+    "week": "w",
+    "month": "m"
   }
 }

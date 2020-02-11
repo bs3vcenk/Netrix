@@ -2,9 +2,7 @@
   "generic": {
     "alert": {
       "network": "Greška kod povezivanja",
-      "expiry": "Tvoja prijava je istekla",
-      "database": "Neuspjelo povezivanje sa bazom podataka; pokušaj ponovno kasnije",
-      "server": "Serverska greška; pokušaj ponovno kasnije"
+      "server": "Greška na serveru; pokušaj ponovno kasnije"
     },
     "back": "Natrag",
     "text": {
@@ -13,7 +11,7 @@
         "content": "Provjeri svoju vezu, pa pokušaj ponovo (ili je u tijeku održavanje servera)."
       },
       "nodb": {
-        "header": "Serverska greška",
+        "header": "Greška na serveru",
         "content": "Dogodila se greška na serveru. Radimo na tome!"
       },
       "trusterror": {
@@ -22,9 +20,9 @@
       },
       "maintenance": {
         "header": "Održavanje u tijeku",
-        "content": "e-Dnevnik je trenutno u nadogradnji (nemamo kontrolu nad time). Provjeri web-stranicu za više informacija."
+        "content": "e-Dnevnik je trenutno u procesu nadogradnje (nemamo kontrolu nad time). Provjeri web-stranicu za više informacija."
       },
-      "cache": "Pošto trenutno nemaš vezu s internetom, prikazujemo ti podatke od zadnjeg otvaranja aplikacije."
+      "cache": "Pošto se trenutno ne možemo spojiti na server, prikazujemo ti podatke od zadnjeg otvaranja aplikacije."
     },
     "choice": {
       "yes": "Da",
@@ -39,6 +37,13 @@
       "classes": "Razredi",
       "no_grades": "Nema ocjena",
       "tests_remaining": "Preostalo testova ovaj tjedan"
+    },
+    "more": {
+      "header": "Izbornik",
+      "settings": "Postavke",
+      "classes": "Razredi",
+      "users": "Promjena računa",
+      "close": "Zatvori"
     }
   },
   "tab2": {
@@ -59,6 +64,15 @@
       "sum": "Svi"
     }
   },
+  "tab4": {
+    "title": "Statistika",
+    "cards": {
+      "exams": "Ispiti",
+      "average": "Prosjek",
+      "change": "Promjena",
+      "history": "Prosjek kroz vrijeme"
+    }
+  },
   "settings_page": {
     "title": "Postavke",
     "text": {
@@ -67,7 +81,11 @@
     "alert": {
       "logout": {
         "header": "Odjaviti?",
-        "content": "To će pobrisati tvoje podatke s Netrixovih servera i isključiti sve obavijesti."
+        "content": "To će pobrisati tvoje podatke s Netrixovih servera i isključiti sve obavijesti.",
+        "choice": {
+          "cancel": "Odbaci",
+          "logout": "Stvarno odjavi"
+        }
       },
       "time": {
         "choice": {
@@ -75,7 +93,7 @@
           "cancel": "Zatvori"
         }
       },
-      "effect_on_restart": "Ova promjena će stupiti na snagu nakon ponovnog pokretanja aplikacije."
+      "effect_on_restart": "Ova promjena će stupiti na snagu tek nakon ponovnog pokretanja aplikacije."
     }
   },
   "overview": {
@@ -106,26 +124,28 @@
       "holder_user": "Korisničko ime",
       "holder_pass": "Lozinka",
       "appdesc": "Moderno sučelje za eDnevnik",
-      "privacy": "Pravila o privatnosti"
+      "privacy": "Zaštita podataka"
     }
   },
   "tabs": {
     "subjects": "Predmeti",
     "tests": "Ispiti",
     "settings": "Postavke",
-    "absences": "Izostanci"
+    "absences": "Izostanci",
+    "stats": "Statistika"
   },
   "settings": {
     "analytics": {
-      "header": "Analitika i reklame",
+      "header": "Izvještaji i reklame",
       "ads": "Prikazuj reklame",
-      "usage": "Šalji podatke o upotrebi"
+      "errors": "Šalji izvještaje o rušenju aplikacije"
     },
     "notifs": {
       "header": "Obavijesti",
-      "management": "Upravljanje obavijestima",
-      "time": "Obavjesti prije ispita",
-      "master": "Sve obavijesti"
+      "management": "Kategorije obavijesti",
+      "time": "Podsjetnik prije ispita",
+      "master": "Sve obavijesti",
+      "onday": "Obavijest na dan ispita"
     },
     "design": {
       "header": "Izgled",
@@ -135,7 +155,7 @@
     "time_plural": "dana"
   },
   "notifSettings": {
-    "title": "Upravljanje obavijestima",
+    "title": "Kategorije obavijesti",
     "tests": "Ispiti",
     "grades": "Ocjene",
     "classes": "Razredi",
@@ -149,6 +169,12 @@
     }
   },
   "classes": {
-    "title": "Razredi"
+    "title": "Razredi",
+    "close": "Zatvori"
+  },
+  "shorthand": {
+    "day": "d",
+    "week": "tj",
+    "month": "m"
   }
 }

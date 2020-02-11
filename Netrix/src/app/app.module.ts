@@ -16,17 +16,17 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { CrashlyticsErrorHandler } from './services/firebase.service';
 import { AdMob } from '@ionic-native/admob-plus/ngx';
 import { AdmobService } from './services/admob.service';
-import { CountUpModule } from 'countup.js-angular2';
-import { HTTP } from '@ionic-native/http/ngx';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+import { ClassesPageModule } from './classes/classes.module';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
 }
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
+  declarations: [
+    AppComponent
+  ],
   imports: [
     BrowserModule,
     IonicModule.forRoot({
@@ -43,8 +43,8 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    CountUpModule,
-    HttpClientModule
+    HttpClientModule,
+    ClassesPageModule
   ],
   providers: [
     StatusBar,
@@ -54,7 +54,6 @@ export function createTranslateLoader(http: HttpClient) {
     { provide: ErrorHandler, useClass: CrashlyticsErrorHandler },
     FirebaseX,
     AdmobService,
-    HTTP,
     LocalNotifications,
     AdMob
   ],

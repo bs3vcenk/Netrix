@@ -1,3 +1,42 @@
+## 1.9.13 (2020-01-28)
+* **NOVO**: Opcija za kontroliranje izvještaja o rušenju aplikacije
+* **FIX**: Obavijesti o ispitima "za null dana"
+* **FIX**: Neuspjeli HTTP zahtjev prilikom otvaranja obavijesti u izvanmrežnom načinu
+* **FIX**: Nepotreban resceduling obavijesti nakon otvaranja aplikacije
+* **PROMJENA**: Malo drugačiji izgled stranice za izbor razreda
+* **PROMJENA**: Broj tjedana umjesto mjeseci do ispita
+* **MISC**: Uklonjen Firebase Analytics - manja aplikacija
+
+## 1.9.12 (2020-01-17)
+* **FIX**: Reklame se nisu isključile nakon promjene opcije
+
+## 1.9.11 (2020-01-11)
+* **FIX**: Prekidač za dark mode nije vraćao na bijelu temu
+
+## 1.9.10 (2020-01-11)
+* **NOVO**: Opcija za isključivanje reklama
+* **PROMJENA**: Male izmjene dizajna oko cijele aplikacije
+* **PROMJENA**: Novi HTTP backend - općenito brže hvatanje podataka
+* **MISC**: Poboljšanje izvještaja o greškama
+* **MISC**: Brža prijava
+* **MISC**: Smanjena količina podataka koja se šalje na Analytics (ako je uključen)
+
+## 1.9.9 (2019-12-12)
+* **FIX**: Automatska prijava nije radila na novim instalacijama
+* **MISC**: Mala poboljšanja dizajna
+
+## 1.9.8 (2019-12-09)
+* **FIX**: Migracija podataka nije detektirala da starija verzija ne postoji
+
+## 1.9.7 (2019-12-08)
+* **FIX**: Izvanmrežni način na uređajima s manje od 1GB prostora
+* **FIX**: Izvanmrežni način nije detektirao nevažeći token
+* **FIX**: Crash ako je aplikacija otvorena u vodoravnom načinu
+* **PROMJENA**: Stabilniji storage backend
+* **PROMJENA**: Izmjena nekih prijevoda
+* **MISC**: Bolji izgled tamne teme i izbornika razreda
+* **MISC**: Ažurirani libraryi (native i JS)
+
 ## 1.9.6 (2019-11-11)
 * **NOVO**: Izvanmrežni način – provjeri ocjene čak i kada nemaš interneta
 * **FIX**: Obavijesti za ispite se sada zakazuju u 7 ujutro umjesto u ponoć

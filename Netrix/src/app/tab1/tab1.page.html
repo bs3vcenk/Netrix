@@ -3,14 +3,14 @@
     <ion-title>
       {{ 'tab1.title' | translate }}
     </ion-title>
-    <ion-buttons slot="primary">
-      <ion-button routerLink="/settings" routerDirection="forward">
-        <ion-icon slot="icon-only" name="settings"></ion-icon>
+    <ion-buttons slot="secondary">
+      <ion-button>
+        <ion-icon slot="icon-only" name="time"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-buttons slot="secondary">
-      <ion-button routerLink="/classes" routerDirection="forward" disabled="{{usingCache}}">
-        {{ 'tab1.text.classes' | translate }}
+    <ion-buttons slot="primary">
+      <ion-button (click)="showMoreOptions()">
+        <ion-icon slot="icon-only" name="more"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

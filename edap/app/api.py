@@ -1,25 +1,28 @@
 from functools import wraps
-from flask import Flask, jsonify, make_response, request, abort, redirect
-from flask_cors import CORS
+from flask import Flask, jsonify, make_response, request, abort
 from api_backend import *
 import edap, traceback
 
-API_VERSION = "2.12"
+API_VERSION = "2.15"
 
 log = logging.getLogger('EDAP-API')
 
-log.info("eDAP-API v%s starting up...", API_VERSION)
+log.info("eDAP-API version %s starting up", API_VERSION)
 
+# Initialize Flask application
 app = Flask("EDAP-API")
-CORS(app)
 
+# Perform startup checks
+do_startup_checks()
+
+# Restore sync threads for all active tokens in DB
 restore_syncs()
 
 def check_auth(username, password):
 	"""
 		Check if the specified username and password hash match the set ones.
 	"""
-	return username == config["privUsername"] and hash_password(password) == config["privPassword"]
+	return username == config.dev.username and hash_password(password) == config.dev.password
 
 def authenticate():
 	"""
@@ -50,27 +53,36 @@ def fetcher_verification(f):
 
 def dev_pw_area(f):
 	"""
-		Decorator that marks a function as belonging to the browser-side
+		Decorator that marks a function as belonging to the browser-accessible
 		/dev/ dashboard, and protects it with a username and password
 	"""
 	@wraps(f)
 	def decorated(*args, **kwargs):
-		if config["USE_CLOUDFLARE"]:
+		# Gather info about accessing IP
+		if config.cloudflare.enabled:
 			ip = request.headers["CF-Connecting-IP"]
 			country = request.headers["CF-IPCountry"]
 		else:
 			ip = request.remote_addr
 			country = "Unknown"
-		if config["ALLOW_DEV_ACCESS"]:
+		# Check whether we allow this type of access
+		if config.dev.enabled:
+			# If we do, verify the supplied HTTP Basic Auth credentials
 			auth = request.authorization
+			# If no credentials were provided, or the credential pair is incorrect,
+			# present an auth prompt
 			if not auth or not check_auth(auth.username, auth.password):
+				# If credentials were provided and we landed in this if-block, that
+				# means this was a failed login attempt, so we log it
 				if auth:
 					log.warning("FAIL => %s (%s) => Bad auth", ip, country)
 				return authenticate()
 		else:
+			# If we do not, log this access and simply return a 404
 			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
 			abort(404)
-		log.info('DEV => Successful access from %s using password auth', ip)
+		# If the credential pair was correct, log access and return
+		log.debug('DEV => Successful access from %s using password auth', ip)
 		return f(*args, **kwargs)
 	return decorated
 
@@ -81,23 +93,31 @@ def dev_area(f):
 	"""
 	@wraps(f)
 	def decorated(*args, **kwargs):
-		if config["USE_CLOUDFLARE"]:
+		# Gather info about accessing IP
+		if config.cloudflare.enabled:
 			ip = request.headers["CF-Connecting-IP"]
 			country = request.headers["CF-IPCountry"]
 		else:
 			ip = request.remote_addr
 			country = "Unknown"
-		if config["ALLOW_DEV_ACCESS"]:
+		# Check whether we allow this type of access
+		if config.dev.enabled:
+			# If we do, check if request contains an X-API-Token header
 			if "X-API-Token" not in request.headers:
+				# If not, log failed request and return
 				log.warning("FAIL => %s (%s) => No API token supplied", ip, country)
 				abort(403)
+			# If it cointains such a header, check if it's a valid one
 			elif not verify_dev_request(request.headers["X-API-Token"]):
+				# If it is not, log failed request and return
 				log.warning("FAIL => %s (%s) => Bad API token %s", ip, country, request.headers["X-API-Token"])
 				abort(403)
 		else:
+			# If we do not, log this access and simply return a 404
 			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
 			abort(404)
-		log.info('DEV => Successful access from %s using token auth', ip)
+		# If the token verification was successful, log access and return
+		log.debug('DEV => Successful access from %s using token auth', ip)
 		return f(*args, **kwargs)
 	return decorated
 
@@ -116,7 +136,7 @@ def e401(_):
 		exist in the DB.
 	"""
 	log.warning('Nonexistent token/cID/sID')
-	return make_response(jsonify({'error':'E_TOKEN_NONEXISTENT'}), 401)
+	return make_response(jsonify({'error':'E_TOKEN_OR_CLASS_ID_OR_SUBJECT_ID_NONEXISTENT'}), 401)
 
 @app.errorhandler(400)
 def e400(_):
@@ -149,31 +169,29 @@ def e500(_):
 		Default handler in case something generic goes wrong on the server
 		side.
 	"""
-	exc = traceback.format_exc()
-	if config['USE_NOTIFICATIONS']:
-		log.critical('HTTP 500, sending notification')
-		notify_error('HTTP 500 RESPONSE', 'generic', stacktrace=exc)
+	# Check if we need to send server error notifications
+	if config.error_notifications.enabled:
+		# Send message
+		notify_error('HTTP 500 RESPONSE', 'generic')
 	else:
+		# If we don't, just log it
 		log.critical('HTTP 500 error!')
 	return make_response(jsonify({'error':'E_SERVER_ERROR'}), 500)
-
-@app.route('/', methods=["GET"])
-def index():
-	"""
-		Default page, redirects to the Netrix page.
-	"""
-	return redirect('https://netrix.io/')
 
 @app.errorhandler(Exception)
 def exh_unhandled(e):
 	"""
 		Default exception handler.
 	"""
-	exc = traceback.format_exc()
-	log.warning('Unhandled exception %s', e)
-	if config['USE_NOTIFICATIONS']:
+	# Check if we need to send a notification
+	if config.error_notifications.enabled:
+		# If we do, get a stacktrace
+		exc = traceback.format_exc()
+		# Send message
 		notify_error('UNHANDLED EXC', 'generic', stacktrace=exc)
-	abort(500)
+	# Log exception
+	log.warning('Unhandled exception %s', e)
+	#abort(500)
 
 @app.errorhandler(redis.exceptions.ConnectionError)
 def exh_redis_db_fail(e):
@@ -182,7 +200,7 @@ def exh_redis_db_fail(e):
 	"""
 	exc = traceback.format_exc()
 	log.critical("DATBASE ACCESS FAILURE!!!!! [%s]", e)
-	if config['USE_NOTIFICATIONS']:
+	if config.error_notifications.enabled:
 		notify_error('DB CONNECTION FAIL', 'redis', stacktrace=exc)
 	return make_response(jsonify({'error':'E_DATABASE_CONNECTION_FAILED'}), 500)
 
@@ -193,18 +211,43 @@ def exh_memory_error(_):
 	"""
 	stacktrace = traceback.format_exc()
 	log.critical("!! Caught MemoryError !!")
-	if config['USE_NOTIFICATIONS']:
+	if config.error_notifications.enabled:
 		notify_error('MEMORY ERROR', 'generic', stacktrace)
 	return make_response(jsonify({'error':'E_SERVER_OUT_OF_MEMORY'}), 500)
+
+@app.route('/dev/memory', methods=["GET"])
+@dev_pw_area
+def dev_memory_usage():
+	"""
+		DEV: Output used memory using Pympler.
+	"""
+	return memory_summary()
 
 @app.route('/dev/dboptimize', methods=["GET"])
 @dev_area
 def dev_db_optimize():
 	"""
-		DEV: Rewrite the AOF file.
+		DEV: Rewrite the AOF file. Can be supplied with argument 'heavy'
+		which will also delete any excess class IDs (non-zero).
 	"""
+	heavy_opt = request.args.get('heavy', type=bool)
 	pre_size = convert_size(get_db_size())
+	if heavy_opt:
+		for token in get_tokens():
+			tdata = get_data(token)
+			for i in tdata['data']['classes'][1:]:
+				try:
+					del i['subjects']
+					del i['tests']
+					del i['absences']
+					del i['info']
+					del i['full']
+					del i['complete_avg']
+				except KeyError:
+					pass
+			save_data(token, tdata)
 	optimize_db_aof()
+	sleep(2)
 	post_size = convert_size(get_db_size())
 	return make_response(jsonify({
 		'size_prev': pre_size,
@@ -238,8 +281,7 @@ def dev_log():
 	"""
 		DEV: Simple page to print the log file.
 	"""
-	filter_sync = request.args.get('filter', type=bool)
-	return make_response(jsonify({'log':read_log(exclude_syncing=filter_sync)}), 200)
+	return make_response(jsonify({'log':read_log()}), 200)
 
 @app.route('/dev/firebase', methods=["GET"])
 @dev_area
@@ -282,7 +324,7 @@ def dev_token_mgmt(token):
 				'language': data["lang"]
 			},
 			'ip': data["last_ip"],
-			'cloudflare': None if not config["USE_CLOUDFLARE"] else {
+			'cloudflare': None if not config.cloudflare.enabled else {
 				'last_ip': data["cloudflare"]["last_ip"],
 				'country': data["cloudflare"]["country"]
 			},
@@ -292,29 +334,11 @@ def dev_token_mgmt(token):
 		}
 		if fb_info['status']:
 			ret_object['firebase']['app_version'] = fb_info['data']['applicationVersion']
-			ret_object['firebase']['rooted'] = fb_info['data']['attestStatus'] == 'ROOTED'
+			ret_object['firebase']['rooted'] = False
 		return ret_object
 	elif request.method == "DELETE":
 		purge_token(token)
 		return {'status':'success'}
-
-@app.route('/dev/stats', methods=["GET"])
-@dev_area
-def dev_stats():
-	"""
-		DEV: Statistics report, shows full and cached logins along with failed
-		ones.
-	"""
-	return make_response(jsonify({
-		'success': {
-			'slow_logins': get_counter("logins:success:slow"),
-			'fast_logins': get_counter("logins:success:fast")
-		},
-		'fails': {
-			'wrong_pw': get_counter("logins:fail:credentials"),
-			'exceptions': get_counter("logins:fail:generic")
-		}
-	}), 200)
 
 @app.route('/dev/token', methods=["GET"])
 @dev_pw_area
@@ -331,19 +355,6 @@ def dev_thread_list():
 		DEV: List running background threads.
 	"""
 	return make_response(jsonify({'threads': get_sync_threads()}), 200)
-
-@app.route('/dev/info/testuser', methods=["GET"])
-@dev_pw_area
-def devAddTestUser():
-	"""
-		DEV: Add a test user. Contains a test dataset; more info
-		in api_backend/generate_test_user().
-	"""
-	testUser, testPasw, testToken = generate_test_user()
-	html = "<p>Username: <code>%s</code></p>" % testUser
-	html += "<p>Password: <code>%s</code></p>" % testPasw
-	html += "<p>Token: <code>%s</code></p>" % testToken
-	return make_html(title="Test user creation", content=html)
 
 @app.route('/dev/recreate', methods=["GET"])
 @dev_area
@@ -394,13 +405,12 @@ def dev_test_diff(token):
 @dev_pw_area
 def dev_force_diff(token):
 	"""
-		DEV: Force a sync operation for a token. Will output debugging
-		logs, which include credentials!
+		DEV: Force a sync operation for a token.
 	"""
 	if not verify_request(token):
 		abort(401)
-	debug_output = sync(token, debug=True)
-	return make_response(debug_output, 200)
+	sync(token)
+	return make_response('', 200)
 
 @app.route('/api/login', methods=["POST"])
 def login():
@@ -419,50 +429,53 @@ def login():
 	"""
 	if not request.json or not 'username' in request.json or not 'password' in request.json:
 		log.error("Bad JSON")
-		update_counter("logins:fail:generic")
 		abort(400)
 	elif (request.json["username"] is None or
 	      request.json["password"] is None or
 	      len(request.json["username"]) < 4 or
 	      len(request.json["password"]) < 4):
 		log.error("Bad auth data")
-		update_counter("logins:fail:generic")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	dev_ip = request.remote_addr
 	username = request.json["username"].strip()
 	password = request.json["password"]
 	if "@skole.hr" in username:
 		username = username.replace("@skole.hr", "")
-	token = hash_string(username + ":" + password)
+	# Detect some invalid usernames
+	pattern_detected = None
+	if "@skolers.org" in username:
+		pattern_detected = "еСервиси (Srbija)"
+	elif "@gmail.com" in username:
+		pattern_detected = "Google account"
+	elif username.startswith("@"):
+		pattern_detected = "Instagram/Twitter username"
+	if pattern_detected:
+		log.warning("Detected invalid username %s (matched against %s)", username, pattern_detected)
+		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
+	token = hash_string(username + ":" + password) # Create the token, this is an MD5 hash of username:password
 	if verify_request(token):
-		log.info("FAST => %s", username)
-		update_counter("logins:success:fast")
+		log.info("Returning cached data for %s", username)
 		return make_response(jsonify({'token':token}), 200)
-	log.info("SLOW => %s", username)
+	log.debug("Starting login for %s", username)
 	try:
 		obj = edap.edap(username, password)
 	except edap.WrongCredentials:
-		log.error("SLOW => WRONG CREDS => %s", username)
-		update_counter("logins:fail:credentials")
+		log.warning("Failed logging %s in: invalid credentials", username)
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	except edap.ParseError as e:
-		log.error("SLOW => eDAP PARSE ERROR => %s => %s", username, e)
-		update_counter("logins:fail:generic")
+		log.error("Failed logging %s in: eDAP library error - ParseError: %s", username, e)
 		notify_error('PARSE ERROR', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		abort(500)
 	except edap.InvalidResponse as e:
-		log.error("SLOW => eDAP INVALID RESPONSE => %s => %s", username, e)
-		update_counter("logins:fail:generic")
+		log.error("Failed logging %s in: eDAP library error - InvalidResponse: %s", username, e)
 		notify_error('INVALID SERVER RESPONSE', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		abort(500)
 	except edap.NetworkError as e:
-		log.error("SLOW => eDAP CONNECTION FAIL => %s => %s", username, e)
-		update_counter("logins:fail:generic")
+		log.error("Failed logging %s in: eDAP library error - NetworkError: %s", username, e)
 		notify_error('CONNECTION FAIL', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		abort(500)
 	except edap.ServerInMaintenance as e:
-		log.error("SLOW => MAINTENANCE => %s", username)
-		update_counter("logins:fail:generic")
+		log.error("Failed logging %s in: upstream server maintenance in progress", username)
 		notify_error('SERVER MAINTENANCE', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		return make_response(jsonify({'error':'E_UPSTREAM_MAINTENANCE'}), 500)
 	log.info("SLOW => SUCCESS => %s (%s)", username, token)
@@ -486,24 +499,12 @@ def login():
 		'messages': []
 	}
 	set_credentials(token, username, password)
-	if config["USE_CLOUDFLARE"]:
+	if config.cloudflare.enabled:
 		dataObj["cloudflare"] = {"last_ip": None, "country": None}
 	save_data(token, dataObj)
-	log.debug("SLOW => Starting sync for %s", username)
+	log.debug("Starting sync for %s", username)
 	start_sync(token)
-	update_counter("logins:success:slow")
 	return make_response(jsonify({'token':token}), 200)
-
-@app.route('/api/user/<string:token>/info', methods=["GET"])
-def get_user_info_old(token):
-	"""
-		Get the user's personal information.
-	"""
-	if not verify_request(token):
-		abort(401)
-	log.warning('DEPRECATED METHOD')
-	log.info(token)
-	return make_response(jsonify({'name':'Upgrade time'}), 200)
 
 @app.route('/api/user/<string:token>/firebase', methods=["POST"])
 def set_firebase_token(token):
@@ -514,7 +515,7 @@ def set_firebase_token(token):
 		abort(401)
 	if not request.json or not "deviceToken" in request.json:
 		abort(400)
-	log.info("FIREBASE => %s", token)
+	log.debug("%s: Saving Firebase Cloud Messaging token", token)
 	user_data = get_data(token)
 	user_data['firebase_device_token'] = request.json['deviceToken']
 	save_data(token, user_data)
@@ -529,7 +530,7 @@ def fill_class(token):
 		abort(401)
 	if not request.json or not "class_id" in request.json:
 		abort(400)
-	log.info("FETCH => %s => %s", token, request.json["class_id"])
+	log.info("%s: Fetching class ID %s", token, request.json["class_id"])
 	fetch_new_class(token, request.json["class_id"])
 	return make_response('', 200)
 
@@ -543,14 +544,14 @@ def setting(token, action):
 	if request.method == "POST":
 		if not request.json or not "parameter" in request.json:
 			abort(400)
-		log.info("SET => %s => %s => %s", token, action, request.json["parameter"])
+		log.info("%s: Processing action SET %s with parameter %s", token, action, request.json["parameter"])
 		try:
 			process_setting(token, action, request.json["parameter"])
 		except NonExistentSetting:
 			return make_response(jsonify({'error':'E_SETTING_NONEXISTENT'}), 400)
 		return make_response(jsonify({'status':'ok'}), 200)
 	elif request.method == "GET":
-		log.info("GET => %s => %s", token, action)
+		log.info("%s: Processing action GET %s", token, action)
 		try:
 			val = get_setting(token, action)
 		except NonExistentSetting:
@@ -619,6 +620,35 @@ def get_classes(token):
 			pass
 	return make_response(jsonify(o), 200)
 
+@app.route('/api/user/<string:token>/classes/<int:class_id>/history', methods=["GET"])
+def get_history(token, class_id):
+	"""
+		Get a history of either grades or notes, specified using
+		`type` named parameter.
+	"""
+	if not verify_request(token, class_id):
+		abort(401)
+	req_type = request.args.get('type')
+	if req_type == 'grade':
+		output_format = request.args.get('output', default='complete') # complete or graph
+		if output_format not in ['graph', 'complete']:
+			return make_response(jsonify({'error': 'E_INVALID_OUTPUT_FORMAT'}), 400)
+		subjs = get_data(token)['data']['classes'][class_id]['subjects']
+		# Compile a list of all grades
+		grade_list = []
+		for subject in subjs:
+			for grade in subject['grades']:
+				grade['subject_id'] = subject['id']
+				grade_list.append(grade)
+		if output_format == 'complete':
+			# Sort by date, newest first, output everything
+			return make_response(jsonify(sorted(grade_list, key=lambda k: k['date'], reverse=True)), 200)
+		elif output_format == 'graph':
+			# Return averages for months, calculate with subject averages
+			return make_response(jsonify(graph_average(grade_list)), 200)
+	log.warning('%s: Requested history with invalid or missing type for class ID %s', token, class_id)
+	return make_response(jsonify({'error': 'E_MISSING_OR_INVALID_TYPE'}), 400)
+
 @app.route('/api/user/<string:token>/classes/<int:class_id>/info', methods=["GET"])
 def get_user_info(token, class_id):
 	"""
@@ -636,7 +666,7 @@ def get_absences(token, class_id):
 	"""
 	if not verify_request(token, class_id):
 		abort(401)
-	log.info("%s => Class %s", token, class_id)
+	log.info("%s: List absences for class %s", token, class_id)
 	return make_response(jsonify(get_data(token)['data']['classes'][class_id]['absences']), 200)
 
 @app.route('/api/user/<string:token>/classes/<int:class_id>/subjects', methods=["GET"])
@@ -646,7 +676,7 @@ def get_subjects(token, class_id):
 	"""
 	if not verify_request(token, class_id):
 		abort(401)
-	log.info("%s => Class %s", token, class_id)
+	log.info("%s: List subjects for class %s", token, class_id)
 	o = get_data(token)['data']['classes'][class_id]
 	return make_response(jsonify({'subjects': o['subjects'], 'class_avg':o['complete_avg']}), 200)
 
@@ -657,7 +687,7 @@ def get_tests(token, class_id):
 	"""
 	if not verify_request(token, class_id):
 		abort(401)
-	log.info("%s => Class %s", token, class_id)
+	log.info("%s: List tests for class %s", token, class_id)
 	o = get_data(token)['data']['classes'][class_id]['tests']
 	return make_response(jsonify({'tests': o}), 200)
 
@@ -668,7 +698,7 @@ def get_subject(token, class_id, subject_id):
 	"""
 	if not verify_request(token, class_id, subject_id):
 		abort(401)
-	log.info("%s => Class %s => Subject %s", token, class_id, subject_id)
+	log.info("%s: Get subject data for class %s, subject %s", token, class_id, subject_id)
 	o = get_data(token)['data']['classes'][class_id]['subjects'][subject_id]
 	return make_response(jsonify(o), 200)
 
@@ -687,7 +717,7 @@ def log_stats():
 	if not verify_request(token):
 		abort(401)
 	log.info(
-		"STATS => %s => %s, %s, %s",
+		"%s: Save device info: platform::%s, model::%s, language::%s",
 		token,
 		request.json["platform"],
 		request.json["device"],
@@ -698,7 +728,7 @@ def log_stats():
 	dataObj['device']['platform'] = request.json["platform"]
 	dataObj['device']['model'] = request.json["device"]
 	dataObj['lang'] = request.json["language"]
-	if config["USE_CLOUDFLARE"]:
+	if config.cloudflare.enabled:
 		dataObj['cloudflare']['country'] = request.headers["CF-IPCountry"]
 		dataObj['cloudflare']['last_ip'] = request.headers["CF-Connecting-IP"]
 	save_data(token, dataObj)

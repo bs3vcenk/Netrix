@@ -1,8 +1,10 @@
 requests==2.22.0
-BeautifulSoup4==4.8.1
+BeautifulSoup4==4.8.2
 Flask==1.1.1
-Flask-Cors==3.0.8
-redis==3.3.11
-lxml==4.4.1
-hiredis==1.0.0
+redis==3.4.1
+lxml==4.5.0
+hiredis==1.0.1
+Pympler==0.8
+setproctitle==1.1.10
+python-dateutil==2.8.1
 apscheduler==3.6.1

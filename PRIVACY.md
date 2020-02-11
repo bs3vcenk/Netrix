@@ -1,12 +1,8 @@
-# Pravila o privatnosti
-
-Zadnje ažuriranje: 14.10.2019.
-
-Prijašnje inačice ovog dokumenta možete zatražiti upitom na e-mail bs3vcenk@gmail.com.
+# Zaštita podataka
 
 ## Što je Netrix?
 
-**Netrix** je naziv neslužbene frontend aplikacije za CARNetov servis "e-Dnevnik". Netrix kontaktira API server pod imenom *eDnevnikAndroidProject* (skraćeno eDAP).
+**Netrix** je naziv neslužbene frontend aplikacije za CARNetov servis "e-Dnevnik". Netrix kontaktira API server pod imenom *eDAP* na adresi api.netrix.io.
 
 Netrix omogućuje brz pregled ocjena, izostanaka, ispita i korisničkih informacija te obavijesti o promjeni istih.
 
@@ -18,9 +14,9 @@ Netrix omogućuje brz pregled ocjena, izostanaka, ispita i korisničkih informac
 
 **eDAP** sprema sljedeće podatke nakon prijave:
 
-* **Korisničko ime (kriptirano)** - koristi se za pozadinsku sinkronizaciju i uspoređivanje podataka (za obavijesti o novostima)
-* **Lozinka (kriptirana)** - koristi se za pozadinsku sinkronizaciju i uspoređivanje podataka (za obavijesti o novostima)
-* **Token** - MD5 hash korisničkog imena i lozinke, koji se koristi za daljnju upotrebu API-a i identifikaciju u zapisima na strani servera
+* **Korisničko ime** (zaštičeno sustavom Hashicorp Vault) - koristi se za pozadinsku sinkronizaciju i uspoređivanje podataka (za obavijesti o novostima)
+* **Lozinka** (zaštićena sustavom Hashicorp Vault) - koristi se za pozadinsku sinkronizaciju i uspoređivanje podataka (za obavijesti o novostima)
+* **Token** - hash korisničkog imena i lozinke, koji se koristi za daljnju upotrebu API-a i identifikaciju u zapisima na strani servera
 * **Jezik uređaja** - npr. hr/de/en, služi za lokaliziranje odnosno prevođenje sadržaja kao npr. obavijesti
 * **Informacije o školskoj godini**, što uključuje:
     * **Popis razreda i pripadajuće informacije** - oznaka (npr. 2.e), školska godina (npr. 2018./2019.), ime i mjesto škole te ime razrednika
@@ -34,49 +30,61 @@ Netrix omogućuje brz pregled ocjena, izostanaka, ispita i korisničkih informac
 * **Postavke obavijesti**, što uključuje:
     * **Status obavijesti** - treba li slati korisniku obavijesti ili ne
     * **Isključene kategorije** - koje vrste obavijesti ne treba slati
-* **Firebase Cloud Messaging token uređaja** - koristi se za slanje obavijesti na uređaj
-* **IP adresa s koje je zadnji zahtjev stigao** - kako bi se identificirali i blokirali potencijalni napadi na servis
+* **Firebase Cloud Messaging token** - koristi se za slanje obavijesti na uređaj i za provjeru je li aplikacija još uvijek instalirana
 * **Platforma uređaja** - npr. *Android/iOS/drugo*, služi za bolje kategoriziranje mogućih problema u radu aplikacije (npr. događa li se greška samo na toj platformi)
 * **Model uređaja** - npr. *SM-G965F*, služi za bolje kategoriziranje mogućih problema u radu aplikacije (npr. događa li se greška samo kod tog proizvođača ili tog modela uređaja)
+
+**Sinkronizirani razred** je svaki razred čiji podatci se nalaze u bazi podataka na eDAP poslužitelju. Nakon prve prijave, jedini sinkronizirani razred je prvi razred u listi (tekuća školska godina). Druge razrede moguće je sinkronizirati s poslužiteljem pritiskom na razred u izborniku "Razredi".
 
 Gore navedene podatke je moguće isbrisati pritiskom na gumb "Odjava" pod tabom "Postavke" u aplikaciji.
 
 Deinstalacija aplikacije deaktivira vezani FCM (Firebase Cloud Messaging) token, što koristimo za detektiranje neaktivnih korisnika, pri čemu s naših servera brišemo vezane podatke kako bi se smanjila upotreba bandwidtha i opterećenje i naših i CARNetovih servera.
 
-Držimo popis svih zahtjeva (log) na eDAP server koji se briše svaka tri dana.
+Također, pošto je eDAP web servis, za svaki zahtjev spremaju se i ove informacije:
+* **IP adresa**
+* **Vrijeme i datum zahtjeva**
+* **Zatražena stranica/URL**
+* **Veličina odgovora u bajtovima**
+* **User agent** - sadrži ime i verziju web preglednika te model uređaja i verziju operativnog sustava
+* **Referrer** - web stranica s koje je došao zahtjev
+
+Ti podaci se dalje upotrebljavaju u svrhu detektiranja napada i poboljšanja usluge.
 
 eDAP se spaja na CARNetov servis e-Dnevnik, čija pravila o privatnosti možete pročitati [ovdje](https://www.carnet.hr/obavijest-o-privatnosti/).
 
 ### Netrix (frontend)
 
-Netrix koristi Googleov *Firebase Cloud Messaging* za obavijesti, *Firebase Crashlytics* za izjave o greškama i AdMob za prikazivanje reklama. Za više informacija o podacima koji se šalju, provjerite [Googleova pravila o privatnosti](https://policies.google.com/privacy) i [Kako Google koristi Vaše podatke](https://policies.google.com/technologies/partner-sites).
+Netrix koristi Googleov **Firebase Cloud Messaging** za obavijesti, **Firebase Crashlytics** za izjave o greškama i **AdMob** za prikazivanje reklama. Za više informacija o podacima koji se šalju, provjerite [Googleova pravila o privatnosti](https://policies.google.com/privacy) i [Kako Google koristi Vaše podatke](https://policies.google.com/technologies/partner-sites).
 
-U slučaju da korisnik uključi opciju "Šalji podatke o korištenju" (koja je po zadanome isključena), uključuje se i Googleov *Firebase Analytics*.
+**Firebase Crashlytics** šalje izvještaje o rušenju aplikacije, ili o drugim problemima tijekom rada aplikacije. Moguće ga je isključiti u postavkama aplikacije.
 
-*Firebase Analytics* šalje zapise o korištenju aplikacije (npr. prijava, odjava, ime trenutnog ekrana), no nama te informacije nisu potrebne te je opciju najbolje ostaviti isključenu.
+U izvještaju o grešci sadržane su sljedeće informacije:
 
-*Firebase Crashlytics* šalje informacije o grešci ako se dogodi. U izjavi o grešci sadržane su sljedeće informacije:
-
-* Token/ID korisnika
 * Proizvođač i model uređaja
 * Količina slobodnog RAM-a i prostora za pohranu
-* Verzija operativnog sustava (8, 9, 10, itd.)
+* Verzija operativnog sustava
 * Je li uređaj rootan
 * Datum događaja
 * Verzija aplikacije
-* Zapis događaja koji je doveo do greške
+* Zapis događaja koji je doveo do greške (log), koji sadrži:
+    * Vrijeme i datum
+    * Funkciju koja ostavlja zapis
 
-*AdMob* je moguće isključiti opcijom "Prikazuj reklame". Google može koristiti Vaš profil za bolje ciljanje (eng. *targeting*) reklama prema Vašim interesima. Više informacija o tome i kako upravljati tom opcijom nalazi se [ovdje](https://support.google.com/ads/answer/1660762).
+Niti jedan unos u zapis događaja ne sadržava identificirajuće podatke.
 
-Ako korisnik ne stisne gumb "Prijava", aplikacija se neće javiti na server.
+**AdMob** je moguće isključiti opcijom "Prikazuj reklame".
+
+Google može koristiti Vaš profil za bolje ciljanje reklama (eng. *ad targeting*) prema Vašim interesima. Više informacija o tome i kako upravljati tom opcijom nalazi se [ovdje](https://support.google.com/ads/answer/1660762).
+
+Ako korisnik ne stisne gumb "Prijava", aplikacija se neće javiti na eDAP poslužitelj, ali je moguće da će napraviti neke zahtjeve na Googleove poslužitelje vezane za Firebase.
 
 ## netrix.io (web-stranica)
 
-Web stranica [netrix.io](https://netrix.io) koristi Cloudflare Workers, koji nam daje samo statističke podatke o korištenju (broj zahtjeva). Ne skupljaju se nikakvi podatci kojima se može identificirati ili pratiti korisnika.
+Web stranica [netrix.io](https://netrix.io) koristi Cloudflare Workers, koji daje samo statističke podatke o korištenju (broj zahtjeva i HTTP statusni kod). Ne skupljaju se nikakvi podatci kojima se može identificirati ili pratiti korisnika.
 
 ## Sigurnost prijenosa podataka
 
-Netrix koristi HTTPS protokol za komunikaciju sa svojim API-em i *Firebaseom*. Aplikacija koristi *SSL pinning*, što znači da neće poslati podatke na poslužitelj ako HTTPS provjera ne uspije, te će korisnik biti upozoren.
+Netrix koristi HTTPS protokol za komunikaciju sa svojim API-em i *Firebaseom*. Ako HTTPS provjera ne uspije, aplikacija neće poslati nikakve podatke, te će korisnik biti upozoren.
 
 ## Sigurnost spremljenih podataka
 
@@ -84,14 +92,18 @@ eDAP kao spremište za korisnička imena i lozinke koristi open-source program H
 
 Pri odjavi se brišu svi korisnički podaci sa servera.
 
-Poslužitelje održavamo ažuriranima te provjeravamo aplikaciju i kod o kojem ovisi (eng. *dependency*) za bilo kakve sigurnosne propuste.
-
 ## Upravljanje podatcima
 
 ### Brisanje podataka s Netrix servisa
 
-Vaše podatke je moguće potpuno obrisati sa servera pritiskom na gumb "Odjava" u postavkama aplikacije. Taj postupak briše sve gore navedene podatke.
+Podatke je moguće potpuno obrisati sa servera pritiskom na gumb "Odjava" u postavkama aplikacije. Taj postupak briše sve podatke navedene u "eDAP" pod "Spremanje i korištenje podataka".
 
 ### Kopija podataka
 
 Možete zatražiti kopiju Vaših podataka upitom na e-mail bs3vcenk@gmail.com. Kopija uključuje podatke s naših servera (potpuni profil i zapisi vezani za Vaš profil, ako su još dostupni) te nama dostupne podatke s Googleovih servisa (npr. *Firebase Analytics*, ako je omogućeno).
+
+## Druge stvari
+
+Zadnje ažuriranje ovog dokumenta je bilo 28.1.2020.
+
+Prijašnje inačice ovog dokumenta možete zatražiti upitom na e-mail bs3vcenk@gmail.com.

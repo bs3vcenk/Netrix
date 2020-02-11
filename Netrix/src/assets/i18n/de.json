@@ -2,8 +2,6 @@
   "generic": {
     "alert": {
       "network": "Netzwerkfehler",
-      "expiry": "Deine Anmeldung ist abgelaufen",
-      "database": "Datenbankverbindung fehlgeschlagen; versuch es später noch einmal",
       "server": "Serverfehler; versuch es später noch einmal"
     },
     "back": "Zurück",
@@ -14,7 +12,7 @@
       },
       "nodb": {
         "header": "Serverfehler",
-        "content": "Auf der Serverseite ist etwas schief gelaufen. Wir arbeiten schnell daran, es zu reparieren!"
+        "content": "Auf der Serverseite ist etwas schief gelaufen. Wir arbeiten daran!"
       },
       "trusterror": {
         "header": "Nicht sichere Verbindung",
@@ -24,7 +22,7 @@
         "header": "Wartung läuft",
         "content": "e-Dnevnik befindet sich derzeit in der Wartung (wir haben keine Kontrolle darüber). Weitere Informationen findest du auf der Website."
       },
-      "cache": "Da du derzeit nicht mit dem Internet verbunden bist, werden die Daten deiner letzten Sitzung angezeigt."
+      "cache": "Da wir uns derzeit nicht mit dem Server verbinden können, werden die Daten deiner letzten Sitzung angezeigt."
     },
     "choice": {
       "yes": "Ja",
@@ -39,6 +37,13 @@
       "classes": "Klassen",
       "no_grades": "Keine Noten",
       "tests_remaining": "Verbleibende Prüfungen diese Woche"
+    },
+    "more": {
+      "header": "Menü",
+      "settings": "Einstellungen",
+      "classes": "Klassen",
+      "users": "Konto wechseln",
+      "close": "Schließen"
     }
   },
   "tab2": {
@@ -59,6 +64,15 @@
       "sum": "Alle"
     }
   },
+  "tab4": {
+    "title": "Statistik",
+    "cards": {
+      "exams": "Prüfungen",
+      "average": "Durchschnitt",
+      "change": "Änderung",
+      "history": "Notendurchschnitt im Laufe der Zeit"
+    }
+  },
   "settings_page": {
     "title": "Einstellungen",
     "text": {
@@ -67,7 +81,11 @@
     "alert": {
       "logout": {
         "header": "Abmelden?",
-        "content": "Dadurch werden Ihre Daten von den Servern von Netrix gelöscht und alle Benachrichtigungen deaktiviert."
+        "content": "Dadurch werden Ihre Daten von den Servern von Netrix gelöscht und alle Benachrichtigungen deaktiviert.",
+        "choice": {
+          "cancel": "Abbrechen",
+          "logout": "Wirklich abmelden"
+        }
       },
       "time": {
         "choice": {
@@ -98,7 +116,7 @@
     "alert": {
       "credentials": {
         "header": "Falsche Zugangsdaten",
-        "content": "Prüfe deinen Benutzernamen und dein Passwort und versuche es erneut."
+        "content": "Prüfe deine Benutzername und dein Passwort und versuche es erneut."
       }
     },
     "text": {
@@ -106,26 +124,28 @@
       "holder_user": "Benutzername",
       "holder_pass": "Kennwort",
       "appdesc": "Eine moderne Schnittstelle für e-Dnevnik",
-      "privacy": "Datenschutzerklärung"
+      "privacy": "Datenschutz"
     }
   },
   "tabs": {
     "subjects": "Schulfächer",
     "tests": "Prüfungen",
     "settings": "Einstellungen",
-    "absences": "Abwesenheiten"
+    "absences": "Abwesenheiten",
+    "stats": "Statistik"
   },
   "settings": {
     "analytics": {
-      "header": "Analytics und Werbungen",
-      "ads": "Werbungen anzeigen",
-      "usage": "Nutzungsinformationen senden"
+      "header": "Berichte und Anzeigen",
+      "ads": "Anzeigen einblenden",
+      "errors": "Absturzberichte senden"
     },
     "notifs": {
       "header": "Benachrichtigungen",
-      "management": "Benachrichtigungsverwaltung",
-      "time": "Vor Prüfung benachrichtigen",
-      "master": "Alle Benachrichtigungen"
+      "management": "Benachrichtigungskategorien",
+      "time": "Vor Prüfung erinnern",
+      "master": "Alle Benachrichtigungen",
+      "onday": "Benachrichtigung am Tag der Prüfung"
     },
     "design": {
       "header": "Design",
@@ -135,7 +155,7 @@
     "time_plural": "Tagen"
   },
   "notifSettings": {
-    "title": "Benachrichtigungsverwaltung",
+    "title": "Benachrichtigungskategorien",
     "tests": "Prüfungen",
     "grades": "Noten",
     "classes": "Schulfächer",
@@ -144,11 +164,17 @@
   },
   "notif": {
     "text": {
-      "test": "Bereite dich vor!",
+      "test": "Mach dich bereit!",
       "inXdays": "in DAYS Tagen"
     }
   },
   "classes": {
-    "title": "Klassen"
+    "title": "Klassen",
+    "close": "Schließen"
+  },
+  "shorthand": {
+    "day": "T",
+    "week": "W",
+    "month": "M"
   }
 }

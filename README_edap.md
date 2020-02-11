@@ -1,28 +1,61 @@
-# eDnevnikAndroidProject
+# eDnevnikAndroidProject API
 
 eDAP je Python 3 library koji pruža API za CARNetov servis [eDnevnik](https://ocjene.skole.hr).
 
-To je API pisan pomoću Flask frameworka koji mapira funkcije eDAPa na [ReST](https://en.wikipedia.org/wiki/Representational_State_Transfer)-kompatibilno sučelje.
+eDAP-API je kod pisan pomoću Flask frameworka koji daje mogućnosti eDAP-a kroz HTTP sučelje.
 
-Za bazu podataka koristi [Redis](https://redis.io/) u (po mogućnosti) AOF (Append-Only file) načinu.
+Za bazu podataka koristi [Redis](https://redis.io/) u AOF (Append-Only file) načinu.
 
 ## Potrebni programi
 
 * [Docker](https://docs.docker.com/install/) – za produkciju
-* [Python 3.5+](https://www.python.org/downloads/) – za dev testing na računalu
+* [Python 3.5+](https://www.python.org/downloads/) i [Redis](https://redis.io/) – za dev testing na računalu
 
-## Instalacija
+## Korištenje
 
-Za vrijeme razvijanja projekta je potrebno pokrenuti Redis instancu u jednom prozoru:
-```bash
-redis-server --dir /tmp
+### Razvijanje
+
+Za pokretanje eDAP-API poslužitelja u privremenom okruženju moguće je koristiti `run_instance.py` skriptu u mapi `edap/app`. Skripta će stvoriti privremenu mapu i konfigurirati Redis u pozadini.
+
+```console
+btx3@btx3s-mbp app % python3 run_instance.py 
+[dev] [INFO] Started Redis in the background, waiting 2 seconds...
+[dev] [INFO] Successfully connected to Redis
+[eDAP] [INFO] Storing data in: /var/folders/ql/xy1641592rj0x5h5fsrg4w700000gn/T/tmpgneumha1
+[eDAP] [INFO] Using Hashicorp Vault: False
+[eDAP] [WARN] Not using Vault for credential storage -- storing data insecurely in Redis!
+[eDAP] [INFO] Developer access enabled: True
+[eDAP] [INFO] Using Cloudflare: None
+[eDAP] [INFO] Using Firebase: None
+[eDAP] [INFO] Send administrative notifications: None
+[eDAP] [INFO] Waiting between 1800 and 6000 seconds before syncing for each user
+[eDAP] [INFO] Automatically adjusting sync times: None
+[eDAP] [INFO] Further logging is in /var/folders/ql/xy1641592rj0x5h5fsrg4w700000gn/T/tmpgneumha1/edap_api.log
+[dev] [INFO] Starting; listening on port 39143
+[dev] [INFO] Dev access enabled with username 'user' and password 'password'
+ * Serving Flask app "EDAP-API" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
 ```
-te u drugom prozoru pokrenuti server:
-```bash
-cd Netrix/edap
-pip3 install -r requirements.txt
-DATA_FOLDER=/tmp python3 api.py # Ovako pokretati samo u developer okruženju!
+
+Skripta otvara development server za eDAP-API na nasumičnom portu (gore `39143`) i u privremenoj mapi (gore `/var/folders/ql/xy1641592rj0x5h5fsrg4w700000gn/T/tmpgneumha1/`).
+
+Pristup `/dev/` endpointovima je moguć putem korisničkog imena `user` i lozinke `password`.
+
+Logovi su dostupni u privremenoj mapi u datoteci `edap_api.log`:
+
+```console
+btx3@btx3s-mbp ~ % tail -f /var/folders/ql/xy1641592rj0x5h5fsrg4w700000gn/T/tmpgneumha1/edap_api.log
+2020-01-02 22:38:39,860 > _init_db(INFO) => Database connection successful
+2020-01-02 22:38:39,861 > <module>(INFO) => eDAP-API version 2.14.2 starting up
+2020-01-02 22:38:39,863 > do_startup_checks(WARNING) => Vault not being used - passwords will be stored insecurely!
+2020-01-02 22:38:39,863 > restore_syncs(INFO) => Starting sync threads for 0 tokens
+2020-01-02 22:38:39,893 > _log(INFO) =>  * Running on http://0.0.0.0:39143/ (Press CTRL+C to quit)
 ```
+
+### Production (Docker)
 
 Ako se aplikacija postavlja u *production*/javno okruženje, potrebno ju je integrirati sa *uWSGI*-em i web-serverom po želji (najbolje *nginx*). Mapa `/edap/` već sadrži unaprijed konfiguriran Dockerfile, te je za hostanje servera potrebno pokrenuti samo ovo:
 
@@ -36,7 +69,7 @@ docker run -d --name netrix \
         netrix:latest
 ```
 
-Dodatna konfiguracija (npr. Firebase ili Cloudflare integracija) je moguća pomoću varijabla okruženja (environment variables) koje se definiraju pomoću Docker argumenta `-e`, na primjer:
+Dodatna konfiguracija (npr. Firebase ili Cloudflare integracija) je moguća pomoću varijabla u okruženju (environment variables) koje se definiraju pomoću Docker argumenta `-e`, na primjer:
 
 ```bash
 docker run -d --name netrix \
@@ -68,122 +101,6 @@ docker run -d --name netrix \
       netrix:latest
 ```
 
-## Lista konfiguracijskih varijabla
+## Konfiguracija
 
-Varijable označene s [R] moraju biti definirane.
-
-### DATA_FOLDER [R]
-
-Zadana vrijednost: `/data`
-
-Ovdje se spremaju logovi te se pretpostavlja da je i Redis AOF baza podataka (`appendonly.aof`) na istoj lokaciji.
-
-### CLOUDFLARE
-
-Zadana vrijednost: `N`
-
-Omogućuje integraciju s Cloudflareom. Uključivanjem dobivaju se dodatne informacije za klijent (npr. država) te se iz headera izvlači prava IP adresa korisnika.
-
-### VAULT
-
-Zadana vrijedost: `Y`
-
-Omogućuje integraciju s Hashicorp Vaultom (preporučeno). Ako je postavljeno na `N`, podaci za prijavu se spremaju u bazu podataka (Redis).
-
-### VAULT_SERVER [R ako VAULT == Y]
-
-Zadana vrijednost: ništa
-
-HTTP(S) adresa Hashicorp Vault servera. Koristi se u daljnjim zahtjevima za spremanje, modificiranje i brisanje podataka za prijavu na servis e-Dnevnik.
-
-### VAULT_TOKEN_READ [R ako VAULT == Y]
-
-Zadana vrijednost: ništa
-
-Token za Hashicorp Vault server s dopuštenjem čitanja.
-
-### VAULT_TOKEN_WRITE [R ako VAULT == Y]
-
-Zadana vrijednost: ništa
-
-Token za Hashicorp Vault server s dopuštenjem kreiranja/pisanja i modificiranja.
-
-### FIREBASE
-
-Zadana vrijednost: `N`
-
-Omogućuje Firebase Cloud Messaging integraciju. Koristi se za slanje obavijesti o promjenama podataka.
-
-Ako je ova varijabla uključena, potrebno je dopuniti i FIREBASE_TOKEN, inače će se automatski isključiti.
-
-### FIREBASE_TOKEN [R ako FIREBASE == Y]
-
-Zadana vrijednost: ništa
-
-Token za Firebase Cloud Messaging.
-
-### DEV_ACCESS
-
-Zadana vrijednost: `N`
-
-Omogućuje pristup statistikama, popisima i zapisima na serveru te ograničenu kontrolu nad nekim korisnicima. Endpointovi koje ova varijabla kontrolira imaju prefix `/dev/` u zahtjevima i `dev_` u funkcijama.
-
-Ako je ova varijabla uključena, potrebno je dopuniti i DEV_USER i DEV_PASW, inače će se automatski isključiti.
-
-### DEV_USER [R ako DEV_ACCESS == Y]
-
-Zadana vrijednost: ništa
-
-Korisničko ime za dio dev sučelja koji podržava pristup pomoću preglednika.
-
-### DEV_PASW [R ako DEV_ACCESS == Y]
-
-Zadana vrijednost: ništa
-
-SHA256 hash lozinke za dio dev sučelja koji podržava pristup pomoću preglednika.
-
-### SERVER_NAME [R]
-
-Zadana vrijednost: `api.netrix.io`
-
-Hostname servera; koristi se u NGINX konfiguraciji (instrukcija `server_name`).
-
-### SSL
-
-Zadana vrijednost: `N`
-
-Omogućuje HTTPS konfiguraciju s podrškom za moderne klijente (ocjena A+ na ssllabs.com).
-
-Ako je ova varijabla uključena, potrebno je dopuniti i SSL_CERT i SSL_KEY te osigurati da su te datoteke dostupne i certifikati važeći za domenu navedenu pod SERVER_NAME.
-
-### SSL_CERT [R ako SSL == Y]
-
-Zadana vrijednost: ništa
-
-SSL certifikat.
-
-### SSL_KEY [R ako SSL == Y]
-
-Zadana vrijednost: ništa
-
-SSL private key.
-
-### ADMIN_NOTIFICATIONS
-
-Zadana vrijednost: `N`
-
-Omogućuje slanje obavijesti o kritičnim greškama pomoću Telegrama.
-
-Ako je ova varijabla uključena, potrebno je dopuniti i TELEGRAM_TOKEN i TELEGRAM_TARGET_UID.
-
-### TELEGRAM_TOKEN [R ako ADMIN_NOTIFICATIONS == Y]
-
-Zadana vrijednost: ništa
-
-Token za Telegram bota. Za više informacija o tome kako dobiti bot token provjerite [ovdje](https://telegram.org/blog/bot-revolution).
-
-### TELEGRAM_TARGET_UID [R ako ADMIN_NOTIFICATIONS == Y]
-
-Zadana vrijednost: ništa.
-
-ID korisnika kojem će se slati poruke. Moguće ga je saznati kontaktiranjem @IDBot porukom `/getid`.
+eDAP-API je potrebno konfigurirati prije korištenja, što je moguće pomoću varijabli u okruženju. Popis tih varijabli je dostupan [ovdje](https://github.com/btx3/Netrix/blob/master/edap/CONFIG.md) skupa s opisom čime koja varijabla upravlja.

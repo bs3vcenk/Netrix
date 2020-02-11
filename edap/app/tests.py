@@ -1,272 +1,151 @@
-"""Test suite for eDAP library"""
-import sys
-from timeit import default_timer as timer
-import edap
+import httpx, os, tempfile, subprocess, threading, redis, sys, json
+from time import sleep
+from hashlib import md5
 
-def to_ms(seconds: int) -> str:
-	"""Convert seconds to miliseconds"""
-	return str(round(seconds * 1000)) + ' ms'
+directory = tempfile.mkdtemp()
 
-def populate_data(obj):
-	"""
-		Fill in the 'data' part of the user dict. This will contain subjects, grades, etc.
+REMOTE = False
+REMOTE_URL = None	
 
-		First, get the class list (this also fills the class ID list for eDAP).
+def log(level: str, lstr: str):
+	print('[test] [%s] %s' % (level, lstr))
 
-		Second, get the list of tests for the first class, both current and full, and
-		compare them, assigning a "current" flag to each which will say if the test
-		has already been written or not.
+if "--remote" in sys.argv:
+	REMOTE = True
+	REMOTE_URL = sys.argv[sys.argv.index("--remote")+1]
+	log('INFO', 'Targeting remote server @ %s instead of locally' % REMOTE_URL)
 
-		Third, get the subjects for a class, and get the grades for each one. If there
-		is a concluded grade available, use it as the average, otherwise calculate an average.
-		Get the list of "additional notes" for each subject.
+username = os.environ.get('ED_USERNAME')
+password = os.environ.get('ED_PASSWORD')
+if not username or not password:
+	log('ERROR', 'No username or password specified! Use environment variables ED_USERNAME and ED_PASSWORD.')
+	sys.exit(1)
+token = md5(('%s:%s' % (username, password)).encode()).hexdigest()
 
-		Fourth, write this data into the "classes" key in the dict.
+def run_redis(datadir):
+	"""Start redis, meant to be run in the background"""
+	subprocess.check_output(['redis-server',
+	                         '--daemonize', 'no',
+	                         '--bind', '127.0.0.1',
+	                         '--appendonly', 'yes',
+	                         '--dir', datadir])
 
-		Fifth, get the user's personal info and write it into the "info" key in the dict.
-
-		Finally, return all the collected data.
-	"""
-	start_full = timer()
-	dataDict = {'classes':None, 'info':None}
-	try:
-		start = timer()
-		output = obj.getClasses()
-		end = timer()
-		print('==> getClasses() => %s' % to_ms(end - start))
-	except Exception as e:
-		print("Error getting classes: %s" % e)
-		sys.exit(1)
-
-	try:
-		start_fetch = timer()
-		tests_nowonly = obj.getTests(ID, alltests=False)
-		tests_all = obj.getTests(ID, alltests=True)
-		end_fetch = timer()
-		start_proc = timer()
-		testId = 0
-		for x in tests_all:
-			if x not in tests_nowonly:
-				x['current'] = False
-			else:
-				x['current'] = True
-			x['id'] = testId
-			testId += 1
-		output[0]['tests'] = tests_all
-		end_proc = timer()
-		print('==> getTests() [fetch only] => %s' % to_ms(end_fetch - start_fetch))
-		print('==> getTests() [processing] => %s' % to_ms(end_proc - start_proc))
-	except Exception as e:
-		print("Error getting tests for class: %s" % e)
-		output[0]['tests'] = None
-
-	try:
-		start = timer()
-		absences_overview = obj.getAbsenceOverview(ID)
-		absences_full = obj.getAbsenceList(ID)
-		output[0]['absences'] = {'overview':absences_overview, 'full':absences_full}
-		end = timer()
-		print('==> getAbsence*() => %s' % to_ms(end - start))
-	except Exception as e:
-		print("Error getting absences for class: %s" % e)
-		output[0]['absences'] = None
-
-	try:
-		start = timer()
-		output[0]['subjects'] = obj.getSubjects(ID)
-		end = timer()
-		print('==> getSubjects() => %s' % to_ms(end - start))
-	except Exception as e:
-		print("Error getting subjects for class: %s" % e)
-		output[0]['subjects'] = None
-	start = timer()
-	allSubjAverageGrades = []
-	for z in range(len(output[0]['subjects'])):
-		output[0]['subjects'][z]['id'] = z
-		try:
-			output[0]['subjects'][z]['grades'] = obj.getGrades(ID, z)
-			if len(output[0]['subjects'][z]['grades']) == 0:
-				output[0]['subjects'][z]['grades'] = None
-			isconcl, concluded = obj.getConcludedGrade(0, z)
-			if isconcl:
-				output[0]['subjects'][z]['average'] = concluded
-				allSubjAverageGrades.append(concluded)
-			elif output[0]['subjects'][z]['grades']:
-				lgrades = []
-				for i in output[0]['subjects'][z]['grades']:
-					lgrades.append(i['grade'])
-				output[0]['subjects'][z]['average'] = round(sum(lgrades)/len(lgrades), 2)
-				allSubjAverageGrades.append(round(sum(lgrades)/len(lgrades), 0))
-			else:
-				print('No grades for sID %s' % z)
-		except Exception as e:
-			print("Error getting grades for subject %s: %s" % (z, e))
-			output[0]['subjects'][z]['grades'] = None
-		try:
-			output[0]['subjects'][z]['notes'] = obj.getNotes(ID, z)
-			if len(output[0]['subjects'][z]['notes']) == 0:
-				output[0]['subjects'][z]['notes'] = None
-		except Exception as e:
-			print("Error getting notes for subject %s: %s" % (z, e))
-			output[0]['subjects'][z]['notes'] = None
-	output[0]['complete_avg'] = round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
-	end = timer()
-	print('==> grade, note & average fetch and processing => %s' % to_ms(end - start))
-	dataDict['classes'] = output
-	try:
-		start = timer()
-		dataDict['info'] = obj.getInfo(0)
-		end = timer()
-		print('==> getInfo() => %s' % to_ms(end - start))
-	except Exception as e:
-		print("Error getting info: %s" % (str(e)))
-	end_full = timer()
-	print('=======> populateData() simulation took: %s' % (to_ms(end_full - start_full)))
-
-def main():
-	"""Main function"""
-	full_start = timer()
-	total_processing_time = 0
-	print("= 1/10 => edap.__init__() => ", end='')
-	try:
-		start = timer()
-		student = edap.edap(
-			user=sys.argv[1],
-			pasw=sys.argv[2],
-			return_processing_time=True,
-			parser=PARSER)
-		end = timer()
-		print("SUCCEEDED [%s]" % (to_ms(end - start)))
-	except edap.FatalLogExit as e:
-		end = timer()
-		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
-		sys.exit(1)
-	print("= 2/10 => student.getClasses() => ", end='')
-	try:
-		start = timer()
-		_, x = student.getClasses()
-		end = timer()
-		total_processing_time += x
-		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
-	except edap.FatalLogExit as e:
-		end = timer()
-		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
-		sys.exit(1)
-	print("= 3/10 => student.getSubjects() => ", end='')
-	try:
-		start = timer()
-		_, x = student.getSubjects(ID)
-		end = timer()
-		total_processing_time += x
-		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
-	except edap.FatalLogExit as e:
-		end = timer()
-		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
-		sys.exit(1)
-	print("= 4/10 => student.getTests() => ", end='')
-	try:
-		start = timer()
-		_, x = student.getTests(ID, alltests=True)
-		end = timer()
-		total_processing_time += x
-		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
-	except edap.FatalLogExit as e:
-		end = timer()
-		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
-		sys.exit(1)
-	print("= 5/10 => student.getInfo() => ", end='')
-	try:
-		start = timer()
-		_, x = student.getInfo(ID)
-		end = timer()
-		total_processing_time += x
-		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
-	except edap.FatalLogExit as e:
-		end = timer()
-		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
-		sys.exit(1)
-	print("= 6/10 => student.getGrades() => ", end='')
-	try:
-		start = timer()
-		_, x = student.getGrades(ID, 0)
-		end = timer()
-		total_processing_time += x
-		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
-	except edap.FatalLogExit as e:
-		end = timer()
-		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
-		sys.exit(1)
-	print("= 7/10 => student.getNotes() => ", end='')
-	try:
-		start = timer()
-		_, x = student.getNotes(ID, 0)
-		end = timer()
-		total_processing_time += x
-		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
-	except edap.FatalLogExit as e:
-		end = timer()
-		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
-		sys.exit(1)
-	print("= 8/10 => student.getAbsenceOverview() => ", end='')
-	try:
-		start = timer()
-		_, x = student.getAbsenceOverview(ID)
-		end = timer()
-		total_processing_time += x
-		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
-	except edap.FatalLogExit as e:
-		end = timer()
-		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
-		sys.exit(1)
-	print("= 9/10 => student.getAbsenceList() => ", end='')
-	try:
-		start = timer()
-		_, x = student.getAbsenceList(ID)
-		end = timer()
-		total_processing_time += x
-		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
-	except edap.FatalLogExit as e:
-		end = timer()
-		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
-		sys.exit(1)
-	print("= 10/10 => student.getConcludedGrade() => ", end='')
-	try:
-		start = timer()
-		_, _, x = student.getConcludedGrade(ID, 0)
-		end = timer()
-		total_processing_time += x
-		print("SUCCEEDED [%s] [ex: %s]" % (to_ms(end - start), to_ms(x)))
-	except edap.FatalLogExit as e:
-		end = timer()
-		print("FAILED (%s) [%s]" % (e, to_ms(end - start)))
-		sys.exit(1)
-	full_end = timer()
-	print("=======> FINISHED TESTS IN %s" % to_ms(full_end - full_start))
-	print("=======> Total time spent processing data: %s" % to_ms(total_processing_time))
-	print("=======> student.dump_data() output:")
-	student.dump_data()
-
-if __name__ == "__main__":
-	ARGS = sys.argv[3:]
-	if "--parser" in ARGS:
-		PARSER = sys.argv[sys.argv.index('--parser')+1]
-		print('= conf => Using %s as parser' % PARSER)
+if not REMOTE:
+	# Start redis
+	redis_thread = threading.Thread(target=run_redis, args=(directory,))
+	redis_thread.start()
+	log('INFO', 'Started Redis in the background, waiting 2 seconds...')
+	sleep(2)
+	r = redis.Redis()
+	if r.ping():
+		log('INFO', 'Successfully established connection to Redis')
 	else:
-		PARSER = "lxml"
-		print('= conf => Using default parser lxml')
-	if "--type" in ARGS:
-		TYPE = sys.argv[sys.argv.index('--type')+1]
-		print('= conf => Testing with %s method' % TYPE)
-	else:
-		TYPE = 'bare'
-		print('= conf => Testing bare eDAP library')
-	if "--id" in ARGS:
-		ID = int(sys.argv[sys.argv.index('--id')+1])
-		print('= conf => Testing for subject ID %s' % ID)
-	else:
-		ID = 0
-		print('= conf => Testing default subject ID 0')
-	if TYPE == 'bare':
-		main()
-	elif TYPE == 'api':
-		populate_data(edap.edap(sys.argv[1], sys.argv[2]))
+		log('ERROR', 'Failed to connect to Redis')
+		sys.exit(1)
+
+def get_data():
+	return json.loads(r.get('token:%s' % token))
+
+if not REMOTE:
+	# Configure eDAP-API
+	os.environ["VAULT"] = "N"
+	os.environ["DATA_FOLDER"] = directory
+	from api import app
+
+try:
+	with httpx.Client(base_url='http://app/' if not REMOTE else REMOTE_URL, app=app if not REMOTE else None) as client:
+		### LOGIN
+		## LOGIN: Pre-fetch checks
+		log('TEST', 'login:bad_json')
+		request = client.post('/api/login', json={
+			'invalid': 'json'
+		})
+		assert request.status_code == 400, "Invalid JSON did not return 'Bad Request'"
+		log('TEST', 'login:null_value')
+		request = client.post('/api/login', json={
+			'username': None,
+			'password': None
+		})
+		assert request.status_code == 401, "Credentials with null value did not return 'Unauthorized'"
+		log('TEST', 'login:length_check')
+		request = client.post('/api/login', json={
+			'username': 'abc',
+			'password': 'def'
+		})
+		assert request.status_code == 401, "Sub-5-character credentials did not return 'Unauthorized'"
+		log('TEST', 'login:pattern_detection')
+		request_a = client.post('/api/login', json={
+			'username': 'ime.prezime@skolers.org',
+			'password': 'ovo_je_lozinka'
+		})
+		assert request_a.status_code == 401, "Username with @skolers.org did not return 'Unauthorized'"
+		request_b = client.post('/api/login', json={
+			'username': 'ime.prezime@gmail.com',
+			'password': 'ovo_je_lozinka'
+		})
+		assert request_b.status_code == 401, "Username with @gmail.com did not return 'Unauthorized'"
+		request_c = client.post('/api/login', json={
+			'username': '@ime.prezime',
+			'password': 'ovo_je_lozinka'
+		})
+		assert request_c.status_code == 401, "Username starting with @ did not return 'Unauthorized'"
+		## LOGIN: Login process
+		log('TEST', 'login:general')
+		request = client.post('/api/login', json={
+			'username': username,
+			'password': password
+		})
+		assert request.status_code == 200, "Login request was not successful"
+		## LOGIN: Response validity
+		log('TEST', 'login:token_validity')
+		_r = request.json()
+		assert 'token' in _r, "No 'token' field in response from login request"
+		assert _r['token'] == token, "Token in response is not equal to locally calculated token"
+		### ACCESS
+		## ACCESS: Token check
+		log('TEST', 'access:token')
+		request = client.get('/api/user/rANdOMtOKeN123456/classes')
+		assert request.status_code == 401, "Non-existent token access did not return 'Unauthorized'"
+		### DATA
+		## DATA: Save Firebase token
+		log('TEST', 'data:firebase')
+		request = client.post('/api/user/%s/firebase' % token, json={
+			'deviceToken': 'ovo_je_neki_firebase_token1234567890'
+		})
+		assert request.status_code == 200, "Token save was not successful"
+		if not REMOTE:
+			user_data = get_data()
+			assert user_data['firebase_device_token'] == 'ovo_je_neki_firebase_token1234567890', "Token was not saved to Redis"
+		## DATA: Classes
+		log('TEST', 'data:classes')
+		request = client.get('/api/user/%s/classes' % token)
+		assert request.status_code == 200, "Classes fetch was not successful"
+		_r = request.json()
+		assert 'classes' in _r, "No 'classes' field in response"
+		for i, class_obj in enumerate(_r['classes']):
+			assert 'class' in class_obj, "No 'class' field in class ID %s" % i
+			assert 'classmaster' in class_obj, "No 'classmaster' field in class ID %s" % i
+			assert 'school_city' in class_obj, "No 'school_city' field in class ID %s" % i
+			assert 'school_name' in class_obj, "No 'school_name' field in class ID %s" % i
+			assert 'year' in class_obj, "No 'year' field in class ID %s" % i
+		## DATA: Info
+		log('TEST', 'data:user_info')
+		request = client.get('/api/user/%s/classes/0/info' % token)
+		assert request.status_code == 200, "Info fetch was not successful"
+		_r = request.json()
+		assert 'birthdate' in _r, "No 'birthdate' field in info"
+		assert 'birthplace' in _r, "No 'birthplace' field in info"
+		assert 'name' in _r, "No 'name' field in info"
+		assert 'number' in _r, "No 'number' field in info"
+		assert isinstance(_r['number'], int), "'number' field in info is not an integer"
+		assert 'program' in _r, "No 'program' field in info"
+
+finally:
+	print()
+	log('INFO', 'TEST FINISHED')
+	if not REMOTE:
+		redis_info = r.info()
+		log('INFO', '[Redis] Total commands processed: %s' % redis_info['total_commands_processed'])
+		log('INFO', '[Redis] Peak used memory: %s' % redis_info['used_memory_peak_human'])
+		log('INFO', 'Shutting down Redis')
+		r.shutdown()

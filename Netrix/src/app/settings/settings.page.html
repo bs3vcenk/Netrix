@@ -11,31 +11,28 @@
 </ion-header>
 
 <ion-content>
-  <ion-list lines="full">
+  <ion-list>
     <!-- SEP: Analytics and ads -->
     <ion-list-header>
       <ion-label>{{ 'settings.analytics.header' | translate }}</ion-label>
     </ion-list-header>
 
-    <!-- SWITCH: Analytics -->
+    <!-- SWITCH: Error reporting -->
     <ion-item>
-      <ion-label>{{ 'settings.analytics.usage' | translate }}</ion-label>
-      <ion-toggle slot="end" [(ngModel)]="dataPreference" (ionChange)="updDeviceInfoPreference()"></ion-toggle>
+      <ion-label>{{ 'settings.analytics.errors' | translate }}</ion-label>
+      <ion-toggle slot="end" [(ngModel)]="errorReportPreference" (ionChange)="updErrorReportPreference()"></ion-toggle>
     </ion-item>
-    <!-- SWITCH (disabled): Advertisements -->
+    <!-- SWITCH: Advertisements -->
     <ion-item>
       <ion-label>{{ 'settings.analytics.ads' | translate }}</ion-label>
-      <ion-toggle slot="end" [(ngModel)]="adPreference" (ionChange)="updAdPreference()" disabled="true"></ion-toggle>
+      <ion-toggle slot="end" [(ngModel)]="adPreference" (ionChange)="updAdPreference()"></ion-toggle>
     </ion-item>
     <ion-item button routerLink="/privacy" routerDirection="forward" disabled="{{usingCache}}">
       <ion-label>{{ 'login.text.privacy' | translate }}</ion-label>
     </ion-item>
-    <!-- SWITCH (disabled): Error reporting -->
-    <!--<ion-item>
-      <ion-label>{{ 'settings.api.errreport' | translate }}</ion-label>
-      <ion-toggle slot="end" [(ngModel)]="errorPreference" (ionChange)="updErrorReportPreference()"></ion-toggle>
-    </ion-item>-->
+  </ion-list>
 
+  <ion-list>
     <!-- SEP: Notifications -->
     <ion-list-header>
       <ion-label>{{ 'settings.notifs.header' | translate }}</ion-label>
@@ -57,7 +54,14 @@
       <ion-label>{{ 'settings.notifs.time' | translate}}</ion-label>
       <ion-text class="ion-text-right">{{ testNotifTime }} {{ dayString }}</ion-text>
     </ion-item>
+    <!-- SWITCH: Also notify on day of test -->
+    <ion-item [@fadeInOut]>
+      <ion-label>{{ 'settings.notifs.onday' | translate }}</ion-label>
+      <ion-toggle slot="end" [(ngModel)]="onDayNotifications" (ionChange)="updOnDayNotificationsPreference()"></ion-toggle>
+    </ion-item>
+  </ion-list>
 
+  <ion-list>
     <ion-list-header>
       <ion-label>{{ 'settings.design.header' | translate }}</ion-label>
     </ion-list-header>
@@ -71,28 +75,42 @@
       <ion-label>{{ 'settings.design.force_hr' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="forceCroatianPreference" (ionChange)="updHRForcePreference()"></ion-toggle>
     </ion-item>-->
+  </ion-list>
 
-    <!-- SEP: Experimental -->
-    <ion-list-header *ngIf="developer">
-      <ion-label>Experimental</ion-label>
+  <ion-list *ngIf="developer">
+    <!-- SEP: Developer -->
+    <ion-list-header>
+      <ion-label>Developer</ion-label>
     </ion-list-header>
 
     <!-- Developer -->
     <!-- BUTTON: Reset notifications -->
-    <ion-item button (click)="resetNotif()" *ngIf="developer">
+    <ion-item button (click)="resetNotif()">
       <ion-label>Reset notifications</ion-label>
     </ion-item>
     <!-- BUTTON: Force language to hr -->
-    <ion-item button (click)="forceCroatian()" *ngIf="developer">
+    <ion-item button (click)="forceLang('hr')">
       <ion-label>Force switch to HR locale</ion-label>
     </ion-item>
+    <!-- BUTTON: Force language to en -->
+    <ion-item button (click)="forceLang('en')">
+      <ion-label>Force switch to EN locale</ion-label>
+    </ion-item>
+    <!-- BUTTON: Force language to en -->
+    <ion-item button (click)="forceLang('de')">
+      <ion-label>Force switch to DE locale</ion-label>
+    </ion-item>
     <!-- BUTTON: Invert usingCache setting -->
-    <ion-item button (click)="invertCacheIndicator()" *ngIf="developer">
+    <ion-item button (click)="invertCacheIndicator()">
       <ion-label>Invert usingCache setting</ion-label>
     </ion-item>
     <!-- BUTTON: Clear cache -->
-    <ion-item button (click)="clearCache()" *ngIf="developer">
+    <ion-item button (click)="clearCache()">
       <ion-label>Clear cache</ion-label>
+    </ion-item>
+    <!-- BUTTON: Disable advertisement banner -->
+    <ion-item button (click)="disableBanner()">
+      <ion-label>Hide banner ad</ion-label>
     </ion-item>
   </ion-list>
 
@@ -102,4 +120,11 @@
       <ion-label>{{ 'settings_page.text.logout' | translate }}</ion-label>
     </ion-item>
   </ion-list>
+
+  <!--<ion-list *ngIf="!developer">
+    <ion-item>
+      <ion-label>{{ 'settings.experimental.enable' | translate }}</ion-label>
+      <ion-toggle slot="end" [(ngModel)]="exp_enabled"></ion-toggle>
+    </ion-item>
+  </ion-list>-->
 </ion-content>

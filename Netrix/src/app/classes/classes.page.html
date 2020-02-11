@@ -1,8 +1,8 @@
 <ion-header>
   <ion-toolbar>
     <!-- Back button -->
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">{{ 'classes.close' | translate }}</ion-button>
     </ion-buttons>
     <ion-title>{{ 'classes.title' | translate }}</ion-title>
   </ion-toolbar>
@@ -11,15 +11,12 @@
 <ion-content>
   <ion-list lines="full">
     <ion-item *ngFor="let class of classes" (click)="switchClass(classes.indexOf(class))">
-      <ion-label>
-        <div id="classIdentifier">{{class.class}}</div>
-        <div id="classInfo">
-          <div stacked>{{class.year}}</div>
-          <div stacked>{{class.classmaster}}</div>
-          <div stacked class="ion-text-wrap">{{class.school_name}}</div>
-        </div>
+      <ion-note id="classIdentifier" color="dark">{{class.class}}</ion-note>
+      <ion-label id="classInfo">
+        <div>{{class.year}}</div>
+        <div>{{class.classmaster}}</div>
+        <div class="ion-text-wrap">{{class.school_name}}</div>
       </ion-label>
-      <!--<ion-icon item-right style="float:right;" name="checkmark" color="success" *ngIf="classes.indexOf(class) === currentClass"></ion-icon>-->
     </ion-item>
   </ion-list>
 </ion-content>
