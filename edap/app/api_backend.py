@@ -6,7 +6,7 @@ This module contains various functions which interact with the backend
 of the eDAP-API system.
 """
 
-import logging, redis, edap, requests, setproctitle, gc
+import logging, redis, edap, requests, setproctitle, gc, uuid
 from hashlib import md5 as _MD5HASH
 from hashlib import sha256 as _SHA256HASH
 from json import loads as _json_load
@@ -40,6 +40,9 @@ _fetcher_jobs = {}
 
 class NonExistentSetting(Exception):
 	"""Specified setting ID is non-existent."""
+
+class JobUnsuccessful(Exception):
+	"""Job failed"""
 
 def _get_month_start_timestamp(input_date: int) -> int:
 	return int(datetime.fromtimestamp(input_date).replace(hour=0, minute=0, day=1).timestamp())
@@ -170,6 +173,17 @@ def do_startup_checks():
 		if health['sealed']:
 			log.critical('Vault error - vault is sealed')
 			_exit(1)
+
+def fetcher_schedule_job(token):
+	credentials = get_credentials(token)
+	job_uuid = str(uuid.uuid4())
+	_fetcher_jobs[job_uuid] = {'type': 'fetch', 'data': credentials, 'server_data': {'scheduled': False, 'completed': False, 'result': None, 'success': None}}
+	job_completed = False
+	while not job_completed:
+		sleep(0.1)
+		job_completed = _fetcher_jobs[job_uuid]['server_data']['completed']
+	if not _fetcher_jobs[job_uuid]['server_data']['success']:
+		raise JobUnsuccessful
 
 def fetcher_backend_get_clients() -> list:
 	"""
@@ -562,8 +576,7 @@ def sync(token: str):
 			purge_token(token)
 			return
 	data = fData["data"] # Old data
-	credentials = get_credentials(token)
-	nData = populate_data(edap.edap(credentials["username"], credentials["password"])) # New data
+	nData = fetcher_schedule_job(token) # New data
 	diff = _profile_difference(data, nData)
 	if diff:
 		# Overwrite everything if new class
@@ -932,125 +945,6 @@ def fetch_new_class(token: str, class_id: int):
 			full_data['data']['classes'][class_id]
 		)
 		save_data(token, full_data)
-
-def populate_data(obj) -> dict:
-	"""
-		Call get_class_profile() to initialize the data object in
-		a newly-created profile.
-	"""
-	# TODO: Should probably be merged with `get_class_profile()`.
-	data_dict = {'classes':None}
-	try:
-		output = obj.getClasses()
-	except Exception as e:
-		log.error("Error getting classes: %s", e)
-		raise e
-
-	output[0] = get_class_profile(obj, 0, output[0])
-	data_dict['classes'] = output
-	return data_dict
-
-def get_class_profile(obj, class_id: int, class_obj) -> dict:
-	"""
-		Add/modify a list of classes from eDAP. `class_id` is the
-		class ID that will be "expanded" (add grades, exams, etc.)
-		and class_obj is the class object to which the data will
-		be assigned to.
-	"""
-	# TODO: Rewrite a lot of this and the invoking code, makes very little sense right now; handle exceptions properly.
-	try:
-		# Get a list of current tests and all tests
-		tests_nowonly = obj.getTests(class_id, alltests=False)
-		tests_all = obj.getTests(class_id, alltests=True)
-		# Init a testId var so we can assign an ID to the tests
-		testId = 0
-		for x in tests_all:
-			# Check if a test is present in the list of current tests
-			# and mark it as such (so we know which ones to show and
-			# which to ignore)
-			if x not in tests_nowonly:
-				x['current'] = False
-			else:
-				x['current'] = True
-			x['id'] = testId
-			testId += 1
-		# Create a new 'tests' item in the dictionary
-		class_obj['tests'] = tests_all
-	except Exception as e:
-		log.error("Error getting tests for class: %s", e)
-		class_obj['tests'] = None
-
-	try:
-		# Get an overview of absences (counters)
-		absences_overview = obj.getAbsenceOverview(class_id)
-		class_obj['absences'] = {'overview':absences_overview, 'full': []}
-	except Exception as e:
-		log.error("Error getting absence overview for class: %s", e)
-		class_obj['absences'] = {'overview': None, 'full': []}
-	try:
-		# If we have an overview, we can continue with making a full
-		# list of absences, sorted by day.
-		if class_obj['absences']['overview']:
-			absences_full = obj.getAbsenceList(class_id)
-			class_obj['absences']['full'] = absences_full
-	except Exception as e:
-		log.error("Error getting absence full list for class: %s", e)
-
-	try:
-		# Get a list of subjects
-		class_obj['subjects'] = obj.getSubjects(class_id)
-	except Exception as e:
-		log.error("Error getting subjects for class: %s", e)
-		class_obj['subjects'] = None
-	# Init a list of average grades for all subjects (for calculating
-	# the general average)
-	allSubjAverageGrades = []
-	for z in range(len(class_obj['subjects'])):
-		class_obj['subjects'][z]['id'] = z
-		try:
-			# Get a list of all grades
-			class_obj['subjects'][z]['grades'] = obj.getGrades(class_id, z)
-			# Check if we have a concluded grade
-			isconcl, concluded = obj.getConcludedGrade(0, z)
-			# Store the boolean for use in the UI
-			class_obj['subjects'][z]['concluded'] = isconcl
-			if isconcl:
-				# Skip calculating grade if it's already concluded
-				class_obj['subjects'][z]['average'] = concluded
-				allSubjAverageGrades.append(concluded)
-			elif class_obj['subjects'][z]['grades']:
-				# Otherwise do the standard calculating (sum(grades)/len(grades))
-				lgrades = []
-				for i in class_obj['subjects'][z]['grades']:
-					lgrades.append(i['grade'])
-				class_obj['subjects'][z]['average'] = _round(sum(lgrades)/len(lgrades), 2)
-				allSubjAverageGrades.append(_round(sum(lgrades)/len(lgrades), 0))
-			else:
-				log.debug('No grades for sID %s', z)
-		except Exception as e:
-			log.error("Error getting grades for subject %s: %s", z, e)
-			class_obj['subjects'][z]['grades'] = []
-		try:
-			# Get a list of notes
-			class_obj['subjects'][z]['notes'] = obj.getNotes(class_id, z)
-		except Exception as e:
-			log.error("Error getting notes for subject %s: %s", z, e)
-			class_obj['subjects'][z]['notes'] = []
-	try:
-		# Calculate the general average
-		class_obj['complete_avg'] = _round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
-	except ZeroDivisionError:
-		# Avoid division by zero/no grades
-		class_obj['complete_avg'] = 0
-	try:
-		# Finally, get user information
-		class_obj['info'] = obj.getInfo(0)
-	except Exception as e:
-		log.error("Error getting info: %s", str(e))
-		class_obj['info'] = None
-	# Mark it as full/expanded
-	class_obj['full'] = True
-	return class_obj
 
 def verify_dev_request(token: str) -> bool:
 	"""

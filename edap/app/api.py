@@ -45,7 +45,7 @@ def fetcher_verification(f):
 		if not token:
 			log.warning('FETCHER => No API token specified in request from %s', ip)
 			return make_response(jsonify({'error': 'E_FETCHER_NO_API_TOKEN'}), 401)
-		elif token != config['FETCHER_TOKEN']:
+		elif token != config.fetcher.token:
 			log.warning('FETCHER => Bad API token %s in request from %s', ip)
 			return make_response(jsonify({'error': 'E_FETCHER_BAD_TOKEN'}), 403)
 		return f(*args, **kwargs)
