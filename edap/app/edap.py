@@ -157,7 +157,8 @@ class edap:
 		try:
 			o = self.session.get(url)
 			o.raise_for_status()
-			return o.text
+			data = o.content.decode('utf-8')
+			return data
 		except (requests.exceptions.HTTPError, requests.exceptions.Timeout):
 			raise NetworkError(url)
 
@@ -610,11 +611,3 @@ class edap:
 		self.__edlog(0, "Decomposing tree")
 		soup.decompose()
 		return abslist2
-
-	def close(self):
-		# Test method
-		self.session.close()
-		self.class_ids = []
-		self.subject_ids = []
-		self.subject_cache = {}
-		self.absence_cache = {}
