@@ -610,3 +610,11 @@ class edap:
 		self.__edlog(0, "Decomposing tree")
 		soup.decompose()
 		return abslist2
+
+	def close(self):
+		# Test method
+		self.session.close()
+		self.class_ids = []
+		self.subject_ids = []
+		self.subject_cache = {}
+		self.absence_cache = {}

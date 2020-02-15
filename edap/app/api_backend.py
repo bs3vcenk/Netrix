@@ -1030,6 +1030,7 @@ def get_class_profile(obj, class_id: int, class_obj) -> dict:
 		class_obj['info'] = None
 	# Mark it as full/expanded
 	class_obj['full'] = True
+	obj.close()
 	return class_obj
 
 def verify_dev_request(token: str) -> bool:
