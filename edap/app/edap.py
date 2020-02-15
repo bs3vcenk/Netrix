@@ -155,9 +155,10 @@ class edap:
 			url - URL to fetch using self.session object
 		"""
 		try:
-			o = self.session.get(url)
-			o.raise_for_status()
-			data = o.content.decode('utf-8')
+			with self.session as session:
+				o = session.get(url)
+				o.raise_for_status()
+				data = o.content.decode('utf-8')
 			return data
 		except (requests.exceptions.HTTPError, requests.exceptions.Timeout):
 			raise NetworkError(url)
