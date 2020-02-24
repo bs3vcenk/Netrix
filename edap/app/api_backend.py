@@ -530,7 +530,7 @@ def sync_dev(data2, token: str):
 		save_data(token, o)
 		_formatAndSendNotification(token, diff)
 	else:
-		log.warning("No difference detected (??) This should not happen :P")
+		log.warning("No difference detected (??) This should not happen")
 
 def sync(token: str):
 	"""
@@ -557,8 +557,8 @@ def sync(token: str):
 			fData["data"]["classes"][0] = nData["classes"][0]
 		fData["new"] = diff
 		save_data(token, fData)
-		if not fData["settings"]["notif"]["disable"]:
-			_formatAndSendNotification(token, diff)
+		#if not fData["settings"]["notif"]["disable"]:
+		#	_formatAndSendNotification(token, diff)
 	# Free memory
 	gc.collect()
 
