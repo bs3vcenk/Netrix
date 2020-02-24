@@ -71,10 +71,11 @@ export class ApiService {
     private firebase: FirebaseX
   ) { }
 
-  async preCacheData() {
+  preCacheData() {
     this.plt.ready().then(() => {
-      this.classId.subscribe((activeClassId) => {
+      this.classId.subscribe(async (activeClassId) => {
         /* Execute all get functions */
+        await this.updateRemoteData();
         this.getClasses();
         this.getSubjects(activeClassId);
         this.getTests(activeClassId);
@@ -196,6 +197,16 @@ export class ApiService {
       await this.http.post(
         this.settings.apiServer + '/api/user/' + this.authServ.token + '/fetchclass',
         {class_id: classId}
+      ).toPromise();
+    } catch (e) {
+      this.handleErr(e);
+    }
+  }
+
+  async updateRemoteData() {
+    try {
+      await this.http.get(
+        this.settings.apiServer + '/api/user/' + this.authServ.token + '/update'
       ).toPromise();
     } catch (e) {
       this.handleErr(e);
