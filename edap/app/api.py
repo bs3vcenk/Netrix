@@ -16,7 +16,7 @@ app = Flask("EDAP-API")
 do_startup_checks()
 
 # Restore sync threads for all active tokens in DB
-#restore_syncs()
+restore_syncs()
 
 def check_auth(username, password):
 	"""
@@ -684,17 +684,6 @@ def get_subject(token, class_id, subject_id):
 	log.info("%s: Get subject data for class %s, subject %s", token, class_id, subject_id)
 	o = get_data(token)['data']['classes'][class_id]['subjects'][subject_id]
 	return make_response(jsonify(o), 200)
-
-@app.route('/api/user/<string:token>/update', methods=["GET"])
-def update_user_data(token):
-	"""
-		Sync user data.
-	"""
-	if not verify_request(token):
-		abort(401)
-	log.info("Updating data for %s", token)
-	diff = sync(token)
-	return jsonify({'status': 'ok'})
 
 @app.route('/api/stats', methods=["POST"])
 def log_stats():
