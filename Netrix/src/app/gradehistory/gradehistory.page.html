@@ -1,9 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>gradehistory</ion-title>
+    <!-- Back button -->
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">{{ 'gradehistory.close' | translate }}</ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'gradehistory.title' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <div id="spinner" *ngIf="!gradeHist"><ion-spinner></ion-spinner></div>
 </ion-content>

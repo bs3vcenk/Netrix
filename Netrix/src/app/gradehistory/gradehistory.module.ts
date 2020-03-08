@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { GradeHistoryPageRoutingModule } from './gradehistory-routing.module';
 
 import { GradeHistoryPage } from './gradehistory.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    GradeHistoryPageRoutingModule
+    GradeHistoryPageRoutingModule,
+    TranslateModule
   ],
   declarations: [GradeHistoryPage]
 })

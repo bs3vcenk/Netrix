@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-gradehistory',
@@ -7,9 +8,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GradeHistoryPage implements OnInit {
 
-  constructor() { }
+  gradeHist = null;
+
+  constructor(
+    private modalController: ModalController
+  ) { }
 
   ngOnInit() {
+  }
+
+  dismiss() {
+    this.modalController.dismiss();
   }
 
 }
