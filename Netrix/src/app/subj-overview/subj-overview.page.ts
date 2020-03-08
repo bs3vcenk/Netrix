@@ -22,6 +22,10 @@ export class SubjOverviewPage implements OnInit {
   tests = [];
   currentDate = Date.now();
 
+  dayShorthand = this.translate.instant('shorthand.day');
+  weekShorthand = this.translate.instant('shorthand.week');
+  monthShorthand = this.translate.instant('shorthand.month');
+
   constructor(
     private translate: TranslateService,
     private activatedRoute: ActivatedRoute,
