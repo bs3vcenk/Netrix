@@ -5,6 +5,7 @@ import { AdmobService } from '../services/admob.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { ModalController, ActionSheetController } from '@ionic/angular';
 import { ClassesPage } from '../classes/classes.page';
+import { GradeHistoryPage } from '../gradehistory/gradehistory.page';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 
@@ -81,6 +82,13 @@ export class Tab1Page implements OnInit {
   async showClassSelectionScreen() {
     const modal = await this.modalController.create({
       component: ClassesPage
+    });
+    return await modal.present();
+  }
+
+  async showGradeHistoryScreen() {
+    const modal = await this.modalController.create({
+      component: GradeHistoryPage
     });
     return await modal.present();
   }
