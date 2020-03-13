@@ -3,7 +3,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 import { ApiService } from '../services/api.service';
 import { AdmobService } from '../services/admob.service';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-import { ModalController, ActionSheetController } from '@ionic/angular';
+import { ModalController, ActionSheetController, AlertController } from '@ionic/angular';
 import { ClassesPage } from '../classes/classes.page';
 import { GradeHistoryPage } from '../gradehistory/gradehistory.page';
 import { TranslateService } from '@ngx-translate/core';
@@ -35,6 +35,7 @@ export class Tab1Page implements OnInit {
     private admobSvc: AdmobService,
     private firebase: FirebaseX,
     private modalController: ModalController,
+    private alertController: AlertController,
     private actionSheetControl: ActionSheetController,
     private translate: TranslateService,
     private router: Router
@@ -45,6 +46,10 @@ export class Tab1Page implements OnInit {
 
   ngOnInit() {
     this.admobSvc.showBanner();
+  }
+
+  ionViewDidEnter() {
+    this.presentShutdownMessage();
   }
 
   calculateRemainingTests() {
@@ -91,6 +96,15 @@ export class Tab1Page implements OnInit {
       component: GradeHistoryPage
     });
     return await modal.present();
+  }
+
+  async presentShutdownMessage() {
+    const alert = await this.alertController.create({
+      header: this.translate.instant('shutdown.header'),
+      message: this.translate.instant('shutdown.message'),
+      buttons: ['OK']
+    });
+    alert.present();
   }
 
   async showMoreOptions() {

@@ -180,5 +180,9 @@
   "gradehistory": {
     "title": "Povijest",
     "close": "Zatvori"
+  },
+  "shutdown": {
+    "header": "Netrix uskoro odlazi",
+    "message": "Netrix više neće nakon 20. ožujka biti dostupan. Aplikacija više neće primati obavijesti niti će moći prikazivati nove korisničke podatke kao ocjene, ispite itd."
   }
 }

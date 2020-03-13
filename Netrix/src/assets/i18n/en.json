@@ -180,5 +180,9 @@
   "gradehistory": {
     "title": "History",
     "close": "Close"
+  },
+  "shutdown": {
+    "header": "Netrix is going away",
+    "message": "Netrix will be shutting down its servers on the 20th of March. This means that the app will stop receiving notifications and will not be able to load any new user data (such as new grades or exams)."
   }
 }
