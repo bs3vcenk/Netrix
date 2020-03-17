@@ -2,3 +2,23 @@
     text-align: center;
     margin-top: 10px;
 }
+
+.mark {
+	font-weight: 700;
+	font-size: 32px;
+	float: left;
+	margin-left: 0px;
+	margin-right: 12px;
+	min-width: 20px !important;
+	text-align: center;
+}
+
+.date {
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: var(--ion-color-step-600);
+}
+
+.description {
+    display: flex;
+}

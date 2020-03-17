@@ -10,4 +10,21 @@
 
 <ion-content>
   <div id="spinner" *ngIf="!gradeHist"><ion-spinner></ion-spinner></div>
+  <ion-list lines="full" *ngIf="gradeHist">
+		<ion-item *ngFor="let grade of gradeHist">
+			<ion-label>
+				<div class="date">
+					{{convertToReadableDate(grade.date)}} &middot; {{ grade.subject_id }}
+				</div>
+				<!-- Grade, shown to the left -->
+				<div class="mark">
+					{{grade.grade}}
+				</div>
+				<!-- Note, shown to the right -->
+				<div class="description" class="ion-text-wrap">
+					{{grade.note}}
+				</div>
+			</ion-label>
+		</ion-item>
+	</ion-list>
 </ion-content>

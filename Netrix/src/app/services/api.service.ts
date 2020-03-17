@@ -277,6 +277,17 @@ export class ApiService {
     }
   }
 
+  async getGradeHistory(classId: number) {
+    /* Get history of grades */
+    let response: any;
+    let history;
+    response = await this.http.get(
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/history?type=grade'
+    ).toPromise();
+    history = response;
+    return history;
+  }
+
   async getUserInfo(classId: number) {
     /* Get information about user */
     let response: any;
