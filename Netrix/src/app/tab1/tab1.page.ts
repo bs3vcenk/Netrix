@@ -124,12 +124,6 @@ export class Tab1Page implements OnInit {
           }
         },
         {
-          text: this.translate.instant('tab1.more.users'),
-          handler: () => {
-            console.log('users');
-          }
-        },
-        {
           text: this.translate.instant('tab1.more.close'),
           role: 'cancel'
         }
