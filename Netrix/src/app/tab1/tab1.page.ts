@@ -49,7 +49,7 @@ export class Tab1Page implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.presentShutdownMessage();
+    // this.presentShutdownMessage();
   }
 
   calculateRemainingTests() {
