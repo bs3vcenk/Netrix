@@ -44,28 +44,6 @@
       </ion-label>
     </div>
   </ion-item>
-  <!-- "Your average is:" text at the top
-       Shows only when we have the complete average  -->
-  <!--<ion-item [@fadeInOut] *ngIf="fullAvg >= 0 && fullAvg !== null">
-    <ion-text id="preWholeAvgText" position="stacked">
-      {{ 'tab1.text.average' | translate }}
-    </ion-text>
-    <ion-label id="wholeAvgText" position="stacked" *ngIf="fullAvg !== 0">
-      {{ fullAvg }}
-    </ion-label>
-    <ion-label id="wholeAvgText" position="stacked" *ngIf="fullAvg === 0">
-      {{ 'tab1.text.no_grades' | translate }}
-    </ion-label>
-  </ion-item>-->
-  <!-- "Your average is:" skeleton object -->
-  <!--<ion-item *ngIf="fullAvg === null">
-    <ion-text id="preWholeAvgText" position="stacked" style="width: 30%">
-      <ion-skeleton-text animated style="width: 100%;line-height: 12px"></ion-skeleton-text>
-    </ion-text>
-    <ion-label id="wholeAvgText" position="stacked" style="width: 20%">
-      <ion-skeleton-text animated style="width: 100%;line-height: 38px"></ion-skeleton-text>
-    </ion-label>
-  </ion-item>-->
 
   <!-- List of subjects -->
   <ion-list lines="full" *ngIf="subjects">
@@ -82,7 +60,7 @@
       </ion-label>
       <!-- The average grade for this subject (shown to the right) -->
       <ion-text id="average" class="ion-text-right">
-        {{subject.average}}
+        {{ subject.average | number:'1.0-0' }}
       </ion-text>
     </ion-item>
   </ion-list>
