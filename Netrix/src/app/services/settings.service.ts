@@ -41,7 +41,7 @@ export class SettingsService {
       this.firebase.logMessage('SettingsService/readPrefs(): Crashlytics preference set to ' + dataPref);
       this.firebase.setCrashlyticsCollectionEnabled(dataPref);
       this.errorReportPreference = dataPref;
-    } else { // If it isn't stored, store it and set default (treu)
+    } else { // If it isn't stored, store it and set default (true)
       this.storage.set('error-report-preference', true);
       this.errorReportPreference = true;
       this.firebase.setCrashlyticsCollectionEnabled(true);
