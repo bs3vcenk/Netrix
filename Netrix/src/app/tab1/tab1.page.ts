@@ -48,10 +48,6 @@ export class Tab1Page implements OnInit {
     this.admobSvc.showBanner();
   }
 
-  ionViewDidEnter() {
-    // this.presentShutdownMessage();
-  }
-
   calculateRemainingTests() {
     const weekStart = this.apiSvc.getMonday(new Date().getTime());
     const weekID = Math.floor(weekStart.getTime() / (7 * 24 * 60 * 60 * 1000));
@@ -96,15 +92,6 @@ export class Tab1Page implements OnInit {
       component: GradeHistoryPage
     });
     return await modal.present();
-  }
-
-  async presentShutdownMessage() {
-    const alert = await this.alertController.create({
-      header: this.translate.instant('shutdown.header'),
-      message: this.translate.instant('shutdown.message'),
-      buttons: ['OK']
-    });
-    alert.present();
   }
 
   async showMoreOptions() {
