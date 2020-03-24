@@ -32,6 +32,7 @@ export class SettingsPage {
   errorPreference = null;
   adPreference = null;
   forceCroatianPreference = null;
+  onDayNotifications = null;
   testNotifTime = null;
   darkModePreference = null;
   usingCache = null;
@@ -57,6 +58,7 @@ export class SettingsPage {
     this.adPreference = this.settings.adPreference;
     this.forceCroatianPreference = this.settings.forceCroatianPreference;
     this.darkModePreference = this.settings.globalTheme === 'dark';
+    this.onDayNotifications = this.settings.onDayNotifications;
     this.usingCache = this.apiSvc.usingCachedContent;
     if (this.testNotifTime === 1) {
       this.dayString = this.timeSingular;
@@ -67,9 +69,9 @@ export class SettingsPage {
     this.authServ.logout();
   }
 
-  logout() {
+  async logout() {
     // Data collection alert
-    this.actionSheetControl.create({
+    const alert = await this.actionSheetControl.create({
       header: this.translate.instant('settings_page.alert.logout.content'),
       buttons: [
         {
@@ -84,29 +86,26 @@ export class SettingsPage {
           role: 'cancel'
         }
       ]
-    }).then(alert => {
-      // Show the alert
-      alert.present();
     });
+    alert.present();
   }
 
-  effectOnRestart() {
-    this.toastControl.create({
+  async effectOnRestart() {
+    const toast = await this.toastControl.create({
       message: this.translate.instant('settings_page.alert.effect_on_restart'),
       duration: 3000,
       color: 'dark'
-    }).then((toast) => {
-      toast.present();
     });
+    toast.present();
   }
 
-  updErrorReportPreference() {
+  async updErrorReportPreference() {
     if (this.errorReportPreference !== this.settings.errorReportPreference) {
       this.settings.setCrashReport(this.errorPreference);
     }
   }
 
-  updAdPreference() {
+  async updAdPreference() {
     if (this.adPreference !== this.settings.adPreference) {
       this.settings.changePreference('ad-preference', this.adPreference);
       this.settings.adPreference = this.adPreference;
@@ -114,7 +113,7 @@ export class SettingsPage {
     }
   }
 
-  updMainNotificationPreference() {
+  async updMainNotificationPreference() {
     if (this.notifPreference !== this.settings.notifPreference) {
       this.settings.changePreference('notif-preference', this.notifPreference);
       this.settings.notifPreference = this.notifPreference;
@@ -122,7 +121,7 @@ export class SettingsPage {
     }
   }
 
-  updDarkModePreference() {
+  async updDarkModePreference() {
     if (this.settings.globalTheme !== (this.darkModePreference ? 'dark' : 'light')) {
       this.settings.changePreference('global-theme', this.darkModePreference ? 'dark' : 'light');
       this.settings.globalTheme = this.darkModePreference ? 'dark' : 'light';
@@ -130,15 +129,15 @@ export class SettingsPage {
     }
   }
 
-  updHRForcePreference() {
-    if (this.forceCroatianPreference !== this.settings.forceCroatianPreference) {
-      this.settings.changePreference('force-croatian-preference', this.forceCroatianPreference);
-      this.settings.forceCroatianPreference = this.forceCroatianPreference;
-      this.effectOnRestart();
+  async updOnDayNotificationsPreference() {
+    if (this.settings.onDayNotifications !== this.onDayNotifications) {
+      this.settings.changePreference('on-test-notif-preference', this.onDayNotifications);
+      this.settings.onDayNotifications = this.onDayNotifications;
+      this.resetNotif();
     }
   }
 
-  resetNotif() {
+  async resetNotif() {
     this.notifSvc.disableAll();
   }
 
@@ -183,8 +182,8 @@ export class SettingsPage {
     picker.present();
   }
 
-  forceCroatian() {
-    this.translate.use('hr');
+  forceLang(lang: string) {
+    this.translate.use(lang);
   }
 
   invertCacheIndicator() {

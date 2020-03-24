@@ -37,6 +37,13 @@
       "classes": "Razredi",
       "no_grades": "Nema ocjena",
       "tests_remaining": "Preostalo testova ovaj tjedan"
+    },
+    "more": {
+      "header": "Izbornik",
+      "settings": "Postavke",
+      "classes": "Razredi",
+      "users": "Promjena računa",
+      "close": "Zatvori"
     }
   },
   "tab2": {
@@ -136,8 +143,9 @@
     "notifs": {
       "header": "Obavijesti",
       "management": "Kategorije obavijesti",
-      "time": "Obavjesti prije ispita",
-      "master": "Sve obavijesti"
+      "time": "Podsjetnik prije ispita",
+      "master": "Sve obavijesti",
+      "onday": "Obavijest na dan ispita"
     },
     "design": {
       "header": "Izgled",
@@ -168,5 +176,13 @@
     "day": "d",
     "week": "tj",
     "month": "m"
+  },
+  "gradehistory": {
+    "title": "Povijest",
+    "close": "Zatvori"
+  },
+  "shutdown": {
+    "header": "Netrix uskoro odlazi",
+    "message": "Netrix više neće biti dostupan nakon 2. travnja. Aplikacija više neće primati obavijesti niti će prikazivati ikakve nove korisničke podatke kao ocjene, ispite itd."
   }
 }

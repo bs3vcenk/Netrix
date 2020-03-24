@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Platform, Config } from '@ionic/angular';
+import { Platform, Config, AlertController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthenticationService } from './services/authentication.service';
 import { LanguageService } from './services/language.service';
@@ -30,7 +30,8 @@ export class AppComponent {
     private apiSvc: ApiService,
     private notifSvc: NotificationService,
     private splash: SplashScreen,
-    private firebase: FirebaseX
+    private firebase: FirebaseX,
+    private alertController: AlertController
   ) {
     this.initializeApp();
   }
@@ -52,6 +53,15 @@ export class AppComponent {
     if (val) {
       this.router.navigate(['error'], {replaceUrl: true});
     }
+  }
+
+  async presentShutdownMessage() {
+    const alert = await this.alertController.create({
+      header: this.translate.instant('shutdown.header'),
+      message: this.translate.instant('shutdown.message'),
+      buttons: ['OK']
+    });
+    alert.present();
   }
 
   initializeApp() {
@@ -90,6 +100,7 @@ export class AppComponent {
           this.apiSvc.preCacheData();
           /* Set up Firebase Cloud Messaging for notifications */
           this.notificationSetup(this.authenticationService.token);
+          this.presentShutdownMessage();
         } else {
           /* If the user is not logged in, direct to the login page */
           this.router.navigate(['login'], {replaceUrl: true});
