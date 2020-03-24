@@ -77,24 +77,20 @@ def graph_average(input_gradelist: list) -> list:
 		Return the history of a user's average by month. This is used to
 		construct the graph in the client.
 	"""
-	# TODO: Cleanup
 	# Sort the grade list so we can assume the first element is the oldest,
 	# and the last is the newest
 	sorted_input_list = sorted(input_gradelist, key=lambda k: k['date'])
 	grades_sorted_by_month = []
-	# List of month 
+	# List of months
 	months_to_scan = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6]
 	# Get lower limit for our grade range (oldest grade)
 	lower_month_limit = _get_month_start_timestamp(sorted_input_list[0]['date'])
 	# Get upper limit (newest grade)
 	upper_month_limit = int((datetime.fromtimestamp(sorted_input_list[-1]['date']) + relativedelta(months=1)).timestamp())
-	print('lower_month_limit: %s' % lower_month_limit)
-	print('upper_month_limit: %s' % upper_month_limit)
 	sclist = [datetime.fromtimestamp(lower_month_limit) + relativedelta(months=1)]
 	for _ in months_to_scan[1:]:
 		sclist.append(sclist[-1] + relativedelta(months=1))
 	for current_month in sclist:
-		print('current_month: %s (%s)' % (current_month.timestamp(), current_month.month))
 		if current_month.timestamp() > upper_month_limit:
 			break
 		# Filter grade list to include every grade between the oldest one and the last one
@@ -150,8 +146,9 @@ def do_startup_checks():
 	else:
 		log.info('Vault used for credential storage')
 		# Check Vault server scheme
-		if "https://" not in config.vault.server:
-			log.warning('Vault will not be accessed through HTTPS; this is only a problem if Vault is on a different server than localhost.')
+		if "https://" not in config.vault.server and ("localhost" not in config.vault.server or "127.0.0.1" not in config.vault.server or "::1" not in config.vault.server):
+			log.critical('Vault will not be accessed through HTTPS! This is an insecure and unsupported configuration; shutting down now.')
+			_exit(1)
 		# Check if we can reach Vault
 		try:
 			reqst = requests.get('%s/v1/sys/health' % config.vault.server)
@@ -541,12 +538,13 @@ def sync(token: str):
 	"""
 	log.debug("Syncing %s", token)
 	fData = get_data(token)
-	fb_token_info = get_firebase_info(fData['firebase_device_token'])
-	if not fb_token_info['status']:
-		# Inactive token, stop sync
-		log.warning('Inactive token %s detected, stopping sync', token)
-		purge_token(token)
-		return
+	if config.firebase.enabled:
+		fb_token_info = get_firebase_info(fData['firebase_device_token'])
+		if not fb_token_info['status']:
+			# Inactive token, stop sync
+			log.warning('Inactive token %s detected, stopping sync', token)
+			purge_token(token)
+			return
 	data = fData["data"] # Old data
 	credentials = get_credentials(token)
 	nData = populate_data(edap.edap(credentials["username"], credentials["password"])) # New data
@@ -1078,29 +1076,6 @@ def hash_password(inp: str) -> str:
 		Return the SHA256 hash of a string. Used for the /dev/ password.
 	"""
 	return _SHA256HASH(inp.encode()).hexdigest()
-
-def get_counter(counter_id: str) -> int:
-	"""
-		Get a value of a counter by its ID.
-	"""
-	val = _redis.get("counter:"+counter_id)
-	if val is None:
-		_redis.set("counter:"+counter_id, 0)
-		return 0
-	return int(val)
-
-def _set_counter(counter_id: str, value: int):
-	"""
-		Set a counter to an integer value.
-	"""
-	_redis.set("counter:"+counter_id, value)
-
-def update_counter(counter_id: str):
-	"""
-		Increment a counter by 1.
-	"""
-	val = get_counter(counter_id)
-	_set_counter(counter_id, val+1)
 
 def get_db_keys() -> int:
 	"""

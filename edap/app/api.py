@@ -119,7 +119,7 @@ def e401(_):
 		exist in the DB.
 	"""
 	log.warning('Nonexistent token/cID/sID')
-	return make_response(jsonify({'error':'E_TOKEN_NONEXISTENT'}), 401)
+	return make_response(jsonify({'error':'E_TOKEN_OR_CLASS_ID_OR_SUBJECT_ID_NONEXISTENT'}), 401)
 
 @app.errorhandler(400)
 def e400(_):
@@ -154,12 +154,8 @@ def e500(_):
 	"""
 	# Check if we need to send server error notifications
 	if config.error_notifications.enabled:
-		# If we do, get a stacktrace
-		exc = traceback.format_exc()
-		# Log error
-		log.critical('HTTP 500, sending notification')
 		# Send message
-		notify_error('HTTP 500 RESPONSE', 'generic', stacktrace=exc)
+		notify_error('HTTP 500 RESPONSE', 'generic')
 	else:
 		# If we don't, just log it
 		log.critical('HTTP 500 error!')
@@ -214,11 +210,27 @@ def dev_memory_usage():
 @dev_area
 def dev_db_optimize():
 	"""
-		DEV: Rewrite the AOF file.
+		DEV: Rewrite the AOF file. Can be supplied with argument 'heavy'
+		which will also delete any excess class IDs (non-zero).
 	"""
+	heavy_opt = request.args.get('heavy', type=bool)
 	pre_size = convert_size(get_db_size())
+	if heavy_opt:
+		for token in get_tokens():
+			tdata = get_data(token)
+			for i in tdata['data']['classes'][1:]:
+				try:
+					del i['subjects']
+					del i['tests']
+					del i['absences']
+					del i['info']
+					del i['full']
+					del i['complete_avg']
+				except KeyError:
+					pass
+			save_data(token, tdata)
 	optimize_db_aof()
-	sleep(1)
+	sleep(2)
 	post_size = convert_size(get_db_size())
 	return make_response(jsonify({
 		'size_prev': pre_size,
@@ -311,24 +323,6 @@ def dev_token_mgmt(token):
 		purge_token(token)
 		return {'status':'success'}
 
-@app.route('/dev/stats', methods=["GET"])
-@dev_area
-def dev_stats():
-	"""
-		DEV: Statistics report, shows full and cached logins along with failed
-		ones.
-	"""
-	return make_response(jsonify({
-		'success': {
-			'slow_logins': get_counter("logins:success:slow"),
-			'fast_logins': get_counter("logins:success:fast")
-		},
-		'fails': {
-			'wrong_pw': get_counter("logins:fail:credentials"),
-			'exceptions': get_counter("logins:fail:generic")
-		}
-	}), 200)
-
 @app.route('/dev/token', methods=["GET"])
 @dev_pw_area
 def dev_make_token():
@@ -418,14 +412,12 @@ def login():
 	"""
 	if not request.json or not 'username' in request.json or not 'password' in request.json:
 		log.error("Bad JSON")
-		update_counter("logins:fail:generic")
 		abort(400)
 	elif (request.json["username"] is None or
 	      request.json["password"] is None or
 	      len(request.json["username"]) < 4 or
 	      len(request.json["password"]) < 4):
 		log.error("Bad auth data")
-		update_counter("logins:fail:generic")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	dev_ip = request.remote_addr
 	username = request.json["username"].strip()
@@ -446,33 +438,27 @@ def login():
 	token = hash_string(username + ":" + password) # Create the token, this is an MD5 hash of username:password
 	if verify_request(token):
 		log.info("Returning cached data for %s", username)
-		update_counter("logins:success:fast")
 		return make_response(jsonify({'token':token}), 200)
 	log.debug("Starting login for %s", username)
 	try:
 		obj = edap.edap(username, password)
 	except edap.WrongCredentials:
 		log.warning("Failed logging %s in: invalid credentials", username)
-		update_counter("logins:fail:credentials")
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
 	except edap.ParseError as e:
 		log.error("Failed logging %s in: eDAP library error - ParseError: %s", username, e)
-		update_counter("logins:fail:generic")
 		notify_error('PARSE ERROR', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		abort(500)
 	except edap.InvalidResponse as e:
 		log.error("Failed logging %s in: eDAP library error - InvalidResponse: %s", username, e)
-		update_counter("logins:fail:generic")
 		notify_error('INVALID SERVER RESPONSE', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		abort(500)
 	except edap.NetworkError as e:
 		log.error("Failed logging %s in: eDAP library error - NetworkError: %s", username, e)
-		update_counter("logins:fail:generic")
 		notify_error('CONNECTION FAIL', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		abort(500)
 	except edap.ServerInMaintenance as e:
 		log.error("Failed logging %s in: upstream server maintenance in progress", username)
-		update_counter("logins:fail:generic")
 		notify_error('SERVER MAINTENANCE', 'login', additional_info={'Token': token, 'Username': username, 'IP': dev_ip})
 		return make_response(jsonify({'error':'E_UPSTREAM_MAINTENANCE'}), 500)
 	log.info("SLOW => SUCCESS => %s (%s)", username, token)
@@ -501,7 +487,6 @@ def login():
 	save_data(token, dataObj)
 	log.debug("Starting sync for %s", username)
 	start_sync(token)
-	update_counter("logins:success:slow")
 	return make_response(jsonify({'token':token}), 200)
 
 @app.route('/api/user/<string:token>/firebase', methods=["POST"])

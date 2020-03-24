@@ -37,6 +37,13 @@
       "classes": "Klassen",
       "no_grades": "Keine Noten",
       "tests_remaining": "Verbleibende Prüfungen diese Woche"
+    },
+    "more": {
+      "header": "Menü",
+      "settings": "Einstellungen",
+      "classes": "Klassen",
+      "users": "Konto wechseln",
+      "close": "Schließen"
     }
   },
   "tab2": {
@@ -136,8 +143,9 @@
     "notifs": {
       "header": "Benachrichtigungen",
       "management": "Benachrichtigungskategorien",
-      "time": "Vor Prüfung benachrichtigen",
-      "master": "Alle Benachrichtigungen"
+      "time": "Vor Prüfung erinnern",
+      "master": "Alle Benachrichtigungen",
+      "onday": "Benachrichtigung am Tag der Prüfung"
     },
     "design": {
       "header": "Design",
@@ -168,5 +176,13 @@
     "day": "T",
     "week": "W",
     "month": "M"
+  },
+  "gradehistory": {
+    "title": "Verlauf",
+    "close": "Schließen"
+  },
+  "shutdown": {
+    "header": "Netrix geht weg",
+    "message": "Netrix wird nach dem 2. April nicht mehr verfügbar sein. Die App wird keine Benachrichtigungen mehr erhalten und keine neuen Benutzerdaten (wie neue Noten oder Prüfungen) mehr laden können."
   }
 }

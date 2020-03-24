@@ -9,7 +9,8 @@ const routes: Routes = [
   { path: 'notif-settings', loadChildren: () => import('./notif-settings/notif-settings.module').then(m => m.NotifSettingsPageModule) },
   { path: 'error', loadChildren: () => import('./error/error.module').then(m => m.ErrorPageModule) },
   { path: 'settings', loadChildren: () => import('./settings/settings.module').then(m => m.SettingsPageModule) },
-  { path: 'classes', loadChildren: './classes/classes.module#ClassesPageModule' }
+  { path: 'classes', loadChildren: './classes/classes.module#ClassesPageModule' },
+  { path: 'gradehistory', loadChildren: () => import('./gradehistory/gradehistory.module').then(m => m.GradeHistoryPageModule) }
 ];
 @NgModule({
   imports: [

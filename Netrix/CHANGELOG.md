@@ -1,3 +1,15 @@
+## 1.9.14 (2020-03-22)
+Ovo je zadnja verzija aplikacije Netrix za e-Dnevnik. Održavanje je postalo
+vrlo naporno i skupo te sam zbog toga odlučio zasad prekinuti razvoj ove
+aplikacije. U međuvremenu razvijam bolju verziju aplikacije, no ne mogu
+točno reći kada će postati dostupna svima.
+
+API server će se isključiti 2. travnja, nakon čega aplikacija više neće primati
+obavijesti, a otvaranjem će se prikazivati zadnje dostupni predmeti, ocjene,
+bilješke, ispiti i drugo. Obavijesti za ispite će i dalje raditi, ali sa starim
+podacima, što znači da bilo kakve promjene u rasporedu ispita neće zakazati nove
+obavijesti.
+
 ## 1.9.13 (2020-01-28)
 * **NOVO**: Opcija za kontroliranje izvještaja o rušenju aplikacije
 * **FIX**: Obavijesti o ispitima "za null dana"
