@@ -1,3 +1,8 @@
+## 1.9.15 (2020-04-17)
+* **FIX**: Opcija obavijesti na dan ispita uklonjena u prod buildovima
+* **PROMJENA**: Font promjenjen u Inter
+* **PROMJENA**: Ažurirani libraryji
+
 ## 1.9.14 (2020-03-22)
 Ovo je zadnja verzija aplikacije Netrix za e-Dnevnik. Održavanje je postalo
 vrlo naporno i skupo te sam zbog toga odlučio zasad prekinuti razvoj ove

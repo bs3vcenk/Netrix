@@ -14,13 +14,15 @@ export class AdmobService {
     private storage: Storage
   ) {
     /* Check if the user wants to see ads */
-    this.storage.get('ad-preference').then(res => {
+    /*this.storage.get('ad-preference').then(res => {
       if (res != null) {
         this.adPreference = res;
       } else {
         this.adPreference = true;
       }
-    });
+    });*/
+    // Ignore ad preference for now
+    this.adPreference = true;
   }
 
   showBanner() {
