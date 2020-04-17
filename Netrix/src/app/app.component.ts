@@ -100,7 +100,7 @@ export class AppComponent {
           this.apiSvc.preCacheData();
           /* Set up Firebase Cloud Messaging for notifications */
           this.notificationSetup(this.authenticationService.token);
-          this.presentShutdownMessage();
+          // this.presentShutdownMessage();
         } else {
           /* If the user is not logged in, direct to the login page */
           this.router.navigate(['login'], {replaceUrl: true});
