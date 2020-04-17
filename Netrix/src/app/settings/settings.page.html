@@ -55,7 +55,7 @@
       <ion-text class="ion-text-right">{{ testNotifTime }} {{ dayString }}</ion-text>
     </ion-item>
     <!-- SWITCH: Also notify on day of test -->
-    <ion-item [@fadeInOut]>
+    <ion-item [@fadeInOut] *ngIf="developer">
       <ion-label>{{ 'settings.notifs.onday' | translate }}</ion-label>
       <ion-toggle slot="end" [(ngModel)]="onDayNotifications" (ionChange)="updOnDayNotificationsPreference()"></ion-toggle>
     </ion-item>
