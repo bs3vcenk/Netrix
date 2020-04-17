@@ -6,28 +6,28 @@
 // and used throughout the application.
 
 @font-face {
-  font-family: 'San Francisco';
-  src: url(../fonts/SF-Pro-Display-Regular.otf);
+  font-family: 'Inter';
+  src: url(../fonts/Inter-Regular.woff2);
   font-weight: 400;
   unicode-range: U+000-5FF;
 }
 
 @font-face {
-  font-family: 'San Francisco';
-  src: url(../fonts/SF-Pro-Display-Bold.otf);
+  font-family: 'Inter';
+  src: url(../fonts/Inter-Bold.woff2);
   font-weight: 600;
   unicode-range: U+000-5FF;
 }
 
 @font-face {
-  font-family: 'San Francisco';
-  src: url(../fonts/SF-Pro-Display-Heavy.otf);
-  font-weight: 700;
+  font-family: 'Inter';
+  src: url(../fonts/Inter-Black.woff2);
+  font-weight: 900;
   unicode-range: U+000-5FF;
 }
 
 * {
-  font-family: 'San Francisco';
+  font-family: 'Inter';
 }
 
 ion-title, h1 {
@@ -48,7 +48,7 @@ ion-card-title {
 }
 
 ion-label, ion-text {
-  font-family: 'San Francisco' !important;
+  font-family: 'Inter' !important;
 }
 
 #intext p, h3, li {
