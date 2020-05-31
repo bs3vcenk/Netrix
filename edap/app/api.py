@@ -621,7 +621,7 @@ def get_history(token, class_id):
 		grade_list = []
 		for subject in subjs:
 			for grade in subject['grades']:
-				grade['subject_id'] = subject['id']
+				grade['subject'] = subject['name']
 				grade_list.append(grade)
 		if output_format == 'complete':
 			# Sort by date, newest first, output everything
