@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { IonRouterOutlet } from '@ionic/angular';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ApiService } from '../services/api.service';
 import { AdmobService } from '../services/admob.service';
@@ -39,8 +38,7 @@ export class Tab1Page implements OnInit {
     private alertController: AlertController,
     private actionSheetControl: ActionSheetController,
     private translate: TranslateService,
-    private router: Router,
-    private routerOutlet: IonRouterOutlet,
+    private router: Router
   ) {
     this.initInBg();
     this.calculateRemainingTests();
@@ -84,18 +82,14 @@ export class Tab1Page implements OnInit {
 
   async showClassSelectionScreen() {
     const modal = await this.modalController.create({
-      component: ClassesPage,
-      swipeToClose: true,
-      presentingElement: this.routerOutlet.nativeEl
+      component: ClassesPage
     });
     return await modal.present();
   }
 
   async showGradeHistoryScreen() {
     const modal = await this.modalController.create({
-      component: GradeHistoryPage,
-      swipeToClose: true,
-      presentingElement: this.routerOutlet.nativeEl
+      component: GradeHistoryPage
     });
     return await modal.present();
   }
