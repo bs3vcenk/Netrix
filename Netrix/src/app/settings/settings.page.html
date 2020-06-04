@@ -1,9 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <!-- Back button -->
-    <ion-buttons slot="start">
-  	  <ion-back-button></ion-back-button>
-  	</ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">{{ 'settings_page.close' | translate }}</ion-button>
+    </ion-buttons>
     <ion-title>
       {{ 'settings_page.title' | translate }}
     </ion-title>

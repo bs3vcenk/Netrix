@@ -94,7 +94,8 @@
         }
       },
       "effect_on_restart": "Diese Änderung wird nach einem Neustart der Anwendung wirksam."
-    }
+    },
+    "close": "Schließen"
   },
   "overview": {
     "title": "Übersicht",

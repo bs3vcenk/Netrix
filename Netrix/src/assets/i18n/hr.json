@@ -94,7 +94,8 @@
         }
       },
       "effect_on_restart": "Ova promjena će stupiti na snagu tek nakon ponovnog pokretanja aplikacije."
-    }
+    },
+    "close": "Zatvori"
   },
   "overview": {
     "title": "Pregled",

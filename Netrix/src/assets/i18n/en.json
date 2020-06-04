@@ -94,7 +94,8 @@
         }
       },
       "effect_on_restart": "This change will go into effect after you restart the application."
-    }
+    },
+    "close": "Close"
   },
   "overview": {
     "title": "Overview",

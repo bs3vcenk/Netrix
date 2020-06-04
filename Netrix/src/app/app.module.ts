@@ -19,6 +19,7 @@ import { AdmobService } from './services/admob.service';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { ClassesPageModule } from './classes/classes.module';
 import { GradeHistoryPageModule } from './gradehistory/gradehistory.module';
+import { SettingsPageModule } from './settings/settings.module';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
@@ -46,7 +47,8 @@ export function createTranslateLoader(http: HttpClient) {
     }),
     HttpClientModule,
     ClassesPageModule,
-    GradeHistoryPageModule
+    GradeHistoryPageModule,
+    SettingsPageModule
   ],
   providers: [
     StatusBar,

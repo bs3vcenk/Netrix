@@ -8,6 +8,7 @@ import { ClassesPage } from '../classes/classes.page';
 import { GradeHistoryPage } from '../gradehistory/gradehistory.page';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
+import { SettingsPage } from '../settings/settings.page';
 
 @Component({
   selector: 'app-tab1',
@@ -94,6 +95,13 @@ export class Tab1Page implements OnInit {
     return await modal.present();
   }
 
+  async showSettingsScreen() {
+    const modal = await this.modalController.create({
+      component: SettingsPage
+    });
+    return await modal.present();
+  }
+
   async showMoreOptions() {
     const actionSheet = await this.actionSheetControl.create({
       header: this.translate.instant('tab1.more.header'),
@@ -101,7 +109,7 @@ export class Tab1Page implements OnInit {
         {
           text: this.translate.instant('tab1.more.settings'),
           handler: () => {
-            this.router.navigate(['settings']);
+            this.showSettingsScreen();
           }
         },
         {
