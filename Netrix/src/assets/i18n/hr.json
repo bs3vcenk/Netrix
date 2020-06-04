@@ -180,7 +180,8 @@
   },
   "gradehistory": {
     "title": "Povijest",
-    "close": "Zatvori"
+    "close": "Zatvori",
+    "total_grades": "Ukupan broj ocjena"
   },
   "shutdown": {
     "header": "Netrix uskoro odlazi",

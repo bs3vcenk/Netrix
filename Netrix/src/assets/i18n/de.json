@@ -180,7 +180,8 @@
   },
   "gradehistory": {
     "title": "Verlauf",
-    "close": "Schließen"
+    "close": "Schließen",
+    "total_grades": "Gesamtzahl der Noten"
   },
   "shutdown": {
     "header": "Netrix geht weg",

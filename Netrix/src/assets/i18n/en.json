@@ -180,7 +180,8 @@
   },
   "gradehistory": {
     "title": "History",
-    "close": "Close"
+    "close": "Close",
+    "total_grades": "Total amount of grades"
   },
   "shutdown": {
     "header": "Netrix is going away",
