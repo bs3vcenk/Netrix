@@ -102,9 +102,9 @@ def graph_average(input_gradelist: list) -> list:
 			grades_sorted_by_month.append({'month': current_month.month - 1, 'grades': {}})
 		# Iterate over grades in the filtered list
 		for grade in glist:
-			if str(grade['subject_id']) not in grades_sorted_by_month[-1]['grades']:
-				grades_sorted_by_month[-1]['grades'][str(grade['subject_id'])] = []
-			grades_sorted_by_month[-1]['grades'][str(grade['subject_id'])].append(grade)
+			if grade['subject'] not in grades_sorted_by_month[-1]['grades']:
+				grades_sorted_by_month[-1]['grades'][grade['subject']] = []
+			grades_sorted_by_month[-1]['grades'][grade['subject']].append(grade)
 	# Initialize the variable we'll return
 	returnable = []
 	# Calculate averages for each of the subjects, then calculate the overall
