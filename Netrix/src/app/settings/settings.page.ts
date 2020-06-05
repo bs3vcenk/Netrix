@@ -66,7 +66,7 @@ export class SettingsPage {
     }
   }
 
-  private dismiss() {
+  dismiss() {
     this.modalController.dismiss();
   }
 
