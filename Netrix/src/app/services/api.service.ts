@@ -277,6 +277,17 @@ export class ApiService {
     }
   }
 
+  async getGradeHistoryGraph(classId: number) {
+    /* Get history of grades, used for formatting the graph */
+    let response: any;
+    let history;
+    response = await this.http.get(
+      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/history?type=grade&output=graph'
+    ).toPromise();
+    history = response;
+    return history;
+  }
+
   async getGradeHistory(classId: number) {
     /* Get history of grades */
     let response: any;
