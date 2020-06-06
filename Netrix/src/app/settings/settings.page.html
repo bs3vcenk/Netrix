@@ -115,9 +115,12 @@
   </ion-list>
 
 	<ion-list>
+    <ion-list-header>
+      <ion-label>{{ 'settings.account.header' | translate }}</ion-label>
+    </ion-list-header>
     <!-- BUTTON: Log out -->
     <ion-item button (click)="logout()" lines="full">
-      <ion-label>{{ 'settings_page.text.logout' | translate }}</ion-label>
+      <ion-label>{{ 'settings.account.logout' | translate }}</ion-label>
     </ion-item>
   </ion-list>
 
