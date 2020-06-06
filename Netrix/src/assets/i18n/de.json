@@ -70,7 +70,8 @@
       "exams": "Prüfungen",
       "average": "Durchschnitt",
       "change": "Änderung",
-      "history": "Notendurchschnitt im Laufe der Zeit"
+      "history": "Notendurchschnitt im Laufe der Zeit",
+      "grades": "Verteilung der Noten"
     }
   },
   "settings_page": {

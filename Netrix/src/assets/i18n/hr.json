@@ -70,7 +70,8 @@
       "exams": "Ispiti",
       "average": "Prosjek",
       "change": "Promjena",
-      "history": "Prosjek kroz vrijeme"
+      "history": "Prosjek kroz vrijeme",
+      "grades": "Raspodjela ocjena"
     }
   },
   "settings_page": {

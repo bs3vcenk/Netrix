@@ -70,7 +70,8 @@
       "exams": "Exams",
       "average": "Average",
       "change": "Change",
-      "history": "Average over time"
+      "history": "Average over time",
+      "grades": "Distribution of grades"
     }
   },
   "settings_page": {
