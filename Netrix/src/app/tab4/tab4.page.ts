@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Chart } from 'chart.js';
+import 'chartjs-plugin-datalabels';
 import { ApiService } from '../services/api.service';
 
 /* School year starts in September */
@@ -12,14 +13,8 @@ const SCHOOL_MONTH_ORDER = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8];
 })
 export class Tab4Page implements OnInit {
 
-  // This will be used as a reference to how the data will look like when fetched from
-  // the server.
-  exampleGraphResponse: Array<any> = JSON.parse(
-    '[{"average":3.87,"month":1},{"average":3.8,"month":2},{"average":3.8,"month":3},{"average":3.73,"month":4},{"average":3.87,"month":5},{"average":4.0,"month":6},{"average":4.2,"month":9},{"average":3.6,"month":10},{"average":3.87,"month":11}]'
-  );
-  exampleGradeHistoryResponse: Array<any> = JSON.parse(
-    '[{"date":1560376800,"grade":4,"note":"Klima  - manje greske","subject_id":7},{"date":1560376800,"grade":5,"note":"Povezivanje gradiva","subject_id":7},{"date":1560290400,"grade":1,"note":"voc/ nema rje\u010dnik","subject_id":3},{"date":1560290400,"grade":5,"note":"U\u010denik ponekad sudjeluje prilikom obrade postavljaju\u0107i proaktivna pitanja. Ima razvijeno matemati\u010dko i logi\u010dko razmi\u0161ljanje ali zbog manjka samostalnog rada ostvaruje rezultate ispod svojih mogu\u0107nosti. Uz sistemati\u010dni i kontinuirani samostalni rad, sl. nastavne godine bi mogao bez problema ostvariti puno bolji uspjeh.","subject_id":8},{"date":1560204000,"grade":5,"note":"Zu Hause","subject_id":2},{"date":1560204000,"grade":4,"note":"Servi dominique/ odre\u0111uje strukt re\u010d,pogre\u0161ke u nekim tvorb.","subject_id":3},{"date":1560204000,"grade":4,"note":"komparac pridjeva,acrior dolor, habeo 2- pregled glag oblika/ usvojio gram kateg,pogre\u0161ke u nekim slu\u017eb.","subject_id":3},{"date":1560204000,"grade":5,"note":"Koncerti 2. polugodi\u0161te","subject_id":4},{"date":1560117600,"grade":5,"note":"Objektsatz","subject_id":2},{"date":1559858400,"grade":5,"note":"Osvrt","subject_id":5},{"date":1559772000,"grade":5,"note":"Projektni zadatak Ban Josip Jela\u010di\u0107  HTML, CSS, Trello - timski rad i kreativno rje\u0161avanje problema","subject_id":12},{"date":1559599200,"grade":3,"note":"Klima - povrsno","subject_id":7},{"date":1559599200,"grade":4,"note":"Povezivanje gradiva","subject_id":7},{"date":1559512800,"grade":5,"note":"- prosudbene vje\u0161tine","subject_id":14},{"date":1559512800,"grade":5,"note":"- eti\u010dki kriteriji \u010dovjekova pona\u0161anja","subject_id":14},{"date":1559253600,"grade":5,"note":"Vje\u017eba redovito","subject_id":13},{"date":1559080800,"grade":5,"note":"Karta","subject_id":7}]'
-  );
+  private averageHistoryData: Array<any>;
+  private gradeHistoryData: Array<any>;
 
   // Chart configuration
   @ViewChild('gradeHistoryGraph', {static: true}) gradeHistoryGraph: ElementRef;
@@ -41,19 +36,35 @@ export class Tab4Page implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.createGradeHistoryChart();
-    this.createGradeAmountChart();
-    this.api.loadingFinishedSubj.subscribe(() => {
-      this.formatGraphResponse();
-      this.formatGradeCountResponse();
-      this.setupAverage();
+    Chart.defaults.global.defaultFontFamily = 'Inter';
+    this.fetchData().then(() => {
+      this.api.loadingFinishedSubj.subscribe(() => {
+        this.formatGraphResponse();
+        this.formatGradeCountResponse();
+        this.setupAverage();
+      });
+      this.createGradeHistoryChart();
+      this.createGradeAmountChart();
     });
+  }
+
+  private async fetchData() {
+    this.averageHistoryData = await this.api.getGradeHistoryGraph(0);
+    console.log('Tab4Page/fetchData(): averageHistoryData');
+    this.gradeHistoryData = await this.api.getGradeHistory(0);
+    console.log('Tab4Page/fetchData(): gradeHistoryData');
   }
 
   /* Format server graph response into separate labels and dataset arrays */
   private formatGraphResponse() {
     // Sorting from https://stackoverflow.com/a/16221350
-    const orderedList = this.exampleGraphResponse.sort((a, b) => {
+    /* TODO: TEMP FIX */
+    this.averageHistoryData.forEach((value, index) => {
+      if (value.month === 0) {
+        this.averageHistoryData[index].month = 12;
+      }
+    });
+    const orderedList = this.averageHistoryData.sort((a, b) => {
       return SCHOOL_MONTH_ORDER.indexOf(a.month) - SCHOOL_MONTH_ORDER.indexOf(b.month);
     });
     orderedList.forEach((gObject) => {
@@ -64,7 +75,7 @@ export class Tab4Page implements OnInit {
 
   private formatGradeCountResponse() {
     const dataDict = {};
-    this.exampleGradeHistoryResponse.forEach((gObject) => {
+    this.gradeHistoryData.forEach((gObject) => {
       if (!dataDict[gObject.grade.toString()]) {
         dataDict[gObject.grade.toString()] = 1;
       } else {
@@ -120,6 +131,17 @@ export class Tab4Page implements OnInit {
               display: false,
             }
           }]
+        },
+        plugins: {
+          datalabels: {
+            borderRadius: 4,
+            color: 'white',
+            font: {
+              weight: 700,
+              family: 'Inter',
+              size: 15
+            },
+          }
         }
       }
     });
@@ -139,12 +161,8 @@ export class Tab4Page implements OnInit {
           {
             fill: true,
             data: this.chartDataset,
-            borderColor: gradientStroke,
-            pointBorderColor: gradientStroke,
-            pointBackgroundColor: gradientStroke,
-            pointHoverBackgroundColor: gradientStroke,
-            pointHoverBorderColor: gradientStroke,
-            backgroundColor: gradientStroke,
+            borderColor: '#428cff',
+            backgroundColor: '#428cff',
             pointRadius: 0
           }
         ]
@@ -172,6 +190,24 @@ export class Tab4Page implements OnInit {
               maxTicksLimit: 6
             },
           }]
+        },
+        layout: {
+          padding: {
+            top: 20,
+            left: 18,
+            right: 18,
+          }
+        },
+        plugins: {
+          datalabels: {
+            backgroundColor: gradientStroke,
+            borderRadius: 2,
+            color: 'white',
+            font: {
+              weight: 'bold',
+              family: 'Inter'
+            },
+          }
         }
       }
     });
