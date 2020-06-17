@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PickerController, ToastController, ActionSheetController } from '@ionic/angular';
+import { PickerController, ToastController, ActionSheetController, ModalController } from '@ionic/angular';
 import { AuthenticationService } from '../services/authentication.service';
 import { SettingsService } from '../services/settings.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
@@ -49,7 +49,8 @@ export class SettingsPage {
     private actionSheetControl: ActionSheetController,
     private toastControl: ToastController,
     private notifSvc: NotificationService,
-    private admobSvc: AdmobService
+    private admobSvc: AdmobService,
+    private modalController: ModalController
   ) {
     this.errorReportPreference = this.settings.errorReportPreference;
     // this.errorPreference = this.settings.errorPreference;
@@ -63,6 +64,10 @@ export class SettingsPage {
     if (this.testNotifTime === 1) {
       this.dayString = this.timeSingular;
     }
+  }
+
+  dismiss() {
+    this.modalController.dismiss();
   }
 
   _logout() {

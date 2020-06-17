@@ -70,7 +70,8 @@
       "exams": "Prüfungen",
       "average": "Durchschnitt",
       "change": "Änderung",
-      "history": "Notendurchschnitt im Laufe der Zeit"
+      "history": "Notendurchschnitt im Laufe der Zeit",
+      "grades": "Verteilung der Noten"
     }
   },
   "settings_page": {
@@ -94,7 +95,8 @@
         }
       },
       "effect_on_restart": "Diese Änderung wird nach einem Neustart der Anwendung wirksam."
-    }
+    },
+    "close": "Schließen"
   },
   "overview": {
     "title": "Übersicht",
@@ -179,7 +181,8 @@
   },
   "gradehistory": {
     "title": "Verlauf",
-    "close": "Schließen"
+    "close": "Schließen",
+    "total_grades": "Gesamtzahl der Noten"
   },
   "shutdown": {
     "header": "Netrix geht weg",

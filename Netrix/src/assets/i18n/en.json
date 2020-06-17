@@ -70,7 +70,8 @@
       "exams": "Exams",
       "average": "Average",
       "change": "Change",
-      "history": "Average over time"
+      "history": "Average over time",
+      "grades": "Distribution of grades"
     }
   },
   "settings_page": {
@@ -94,7 +95,8 @@
         }
       },
       "effect_on_restart": "This change will go into effect after you restart the application."
-    }
+    },
+    "close": "Close"
   },
   "overview": {
     "title": "Overview",
@@ -179,7 +181,8 @@
   },
   "gradehistory": {
     "title": "History",
-    "close": "Close"
+    "close": "Close",
+    "total_grades": "Total amount of grades"
   },
   "shutdown": {
     "header": "Netrix is going away",

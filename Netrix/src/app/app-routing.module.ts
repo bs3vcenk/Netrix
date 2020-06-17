@@ -8,9 +8,9 @@ const routes: Routes = [
   { path: 'privacy', loadChildren: () => import('./privacy/privacy.module').then(m => m.PrivacyPageModule) },
   { path: 'notif-settings', loadChildren: () => import('./notif-settings/notif-settings.module').then(m => m.NotifSettingsPageModule) },
   { path: 'error', loadChildren: () => import('./error/error.module').then(m => m.ErrorPageModule) },
-  { path: 'settings', loadChildren: () => import('./settings/settings.module').then(m => m.SettingsPageModule) },
+  { path: 'settings', loadChildren: './settings/settings.module#SettingsPageModule' },
   { path: 'classes', loadChildren: './classes/classes.module#ClassesPageModule' },
-  { path: 'gradehistory', loadChildren: () => import('./gradehistory/gradehistory.module').then(m => m.GradeHistoryPageModule) }
+  { path: 'gradehistory', loadChildren: './gradehistory/gradehistory.module#GradeHistoryPageModule' }
 ];
 @NgModule({
   imports: [

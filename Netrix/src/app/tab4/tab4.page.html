@@ -11,9 +11,20 @@
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>{{ 'tab4.cards.exams' | translate }}</ion-card-subtitle>
-            <ion-list lines="full">
-              <ion-item>ispit 1</ion-item>
-              <ion-item>ispit 2</ion-item>
+            <ion-list *ngIf="tests">
+              <ion-item *ngFor="let testObj of tests">
+                <ion-label>
+                  <!-- Test name -->
+                  <h2 id="testName" class="ion-text-wrap">{{ testObj.test }}</h2>
+                  <!-- Test date -->
+                  <h3 id="testDate">{{ convertToReadableDate(testObj.date) }}</h3>
+                  <!-- School subject for which the test is for -->
+                  <ion-note id="testSubject">{{ testObj.subject }}</ion-note>
+                </ion-label>
+                <ion-note id="remaining" *ngIf="testObj.current" slot="end" color="dark">
+                  {{ calculateRemainingTime(testObj.date) }}
+                </ion-note>
+              </ion-item>
             </ion-list>
           </ion-card-header>
         </ion-card>
@@ -33,7 +44,7 @@
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>{{ 'tab4.cards.change' | translate }}</ion-card-subtitle>
-            <ion-card-title>+0.43</ion-card-title>
+            <ion-card-title>N/A</ion-card-title>
           </ion-card-header>
         </ion-card>
       </ion-col> <!-- AVERAGE CHANGE END -->

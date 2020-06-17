@@ -70,7 +70,8 @@
       "exams": "Ispiti",
       "average": "Prosjek",
       "change": "Promjena",
-      "history": "Prosjek kroz vrijeme"
+      "history": "Prosjek kroz vrijeme",
+      "grades": "Raspodjela ocjena"
     }
   },
   "settings_page": {
@@ -94,7 +95,8 @@
         }
       },
       "effect_on_restart": "Ova promjena će stupiti na snagu tek nakon ponovnog pokretanja aplikacije."
-    }
+    },
+    "close": "Zatvori"
   },
   "overview": {
     "title": "Pregled",
@@ -179,7 +181,8 @@
   },
   "gradehistory": {
     "title": "Povijest",
-    "close": "Zatvori"
+    "close": "Zatvori",
+    "total_grades": "Ukupan broj ocjena"
   },
   "shutdown": {
     "header": "Netrix uskoro odlazi",

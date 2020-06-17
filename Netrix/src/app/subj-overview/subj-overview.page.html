@@ -4,20 +4,20 @@
   		<ion-buttons slot="start">
   			<ion-back-button></ion-back-button>
   		</ion-buttons>
-		<ion-title>{{ 'overview.title' | translate }}</ion-title>
+		<ion-title>{{ subject.name }}</ion-title>
 	</ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content fullscreen="true">
 	<!-- HEADER -->
-	<ion-text>
-		<!-- Subject name -->
-		<h1>{{subject.name}}</h1>
-	</ion-text>
-	<ion-text>
-		<!-- Full list of subject professors -->
+	<ion-header collapse="condense">
+		<ion-toolbar>
+			<ion-title size="large" class="ion-text-wrap">{{ subject.name }}</ion-title>
+		</ion-toolbar>
+	</ion-header>
+	<!--<ion-text>
 		<h2 id="profList">{{subject.professors}}</h2>
-	</ion-text>
+	</ion-text>-->
 
 	<!-- SUB-HEADER -->
 	<!-- List containing 1 item -->
