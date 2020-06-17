@@ -718,9 +718,7 @@ def _sync(token: str):
 		val = randint(config.sync.min_delay, config.sync.max_delay)
 		log.debug("Waiting %i s for %s", val, token)
 		sleep(val)
-		thr = Thread(target=sync, args=(token,))
-		thr.start()
-		thr.join()
+		sync(token)
 	log.info('Sync thread %s ending', token)
 
 def _get_var(varname: str, _bool: bool = False, default=None):
