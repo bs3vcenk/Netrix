@@ -1,3 +1,6 @@
+## 1.9.16 (2020-06-17)
+* **PROMJENA**: Novi API server
+
 ## 1.9.15 (2020-04-17)
 * **FIX**: Opcija obavijesti na dan ispita uklonjena u prod buildovima
 * **PROMJENA**: Font promjenjen u Inter
