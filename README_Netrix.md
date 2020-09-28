@@ -112,7 +112,7 @@ Potrebno je pokrenuti ovo:
 
 ```bash
 npm i # Instalira lokalne dependencye
-npm i -g cordova cordova-res ionic native-run # Instalira CLI alate
+npm i -g cordova cordova-res @ionic/cli native-run # Instalira CLI alate
 ```
 
 ## Konfiguracija aplikacije
