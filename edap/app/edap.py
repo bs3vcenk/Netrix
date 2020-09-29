@@ -203,36 +203,34 @@ class edap:
 		"""
 		self.__edlog(1, "Listing classes for [{%s}]" % self.user)
 		self.__edlog(0, "Getting class selection HTML")
-		response = self.__fetch("%s/razredi/odabir" % self.edurl)
+		response = self.__fetch("%s/class" % self.edurl)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		classlist_preformat = soup.find_all("a", class_="class-wrap")
+		classlist_preformat = soup.find_all("div", class_="class-menu-vertical")
 		self.__edlog(0, "Populating class list")
 		classlist = []
+		ident = 0
 		for i in classlist_preformat:
-			try:
-				x = i.find("div", class_="class").get_text("\n").split("\n")
-			except AttributeError as e:
-				raise ParseError(e)
-			# x[0] -> class number and letter
-			# x[1] -> school year
-			# x[2] -> institution name, city
-			# x[3] -> classmaster
-			y = x[2].split(", ")
-			# y[0] -> institution name
-			# y[1] -> institution city
+			#print(i)
+			id_list = i.find('div', class_='class').find_all('span')
+			class_id = id_list[0].text # e.g. 3.e
+			class_year = id_list[1].text # e.g. 20/21
+			school_name = i.find('div', class_='school-name').text.strip()
+			link = i.find('a', class_='school').get('href')
+			self.class_ids.append(link)
 			classlist.append({
-				"class":x[0],
-				"year":x[1].replace("Školska godina ", ""),
-				"school_name":y[0],
-				"school_city":y[1],
-				"classmaster":x[3].replace("Razrednik: ", "")
+				'class_id': class_id,
+				'class_year': class_year,
+				'school_name': school_name,
+				'id': ident
 			})
-			self.class_ids.append(i["href"].replace("/pregled/predmeti/", ""))
-		self.__edlog(1, "Completed with %s classes found" % len(classlist))
-		self.__edlog(0, "Decomposing tree")
-		soup.decompose()
+			ident += 1
 		return classlist
+
+	def switchActiveClass(self, class_id):
+		self.__verify(class_id)
+		self.__fetch('%s%s' % (self.edurl, self.class_ids[class_id]))
+		self.subject_ids = []
 
 	def getSubjects(self, class_id: int = 0) -> List[dict]:
 		"""
@@ -346,7 +344,7 @@ class edap:
 		if not self.subject_ids[subject_id] in self.subject_cache:
 			self.__edlog(1, "Fetching subject %s from server" % subject_id)
 			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
-			print(response)
+			#print(response)
 			self.subject_cache[self.subject_ids[subject_id]] = response
 		else:
 			self.__edlog(1, "Fetching subject %s from cache" % subject_id)
@@ -363,7 +361,7 @@ class edap:
 		for grade_object in x:
 			y = grade_object.find_all('div', class_="flex-row")
 			#print(y)
-			grades.append({'note': y[0], 'date': _format_to_date(y[1]), 'grade': y[2]})
+			grades.append({'note': y[0].text.strip(), 'date': _format_to_date(y[1].text.strip()), 'grade': y[2].text.strip()})
 		return grades
 		"""
 		# Get text from all elements and reassign the original element
