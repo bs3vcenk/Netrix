@@ -32,7 +32,7 @@ class InvalidClassID(eDAPError):
 class InvalidSubjectID(eDAPError):
 	"""Non-existent subject ID"""
 
-EDAP_VERSION = "H1"
+EDAP_VERSION = "2.0"
 __version__ = EDAP_VERSION
 
 def _format_to_date(preformat_string: str, date_format: str = "%d.%m.%Y.") -> int:
@@ -55,7 +55,7 @@ class edap:
 	             pasw: str,
 	             parser: str = "lxml",
 	             edurl: str = "https://ocjene.skole.hr",
-	             ua: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0 (https://netrix.io)",
+	             ua: str = "Mozilla/5.0 eDAP/%s" % EDAP_VERSION,
 	             debug: bool = False,
 	             loglevel: int = 1,
 	             hidepriv: bool = True,
@@ -95,11 +95,12 @@ class edap:
 			self.session.headers.update(headers)
 		self.__edlog(0, "Sending initial request to obtain CSRF")
 		try:
-			r = self.session.get("%s/pocetna/prijava" % self.edurl)
+			r = self.session.get("%s/login" % self.edurl)
 			r.raise_for_status()
-			self.csrf = self.session.cookies["csrf_cookie"]
+			# Get CSRF
+			self.csrf = self.__getcsrf(r.text)
 		except (requests.exceptions.HTTPError, requests.exceptions.Timeout):
-			raise NetworkError("%s/pocetna/prijava" % self.edurl)
+			raise NetworkError("%s/login" % self.edurl)
 		except KeyError:
 			if "u nadogradnji" in r.text:
 				raise ServerInMaintenance
@@ -107,8 +108,8 @@ class edap:
 		self.__edlog(1, "Got CSRF: [{%s}]" % self.csrf)
 		self.__edlog(1, "Trying to authenticate %s" % self.user)
 		try:
-			r = self.session.post("%s/pocetna/posalji/" % self.edurl,
-			                      data={"csrf_token": self.csrf, "user_login": user, "user_password": pasw})
+			r = self.session.post("%s/login" % self.edurl,
+			                      data={"csrf_token": self.csrf, "username": user, "password": pasw})
 			r.raise_for_status()
 			if ("Krivo korisničko ime i/ili lozinka." in r.text or
 			    "Potrebno je upisati korisničko ime i lozinku." in r.text or
@@ -118,6 +119,14 @@ class edap:
 		except (requests.exceptions.HTTPError, requests.exceptions.Timeout):
 			raise NetworkError("%s/pocetna/posalji" % self.edurl)
 		self.__edlog(1, "Authentication successful!")
+
+	def __getcsrf(self, html) -> str:
+		soup = BeautifulSoup(html, self.parser)
+		inputs = soup.find_all('input')
+		for i in inputs:
+			if i.get('name') == 'csrf_token':
+				self.__edlog(1, 'Found correct input tag')
+				return i.get('value')
 
 	def __edlog(self, loglevel: int, logs: str):
 		"""
@@ -225,7 +234,7 @@ class edap:
 		soup.decompose()
 		return classlist
 
-	def getSubjects(self, class_id: int) -> List[dict]:
+	def getSubjects(self, class_id: int = 0) -> List[dict]:
 		"""
 			Return list of subjects and professors for class ID "class_id"
 
@@ -234,12 +243,26 @@ class edap:
 
 			RETURNS: list of subjects
 		"""
-		self.__verify(class_id)
-		self.__edlog(1, "Getting subject list for class id %s (remote ID [{%s}])" % (class_id, self.class_ids[class_id]))
-		response = self.__fetch("%s/pregled/predmeti/%s" % (self.edurl, self.class_ids[class_id]))
+		#self.__verify(class_id)
+		#self.__edlog(1, "Getting subject list for class id %s (remote ID [{%s}])" % (class_id, self.class_ids[class_id]))
+		response = self.__fetch("%s/course" % self.edurl)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		subjectlist_preformat = soup.find("div", id="courses").find_all("a")
+		subjectlist_preformat = soup.find("div", class_="content").find_all("a")
+		subjects = []
+		ident = 0
+		for i in subjectlist_preformat:
+			subject_data = i.find_all("span")
+			subject_name = subject_data[0].text
+			subject_professor = subject_data[1].text.strip()
+			link = i.get('href')
+			self.subject_ids.append(link)
+			subjects.append({'subject': subject_name, 'professor': subject_professor, 'id': ident})
+			ident += 1
+			#print(subject_name, subject_professor, link)
+		soup.decompose()
+		return subjects
+		"""
 		self.__edlog(0, "Populating subject list")
 		subjinfo = []
 		for i in subjectlist_preformat:
@@ -260,8 +283,9 @@ class edap:
 		self.__edlog(0, "Decomposing tree")
 		soup.decompose()
 		return subjinfo
+		"""
 
-	def getTests(self, class_id: int, alltests: bool = False) -> List[dict]:
+	def getTests(self, class_id: int = 0, alltests: bool = False) -> List[dict]:
 		"""
 			Return list of tests
 
@@ -271,21 +295,29 @@ class edap:
 
 			RETURNS: list of tests, formatted as {subject, test name, date (Unix timestamp)}
 		"""
-		self.__verify(class_id)
-		self.__edlog(1, "Getting test list for class id %s (corresponding to actual ID [{%s}])" % (class_id, self.class_ids[class_id]))
-		if alltests:
-			self.__edlog(1, "Full test list requested")
-			addon = "/all"
-		else:
-			addon = ""
-		response = self.__fetch("%s/pregled/ispiti/%s" % (self.edurl, str(self.class_ids[class_id]) + addon))
+		#self.__verify(class_id)
+		#self.__edlog(1, "Getting test list for class id %s (corresponding to actual ID [{%s}])" % (class_id, self.class_ids[class_id]))
+		#if alltests:
+		#	self.__edlog(1, "Full test list requested")
+		#	addon = "/all"
+		#else:
+		#	addon = ""
+		response = self.__fetch("%s/exam" % self.edurl)
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
 		try:
-			x = soup.find('table').find_all('td')
+			x = soup.find('div', class_='content').find_all('div', class_='row')
+			#print(x)
 		except AttributeError:
 			self.__edlog(1, "No tests remaining found")
 			return []
+		exams = []
+		for exam_object in x:
+			y = exam_object.find_all('div', class_="flex-row")
+			#print(y)
+			exams.append({'subject': y[0].text.strip(), 'exam': y[1].text.strip(), 'date': y[2].text.strip()})
+		return exams
+		"""
 		self.__edlog(1, "Formatting table into list")
 		for i, item in enumerate(x):
 			x[i] = item.getText()
@@ -297,8 +329,9 @@ class edap:
 		self.__edlog(0, "Decomposing tree")
 		soup.decompose()
 		return final_returnable
+		"""
 
-	def getGrades(self, class_id: int, subject_id: int) -> List[dict]:
+	def getGrades(self, subject_id: int) -> List[dict]:
 		"""
 			Return grade list (dict, values "date", "note" and "grade") for a subject_id
 
@@ -308,23 +341,31 @@ class edap:
 
 			RETURNS: list of grades, formatted {date, note, grade}
 		"""
-		self.__verify(class_id, subject_id)
-		self.__edlog(0, "Getting grade list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
+		#self.__verify(class_id, subject_id)
+		#self.__edlog(0, "Getting grade list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		if not self.subject_ids[subject_id] in self.subject_cache:
 			self.__edlog(1, "Fetching subject %s from server" % subject_id)
 			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
+			print(response)
 			self.subject_cache[self.subject_ids[subject_id]] = response
 		else:
 			self.__edlog(1, "Fetching subject %s from cache" % subject_id)
 			response = self.subject_cache[self.subject_ids[subject_id]]
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		grade_table = soup.find("table", id="grade_notes")
+		grade_table = soup.find("div", class_="notes-table")
 		if not grade_table:
 			self.__edlog(1, "No grades found for this subject")
 			return []
 		# Find all table elements
-		x = grade_table.find_all("td")
+		x = grade_table.find_all("div", class_='row')
+		grades = []
+		for grade_object in x:
+			y = grade_object.find_all('div', class_="flex-row")
+			#print(y)
+			grades.append({'note': y[0], 'date': _format_to_date(y[1]), 'grade': y[2]})
+		return grades
+		"""
 		# Get text from all elements and reassign the original element
 		for i, item in enumerate(x):
 			x[i] = item.getText().strip()
@@ -343,6 +384,7 @@ class edap:
 		self.__edlog(0, "Decomposing tree")
 		soup.decompose()
 		return final_returnable
+		"""
 
 	def getNotes(self, class_id: int, subject_id: int) -> List[dict]:
 		"""
