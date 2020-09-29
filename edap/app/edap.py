@@ -329,7 +329,7 @@ class edap:
 		return final_returnable
 		"""
 
-	def getGrades(self, subject_id: int) -> List[dict]:
+	def getGrades(self, subject_id: int) -> (List[dict], List[dict]):
 		"""
 			Return grade list (dict, values "date", "note" and "grade") for a subject_id
 
@@ -358,81 +358,20 @@ class edap:
 		# Find all table elements
 		x = grade_table.find_all("div", class_='row')
 		grades = []
+		notes = []
 		for grade_object in x:
 			y = grade_object.find_all('div', class_="flex-row")
 			#print(y)
-			grades.append({'note': y[0].text.strip(), 'date': _format_to_date(y[1].text.strip()), 'grade': y[2].text.strip()})
-		return grades
-		"""
-		# Get text from all elements and reassign the original element
-		for i, item in enumerate(x):
-			x[i] = item.getText().strip()
-		# We have three elements that describe a grade: date, note and numerical grade
-		# These elements should be in the same position:
-		# 	1 => date DD.MM.YYYY.
-		# 	2 => note
-		# 	3 => num. grade
-		# So what we need to do is turn it into a usable format -
-		# First split the full list of elements into "chunks" of 3 elements
-		grades_unfiltered = [x[i:i+3] for i in range(0, len(x), 3)] # Every three items get grouped into a list
-		# Then assign elements to a dict (still assuming the above order is correct) (date
-		# needs to be converted to UNIX)
-		# Then add that dict to a list (we can do this in one line)
-		final_returnable = [{"date": _format_to_date(y[0]), "note":y[1], "grade":int(y[2])} for y in grades_unfiltered]
-		self.__edlog(0, "Decomposing tree")
-		soup.decompose()
-		return final_returnable
-		"""
+			grade = y[2].text.strip()
+			date = _format_to_date(y[1].text.strip())
+			note = y[0].text.strip()
+			if not grade:
+				notes.append({'note': note, 'date': date})
+			else:
+				grades.append({'note': note, 'date': date, 'grade': int(grade)})
+		return grades, notes
 
-	def getNotes(self, class_id: int, subject_id: int) -> List[dict]:
-		"""
-			Return note list (dict, values "date", "note") for a subject_id
-
-			== ARGUMENTS
-			class_id - Class ID to narrow down subject selection
-			subject_id - Subject ID to get notes for
-
-			RETURNS: list of grades, formatted {date, note}
-		"""
-		self.__verify(class_id, subject_id)
-		self.__edlog(0, "Getting note list for subject id %s, class id %s (remote IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
-		if not self.subject_ids[subject_id] in self.subject_cache:
-			self.__edlog(1, "Fetching subject %s from server" % subject_id)
-			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
-			self.subject_cache[self.subject_ids[subject_id]] = response
-		else:
-			self.__edlog(1, "Fetching subject %s from cache" % subject_id)
-			response = self.subject_cache[self.subject_ids[subject_id]]
-		self.__edlog(0, "Initializing BeautifulSoup with response")
-		soup = BeautifulSoup(response, self.parser)
-		note_table = soup.find("table", id="notes")
-		# This might not be needed since the note table might be shown
-		# for every subject (unlike the grade table)
-		if not note_table:
-			self.__edlog(1, "No notes found for this subject")
-			return []
-		# Find all table elements
-		x = note_table.find_all("td")
-		# Get text from all elements and reassign the original element
-		for i, item in enumerate(x):
-			x[i] = item.getText().strip()
-		# Instead of three, notes have only two elements that describe them:
-		# date and note content
-		# So we just group them into chunks of two, assuming this order:
-		# 	1 => date DD.MM.YYYY.
-		# 	2 => note content
-		notes_unfiltered = [x[i:i+2] for i in range(0, len(x), 2)] # Every two items get grouped into a list
-		# This is the more likely "notes empty"-check to occur
-		if notes_unfiltered[0][0] == "Nema ostalih bilježaka":
-			self.__edlog(1, "No notes found for this subject")
-			return []
-		# Do the dict assignment and date conversion in one line
-		final_returnable = [{"date": _format_to_date(y[0]), "note":y[1]} for y in notes_unfiltered]
-		self.__edlog(0, "Decomposing tree")
-		soup.decompose()
-		return final_returnable
-
-	def getConcludedGrade(self, class_id: int, subject_id: int):
+	def getConcludedGrade(self, subject_id: int):
 		"""
 			Return whether there is a concluded grade, and if there is one, return it.
 
@@ -442,8 +381,8 @@ class edap:
 
 			RETURNS: boolean indicating if there is a concluded grade for this subject, and concluded grade if it exists, formatted (bool, int)
 		"""
-		self.__verify(class_id, subject_id)
-		self.__edlog(0, "Getting concluded grade for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
+		#self.__verify(subject_id)
+		#self.__edlog(0, "Getting concluded grade for subject id %s, class id %s (corresponding to actual IDs subject:[{%s}] and class:[{%s}])" % (subject_id, class_id, self.subject_ids[subject_id], self.class_ids[class_id]))
 		if not self.subject_ids[subject_id] in self.subject_cache:
 			self.__edlog(1, "Fetching subject %s from server" % subject_id)
 			response = self.__fetch("%s%s" % (self.edurl, self.subject_ids[subject_id]))
@@ -455,8 +394,7 @@ class edap:
 		soup = BeautifulSoup(response, self.parser)
 		try:
 			# Search the grade table for the concluded grade
-			# TODO: Refactor this; use new table#grade_notes identifier like in getGrades
-			x = soup.find("div", class_="grades").find("table").find_all("td", class_="t-center bold")[1].getText().strip()
+			x = soup.find("div", class_="final-grade").find_all('div', class_='flex-row')[2].text.strip()
 		except AttributeError as e:
 			raise ParseError(e)
 		if x: # If not empty/NoneType, means there's text in that table element
