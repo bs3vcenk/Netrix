@@ -46,6 +46,17 @@ def _format_to_date(preformat_string: str, date_format: str = "%d.%m.%Y.") -> in
 	"""
 	return int(datetime.strptime(preformat_string, date_format).timestamp())
 
+def _determine_absence_status(bs_object) -> str:
+	classes = bs_object.get('class')
+	if 'green' in classes:
+		return 'justified'
+	elif 'red' in classes:
+		return 'unjustified'
+	elif 'black' in classes:
+		return 'waiting'
+	elif 'gold' in classes:
+		return 'other'
+
 class edap:
 	"""
 		eDnevnik scraping library.
@@ -536,7 +547,7 @@ class edap:
 		soup.decompose()
 		return final_returnable
 
-	def getAbsenceList(self, class_id: int) -> List[dict]:
+	def getAbsenceList(self) -> List[dict]:
 		"""
 			Return a full list of all marked absences for a given class ID.
 
@@ -545,48 +556,40 @@ class edap:
 
 			RETURNS: list of dictionaries (sorted by day), dicts formatted {period, subject, reason, justified, absences}
 		"""
-		self.__verify(class_id)
-		self.__edlog(0, "Getting absent list for class id %s" % class_id)
-		if not self.class_ids[class_id] in self.absence_cache:
-			self.__edlog(1, "Fetching absences from server")
-			response = self.__fetch("%s/pregled/izostanci/%s" % (self.edurl, self.class_ids[class_id]))
-			self.absence_cache[self.class_ids[class_id]] = response
-		else:
-			self.__edlog(1, "Fetching absences from cache")
-			response = self.absence_cache[self.class_ids[class_id]]
+		#self.__verify(class_id)
+		#self.__edlog(0, "Getting absent list for class id %s" % class_id)
+		#if not self.class_ids[class_id] in self.absence_cache:
+		#	self.__edlog(1, "Fetching absences from server")
+		response = self.__fetch("%s/absent" % self.edurl)
+		#	self.absence_cache[self.class_ids[class_id]] = response
+		#else:
+		#	self.__edlog(1, "Fetching absences from cache")
+		#	response = self.absence_cache[self.class_ids[class_id]]
 		self.__edlog(0, "Initializing BeautifulSoup with response")
 		soup = BeautifulSoup(response, self.parser)
-		try:
-			x = soup.find_all("table")[1]
-		except AttributeError as e:
-			raise ParseError(e)
-		except IndexError:
-			self.__edlog(1, "No absences for this class")
-			return []
-		o = x.find_all("tr")[1:]
-		abslist = []
-		last_searched = 0
-		for x in o:
-			y = x.find_all("td", class_="datum")
-			if y:
-				spanning = int(y[0].get("rowspan"))
-				abslist.append({
-					'span': spanning,
-					'loc': last_searched,
-					'date': _format_to_date(y[0].getText("\n").split()[1])
+		x = soup.find_all('div', class_='absent-table')
+		absences = []
+		if not x:
+			return absences
+		for absgroup in x:
+			#print(absgroup)
+			date = _format_to_date(absgroup.find('div', class_='first').text.split(' - ')[1].strip())
+			abs_group_filtered = {
+				'date': date,
+				'absences': []
+			}
+			rows = absgroup.find_all('div', class_='row')
+			for row in rows:
+				data = row.find_all('div', class_='flex-row')
+				period = int(data[0].text)
+				subject = data[1].text
+				status = _determine_absence_status(data[2].find('i'))
+				reason = data[3].text.strip()
+				abs_group_filtered['absences'].append({
+					'period': period,
+					'subject': subject,
+					'status': status,
+					'reason': reason
 				})
-			last_searched += 1
-		abslist2 = []
-		for x in abslist:
-			absLst = {'date':x['date'], 'absences':[]}
-			for absence in o[x['loc']:x['loc']+x['span']]:
-				absObj = {}
-				absObj["period"] = absence.find("td", class_="sat").getText()
-				absObj["subject"] = absence.find("td", class_="predmet").getText()
-				absObj["reason"] = absence.find("td", class_="razlog").getText()
-				absObj["justified"] = absence.find("td", class_="opravdano").find("img").get("alt") == "Opravdano"
-				absLst['absences'].append(absObj)
-			abslist2.append(absLst)
-		self.__edlog(0, "Decomposing tree")
-		soup.decompose()
-		return abslist2
+			absences.append(abs_group_filtered)
+		return absences
