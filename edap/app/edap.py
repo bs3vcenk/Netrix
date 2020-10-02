@@ -122,10 +122,7 @@ class edap:
 			r = self.session.post("%s/login" % self.edurl,
 			                      data={"csrf_token": self.csrf, "username": user, "password": pasw})
 			r.raise_for_status()
-			if ("Krivo korisničko ime i/ili lozinka." in r.text or
-			    "Potrebno je upisati korisničko ime i lozinku." in r.text or
-			    "nije pronađen u LDAP imeniku škole" in r.text or
-			    "Neispravno korisničko ime." in r.text):
+			if "Neispravno korisničko ime ili lozinka." in r.text:
 				raise WrongCredentials
 		except (requests.exceptions.HTTPError, requests.exceptions.Timeout):
 			raise NetworkError("%s/pocetna/posalji" % self.edurl)
@@ -243,7 +240,7 @@ class edap:
 		self.__fetch('%s%s' % (self.edurl, self.class_ids[class_id]))
 		self.subject_ids = []
 
-	def getSubjects(self, class_id: int = 0) -> List[dict]:
+	def getSubjects(self) -> List[dict]:
 		"""
 			Return list of subjects and professors for class ID "class_id"
 
@@ -271,30 +268,8 @@ class edap:
 			#print(subject_name, subject_professor, link)
 		soup.decompose()
 		return subjects
-		"""
-		self.__edlog(0, "Populating subject list")
-		subjinfo = []
-		for i in subjectlist_preformat:
-			if not i.has_attr('name'):
-				self.__edlog(1, 'Object has no name attribute, skipping')
-				continue
-			try:
-				x = i.find("div", class_="course").get_text("\n").split("\n")
-			except AttributeError as e:
-				self.__edlog(3, "HTML parsing error! [%s]" % (e))
-			prof = ''.join(x[1:]).split(", ")
-			if "/" in prof:
-				self.__edlog(0, "Found empty professor string, replacing")
-				prof[prof.index("/")] = None
-			subjinfo.append({'subject':x[0].strip(), 'professors':prof})
-			self.subject_ids.append(i["href"])
-		self.__edlog(1, "Completed with %s subjects found" % len(subjinfo))
-		self.__edlog(0, "Decomposing tree")
-		soup.decompose()
-		return subjinfo
-		"""
 
-	def getTests(self, class_id: int = 0, alltests: bool = False) -> List[dict]:
+	def getTests(self) -> List[dict]:
 		"""
 			Return list of tests
 
@@ -324,21 +299,8 @@ class edap:
 		for exam_object in x:
 			y = exam_object.find_all('div', class_="flex-row")
 			#print(y)
-			exams.append({'subject': y[0].text.strip(), 'exam': y[1].text.strip(), 'date': y[2].text.strip()})
+			exams.append({'subject': y[0].text.strip(), 'exam': y[1].text.strip(), 'date': _format_to_date(y[2].text.strip() + str(datetime.now().year) + '.')})
 		return exams
-		"""
-		self.__edlog(1, "Formatting table into list")
-		for i, item in enumerate(x):
-			x[i] = item.getText()
-		# First for loop (x[i:i+3] in ...) splits list into chunks containing 3 elements,
-		# 	[0] or x in 2nd for loop => subject that the test is for
-		# 	[1] or y in 2nd for loop => the subject of the test
-		# 	[2] or z in 2nd for loop => the date of the test, formatted in dd.mm.yyyy., converted to UNIX timestamp
-		final_returnable = [{"subject": x, "test": y, "date": _format_to_date(z)} for x, y, z in [x[i:i+3] for i in range(0, len(x), 3)]]
-		self.__edlog(0, "Decomposing tree")
-		soup.decompose()
-		return final_returnable
-		"""
 
 	def getGrades(self, subject_id: int) -> (List[dict], List[dict]):
 		"""
