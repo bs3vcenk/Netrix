@@ -342,36 +342,13 @@ def localize(token: str, notif_type: str) -> str:
 		the phone through /api/stats.
 	"""
 	locs = {
-		"en": {
-			"note": "New note",
-			"grade": "New grade",
-			"absence": "New absence",
-			"test": "New exam",
-			"class": "New class"
-		},
-		"hr": {
-			"note": "Nova bilješka",
-			"grade": "Nova ocjena",
-			"absence": "Novi izostanak",
-			"test": "Novi ispit",
-			"class": "Novi razred"
-		},
-		"de": {
-			"note": "Neue Notiz",
-			"grade": "Neue Note",
-			"absence": "Neue Abwesenheit",
-			"test": "Neue Prüfung",
-			"class": "Neue Klasse"
-		}
+		"note": "Nova bilješka",
+		"grade": "Nova ocjena",
+		"absence": "Novi izostanak",
+		"test": "Novi ispit",
+		"class": "Novi razred"
 	}
-	lang = get_data(token)['lang']
-	if not lang:
-		log.warning('%s => Detected null language value, forcing Croatian', token)
-		lang = 'hr'
-	if lang not in locs:
-		log.warning('%s => Detected unsupported language value, forcing Croatian', token)
-		lang = 'hr'
-	return locs[lang][notif_type]
+	return locs[notif_type]
 
 def random_string(length: int) -> str:
 	"""
@@ -759,7 +736,6 @@ def _read_config() -> Config:
 		print("[eDAP] [WARN] Not using Vault for credential storage -- storing data insecurely in Redis!")
 
 	cfg_obj.dev.enabled = _get_var("DEV_ACCESS", _bool=True)
-	cfg_obj.cloudflare.enabled = _get_var("CLOUDFLARE", _bool=True)
 	cfg_obj.firebase.enabled = _get_var("FIREBASE", _bool=True)
 	cfg_obj.error_notifications.enabled = _get_var("ADMIN_NOTIFICATIONS", _bool=True)
 	cfg_obj.sync.min_delay = int(_get_var("SYNC_TIME_MIN", default=1800))
@@ -791,7 +767,6 @@ def _read_config() -> Config:
 	cfg_obj.redis.port = int(_get_var("REDIS_PORT", default=6379))
 
 	print("[eDAP] [INFO] Developer access enabled: %s" % cfg_obj.dev.enabled)
-	print("[eDAP] [INFO] Using Cloudflare: %s" % cfg_obj.cloudflare.enabled)
 	print("[eDAP] [INFO] Using Firebase: %s" % cfg_obj.firebase.enabled)
 	print("[eDAP] [INFO] Send administrative notifications: %s" % cfg_obj.error_notifications.enabled)
 	print("[eDAP] [INFO] Waiting between %s and %s seconds before syncing for each user" % (cfg_obj.sync.min_delay, cfg_obj.sync.max_delay))
@@ -938,28 +913,22 @@ def get_class_profile(obj, class_id: int, class_obj) -> dict:
 		be assigned to.
 	"""
 	# TODO: Rewrite a lot of this and the invoking code, makes very little sense right now; handle exceptions properly.
+	obj.switchActiveClass(class_id)
 	try:
 		# Get a list of current tests and all tests
-		tests_nowonly = obj.getTests(class_id, alltests=False)
-		tests_all = obj.getTests(class_id, alltests=True)
+		tests = obj.getTests()
 		# Init a testId var so we can assign an ID to the tests
 		testId = 0
-		for x in tests_all:
-			# Check if a test is present in the list of current tests
-			# and mark it as such (so we know which ones to show and
-			# which to ignore)
-			if x not in tests_nowonly:
-				x['current'] = False
-			else:
-				x['current'] = True
+		for x in tests:
 			x['id'] = testId
 			testId += 1
 		# Create a new 'tests' item in the dictionary
-		class_obj['tests'] = tests_all
+		class_obj['tests'] = tests
 	except Exception as e:
 		log.error("Error getting tests for class: %s", e)
 		class_obj['tests'] = None
 
+	"""
 	try:
 		# Get an overview of absences (counters)
 		absences_overview = obj.getAbsenceOverview(class_id)
@@ -967,18 +936,19 @@ def get_class_profile(obj, class_id: int, class_obj) -> dict:
 	except Exception as e:
 		log.error("Error getting absence overview for class: %s", e)
 		class_obj['absences'] = {'overview': None, 'full': []}
+	"""
 	try:
 		# If we have an overview, we can continue with making a full
 		# list of absences, sorted by day.
 		if class_obj['absences']['overview']:
-			absences_full = obj.getAbsenceList(class_id)
+			absences_full = obj.getAbsenceList()
 			class_obj['absences']['full'] = absences_full
 	except Exception as e:
 		log.error("Error getting absence full list for class: %s", e)
 
 	try:
 		# Get a list of subjects
-		class_obj['subjects'] = obj.getSubjects(class_id)
+		class_obj['subjects'] = obj.getSubjects()
 	except Exception as e:
 		log.error("Error getting subjects for class: %s", e)
 		class_obj['subjects'] = None
@@ -989,9 +959,9 @@ def get_class_profile(obj, class_id: int, class_obj) -> dict:
 		class_obj['subjects'][z]['id'] = z
 		try:
 			# Get a list of all grades
-			class_obj['subjects'][z]['grades'] = obj.getGrades(class_id, z)
+			class_obj['subjects'][z]['grades'], class_obj['subjects'][z]['notes'] = obj.getGrades(z)
 			# Check if we have a concluded grade
-			isconcl, concluded = obj.getConcludedGrade(0, z)
+			isconcl, concluded = obj.getConcludedGrade(z)
 			# Store the boolean for use in the UI
 			class_obj['subjects'][z]['concluded'] = isconcl
 			if isconcl:
@@ -1010,24 +980,20 @@ def get_class_profile(obj, class_id: int, class_obj) -> dict:
 		except Exception as e:
 			log.error("Error getting grades for subject %s: %s", z, e)
 			class_obj['subjects'][z]['grades'] = []
-		try:
-			# Get a list of notes
-			class_obj['subjects'][z]['notes'] = obj.getNotes(class_id, z)
-		except Exception as e:
-			log.error("Error getting notes for subject %s: %s", z, e)
-			class_obj['subjects'][z]['notes'] = []
 	try:
 		# Calculate the general average
 		class_obj['complete_avg'] = _round(sum(allSubjAverageGrades)/len(allSubjAverageGrades), 2)
 	except ZeroDivisionError:
 		# Avoid division by zero/no grades
 		class_obj['complete_avg'] = 0
+	"""
 	try:
 		# Finally, get user information
 		class_obj['info'] = obj.getInfo(0)
 	except Exception as e:
 		log.error("Error getting info: %s", str(e))
 		class_obj['info'] = None
+	"""
 	# Mark it as full/expanded
 	class_obj['full'] = True
 	return class_obj

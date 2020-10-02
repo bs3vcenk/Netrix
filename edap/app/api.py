@@ -1,9 +1,10 @@
 from functools import wraps
 from flask import Flask, jsonify, make_response, request, abort
 from api_backend import *
+from flask_cors import CORS
 import edap, traceback
 
-API_VERSION = "2.15"
+API_VERSION = "3.0"
 
 log = logging.getLogger('EDAP-API')
 
@@ -11,6 +12,7 @@ log.info("eDAP-API version %s starting up", API_VERSION)
 
 # Initialize Flask application
 app = Flask("EDAP-API")
+CORS(app)
 
 # Perform startup checks
 do_startup_checks()
@@ -42,12 +44,7 @@ def dev_pw_area(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
 		# Gather info about accessing IP
-		if config.cloudflare.enabled:
-			ip = request.headers["CF-Connecting-IP"]
-			country = request.headers["CF-IPCountry"]
-		else:
-			ip = request.remote_addr
-			country = "Unknown"
+		ip = request.remote_addr
 		# Check whether we allow this type of access
 		if config.dev.enabled:
 			# If we do, verify the supplied HTTP Basic Auth credentials
@@ -58,11 +55,11 @@ def dev_pw_area(f):
 				# If credentials were provided and we landed in this if-block, that
 				# means this was a failed login attempt, so we log it
 				if auth:
-					log.warning("FAIL => %s (%s) => Bad auth", ip, country)
+					log.warning("FAIL => %s => Bad auth", ip)
 				return authenticate()
 		else:
 			# If we do not, log this access and simply return a 404
-			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
+			log.warning("FAIL => %s => DEV endpoints disabled", ip)
 			abort(404)
 		# If the credential pair was correct, log access and return
 		log.debug('DEV => Successful access from %s using password auth', ip)
@@ -77,27 +74,22 @@ def dev_area(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
 		# Gather info about accessing IP
-		if config.cloudflare.enabled:
-			ip = request.headers["CF-Connecting-IP"]
-			country = request.headers["CF-IPCountry"]
-		else:
-			ip = request.remote_addr
-			country = "Unknown"
+		ip = request.remote_addr
 		# Check whether we allow this type of access
 		if config.dev.enabled:
 			# If we do, check if request contains an X-API-Token header
 			if "X-API-Token" not in request.headers:
 				# If not, log failed request and return
-				log.warning("FAIL => %s (%s) => No API token supplied", ip, country)
+				log.warning("FAIL => %s => No API token supplied", ip)
 				abort(403)
 			# If it cointains such a header, check if it's a valid one
 			elif not verify_dev_request(request.headers["X-API-Token"]):
 				# If it is not, log failed request and return
-				log.warning("FAIL => %s (%s) => Bad API token %s", ip, country, request.headers["X-API-Token"])
+				log.warning("FAIL => %s => Bad API token %s", ip, request.headers["X-API-Token"])
 				abort(403)
 		else:
 			# If we do not, log this access and simply return a 404
-			log.warning("FAIL => %s (%s) => DEV endpoints disabled", ip, country)
+			log.warning("FAIL => %s => DEV endpoints disabled", ip)
 			abort(404)
 		# If the token verification was successful, log access and return
 		log.debug('DEV => Successful access from %s using token auth', ip)
@@ -166,14 +158,15 @@ def exh_unhandled(e):
 	"""
 		Default exception handler.
 	"""
+	exc = traceback.format_exc()
 	# Check if we need to send a notification
 	if config.error_notifications.enabled:
 		# If we do, get a stacktrace
-		exc = traceback.format_exc()
 		# Send message
 		notify_error('UNHANDLED EXC', 'generic', stacktrace=exc)
 	# Log exception
 	log.warning('Unhandled exception %s', e)
+	print(exc)
 	#abort(500)
 
 @app.errorhandler(redis.exceptions.ConnectionError)
@@ -303,14 +296,9 @@ def dev_token_mgmt(token):
 			'username': creds["username"],
 			'device': {
 				'os': data["device"]["platform"],
-				'device': data["device"]["model"],
-				'language': data["lang"]
+				'device': data["device"]["model"]
 			},
 			'ip': data["last_ip"],
-			'cloudflare': None if not config.cloudflare.enabled else {
-				'last_ip': data["cloudflare"]["last_ip"],
-				'country': data["cloudflare"]["country"]
-			},
 			'firebase': {
 				'status': fb_info['status']
 			}
@@ -382,7 +370,7 @@ def dev_test_diff(token):
 	o = get_data(token)["data"]
 	o['classes'][0]['subjects'][request.json["subjId"]]['grades'].append(request.json["gradeData"])
 	sync_dev(o, token)
-	return make_response(jsonify({'status':'ok'}), 200)
+	return make_response('', 200)
 
 @app.route('/dev/users/<string:token>/diff', methods=["POST"])
 @dev_pw_area
@@ -395,7 +383,7 @@ def dev_force_diff(token):
 	sync(token)
 	return make_response('', 200)
 
-@app.route('/api/login', methods=["POST"])
+@app.route('/login', methods=["POST"])
 def login():
 	"""
 		Log the user in. The JSON in the POST request is checked, and if
@@ -441,7 +429,7 @@ def login():
 		return make_response(jsonify({'token':token}), 200)
 	log.debug("Starting login for %s", username)
 	try:
-		obj = edap.edap(username, password)
+		obj = edap.edap(username, password, debug=True, hidepriv=False)
 	except edap.WrongCredentials:
 		log.warning("Failed logging %s in: invalid credentials", username)
 		return make_response(jsonify({'error':'E_INVALID_CREDENTIALS'}), 401)
@@ -464,15 +452,9 @@ def login():
 	log.info("SLOW => SUCCESS => %s (%s)", username, token)
 	dataObj = {
 		'data': populate_data(obj),
-		'last_ip': dev_ip,
-		'device': {
-			'platform': None,
-			'model': None
-		},
-		'lang': None,
+		'devices': [],
 		'new': [],
 		'generated_with': API_VERSION,
-		'firebase_device_token': None,
 		'settings': {
 			'notif': {
 				'disable': False,
@@ -482,29 +464,12 @@ def login():
 		'messages': []
 	}
 	set_credentials(token, username, password)
-	if config.cloudflare.enabled:
-		dataObj["cloudflare"] = {"last_ip": None, "country": None}
 	save_data(token, dataObj)
 	log.debug("Starting sync for %s", username)
 	start_sync(token)
 	return make_response(jsonify({'token':token}), 200)
 
-@app.route('/api/user/<string:token>/firebase', methods=["POST"])
-def set_firebase_token(token):
-	"""
-		Store a Firebase token into a user's data object.
-	"""
-	if not verify_request(token):
-		abort(401)
-	if not request.json or not "deviceToken" in request.json:
-		abort(400)
-	log.debug("%s: Saving Firebase Cloud Messaging token", token)
-	user_data = get_data(token)
-	user_data['firebase_device_token'] = request.json['deviceToken']
-	save_data(token, user_data)
-	return make_response(jsonify({'status':'ok'}), 200)
-
-@app.route('/api/user/<string:token>/fetchclass', methods=["POST"])
+@app.route('/user/<string:token>/fetchclass', methods=["POST"])
 def fill_class(token):
 	"""
 		Expand a class object by class ID (specified in POST JSON).
@@ -517,7 +482,7 @@ def fill_class(token):
 	fetch_new_class(token, request.json["class_id"])
 	return make_response('', 200)
 
-@app.route('/api/user/<string:token>/settings/<string:action>', methods=["POST", "GET"])
+@app.route('/user/<string:token>/settings/<string:action>', methods=["POST", "GET"])
 def setting(token, action):
 	"""
 		Set a user's setting.
@@ -532,7 +497,7 @@ def setting(token, action):
 			process_setting(token, action, request.json["parameter"])
 		except NonExistentSetting:
 			return make_response(jsonify({'error':'E_SETTING_NONEXISTENT'}), 400)
-		return make_response(jsonify({'status':'ok'}), 200)
+		return make_response('', 200)
 	elif request.method == "GET":
 		log.info("%s: Processing action GET %s", token, action)
 		try:
@@ -541,7 +506,7 @@ def setting(token, action):
 			return make_response(jsonify({'error':'E_SETTING_NONEXISTENT'}), 400)
 		return make_response(jsonify({'value':val}), 200)
 
-@app.route('/api/user/<string:token>/msg', methods=["GET"])
+@app.route('/user/<string:token>/msg', methods=["GET"])
 def generate_message(token):
 	"""
 		Fetch a message for a user, if available. If not, generate
@@ -559,7 +524,7 @@ def generate_message(token):
 		rsp['messages'].append(o['messages'])
 	return rsp
 
-@app.route('/api/user/<string:token>/new', methods=["GET"])
+@app.route('/user/<string:token>/new', methods=["GET"])
 def get_new(token):
 	"""
 		Get the user's new grades/tests.
@@ -573,7 +538,7 @@ def get_new(token):
 	save_data(token, o)
 	return make_response(jsonify({'new':new}), 200)
 
-@app.route('/api/user/<string:token>/logout', methods=["GET"])
+@app.route('/user/<string:token>/logout', methods=["GET"])
 def logout(token):
 	"""
 		Log the user out.
@@ -581,9 +546,9 @@ def logout(token):
 	if not verify_request(token):
 		abort(401)
 	purge_token(token)
-	return make_response(jsonify({"status":"ok"}), 200)
+	return make_response('', 200)
 
-@app.route('/api/user/<string:token>/classes', methods=["GET"])
+@app.route('/user/<string:token>/classes', methods=["GET"])
 def get_classes(token):
 	"""
 		Get the user's classes. Currently unused by the frontend, as
@@ -603,7 +568,7 @@ def get_classes(token):
 			pass
 	return make_response(jsonify(o), 200)
 
-@app.route('/api/user/<string:token>/classes/<int:class_id>/history', methods=["GET"])
+@app.route('/user/<string:token>/classes/<int:class_id>/history', methods=["GET"])
 def get_history(token, class_id):
 	"""
 		Get a history of either grades or notes, specified using
@@ -632,7 +597,7 @@ def get_history(token, class_id):
 	log.warning('%s: Requested history with invalid or missing type for class ID %s', token, class_id)
 	return make_response(jsonify({'error': 'E_MISSING_OR_INVALID_TYPE'}), 400)
 
-@app.route('/api/user/<string:token>/classes/<int:class_id>/info', methods=["GET"])
+@app.route('/user/<string:token>/classes/<int:class_id>/info', methods=["GET"])
 def get_user_info(token, class_id):
 	"""
 		Get the user's personal information.
@@ -642,7 +607,7 @@ def get_user_info(token, class_id):
 	log.info(token)
 	return make_response(jsonify(get_data(token)['data']['classes'][class_id]['info']), 200)
 
-@app.route('/api/user/<string:token>/classes/<int:class_id>/absences', methods=["GET"])
+@app.route('/user/<string:token>/classes/<int:class_id>/absences', methods=["GET"])
 def get_absences(token, class_id):
 	"""
 		Get the user's absences.
@@ -652,7 +617,7 @@ def get_absences(token, class_id):
 	log.info("%s: List absences for class %s", token, class_id)
 	return make_response(jsonify(get_data(token)['data']['classes'][class_id]['absences']), 200)
 
-@app.route('/api/user/<string:token>/classes/<int:class_id>/subjects', methods=["GET"])
+@app.route('/user/<string:token>/classes/<int:class_id>/subjects', methods=["GET"])
 def get_subjects(token, class_id):
 	"""
 		Get the subjects for a given class ID.
@@ -663,7 +628,7 @@ def get_subjects(token, class_id):
 	o = get_data(token)['data']['classes'][class_id]
 	return make_response(jsonify({'subjects': o['subjects'], 'class_avg':o['complete_avg']}), 200)
 
-@app.route('/api/user/<string:token>/classes/<int:class_id>/tests', methods=["GET"])
+@app.route('/user/<string:token>/classes/<int:class_id>/tests', methods=["GET"])
 def get_tests(token, class_id):
 	"""
 		Get the tests for a given class ID.
@@ -674,7 +639,7 @@ def get_tests(token, class_id):
 	o = get_data(token)['data']['classes'][class_id]['tests']
 	return make_response(jsonify({'tests': o}), 200)
 
-@app.route('/api/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>', methods=["GET"])
+@app.route('/user/<string:token>/classes/<int:class_id>/subjects/<int:subject_id>', methods=["GET"])
 def get_subject(token, class_id, subject_id):
 	"""
 		Get subject info for a given subject ID.
@@ -685,37 +650,33 @@ def get_subject(token, class_id, subject_id):
 	o = get_data(token)['data']['classes'][class_id]['subjects'][subject_id]
 	return make_response(jsonify(o), 200)
 
-@app.route('/api/stats', methods=["POST"])
-def log_stats():
+@app.route('/user/<string:token>/device', methods=["POST"])
+def log_stats(token):
 	"""
 		Save the stats to a user's profile.
 	"""
-	if (not "token" in request.json
-	    or not "platform" in request.json
+	if (not "platform" in request.json
+	    or not "uuid" in request.json
 	    or not "device" in request.json
-	    or not "language" in request.json):
+		or not "firebase" in request.json):
 		log.warning("Invalid JSON from %s", request.remote_addr)
 		abort(400)
-	token = request.json["token"]
 	if not verify_request(token):
 		abort(401)
 	log.info(
-		"%s: Save device info: platform::%s, model::%s, language::%s",
+		"%s: Save device info (%s): platform::%s, model::%s",
 		token,
+		request.json["uuid"],
 		request.json["platform"],
-		request.json["device"],
-		request.json["language"]
+		request.json["device"]
 	)
 	dataObj = get_data(token)
-	dataObj['last_ip'] = request.remote_addr
-	dataObj['device']['platform'] = request.json["platform"]
-	dataObj['device']['model'] = request.json["device"]
-	dataObj['lang'] = request.json["language"]
-	if config.cloudflare.enabled:
-		dataObj['cloudflare']['country'] = request.headers["CF-IPCountry"]
-		dataObj['cloudflare']['last_ip'] = request.headers["CF-Connecting-IP"]
+	dataObj['devices'][uuid]['last_ip'] = request.remote_addr
+	dataObj['devices'][uuid]['platform'] = request.json["platform"]
+	dataObj['devices'][uuid]['model'] = request.json["device"]
+	dataObj['devices'][uuid]['firebase'] = request.json["firebase"]
 	save_data(token, dataObj)
-	return make_response(jsonify({"result":"ok"}), 200)
+	return make_response('', 200)
 
 if __name__ == '__main__':
 	app.run(debug=True)

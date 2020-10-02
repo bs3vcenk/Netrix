@@ -57,41 +57,41 @@ try:
 		### LOGIN
 		## LOGIN: Pre-fetch checks
 		log('TEST', 'login:bad_json')
-		request = client.post('/api/login', json={
+		request = client.post('/login', json={
 			'invalid': 'json'
 		})
 		assert request.status_code == 400, "Invalid JSON did not return 'Bad Request'"
 		log('TEST', 'login:null_value')
-		request = client.post('/api/login', json={
+		request = client.post('/login', json={
 			'username': None,
 			'password': None
 		})
 		assert request.status_code == 401, "Credentials with null value did not return 'Unauthorized'"
 		log('TEST', 'login:length_check')
-		request = client.post('/api/login', json={
+		request = client.post('/login', json={
 			'username': 'abc',
 			'password': 'def'
 		})
 		assert request.status_code == 401, "Sub-5-character credentials did not return 'Unauthorized'"
 		log('TEST', 'login:pattern_detection')
-		request_a = client.post('/api/login', json={
+		request_a = client.post('/login', json={
 			'username': 'ime.prezime@skolers.org',
 			'password': 'ovo_je_lozinka'
 		})
 		assert request_a.status_code == 401, "Username with @skolers.org did not return 'Unauthorized'"
-		request_b = client.post('/api/login', json={
+		request_b = client.post('/login', json={
 			'username': 'ime.prezime@gmail.com',
 			'password': 'ovo_je_lozinka'
 		})
 		assert request_b.status_code == 401, "Username with @gmail.com did not return 'Unauthorized'"
-		request_c = client.post('/api/login', json={
+		request_c = client.post('/login', json={
 			'username': '@ime.prezime',
 			'password': 'ovo_je_lozinka'
 		})
 		assert request_c.status_code == 401, "Username starting with @ did not return 'Unauthorized'"
 		## LOGIN: Login process
 		log('TEST', 'login:general')
-		request = client.post('/api/login', json={
+		request = client.post('/login', json={
 			'username': username,
 			'password': password
 		})
@@ -104,21 +104,13 @@ try:
 		### ACCESS
 		## ACCESS: Token check
 		log('TEST', 'access:token')
-		request = client.get('/api/user/rANdOMtOKeN123456/classes')
+		request = client.get('/user/rANdOMtOKeN123456/classes')
 		assert request.status_code == 401, "Non-existent token access did not return 'Unauthorized'"
 		### DATA
-		## DATA: Save Firebase token
-		log('TEST', 'data:firebase')
-		request = client.post('/api/user/%s/firebase' % token, json={
-			'deviceToken': 'ovo_je_neki_firebase_token1234567890'
-		})
-		assert request.status_code == 200, "Token save was not successful"
-		if not REMOTE:
-			user_data = get_data()
-			assert user_data['firebase_device_token'] == 'ovo_je_neki_firebase_token1234567890', "Token was not saved to Redis"
 		## DATA: Classes
 		log('TEST', 'data:classes')
-		request = client.get('/api/user/%s/classes' % token)
+		print(token)
+		request = client.get('/user/%s/classes' % token)
 		assert request.status_code == 200, "Classes fetch was not successful"
 		_r = request.json()
 		assert 'classes' in _r, "No 'classes' field in response"
@@ -130,7 +122,7 @@ try:
 			assert 'year' in class_obj, "No 'year' field in class ID %s" % i
 		## DATA: Info
 		log('TEST', 'data:user_info')
-		request = client.get('/api/user/%s/classes/0/info' % token)
+		request = client.get('/user/%s/classes/0/info' % token)
 		assert request.status_code == 200, "Info fetch was not successful"
 		_r = request.json()
 		assert 'birthdate' in _r, "No 'birthdate' field in info"
