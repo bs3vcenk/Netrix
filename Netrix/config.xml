@@ -27,6 +27,9 @@
         <config-file parent="application" target="AndroidManifest.xml">
             <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/notification_icon" />
         </config-file>
+        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:usesCleartextTraffic="true" />
+        </edit-config>
         <allow-intent href="market:*" />
         <resource-file src="resources/android/notification/notif-mdpi.png" target="app/src/main/res/drawable-mdpi/notification_icon.png" />
         <resource-file src="resources/android/notification/notif-hdpi.png" target="app/src/main/res/drawable-hdpi/notification_icon.png" />
