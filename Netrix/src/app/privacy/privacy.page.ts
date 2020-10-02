@@ -31,7 +31,7 @@ export class PrivacyPage implements OnInit {
   }
 
   private render() {
-    this.http.get('https://netrix.io/privacy.md', {responseType: 'text'})
+    this.http.get('https://netrix.cc/privacy.md', {responseType: 'text'})
     .subscribe((response: any) => {
       const converter = new showdown.Converter();
       this.html = converter.makeHtml(response);
