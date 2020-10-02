@@ -20,7 +20,7 @@ export class SettingsService {
   onDayNotifications = null;
   language = null;
   notifTime = null;
-  apiServer = 'https://api.netrix.cc';
+  apiServer = 'http://192.168.88.196:57195';
   // httpLimit = 5000;
   globalTheme: 'dark' | 'light';
 

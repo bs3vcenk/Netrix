@@ -194,7 +194,7 @@ export class ApiService {
      * for the selected class ID */
     try {
       await this.http.post(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/fetchclass',
+        this.settings.apiServer + '/user/' + this.authServ.token + '/fetchclass',
         {class_id: classId}
       ).toPromise();
     } catch (e) {
@@ -205,7 +205,7 @@ export class ApiService {
   getClasses() {
     /* Gets a list of classes */
     this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes'
+      this.settings.apiServer + '/user/' + this.authServ.token + '/classes'
     ).subscribe((rx: any) => {
       const response = rx;
       this.classes = response.classes;
@@ -230,7 +230,7 @@ export class ApiService {
     /* Tell the server to store the device token with the user's
      * profile */
     this.http.post(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/firebase',
+      this.settings.apiServer + '/user/' + this.authServ.token + '/firebase',
       {deviceToken: firebaseToken}
     ).subscribe(() => {},
     () => {
@@ -242,7 +242,7 @@ export class ApiService {
     /* Delete a notification type from the ignore list, if it exists */
     if (this.ignoredNotifTypes.includes(nType)) {
       this.http.post(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.del',
+        this.settings.apiServer + '/user/' + this.authServ.token + '/settings/notif.ignore.del',
         {parameter: nType}
       ).subscribe(() => {
         delete this.ignoredNotifTypes[this.ignoredNotifTypes.indexOf(nType)];
@@ -255,7 +255,7 @@ export class ApiService {
   setNotifDisabled(nState: boolean) {
     /* Toggle master notification switch */
     this.http.post(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.disable',
+      this.settings.apiServer + '/user/' + this.authServ.token + '/settings/notif.disable',
       {parameter: nState}
     ).subscribe(() => {
     }, (error) => {
@@ -267,7 +267,7 @@ export class ApiService {
     /* Add a notification type to the ignore list, if it does not already exist */
     if (!this.ignoredNotifTypes.includes(nType)) {
       this.http.post(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.ignore.add',
+        this.settings.apiServer + '/user/' + this.authServ.token + '/settings/notif.ignore.add',
         {parameter: nType}
       ).subscribe(() => {
         this.ignoredNotifTypes.push(nType);
@@ -282,7 +282,7 @@ export class ApiService {
     let response: any;
     let history;
     response = await this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/history?type=grade&output=graph'
+      this.settings.apiServer + '/user/' + this.authServ.token + '/classes/' + classId + '/history?type=grade&output=graph'
     ).toPromise();
     history = response;
     return history;
@@ -293,7 +293,7 @@ export class ApiService {
     let response: any;
     let history;
     response = await this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/history?type=grade'
+      this.settings.apiServer + '/user/' + this.authServ.token + '/classes/' + classId + '/history?type=grade'
     ).toPromise();
     history = response;
     return history;
@@ -306,7 +306,7 @@ export class ApiService {
     let fetchedFromCache = false;
     try {
       response = await this.http.get(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/info'
+        this.settings.apiServer + '/user/' + this.authServ.token + '/classes/' + classId + '/info'
       ).toPromise();
       info = response;
     } catch (error) {
@@ -334,7 +334,7 @@ export class ApiService {
   getNotifConfig() {
     /* Get list of disabled notification types, for display in the Notification management view */
     this.http.get(
-      this.settings.apiServer + '/api/user/' + this.authServ.token + '/settings/notif.all'
+      this.settings.apiServer + '/user/' + this.authServ.token + '/settings/notif.all'
     ).subscribe((response: any) => {
       this.ignoredNotifTypes = response.value.ignore;
       /* Let preCacheData() know we're done */
@@ -355,7 +355,7 @@ export class ApiService {
     let fetchedFromCache = false;
     try {
       rx = await this.http.get(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects'
+        this.settings.apiServer + '/user/' + this.authServ.token + '/classes/' + classId + '/subjects'
       ).toPromise();
       response = rx;
     } catch (error) {
@@ -396,7 +396,7 @@ export class ApiService {
     let fetchedFromCache = false;
     try {
       rx = await this.http.get(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/tests'
+        this.settings.apiServer + '/user/' + this.authServ.token + '/classes/' + classId + '/tests'
       ).toPromise();
       response = rx;
     } catch (error) {
@@ -497,7 +497,7 @@ export class ApiService {
     let fetchedFromCache = false;
     try {
       response = await this.http.get(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/absences'
+        this.settings.apiServer + '/user/' + this.authServ.token + '/classes/' + classId + '/absences'
       ).toPromise();
       absences = response;
     } catch (error) {
@@ -561,7 +561,7 @@ export class ApiService {
        * into the cache */
       this.firebase.logMessage('ApiService/getSubject(): Subject ID ' + subjId + ' not cached, fetching remote');
       const rx: any = await this.http.get(
-        this.settings.apiServer + '/api/user/' + this.authServ.token + '/classes/' + classId + '/subjects/' + subjId
+        this.settings.apiServer + '/user/' + this.authServ.token + '/classes/' + classId + '/subjects/' + subjId
       ).toPromise();
       const response = rx;
       const subject = this.processSubjectData(response);

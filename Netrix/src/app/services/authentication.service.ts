@@ -52,7 +52,7 @@ export class AuthenticationService {
   private sendDeviceInfo() {
     /* Send the platform (Android/iOS), device model, language and WebView resolution to the API */
     this.http.post(
-      this.settings.apiServer + '/api/stats',
+      this.settings.apiServer + '/stats',
       {
         token: this.token,
         platform: this.device.platform,
@@ -69,12 +69,12 @@ export class AuthenticationService {
   async login(username, password) {
     /* Called from the login page, sends a POST request to log in which returns back a token */
     /*const response: Observable<HTTPResponse> = from(this.http.post(
-      this.settings.apiServer + '/api/login',
+      this.settings.apiServer + '/login',
       {username, password},
       this.httpHeader
     ));*/
     const response = await this.http.post(
-      this.settings.apiServer + '/api/login',
+      this.settings.apiServer + '/login',
       {username, password}
     ).toPromise();
     this.handleLogin(response);
@@ -99,7 +99,7 @@ export class AuthenticationService {
     return this.storage.remove('auth-token').then(() => {
       /* Let the API know the user has logged out, so it knows it can discard the user's data */
       this.http.get(
-        this.settings.apiServer + '/api/user/' + this.token + '/logout'
+        this.settings.apiServer + '/user/' + this.token + '/logout'
       ).subscribe(() => {
         this.firebase.logMessage('AuthenticationService/logout(): Server-side data successfully deleted');
       }, () => {
