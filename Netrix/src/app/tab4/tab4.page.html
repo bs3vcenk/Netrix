@@ -21,7 +21,7 @@
                   <!-- School subject for which the test is for -->
                   <ion-note id="testSubject">{{ testObj.subject }}</ion-note>
                 </ion-label>
-                <ion-note id="remaining" *ngIf="testObj.current" slot="end" color="dark">
+                <ion-note id="remaining" slot="end" color="dark">
                   {{ calculateRemainingTime(testObj.date) }}
                 </ion-note>
               </ion-item>

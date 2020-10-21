@@ -234,7 +234,7 @@ export class Tab4Page implements OnInit {
   /* -- Functions for exams -- */
 
   initTests() {
-    this.tests = this.api.currentTests;
+    this.tests = this.api.tests;
   }
 
   convertToReadableDate(unixTimestamp: number): string {

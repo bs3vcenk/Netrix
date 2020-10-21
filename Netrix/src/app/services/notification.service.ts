@@ -83,7 +83,7 @@ export class NotificationService {
             let toBeScheduled = [];
             /* Format every 'current' test into a notification and append it
             * to a list of to-be-scheduled tests */
-            this.apiSvc.currentTests.forEach(test => {
+            this.apiSvc.tests.forEach(test => {
               /* If it's already scheduled, avoid scheduling again */
               if (!this.scheduledNotifIDs.includes(test.id)) {
                 toBeScheduled.push({

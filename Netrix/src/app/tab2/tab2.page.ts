@@ -19,7 +19,6 @@ export class Tab2Page {
 
   tests = null;
   showAllPreference = false;
-  currentTests = [];
   oneWeek = 7 * 24 * 60 * 60 * 1000; // ms
   oneDay = 24 * 60 * 60 * 1000; // ms
   currentDate = Date.now();
@@ -41,7 +40,6 @@ export class Tab2Page {
 
   initInBg() {
     this.tests = this.apiSvc.tests;
-    this.currentTests = this.apiSvc.currentTests;
   }
 
   convertToReadableDate(unixTimestamp: number): string {

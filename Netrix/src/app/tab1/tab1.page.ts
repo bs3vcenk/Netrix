@@ -27,7 +27,7 @@ export class Tab1Page implements OnInit {
   subjects = null;
   fullAvg = null;
   tempSubjects: Array<any> = new Array(10);
-  currentTestsLen = null;
+  testsLen = null;
   remainingTests = null;
   usingCache = null;
 
@@ -54,17 +54,17 @@ export class Tab1Page implements OnInit {
     const weekID = Math.floor(weekStart.getTime() / (7 * 24 * 60 * 60 * 1000));
     this.apiSvc.loadingFinishedTests.subscribe((isLoaded) => {
       if (isLoaded) {
-        this.currentTestsLen = this.apiSvc.currentTests.length;
-        if (this.currentTestsLen > 0) {
+        this.testsLen = this.apiSvc.tests.length;
+        if (this.testsLen > 0) {
           for (const testGroup of this.apiSvc.tests) {
             if (testGroup.week === weekID) {
               this.firebase.logMessage('Tab1Page/calculateRemainingTests(): Found matching test group for week ID ' + weekID);
-              this.remainingTests = testGroup.currentTests;
+              this.remainingTests = testGroup.tests;
             }
           }
         }
       } else {
-        this.currentTestsLen = null;
+        this.testsLen = null;
         this.remainingTests = null;
       }
     });

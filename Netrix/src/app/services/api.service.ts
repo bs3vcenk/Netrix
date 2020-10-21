@@ -48,7 +48,6 @@ export class ApiService {
   classes = null;
 
   tests = null;
-  currentTests = [];
 
   absences = null;
 
@@ -164,7 +163,6 @@ export class ApiService {
   resetLoadingState() {
     this.classes = null;
     this.tests = null;
-    this.currentTests = [];
     this.absences = null;
     this.subjects = null;
     this.fullAvg = null;
@@ -417,7 +415,7 @@ export class ApiService {
     this.tests = response.tests;
     /* Count the number of "current" tests, so that we know if we need to show the
      * "No tests" message or not */
-    this.countTests();
+    // this.countTests();
     /* Sort tests by week */
     this.tests = this.groupTestsByWeek(this.tests);
     if (!fetchedFromCache) {
@@ -430,7 +428,7 @@ export class ApiService {
   getTestsForSubject(subjectName: string) {
     // tslint:disable-next-line: prefer-const
     let matchingTests = [];
-    for (const test of this.currentTests) {
+    for (const test of this.tests) {
       if (test.subject === subjectName) {
         matchingTests.push(test);
       }
@@ -469,25 +467,9 @@ export class ApiService {
       objPeriod[currentIndex].items.push(test);
     }
     for (const group of objPeriod) {
-      let currentTestCounter = 0;
-      group.items.forEach((exam) => {
-        if (exam.current) {
-          currentTestCounter += 1;
-        }
-      });
-      group.currentTests = currentTestCounter;
+      group.tests = group.items.length;
     }
     return objPeriod;
-  }
-
-  private async countTests() {
-    this.tests.forEach((test) => {
-      if (test.current === true) {
-        this.currentTests.push(test);
-      } else {
-        this.tests[test.id].scheduled = false;
-      }
-    });
   }
 
   async getAbsences(classId: number) {
