@@ -153,6 +153,11 @@
       "header": "Design",
       "darkmode": "Dark mode"
     },
+    "account": {
+      "header": "Account",
+      "devices": "Devices",
+      "logout": "Log out"
+    },
     "time_singular": "day",
     "time_plural": "days"
   },

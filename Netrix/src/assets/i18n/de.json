@@ -153,6 +153,11 @@
       "header": "Design",
       "darkmode": "Dunkler Modus"
     },
+    "account": {
+      "header": "Konto",
+      "devices": "Geräte",
+      "logout": "Abmelden"
+    },
     "time_singular": "Tag",
     "time_plural": "Tagen"
   },

@@ -153,6 +153,11 @@
       "header": "Izgled",
       "darkmode": "Tamni način"
     },
+    "account": {
+      "header": "Korisnički račun",
+      "devices": "Uređaji",
+      "logout": "Odjava"
+    },
     "time_singular": "dan",
     "time_plural": "dana"
   },

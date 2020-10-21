@@ -118,6 +118,10 @@
     <ion-list-header>
       <ion-label>{{ 'settings.account.header' | translate }}</ion-label>
     </ion-list-header>
+    <!-- BUTTON: Devices -->
+    <ion-item button (click)="devices_menu()" lines="full">
+      <ion-label>{{ 'settings.account.devices' | translate }}</ion-label>
+    </ion-item>
     <!-- BUTTON: Log out -->
     <ion-item button (click)="logout()" lines="full">
       <ion-label>{{ 'settings.account.logout' | translate }}</ion-label>
