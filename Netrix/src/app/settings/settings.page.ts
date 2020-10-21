@@ -83,6 +83,7 @@ export class SettingsPage {
           text: this.translate.instant('settings_page.alert.logout.choice.logout'),
           role: 'destructive',
           handler: () => {
+            this.dismiss();
             this._logout();
           }
         },
